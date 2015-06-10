@@ -70,7 +70,9 @@ public final class RouteMatcherBuilder {
         
         routeMatcher = new DefaultRouteMatcher();
         
-        LOGGER.debug("creates RouteMatcher");
+        if(Blade.debug()){
+        	LOGGER.debug("creates RouteMatcher");
+        }
         
         String[] basePackages = Blade.defaultRoutes();
         

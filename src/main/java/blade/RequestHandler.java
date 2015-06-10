@@ -112,7 +112,9 @@ public class RequestHandler {
         RequestWrapper requestWrapper = new RequestWrapper();
         ResponseWrapper responseWrapper = new ResponseWrapper();
         
-        LOGGER.debug("Request : " + method + "\t" + uri);
+        if(Blade.debug()){
+        	LOGGER.debug("Request : " + method + "\t" + uri);
+        }
         
         HttpMethod httpMethod = HttpMethod.valueOf(method);
         

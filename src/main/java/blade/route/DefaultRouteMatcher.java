@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import blade.Blade;
 import blade.kit.MimeParse;
 import blade.kit.StringKit;
 import blade.kit.log.Logger;
@@ -139,7 +140,9 @@ public class DefaultRouteMatcher {
         entry.requestURI = url;
         entry.acceptType = acceptType;
         
-        LOGGER.debug("Add Route：" + entry);
+        if(Blade.debug()){
+        	LOGGER.debug("Add Route：" + entry);
+        }
         
         // 添加到路由集合
         routes.add(entry);
@@ -215,8 +218,11 @@ public class DefaultRouteMatcher {
             }
 
             if (routeEntry.matches(httpMethodToMatch, path)) {
-            	LOGGER.debug("Removing path {}", path, httpMethod == null ? "" : " with HTTP method " + httpMethod);
-
+            	
+            	if(Blade.debug()){
+            		LOGGER.debug("Removing path {}", path, httpMethod == null ? "" : " with HTTP method " + httpMethod);
+                }
+            	
                 forRemoval.add(routeEntry);
             }
         }

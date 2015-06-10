@@ -111,6 +111,8 @@ abstract class BladeBase {
      */
     protected static int PORT = 9000;
     
+    protected static boolean DEBUG = true;
+    
     /**
      * IOC容器，存储路由到ioc中
      */
@@ -271,6 +273,15 @@ abstract class BladeBase {
     public static synchronized void webRoot(final String webRoot){
     	BladeBase.WEB_ROOT = webRoot;
     }
+    
+    /**
+	 * 设置系统是否以debug方式运行
+	 * @param isdebug	true:是，默认true；false:否
+	 */
+	public static synchronized void debug(boolean isdebug){
+		BladeBase.DEBUG = isdebug;
+	}
+	
     /**--------------------SET CONST:END-------------------------*/
     
     
@@ -339,6 +350,14 @@ abstract class BladeBase {
     public static String webRoot(){
     	return BladeBase.WEB_ROOT;
     }
+    
+    /**
+	 * @return	返回系统是否以debug方式运行
+	 */
+	public static boolean debug(){
+		return BladeBase.DEBUG;
+	}
+	
     /**--------------------GET CONST:END-------------------------*/
     
     
@@ -418,4 +437,5 @@ abstract class BladeBase {
 	public static synchronized void register(Object object){
 		container.registBean(object);
 	}
+	
 }

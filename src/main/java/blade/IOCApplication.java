@@ -84,9 +84,11 @@ public final class IOCApplication {
 			}
 		}
 		
-		Set<String> beanNames = container.getBeanNames();
-		for(String beanName : beanNames){
-			LOGGER.debug("Load The Class：" + beanName);
+		if(Blade.debug()){
+			Set<String> beanNames = container.getBeanNames();
+			for(String beanName : beanNames){
+				LOGGER.debug("Load The Class：" + beanName);
+			}
 		}
 	}
 	
