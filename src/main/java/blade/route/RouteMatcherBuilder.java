@@ -172,7 +172,7 @@ public final class RouteMatcherBuilder {
     		return;
     	}
     	
-    	Object object = container.registBean(interceptor);
+    	container.registBean(interceptor);
     	
     	for (Method method : methods) {
 			
@@ -182,13 +182,13 @@ public final class RouteMatcherBuilder {
 			if (null != before) {
 				String path = before.value().startsWith("/") ? before.value() : "/" + before.value();
 				String acceptType = before.acceptType();
-				buildRoute(object, method, path, HttpMethod.BEFORE, acceptType);
+				buildRoute(interceptor, method, path, HttpMethod.BEFORE, acceptType);
 			}
 			
 			if (null != after) {
 				String path = after.value().startsWith("/") ? after.value() : "/" + after.value();
 				String acceptType = after.acceptType();
-				buildRoute(object, method, path, HttpMethod.AFTER, acceptType);
+				buildRoute(interceptor, method, path, HttpMethod.AFTER, acceptType);
 			}
 		}
     }
@@ -207,7 +207,7 @@ public final class RouteMatcherBuilder {
     	
 		final String nameSpace = router.getAnnotation(Path.class).value();
 		
-		Object object = container.registBean(router);
+		container.registBean(router);
 		
 		for (Method method : methods) {
 			
@@ -225,7 +225,7 @@ public final class RouteMatcherBuilder {
 				
 				String acceptType = mapping.acceptType();
 				
-				buildRoute(object, method, path, methodType, acceptType);
+				buildRoute(router, method, path, methodType, acceptType);
 			}
 		}
     }
@@ -233,13 +233,13 @@ public final class RouteMatcherBuilder {
     /**
      * 构建一个路由
      * 
-     * @param target		路由目标执行的类实例
+     * @param target		路由目标执行的class
      * @param execMethod	路由执行方法
      * @param path			路由url
      * @param method		路由http方法
      * @param acceptType	路由acceptType
      */
-    private static void buildRoute(Object target, Method execMethod, String path, HttpMethod method, String acceptType){
+    private static void buildRoute(Class<?> target, Method execMethod, String path, HttpMethod method, String acceptType){
 		routeMatcher.addRoute(target, execMethod, path, method, acceptType);
     }
     

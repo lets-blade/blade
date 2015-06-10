@@ -32,7 +32,7 @@ public class RouteMatcher {
 	/**
 	 * 目标运行类实例
 	 */
-	Object target;
+	Class<?> target;
 	
 	/**
 	 * 要运行的方法对象
@@ -62,7 +62,7 @@ public class RouteMatcher {
     public RouteMatcher() {
     }
     
-    public RouteMatcher(Object target, Method execMethod, HttpMethod httpMethod, String path, String requestUri, String acceptType) {
+    public RouteMatcher(Class<?> target, Method execMethod, HttpMethod httpMethod, String path, String requestUri, String acceptType) {
         super();
         this.target = target;
         this.execMethod = execMethod;
@@ -92,7 +92,7 @@ public class RouteMatcher {
         return requestURI;
     }
 	
-    public Object getTarget() {
+    public Class<?> getTarget() {
 		return target;
 	}
     

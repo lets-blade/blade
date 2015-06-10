@@ -26,6 +26,7 @@ import java.util.Set;
 
 import blade.annotation.Component;
 import blade.annotation.Inject;
+import blade.annotation.Path;
 import blade.kit.CloneKit;
 import blade.kit.CollectionKit;
 import blade.kit.ReflectKit;
@@ -221,32 +222,39 @@ public class DefaultContainer implements Container {
         Iterator<Object> it = beansMap.values().iterator();
         try {
             while (it.hasNext()) {
+            	
                 Object obj = it.next();
+                
+                // 所有字段
                 Field[] fields = obj.getClass().getDeclaredFields();
                 for (Field field : fields) {
+                	
+                	// 需要注入的字段
                     Inject inject = field.getAnnotation(Inject.class);
                     if (null != inject) {
+                    	
                         // 要注入的字段
-                        Object wiredField = this.getBean(field.getType(), Scope.SINGLE);
+                        Object injectField = this.getBean(field.getType(), Scope.SINGLE);
+                        
                         // 指定装配的类
                         if (inject.value() != Class.class) {
-                            wiredField = this.getBean(inject.value(), Scope.SINGLE);
+                        	injectField = this.getBean(inject.value(), Scope.SINGLE);
                             // 容器有该类
-                            if (null == wiredField) {
-                                wiredField = this.registBean(inject.value());
+                            if (null == injectField) {
+                            	injectField = this.registBean(inject.value());
                             }
                         } else{
-                        	// 容器有该类
-                            if (null == wiredField) {
-                                wiredField = this.registBean(inject.value());
+                        	// 没有指定装配class, 容器没有该类，则创建一个对象放入容器
+                            if (null == injectField) {
+                            	injectField = this.registBean(field.getType());
                             }
                         }
-                        if (null == wiredField) {
+                        if (null == injectField) {
                             throw new RuntimeException("Unable to load " + field.getType().getCanonicalName() + "！");
                         }
                         boolean accessible = field.isAccessible();
                         field.setAccessible(true);
-                        field.set(obj, wiredField);
+                        field.set(obj, injectField);
                         field.setAccessible(accessible);
                     }
                 }
@@ -272,7 +280,7 @@ public class DefaultContainer implements Container {
             return false;
         }
         for (Annotation annotation : annotations) {
-            if (annotation instanceof Component) {
+            if (annotation instanceof Component || annotation instanceof Path) {
                 return true;
             }
         }
@@ -304,6 +312,13 @@ public class DefaultContainer implements Container {
 				this.registBean(clazz);
 			}
 		}
+	}
+
+	@Override
+	public Object registBean(Object object) {
+		String name = object.getClass().getName();
+		put(name, object);
+		return object;
 	}
 
 }

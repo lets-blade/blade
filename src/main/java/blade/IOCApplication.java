@@ -56,6 +56,8 @@ public final class IOCApplication {
 			for(String packageName : iocPackages){
 				registerBean(packageName);
 			}
+			// 初始化注入
+			container.initWired();
 		}
 	}
 	
@@ -86,8 +88,6 @@ public final class IOCApplication {
 		for(String beanName : beanNames){
 			LOGGER.debug("Load The Class：" + beanName);
 		}
-		// 初始化注入
-		container.initWired();
 	}
 	
 }

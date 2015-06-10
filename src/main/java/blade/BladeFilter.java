@@ -58,6 +58,7 @@ public class BladeFilter implements Filter {
         final BladeApplication application = getApplication(filterConfig);
         application.init();
         
+        // 构建所有路由
         RequestHandler.routeMatcher = RouteMatcherBuilder.building();
         
         // 初始化IOC容器

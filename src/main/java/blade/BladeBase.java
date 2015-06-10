@@ -19,6 +19,8 @@ import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
 
+import blade.ioc.Container;
+import blade.ioc.DefaultContainer;
 import blade.render.Render;
 import blade.render.RenderFactory;
 import blade.route.DefaultRouteMatcher;
@@ -104,7 +106,15 @@ abstract class BladeBase {
      */
     protected static String VIEW_500 = null;
     
+    /**
+     * jetty启动的默认端口
+     */
     protected static int PORT = 9000;
+    
+    /**
+     * IOC容器，存储路由到ioc中
+     */
+    private final static Container container = DefaultContainer.single();
     
     /**
      * 包类型枚举
@@ -399,4 +409,13 @@ abstract class BladeBase {
 		run(port, host, null);
 	}
 	/**----------------------jetty:END-------------------------*/
+	
+	/**
+	 * 手动注册一个对象到ioc容器中
+	 * 
+	 * @param object	要注册的object
+	 */
+	public static synchronized void register(Object object){
+		container.registBean(object);
+	}
 }

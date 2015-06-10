@@ -122,6 +122,13 @@ public interface Container {
     Object registBean(Class<?> clazz);
     
     /**
+     * 注册一个对象到bean容器中
+     * @param object		要注册的object
+     * @return
+     */
+    Object registBean(Object object);
+    
+    /**
      * 注册一个class集合进入ioc容器
      * 
      * @param classes		要注册的class集合

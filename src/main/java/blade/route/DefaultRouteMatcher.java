@@ -124,13 +124,13 @@ public class DefaultRouteMatcher {
     /**
      * 添加一个路由对象
      * 
-     * @param target		路由目标执行的类实例
+     * @param target		路由目标执行的class
      * @param execMethod	路由执行方法
      * @param url			路由url
      * @param method		路由http方法
      * @param acceptType	路由acceptType
      */
-    public void addRoute(Object target, Method execMethod, String url, HttpMethod method, String acceptType) {
+    public void addRoute(Class<?> target, Method execMethod, String url, HttpMethod method, String acceptType) {
     	RouteMatcher entry = new RouteMatcher();
         entry.target = target;
         entry.execMethod = execMethod;

@@ -114,6 +114,17 @@ OK，这是一个非常简单的示例，当然有很多现成的例子供你参
  
 [Balde Repositories](https://github.com/bladejava) 
 
+## 更新日志
+
+### v1.0.1
+	1. 去除对外公开的多余方法展示
+	2. 添加`Blade.run()`方式运行jetty
+	3. 添加`Blade.register()`方法注册bean对象
+	4. 优化IOC对象管理
+
+### v1.0.0
+第一个稳定版本发布
+
 ## 开源协议
 Blade框架基于[Apache2 License](https://github.com/biezhi/blade/blob/master/license.txt)
 

@@ -114,6 +114,15 @@ OK, this is a very simple example, of course, there are a lot of ready-made exam
  
 [Balde Repositories](https://github.com/bladejava) 
 
+
+## Update Log
+
+### v1.0.1
+	1. Remove excess public methods
+	2. Add the `Blade.run()` run jetty
+	3. Add the `Blade.register()` method register bean object
+	4. Optimize the ioc object management
+		
 ## Open source licenses
 Blade Framework based on the[Apache2 License](https://github.com/biezhi/blade/blob/master/license.txt)
 

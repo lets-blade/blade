@@ -22,6 +22,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import blade.exception.BladeException;
+import blade.ioc.Container;
+import blade.ioc.DefaultContainer;
+import blade.ioc.Scope;
 import blade.kit.PathKit;
 import blade.kit.ReflectKit;
 import blade.kit.log.Logger;
@@ -51,6 +54,8 @@ public class RequestHandler {
      * 服务器500错误时返回的HTML
      */
     private static final String INTERNAL_ERROR = "<html><body><h2>500 Internal Error</h2></body></html>";
+    
+    private final static Container container = DefaultContainer.single();
     
     /**
      * 路由处理器，查找请求过来的URL
@@ -122,7 +127,9 @@ public class RequestHandler {
 			// 如果找到
 			if (match != null) {
 				
-				Object target = match.getTarget();
+				Class<?> target = match.getTarget();
+				
+				Object targetObject = container.getBean(target, Scope.SINGLE);
 				
 				// 要执行的路由方法
 				Method execMethod = match.getExecMethod();
@@ -139,7 +146,7 @@ public class RequestHandler {
 				WebContext.put(requestWrapper, responseWrapper);
 				
 				// 执行route方法
-				Object result = executeMethod(target, execMethod, requestWrapper, responseWrapper);
+				Object result = executeMethod(targetObject, execMethod, requestWrapper, responseWrapper);
 				
 				// 执行after拦截
 	        	after(requestWrapper, responseWrapper, httpRequest, httpResponse, uri, acceptType);
@@ -192,14 +199,15 @@ public class RequestHandler {
 		final Response response = RequestResponseBuilder.build(httpServletResponse);
         
 		for (RouteMatcher filterMatch : matchSet) {
-        	Object target = filterMatch.getTarget();
+        	Class<?> target = filterMatch.getTarget();
+        	Object targetObject = container.getBean(target, Scope.SINGLE);
 			Method execMethod = filterMatch.getExecMethod();
 			Request request = RequestResponseBuilder.build(filterMatch, httpRequest);
 			
 			requestWrapper.setDelegate(request);
             responseWrapper.setDelegate(response);
             
-			executeMethod(target, execMethod, requestWrapper, responseWrapper);
+			executeMethod(targetObject, execMethod, requestWrapper, responseWrapper);
         }
 	}
 	
@@ -218,7 +226,10 @@ public class RequestHandler {
         final Response response = RequestResponseBuilder.build(httpServletResponse);
         String bodyContent = null;
         for (RouteMatcher filterMatch : matchSet) {
-        	Object target = filterMatch.getTarget();
+        	Class<?> target = filterMatch.getTarget();
+        	
+        	Object targetObject = container.getBean(target, Scope.SINGLE);
+        	
 			Method execMethod = filterMatch.getExecMethod();
 			
 			if (requestWrapper.getDelegate() == null) {
@@ -230,7 +241,7 @@ public class RequestHandler {
 			
             responseWrapper.setDelegate(response);
             
-			executeMethod(target, execMethod, requestWrapper, responseWrapper);
+			executeMethod(targetObject, execMethod, requestWrapper, responseWrapper);
 			
 			String bodyAfterFilter = response.body();
 	        if (bodyAfterFilter != null) {
