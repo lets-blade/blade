@@ -23,12 +23,13 @@ import java.lang.annotation.Target;
 /**
  * 拦截器前置事件注解，写在方法上  
  * 如：
+ * <pre>
  *  @Before("/*")
  *	public void before(Request request){...}
+ *</pre>
  *
- * @author	biezhi
+ * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since	1.0
- *
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)

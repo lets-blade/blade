@@ -23,10 +23,9 @@ import javax.servlet.http.HttpSession;
 
 /**
  * HttpSession包装
- * 
- * @author	biezhi
+ *
+ * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since	1.0
- * 
  */
 public class Session {
 

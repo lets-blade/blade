@@ -39,10 +39,12 @@ import blade.wrapper.ResponseWrapper;
 
 /**
  * 请求执行的Handler
- * 
- * @author	biezhi
- * @since	1.0
+ * <p>
+ * 拦截器所有blade的请求，处理route and interceptor
+ * </p>
  *
+ * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
+ * @since	1.0
  */
 public class RequestHandler {
 	

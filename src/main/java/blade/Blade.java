@@ -18,9 +18,9 @@ package blade;
 import blade.exception.BladeException;
 
 /**
- * Blade
+ * Blade Core Class
  * 
- * @author	biezhi
+ * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since	1.0
  *
  */

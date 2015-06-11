@@ -17,10 +17,9 @@ package blade.route;
 
 /**
  * HTTP请求方法
- * 
- * @author	biezhi
- * @since	1.0
  *
+ * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
+ * @since	1.0
  */
 public enum HttpMethod {
     GET, POST, PUT, PATCH, DELETE, HEAD, TRACE, CONNECT, OPTIONS, BEFORE, AFTER

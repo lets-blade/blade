@@ -25,14 +25,11 @@ import javax.servlet.http.HttpServletResponse;
 
 import blade.Blade;
 import blade.WebContext;
-
-
 /**
  * 渲染器抽象类
  * 
- * @author	biezhi
+ * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since	1.0
- *
  */
 public abstract class Render {
 	

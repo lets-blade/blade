@@ -19,10 +19,9 @@ import javax.servlet.http.HttpServletResponse;
 
 /**
  * blade运行时异常基类
- * 
- * @author	biezhi
- * @since	1.0
  *
+ * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
+ * @since	1.0
  */
 public class BladeException extends RuntimeException {
 	

@@ -33,9 +33,8 @@ import blade.route.RouteMatcherBuilder;
  * blade核心过滤器，mvc总线
  * 匹配所有请求过滤
  * 
- * @author	biezhi
+ * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since	1.0
- *
  */
 public class BladeFilter implements Filter {
 	

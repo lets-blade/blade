@@ -24,10 +24,12 @@ import blade.wrapper.Response;
 
 /**
  * Request、Response构建器
- * 
- * @author	biezhi
- * @since	1.0
+ * <p>
+ * 构建Request和Response
+ * </p>
  *
+ * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
+ * @since	1.0
  */
 public final class RequestResponseBuilder {
 	

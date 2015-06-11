@@ -39,11 +39,12 @@ import blade.route.RouteMatcher;
 
 /**
  * HttpServletRequest请求包装类
+ * <p>
  * 提供对HttpServletRequest API的简单操作
- * 
- * @author	biezhi
- * @since	1.0
+ * </p>
  *
+ * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
+ * @since	1.0
  */
 public class Request {
 

@@ -17,10 +17,9 @@ package blade.render;
 
 /**
  * 渲染引擎工厂
- * 
- * @author	biezhi
- * @since	1.0
  *
+ * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
+ * @since	1.0
  */
 public final class RenderFactory {
 	

@@ -17,9 +17,11 @@ package blade.ioc;
 
 /**
  * Bean创建类型
+ * <p>
  * SINGLE：单例，PROTOTYPE：原生
- * 
- * @author	biezhi
+ * </p>
+ *
+ * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since	1.0
  */
 public enum Scope {

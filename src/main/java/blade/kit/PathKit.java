@@ -24,11 +24,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 路径工具类
- * 
- * @author	biezhi
- * @since	1.0
+ * 路径工具类，处理request上的路径
  *
+ * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
+ * @since	1.0
  */
 public final class PathKit {
 	

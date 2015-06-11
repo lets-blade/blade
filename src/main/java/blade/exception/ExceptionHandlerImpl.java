@@ -17,10 +17,9 @@ package blade.exception;
 
 /**
  * ExceptionHandlerImpl
- * 
- * @author	biezhi
- * @since	1.0
  *
+ * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
+ * @since	1.0
  */
 public abstract class ExceptionHandlerImpl {
     

@@ -25,10 +25,12 @@ import javax.servlet.http.HttpServletRequest;
 
 /**
  * 查询参数封装
+ * <p>
+ *	封装了URL上的查询参数和Path参数 
+ * </p>
  * 
- * @author	biezhi
+ * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since	1.0
- *
  */
 public class QueryParamsMap {
 

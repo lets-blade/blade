@@ -17,10 +17,9 @@ package blade.ioc;
 
 /**
  * 原生bean对象
- * 
- * @author	biezhi
- * @since	1.0
  *
+ * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
+ * @since	1.0
  */
 public class PrototypeBean extends AbstractBeanFactory {
 

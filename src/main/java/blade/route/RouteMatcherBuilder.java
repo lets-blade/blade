@@ -32,10 +32,9 @@ import blade.kit.resource.ClassReader;
 
 /**
  * 路由构造器
- * 
- * @author	biezhi
- * @since	1.0
  *
+ * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
+ * @since	1.0
  */
 public final class RouteMatcherBuilder {
     

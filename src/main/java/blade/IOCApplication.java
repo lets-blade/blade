@@ -26,8 +26,11 @@ import blade.kit.resource.ClassReader;
 
 /**
  * IOC容器初始化类
- * 
- * @author	biezhi
+ * <p>
+ * 用于初始化ioc对象
+ * </p>
+ *
+ * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since	1.0
  */
 public final class IOCApplication {

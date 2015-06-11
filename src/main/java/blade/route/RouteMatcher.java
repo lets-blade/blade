@@ -22,10 +22,9 @@ import blade.kit.PathKit;
 
 /**
  * 路由匹配对象
- * 
- * @author	biezhi
- * @since	1.0
  *
+ * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
+ * @since	1.0
  */
 public class RouteMatcher {
 	

@@ -25,8 +25,8 @@ import blade.wrapper.Session;
 
 /**
  * 全局的WeContext
- * 
- * @author	biezhi
+ *
+ * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since	1.0
  */
 public final class WebContext {

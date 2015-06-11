@@ -23,12 +23,12 @@ import java.lang.annotation.Target;
 /**
  * 拦截器注解，写在类上  
  * 如：
+ * <pre>
  * @Interceptor
  * public class BaseInterceptor {...}
- * 
- * @author	biezhi
+ * </pre>
+ * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since	1.0
- * 
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)

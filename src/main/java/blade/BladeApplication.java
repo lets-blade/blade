@@ -18,9 +18,8 @@ package blade;
 /**
  * Blade全局初始化类，可以在应用启动的时候做一些操作
  * 
- * @author	biezhi
+ * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since	1.0
- *
  */
 public interface BladeApplication {
 	
