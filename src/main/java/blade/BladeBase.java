@@ -69,7 +69,7 @@ abstract class BladeBase {
     /**
 	 * 静态资源所在文件夹
 	 */
-	protected static String STATIC_FOLDER = null;
+	protected static String[] STATIC_FOLDER = null;
     
     /**
      * 框架是否已经初始化
@@ -228,7 +228,7 @@ abstract class BladeBase {
 	 * 
 	 * @param folder
 	 */
-	public static synchronized void staticFolder(final String folder) {
+	public static synchronized void staticFolder(final String ... folder) {
 		STATIC_FOLDER = folder;
 	}
 	
@@ -356,6 +356,13 @@ abstract class BladeBase {
 	 */
 	public static boolean debug(){
 		return BladeBase.DEBUG;
+	}
+	
+	/**
+	 * @return	返回静态资源目录
+	 */
+	public static String[] staticFolder(){
+		return BladeBase.STATIC_FOLDER;
 	}
 	
     /**--------------------GET CONST:END-------------------------*/

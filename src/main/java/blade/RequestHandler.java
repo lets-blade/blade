@@ -97,8 +97,10 @@ public class RequestHandler {
         String uri = PathKit.getRelativePath(httpRequest, BladeFilter.filterPath);
         
         // 如果是静态资源则交给filter处理
-        if(null != BladeBase.STATIC_FOLDER && uri.startsWith(BladeBase.STATIC_FOLDER)){
-        	return false;
+        if(null != Blade.staticFolder() && Blade.staticFolder().length > 0){
+        	if(!filterStaticFolder(uri)){
+        		return false;
+        	}
         }
         
         String acceptType = httpRequest.getHeader(ACCEPT_TYPE_REQUEST_MIME_HEADER);
@@ -314,5 +316,15 @@ public class RequestHandler {
 			response.render( (ModelAndView) result );
 		}
 		return null;
+	}
+	
+	private boolean filterStaticFolder(String uri){
+		int len = Blade.staticFolder().length;
+    	for(int i=0; i<len; i++){
+    		if(uri.startsWith(Blade.staticFolder()[i])){
+    			return false;
+    		}
+    	}
+    	return true;
 	}
 }
