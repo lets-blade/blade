@@ -30,7 +30,7 @@ import blade.annotation.Path;
 import blade.kit.CloneKit;
 import blade.kit.CollectionKit;
 import blade.kit.ReflectKit;
-import blade.kit.log.Logger;
+import blade.log.Logger;
 
 /**
  * 默认的IOC容器实现

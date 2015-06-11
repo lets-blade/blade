@@ -34,7 +34,7 @@ import blade.kit.FileUpload;
 import blade.kit.IOKit;
 import blade.kit.PathKit;
 import blade.kit.StringKit;
-import blade.kit.log.Logger;
+import blade.log.Logger;
 import blade.route.RouteMatcher;
 
 /**

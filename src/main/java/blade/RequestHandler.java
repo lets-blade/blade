@@ -27,7 +27,7 @@ import blade.ioc.DefaultContainer;
 import blade.ioc.Scope;
 import blade.kit.PathKit;
 import blade.kit.ReflectKit;
-import blade.kit.log.Logger;
+import blade.log.Logger;
 import blade.render.ModelAndView;
 import blade.route.DefaultRouteMatcher;
 import blade.route.HttpMethod;

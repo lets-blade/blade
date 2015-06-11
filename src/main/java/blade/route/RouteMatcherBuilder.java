@@ -26,9 +26,9 @@ import blade.annotation.Path;
 import blade.annotation.Route;
 import blade.ioc.Container;
 import blade.ioc.DefaultContainer;
-import blade.kit.log.Logger;
-import blade.kit.resource.ClassPathClassReader;
-import blade.kit.resource.ClassReader;
+import blade.log.Logger;
+import blade.resource.ClassPathClassReader;
+import blade.resource.ClassReader;
 
 /**
  * 路由构造器

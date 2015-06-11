@@ -20,9 +20,9 @@ import java.util.Set;
 import blade.BladeBase.PackageNames;
 import blade.ioc.Container;
 import blade.ioc.DefaultContainer;
-import blade.kit.log.Logger;
-import blade.kit.resource.ClassPathClassReader;
-import blade.kit.resource.ClassReader;
+import blade.log.Logger;
+import blade.resource.ClassPathClassReader;
+import blade.resource.ClassReader;
 
 /**
  * IOC容器初始化类

@@ -15,7 +15,6 @@
  */
 package blade.kit;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,6 +26,8 @@ import java.util.regex.Pattern;
 
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
+
+import blade.io.FastByteArrayOutputStream;
 
 /**
  * 文件上传对象
@@ -247,11 +248,11 @@ public class FileUpload {
 		private String contentType;
 
 		// 数据体缓存
-		private ByteArrayOutputStream temp;
+		private FastByteArrayOutputStream temp;
 
 		public void write(byte[] buf, int off, int len) {
 			if (temp == null) {
-				temp = new ByteArrayOutputStream();
+				temp = new FastByteArrayOutputStream();
 			}
 			temp.write(buf, off, len);
 		}

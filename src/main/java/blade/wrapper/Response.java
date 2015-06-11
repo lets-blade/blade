@@ -20,7 +20,7 @@ import java.io.IOException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 
-import blade.kit.log.Logger;
+import blade.log.Logger;
 import blade.render.ModelAndView;
 import blade.render.Render;
 import blade.render.RenderFactory;
