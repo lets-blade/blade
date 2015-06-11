@@ -118,7 +118,8 @@ OK，这是一个非常简单的示例，当然有很多现成的例子供你参
 
 ### v1.0.2
 	1. 优化底层IO
-	
+	2. 修复path param bug
+		
 ### v1.0.1
 	1. 去除对外公开的多余方法展示
 	2. 添加`Blade.run()`方式运行jetty
@@ -126,7 +127,7 @@ OK，这是一个非常简单的示例，当然有很多现成的例子供你参
 	4. 优化IOC对象管理
 
 ### v1.0.0
-第一个稳定版本发布
+	第一个稳定版本发布
 
 ## 开源协议
 Blade框架基于[Apache2 License](https://github.com/biezhi/blade/blob/master/license.txt)
