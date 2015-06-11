@@ -27,6 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import blade.kit.PathKit;
+import blade.plugin.PluginApplication;
 import blade.route.RouteMatcherBuilder;
 
 /**
@@ -61,7 +62,10 @@ public class BladeFilter implements Filter {
         RequestHandler.routeMatcher = RouteMatcherBuilder.building();
         
         // 初始化IOC容器
-        IOCApplication.init();
+        IocApplication.init();
+        
+        // 加载所有插件
+        PluginApplication.init();
     }
     
     /**

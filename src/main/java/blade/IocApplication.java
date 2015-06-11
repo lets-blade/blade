@@ -33,9 +33,9 @@ import blade.resource.ClassReader;
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since	1.0
  */
-public final class IOCApplication {
+public final class IocApplication {
 
-	private static final Logger LOGGER = Logger.getLogger(IOCApplication.class);
+	private static final Logger LOGGER = Logger.getLogger(IocApplication.class);
 	
 	/**
 	 * IOC容器，单例获取默认的容器实现
