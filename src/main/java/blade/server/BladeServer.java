@@ -49,15 +49,10 @@ public final class BladeServer {
 	
 	static{
 		String result = BladeServer.class.getResource("/").toString();
+		System.out.println(result);
 		// maven项目
-		if (result.indexOf("/target/classes/") != -1) {
+		/*if (result.indexOf("/target/classes/") != -1) {
 			DEFAULT_APP_PATH = "src/main/webapp";
-		}
-		
-		// dynamic项目
-		/*if (result.indexOf("/build/classes/") != -1) {
-			DEFAULT_APP_PATH = "WebContent";
-			DEFAULT_APP_PATH = "";
 		}*/
 	}
 	

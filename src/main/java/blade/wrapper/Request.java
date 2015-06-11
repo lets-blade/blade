@@ -87,19 +87,21 @@ public class Request {
      * @param match		路由匹配对象，用于存储URL参数等信息
      */
     public void initRequest(RouteMatcher match) {
-        List<String> requestList = PathKit.convertRouteToList(match.getPath());
+    	
+        List<String> requestList = PathKit.convertRouteToList(match.getRequestURI());
         List<String> pathList = PathKit.convertRouteToList(match.getPath());
-
-        pathParams = getPathParams(requestList, pathList);
-        splat = getSplat(requestList, pathList);
-        fileUpload = new FileUpload(this.servletRequest);
+        
+        this.pathParams = getPathParams(requestList, pathList);
+        this.splat = getSplat(requestList, pathList);
+        this.fileUpload = new FileUpload(this.servletRequest);
+        
     }
 
     /**
      * @return	返回URL路径上的所有参数
      */
     public Map<String, String> pathParams() {
-        return Collections.unmodifiableMap(pathParams);
+        return Collections.unmodifiableMap(this.pathParams);
     }
 
     /**
@@ -111,11 +113,11 @@ public class Request {
         if (param == null) {
             return null;
         }
-
+        
         if (param.startsWith(":")) {
-            return pathParams.get(param.toLowerCase());
+            return this.pathParams.get(param.toLowerCase());
         } else {
-            return pathParams.get(":" + param.toLowerCase());
+            return this.pathParams.get(":" + param.toLowerCase());
         }
     }
     

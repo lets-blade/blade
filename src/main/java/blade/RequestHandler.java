@@ -140,13 +140,14 @@ public class RequestHandler {
 				// 要执行的路由方法
 				Method execMethod = match.getExecMethod();
 				
-				if (requestWrapper.getDelegate() == null) {
-                    request = RequestResponseBuilder.build(match, httpRequest);
-                    requestWrapper.setDelegate(request);
-                } else {
-                    requestWrapper.initRequest(match);
-                }
+				if(null != requestWrapper.getDelegate()){
+					request  = requestWrapper.getDelegate();
+					request.initRequest(match);
+				} else {
+					request = RequestResponseBuilder.build(match, httpRequest);
+				}
 				
+				requestWrapper.setDelegate(request);
                 responseWrapper.setDelegate(response);
                 
 				WebContext.put(requestWrapper, responseWrapper);
