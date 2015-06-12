@@ -14,13 +14,14 @@
 ### Blade Features
 
 + Simple MVC
-+ Restful API
++ REST API
 + Note the interceptor
 + The microkernel IOC container
 + Utility class
 + A template engine support
 + Support JDK1.6 +
 + Built-in jetty start
++ Plug-in extension mechanism
 + ...
 
 ##Quick start
