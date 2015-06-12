@@ -3,7 +3,6 @@ package blade.plugin;
 import java.util.Set;
 
 import blade.log.Logger;
-import blade.resource.ClassPathClassReader;
 import blade.resource.ClassReader;
 import blade.resource.JarReaderImpl;
 
@@ -19,7 +18,6 @@ public final class PluginApplication {
 
 	private static final Logger LOGGER = Logger.getLogger(PluginApplication.class);
 	
-	private final static ClassReader classPathReader = new ClassPathClassReader();
 	private final static ClassReader jarReader = new JarReaderImpl();
 	
 	/**
@@ -28,11 +26,7 @@ public final class PluginApplication {
 	public static void init(){
 		
 		// 扫描blade.plugin包下的所有插件
-		Set<Class<?>> pluginList = classPathReader.getClass("blade.plugin", Plugin.class, true);
-		
-		if(null == pluginList || pluginList.size() == 0){
-			pluginList = jarReader.getClass("blade.plugin", Plugin.class, true);
-		}
+		Set<Class<?>> pluginList = jarReader.getClass("blade.plugin", Plugin.class, true);
 		
 		if(null != pluginList && pluginList.size() > 0){
 			try {
