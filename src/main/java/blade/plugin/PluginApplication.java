@@ -3,8 +3,8 @@ package blade.plugin;
 import java.util.Set;
 
 import blade.log.Logger;
+import blade.resource.ClassPathClassReader;
 import blade.resource.ClassReader;
-import blade.resource.JarReaderImpl;
 
 /**
  * 加载所有插件
@@ -18,14 +18,16 @@ public final class PluginApplication {
 
 	private static final Logger LOGGER = Logger.getLogger(PluginApplication.class);
 	
+//	private final static ClassReader classReader = new JarReaderImpl();
+	private final static ClassReader classReader = new ClassPathClassReader();
+	
 	/**
 	 * 初始化所有插件，暂时不考虑执行顺序问题
 	 */
 	public static void init(){
 		
 		// 扫描blade.plugin包下的所有插件
-		ClassReader jarReader = new JarReaderImpl();
-		Set<Class<?>> pluginList = jarReader.getClass("blade.plugin", Plugin.class, true);
+		Set<Class<?>> pluginList = classReader.getClass("blade.plugin", Plugin.class, true);
 		
 		if(pluginList.size() > 0){
 			try {
@@ -34,9 +36,9 @@ public final class PluginApplication {
 					plugin.execute();
 				}
 			} catch (InstantiationException e) {
-				LOGGER.error("初始化增强失败: {}", e.getMessage());
+				LOGGER.error("初始化插件失败: " + e.getMessage());
 			} catch (IllegalAccessException e) {
-				LOGGER.error("初始化增强失败: {}", e.getMessage());
+				LOGGER.error("初始化插件失败: " + e.getMessage());
 			}
 		}
 	}
