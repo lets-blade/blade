@@ -19,7 +19,8 @@ public final class PluginApplication {
 
 	private static final Logger LOGGER = Logger.getLogger(PluginApplication.class);
 	
-	private final static ClassReader classReader = new JarReaderImpl();
+	private final static ClassReader classPathReader = new ClassPathClassReader();
+	private final static ClassReader jarReader = new JarReaderImpl();
 	
 	/**
 	 * 初始化所有插件，暂时不考虑执行顺序问题
@@ -27,10 +28,10 @@ public final class PluginApplication {
 	public static void init(){
 		
 		// 扫描blade.plugin包下的所有插件
-		Set<Class<?>> pluginList = classReader.getClass("blade.plugin", Plugin.class, true);
+		Set<Class<?>> pluginList = classPathReader.getClass("blade.plugin", Plugin.class, true);
 		
 		if(null == pluginList || pluginList.size() == 0){
-			pluginList = new ClassPathClassReader().getClass("blade.plugin", Plugin.class, true);
+			pluginList = jarReader.getClass("blade.plugin", Plugin.class, true);
 		}
 		
 		if(null != pluginList && pluginList.size() > 0){
