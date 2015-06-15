@@ -67,12 +67,13 @@ public class App implements BladeApplication{
 	@Override
 	public void init() {
 		
-		// Set up routing and interceptor bag in bag
+		// 设置路由、拦截器包所在包
 		Blade.defaultRoute("blade.sample");
 	}
 	
 }
 ```
+
 	
 ```java
 @Path
@@ -81,27 +82,29 @@ public class Hello {
 	@Route("/hello")
 	public String hello() {
 		System.out.println("hello");
-		return R.render("hello.jsp");
+		return "hello.jsp";
 	}
-	
+		
 	@Route(value = "/post", method = HttpMethod.POST)
-	public void post() {
-		System.out.println("post");
+	public void post(Request request) {
+		String name = request.query("name");
+		System.out.println("name = " + name);
 	}
 	
 	@Route("/users/:name")
-	public void users(Request request, Response response) {
+	public ModelAndView users(Request request, Response response) {
 		System.out.println("users");
 		String name = request.pathParam(":name");
-		request.attribute("name", name);
-		R.render("/users.jsp");
+		
+		ModelAndView modelAndView = new ModelAndView("users");
+		modelAndView.add("name", name);
+		return modelAndView;
 	}
 
 	@Route("/index")
-	public void index() {
-		ModelAndView modelAndView = new ModelAndView("/index.jsp");
-		modelAndView.add("name", "jack");
-		R.render(modelAndView);
+	public String index(Request request) {
+		request.attribute("name", "jack");
+		return "index.jsp";
 	}
 	
 }

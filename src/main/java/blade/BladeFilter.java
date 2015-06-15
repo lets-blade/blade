@@ -26,8 +26,6 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import blade.kit.PathKit;
-import blade.plugin.PluginApplication;
 import blade.route.RouteMatcherBuilder;
 
 /**
@@ -44,12 +42,8 @@ public class BladeFilter implements Filter {
 	 */
     private static final String APPLCATION_CLASS = "applicationClass";
     
-    public static String filterPath;
-    
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-    	
-    	filterPath = PathKit.getFilterPath(filterConfig);
     	
     	BladeBase.webRoot(filterConfig.getServletContext().getRealPath("/"));
     	
@@ -64,8 +58,6 @@ public class BladeFilter implements Filter {
         // 初始化IOC容器
         IocApplication.init();
         
-        // 加载所有插件
-        PluginApplication.init();
     }
     
     /**

@@ -19,9 +19,9 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import blade.wrapper.Request;
-import blade.wrapper.Response;
-import blade.wrapper.Session;
+import blade.http.Request;
+import blade.http.Response;
+import blade.http.Session;
 
 /**
  * 全局的WeContext

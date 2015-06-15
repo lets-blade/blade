@@ -73,6 +73,7 @@ public class App implements BladeApplication{
 	
 }
 ```
+
 	
 ```java
 @Path
@@ -81,27 +82,29 @@ public class Hello {
 	@Route("/hello")
 	public String hello() {
 		System.out.println("hello");
-		return R.render("hello.jsp");
+		return "hello.jsp";
 	}
-	
+		
 	@Route(value = "/post", method = HttpMethod.POST)
-	public void post() {
-		System.out.println("post");
+	public void post(Request request) {
+		String name = request.query("name");
+		System.out.println("name = " + name);
 	}
 	
 	@Route("/users/:name")
-	public void users(Request request, Response response) {
+	public ModelAndView users(Request request, Response response) {
 		System.out.println("users");
 		String name = request.pathParam(":name");
-		request.attribute("name", name);
-		R.render("/users.jsp");
+		
+		ModelAndView modelAndView = new ModelAndView("users");
+		modelAndView.add("name", name);
+		return modelAndView;
 	}
 
 	@Route("/index")
-	public void index() {
-		ModelAndView modelAndView = new ModelAndView("/index.jsp");
-		modelAndView.add("name", "jack");
-		R.render(modelAndView);
+	public String index(Request request) {
+		request.attribute("name", "jack");
+		return "index.jsp";
 	}
 	
 }
@@ -117,10 +120,11 @@ OK，这是一个非常简单的示例，当然有很多现成的例子供你参
 
 ## 更新日志
 
-### v1.0.3
+### v1.0.4
 	1. 优化底层IO
-	2. 修复path param bug
-	3. 添加插件扩展
+	2. 简化插件扩展
+	3. 拦截器路由匹配分离
+	4. 修复jetty在多maven环境下运行bug 
 		
 ### v1.0.1
 	1. 去除对外公开的多余方法展示

@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package blade;
+package blade.wrapper;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import blade.http.Request;
+import blade.http.Response;
 import blade.route.RouteMatcher;
-import blade.wrapper.Request;
-import blade.wrapper.Response;
 
 /**
  * Request、Response构建器

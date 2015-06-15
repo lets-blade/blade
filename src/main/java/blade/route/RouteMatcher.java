@@ -104,7 +104,7 @@ public class RouteMatcher {
      */
 	boolean matches(HttpMethod httpMethod, String path) {
 		
-    	// 如果是拦截器类型则跳过，返回true
+    	// 如果是拦截器的全部匹配模式则跳过，返回true
         if ((httpMethod == HttpMethod.BEFORE || httpMethod == HttpMethod.AFTER)
                 && (this.httpMethod == httpMethod)
                 && this.path.equals(PathKit.ALL_PATHS)) {
@@ -126,6 +126,7 @@ public class RouteMatcher {
 	 */
     private boolean matchPath(String path) {
     	
+    	// /hello
         if (!this.path.endsWith("*") && ((path.endsWith("/") && !this.path.endsWith("/"))
                 || (this.path.endsWith("/") && !path.endsWith("/")))) {
             return false;
@@ -188,7 +189,7 @@ public class RouteMatcher {
     }
     
     public String toString() {
-        return httpMethod.name() + "\t" + path;
+        return httpMethod.name() + "\t\t" + path;
     }
 	
 }

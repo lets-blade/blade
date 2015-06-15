@@ -17,6 +17,8 @@ package blade.wrapper;
 
 import javax.servlet.http.HttpServletResponse;
 
+import blade.http.Response;
+
 /**
  * Response增强
  *

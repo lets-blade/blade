@@ -20,7 +20,9 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
-import blade.QueryParamsMap;
+import blade.http.QueryParamsMap;
+import blade.http.Request;
+import blade.http.Session;
 
 /**
  * Request增强

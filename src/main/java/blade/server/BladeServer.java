@@ -39,7 +39,7 @@ public final class BladeServer {
 	/**
 	 * 默认的应用所在位置
 	 */
-	private static String DEFAULT_APP_PATH = BladeServer.class.getResource("/").toString();
+	private static String DEFAULT_APP_PATH = BladeServer.class.getClassLoader().getResource("").getPath();;
 	
 	private static final Logger LOGGER = Logger.getLogger(BladeServer.class);
 	
@@ -48,12 +48,7 @@ public final class BladeServer {
 	}
 	
 	static{
-		String result = BladeServer.class.getResource("/").toString();
-		System.out.println(result);
-		// maven项目
-		/*if (result.indexOf("/target/classes/") != -1) {
-			DEFAULT_APP_PATH = "src/main/webapp";
-		}*/
+		
 	}
 	
 	/**
@@ -72,6 +67,7 @@ public final class BladeServer {
 		
 		// 解决Windows下重复启动Jetty居然不报告端口冲突的问题.
 		connector.setReuseAddress(false);
+		connector.setName("blade-jetty-server");
 		server.setConnectors(new Connector[] { connector });
 		
 		WebAppContext webContext = new WebAppContext(DEFAULT_APP_PATH, contextPath);

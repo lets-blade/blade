@@ -39,6 +39,8 @@ abstract class BladeBase {
 	 */
 	public static String PACKAGE_ROUTE = "route";
 	
+	protected static final String DEFAULT_ACCEPT_TYPE = "*/*";
+	
 	/**
 	 * 默认拦截器后缀包，用户扫描拦截器所在位置，默认为interceptor，用户可自定义
 	 */
@@ -132,6 +134,8 @@ abstract class BladeBase {
     	basepackge, route, interceptor, ioc
     }
     
+    protected BladeBase() {
+	}
     
     /*--------------------SET CONST:START-------------------------*/
     
@@ -445,4 +449,10 @@ abstract class BladeBase {
 		container.registBean(object);
 	}
 	
+	/*private static synchronized void init() {
+        if (!initialized) {
+            routeMatcher = RouteMatcherBuilder.building();
+            initialized = true;
+        }
+    }*/
 }

@@ -26,6 +26,9 @@ import blade.exception.BladeException;
  */
 public final class Blade extends BladeBase{
 	
+	private Blade() {
+	}
+	
     public static void halt() {
         throw new BladeException();
     }

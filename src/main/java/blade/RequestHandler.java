@@ -22,6 +22,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import blade.exception.BladeException;
+import blade.http.Request;
+import blade.http.Response;
 import blade.ioc.Container;
 import blade.ioc.DefaultContainer;
 import blade.ioc.Scope;
@@ -32,9 +34,8 @@ import blade.render.ModelAndView;
 import blade.route.DefaultRouteMatcher;
 import blade.route.HttpMethod;
 import blade.route.RouteMatcher;
-import blade.wrapper.Request;
+import blade.wrapper.RequestResponseBuilder;
 import blade.wrapper.RequestWrapper;
-import blade.wrapper.Response;
 import blade.wrapper.ResponseWrapper;
 
 /**
@@ -94,7 +95,7 @@ public class RequestHandler {
         String method = httpRequest.getMethod();
         
         // 请求的uri
-        String uri = PathKit.getRelativePath(httpRequest, BladeFilter.filterPath);
+        String uri = PathKit.getRelativePath(httpRequest);
         
         // 如果是静态资源则交给filter处理
         if(null != Blade.staticFolder() && Blade.staticFolder().length > 0){

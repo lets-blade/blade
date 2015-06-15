@@ -15,13 +15,12 @@
  */
 package blade.kit;
 
-import javax.servlet.FilterConfig;
-import javax.servlet.http.HttpServletRequest;
-
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * 路径工具类，处理request上的路径
@@ -31,15 +30,14 @@ import java.util.List;
  */
 public final class PathKit {
 	
-	public static final String ALL_PATHS = "+/*paths";
-    private static final String SLASH_WILDCARD = "/*";
+	public static final String ALL_PATHS = "/*";
     private static final String SLASH = "/";
-    private static final String FILTER_MAPPING_PARAM = "filterMappingUrlPattern";
     
     private PathKit() {
     }
 
-    public static String getRelativePath(HttpServletRequest request, String filterPath) {
+    public static String getRelativePath(HttpServletRequest request) {
+    	
         String path = request.getRequestURI();
         String contextPath = request.getContextPath();
 
@@ -48,14 +46,7 @@ public final class PathKit {
         if (path.length() > 0) {
             path = path.substring(1);
         }
-
-        if (!path.startsWith(filterPath) && filterPath.equals(path + SLASH)) {
-            path += SLASH;
-        }
-        if (path.startsWith(filterPath)) {
-            path = path.substring(filterPath.length());
-        }
-
+        
         if (!path.startsWith(SLASH)) {
             path = SLASH + path;
         }
@@ -67,19 +58,6 @@ public final class PathKit {
         return path;
     }
 
-    public static String getFilterPath(FilterConfig config) {
-        String result = config.getInitParameter(FILTER_MAPPING_PARAM);
-        if (result == null || result.equals(SLASH_WILDCARD)) {
-            return "";
-        } else if (!result.startsWith(SLASH) || !result.endsWith(SLASH_WILDCARD)) {
-            throw new RuntimeException(
-                    "The " + FILTER_MAPPING_PARAM + " must start with \"/\" and end with \"/*\". It's: "
-                            + result
-            );
-        }
-        return result.substring(1, result.length() - 1);
-    }
-    
     public static List<String> convertRouteToList(String route) {
         String[] pathArray = route.split("/");
         List<String> path = new ArrayList<String>();

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package blade.wrapper;
+package blade.http;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -29,7 +29,6 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import blade.QueryParamsMap;
 import blade.kit.FileUpload;
 import blade.kit.IOKit;
 import blade.kit.PathKit;

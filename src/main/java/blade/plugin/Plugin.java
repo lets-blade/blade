@@ -11,6 +11,6 @@ public interface Plugin {
 	/**
 	 * 要执行的方法
 	 */
-	public void execute();
+	public void run();
 	
 }
