@@ -121,10 +121,12 @@ OK, this is a very simple example, of course, there are a lot of ready-made exam
 
 ## Update Log
 
-### v1.0.2
+### v1.0.4
 	1. Optimize the underlying IO
-	2. Repair path param bug
-
+	2. Simplify the plug-in extension
+	3. Matching vehicle routing separation
+	4. Repair jetty in running maven environment more bugs
+	
 ### v1.0.1
 	1. Remove excess public methods
 	2. Add the `Blade.run()` run jetty
