@@ -25,17 +25,17 @@
 + ...
 
 ##Quick start
-First. Use maven to build a webapp, join dependency on the blade
+First. Use maven to build a webapp, join dependency on the blade,Recommended for the [latest version](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.bladejava%22%20AND%20a%3A%22blade%22)
 
 ```xml
 <dependency>
 	<groupId>com.bladejava</groupId>
 	<artifactId>blade</artifactId>
-	<version>1.0</version>
+	<version>x.x.x</version>
 </dependency>
 ```
 	
-Second. Configuration in the `web.xml` Blade core filter initialization and set your class
+Second. Configuration in the `web.xml` Blade core filter initialization and set your class, and you can also not configuration(using jetty start)
 	
 ```xml
 <web-app>
@@ -63,10 +63,8 @@ Third. Write App.java and routing file, here is an example
 public class App implements BladeApplication{
 
 	Logger logger = Logger.getLogger(App.class);
-	
 	@Override
 	public void init() {
-		
 		// 设置路由、拦截器包所在包
 		Blade.defaultRoute("blade.sample");
 	}
@@ -110,13 +108,9 @@ public class Hello {
 }
 ```
 	
-OK, this is a very simple example, of course, there are a lot of ready-made examples for your reference:
-  
-[Quick start](http://#)
- 
-[Sample App](http://#)
- 
-[Balde Repositories](https://github.com/bladejava) 
+OK, all this may seem simple, refer to the guidelines for use more ready-made examples for your reference:
+
+[Blade Guide](http://bladejava.com/doc/en)
 
 
 ## Update Log

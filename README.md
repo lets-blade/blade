@@ -25,17 +25,17 @@
 + ...
 
 ##快速入门
-第一步、用maven构建一个webapp，加入blade的依赖
+第一步、用maven构建一个webapp，加入blade的依赖，推荐获取[最新版本](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.bladejava%22%20AND%20a%3A%22blade%22)
 
 ```xml
 <dependency>
 	<groupId>com.bladejava</groupId>
 	<artifactId>blade</artifactId>
-	<version>1.0.4</version>
+	<version>x.x.x</version>
 </dependency>
 ```
 	
-第二步、在`web.xml`中配置Blade核心过滤器并设置你的初始化类
+第二步、在`web.xml`中配置Blade核心过滤器并设置你的初始化类，你也可以不配置(使用jetty启动)
 	
 ```xml
 <web-app>
@@ -63,10 +63,8 @@
 public class App implements BladeApplication{
 
 	Logger logger = Logger.getLogger(App.class);
-	
 	@Override
 	public void init() {
-		
 		// 设置路由、拦截器包所在包
 		Blade.defaultRoute("blade.sample");
 	}
@@ -110,14 +108,10 @@ public class Hello {
 }
 ```
 	
-OK，这是一个非常简单的示例，当然有很多现成的例子供你参考:
+OK，这一切看起来多么的简单，查阅使用指南更多现成的例子供你参考:
   
-[新手指南](http://#)
+[Blade使用指南](http://bladejava.com/doc/cn)
  
-[手脚架应用](http://#)
- 
-[Balde Repositories](https://github.com/bladejava) 
-
 ## 更新日志
 
 ### v1.0.4
