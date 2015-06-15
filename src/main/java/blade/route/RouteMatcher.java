@@ -189,7 +189,7 @@ public class RouteMatcher {
     }
     
     public String toString() {
-        return httpMethod.name() + "\t\t" + path;
+        return httpMethod.name() + "\t" + path;
     }
 	
 }

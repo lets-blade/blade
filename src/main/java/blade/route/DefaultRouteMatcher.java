@@ -37,10 +37,14 @@ public class DefaultRouteMatcher {
 
     private static final Logger LOGGER = Logger.getLogger(DefaultRouteMatcher.class);
     
+    // 存储所有路由
     private List<RouteMatcher> routes;
+    // 存储所有拦截器
+    private List<RouteMatcher> interceptors;
     
     public DefaultRouteMatcher() {
         routes = new ArrayList<RouteMatcher>();
+        interceptors = new ArrayList<RouteMatcher>();
     }
 
     /**
@@ -51,8 +55,8 @@ public class DefaultRouteMatcher {
      * @param acceptType	请求的acceptType
      * @return				返回一个路由匹配对象
      */
-    public RouteMatcher findRouteEntity(HttpMethod httpMethod, String path, String acceptType) {
-        List<RouteMatcher> routeEntries = this.findTargetsForRequestedRoute(httpMethod, path);
+    public RouteMatcher findRouteMatcher(HttpMethod httpMethod, String path, String acceptType) {
+        List<RouteMatcher> routeEntries = this.findRouteMatcher(httpMethod, path);
         RouteMatcher entry = findTargetWithGivenAcceptType(routeEntries, acceptType);
         
         return entry != null ? new RouteMatcher(entry.target, entry.execMethod, entry.httpMethod, entry.path, path, acceptType) : null;
@@ -66,9 +70,9 @@ public class DefaultRouteMatcher {
      * @param acceptType	请求的acceptType
      * @return				返回一个路由匹配对象集合
      */
-    public List<RouteMatcher> findTargetsForRequestedRoute(HttpMethod httpMethod, String path, String acceptType) {
+    public List<RouteMatcher> findInterceptor(HttpMethod httpMethod, String path, String acceptType) {
         List<RouteMatcher> matchSet = new ArrayList<RouteMatcher>();
-        List<RouteMatcher> routeEntries = findTargetsForRequestedRoute(httpMethod, path);
+        List<RouteMatcher> routeEntries = this.findInterceptor(httpMethod, path);
 
         for (RouteMatcher routeEntry : routeEntries) {
             if (acceptType != null) {
@@ -147,6 +151,32 @@ public class DefaultRouteMatcher {
         routes.add(entry);
     }
     
+    /**
+     * 添加一个拦截器对象
+     * 
+     * @param target		路由目标执行的class
+     * @param execMethod	路由执行方法
+     * @param url			路由url
+     * @param method		路由http方法
+     * @param acceptType	路由acceptType
+     */
+    public void addInterceptor(Class<?> target, Method execMethod, String url, HttpMethod method, String acceptType) {
+    	RouteMatcher entry = new RouteMatcher();
+        entry.target = target;
+        entry.execMethod = execMethod;
+        entry.httpMethod = method;
+        entry.path = url;
+        entry.requestURI = url;
+        entry.acceptType = acceptType;
+        
+        if(Blade.debug()){
+        	LOGGER.debug("Add Interceptor：" + entry);
+        }
+        
+        // 添加到路由集合
+        interceptors.add(entry);
+    }
+    
     private Map<String, RouteMatcher> getAcceptedMimeTypes(List<RouteMatcher> routes) {
         Map<String, RouteMatcher> acceptedTypes = new HashMap<String, RouteMatcher>();
 
@@ -170,7 +200,7 @@ public class DefaultRouteMatcher {
      * @param path				路由路径
      * @return					返回匹配的所有路由集合
      */
-    private List<RouteMatcher> findTargetsForRequestedRoute(HttpMethod httpMethod, String path) {
+    private List<RouteMatcher> findRouteMatcher(HttpMethod httpMethod, String path) {
         List<RouteMatcher> matchSet = new ArrayList<RouteMatcher>();
         for (RouteMatcher entry : routes) {
             if (entry.matches(httpMethod, path)) {
@@ -180,6 +210,23 @@ public class DefaultRouteMatcher {
         return matchSet;
     }
 
+    /**
+     * 查找所有匹配HttpMethod和path的路由
+     * 
+     * @param httpMethod		http方法
+     * @param path				路由路径
+     * @return					返回匹配的所有路由集合
+     */
+    private List<RouteMatcher> findInterceptor(HttpMethod httpMethod, String path) {
+        List<RouteMatcher> matchSet = new ArrayList<RouteMatcher>();
+        for (RouteMatcher entry : interceptors) {
+            if (entry.matches(httpMethod, path)) {
+                matchSet.add(entry);
+            }
+        }
+        return matchSet;
+    }
+    
     /**
      * 查找符合请求头的路由
      * @param routeMatches

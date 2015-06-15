@@ -15,6 +15,8 @@
  */
 package blade.server;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.EnumSet;
 
 import javax.servlet.DispatcherType;
@@ -39,7 +41,7 @@ public final class BladeServer {
 	/**
 	 * 默认的应用所在位置
 	 */
-	private static String DEFAULT_APP_PATH = BladeServer.class.getClassLoader().getResource("").getPath();;
+	private static String DEFAULT_APP_PATH = BladeServer.class.getClassLoader().getResource("").getPath();
 	
 	private static final Logger LOGGER = Logger.getLogger(BladeServer.class);
 	
@@ -48,7 +50,28 @@ public final class BladeServer {
 	}
 	
 	static{
-		
+		try {
+			File rootDir = new File("");// 参数为空
+			final String courseFile = rootDir.getCanonicalPath();
+			
+			// 标准maven构建的webapp
+			File webapp = new File(courseFile + File.separator + "src/main/webapp");
+			if(webapp.exists()){
+				DEFAULT_APP_PATH = "src/main/webapp";
+			} else {
+				// 普通web项目
+				webapp = new File(courseFile + File.separator + "WebContent/");
+				if(webapp.exists()){
+					DEFAULT_APP_PATH = "WebContent";
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static void setDefaultAppPath(final String defaultPath){
+		BladeServer.DEFAULT_APP_PATH = defaultPath;
 	}
 	
 	/**

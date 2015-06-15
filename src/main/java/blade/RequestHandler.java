@@ -129,7 +129,7 @@ public class RequestHandler {
         	before(requestWrapper, responseWrapper, httpRequest, httpResponse, uri, acceptType);
         	
         	// 查找用户请求的uri
-			RouteMatcher match = routeMatcher.findRouteEntity(httpMethod, uri, acceptType);
+			RouteMatcher match = routeMatcher.findRouteMatcher(httpMethod, uri, acceptType);
 
 			// 如果找到
 			if (match != null) {
@@ -203,7 +203,7 @@ public class RequestHandler {
 	 */
 	private void before(RequestWrapper requestWrapper, ResponseWrapper responseWrapper, HttpServletRequest httpRequest, HttpServletResponse httpServletResponse, final String uri, final String acceptType){
 		
-		List<RouteMatcher> matchSet = routeMatcher.findTargetsForRequestedRoute(HttpMethod.BEFORE, uri, acceptType);
+		List<RouteMatcher> matchSet = routeMatcher.findInterceptor(HttpMethod.BEFORE, uri, acceptType);
 		final Response response = RequestResponseBuilder.build(httpServletResponse);
         
 		for (RouteMatcher filterMatch : matchSet) {
@@ -230,7 +230,7 @@ public class RequestHandler {
 	 * @param acceptType			请求头过滤
 	 */
 	private String after(RequestWrapper requestWrapper, ResponseWrapper responseWrapper, HttpServletRequest httpRequest, HttpServletResponse httpServletResponse, final String uri, final String acceptType){
-        List<RouteMatcher> matchSet = routeMatcher.findTargetsForRequestedRoute(HttpMethod.AFTER, uri, acceptType);
+        List<RouteMatcher> matchSet = routeMatcher.findInterceptor(HttpMethod.AFTER, uri, acceptType);
         final Response response = RequestResponseBuilder.build(httpServletResponse);
         String bodyContent = null;
         for (RouteMatcher filterMatch : matchSet) {

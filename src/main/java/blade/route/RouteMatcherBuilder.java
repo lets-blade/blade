@@ -183,13 +183,13 @@ public final class RouteMatcherBuilder {
 			if (null != before) {
 				String path = before.value().startsWith("/") ? before.value() : "/" + before.value();
 				String acceptType = before.acceptType();
-				buildRoute(interceptor, method, path, HttpMethod.BEFORE, acceptType);
+				buildInterceptor(interceptor, method, path, HttpMethod.BEFORE, acceptType);
 			}
 			
 			if (null != after) {
 				String path = after.value().startsWith("/") ? after.value() : "/" + after.value();
 				String acceptType = after.acceptType();
-				buildRoute(interceptor, method, path, HttpMethod.AFTER, acceptType);
+				buildInterceptor(interceptor, method, path, HttpMethod.AFTER, acceptType);
 			}
 		}
     }
@@ -242,6 +242,19 @@ public final class RouteMatcherBuilder {
      */
     private static void buildRoute(Class<?> target, Method execMethod, String path, HttpMethod method, String acceptType){
 		routeMatcher.addRoute(target, execMethod, path, method, acceptType);
+    }
+    
+    /**
+     * 构建一个路由
+     * 
+     * @param target		路由目标执行的class
+     * @param execMethod	路由执行方法
+     * @param path			路由url
+     * @param method		路由http方法
+     * @param acceptType	路由acceptType
+     */
+    private static void buildInterceptor(Class<?> target, Method execMethod, String path, HttpMethod method, String acceptType){
+		routeMatcher.addInterceptor(target, execMethod, path, method, acceptType);
     }
     
 }
