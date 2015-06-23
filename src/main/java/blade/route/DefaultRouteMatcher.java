@@ -60,6 +60,7 @@ public class DefaultRouteMatcher {
     		uri = uri.endsWith("/") ? uri.substring(0, uri.length() - 1) : uri;
     	}
         List<RouteMatcher> routeEntries = this.findRouteMatcher(httpMethod, uri);
+        
         RouteMatcher entry = findTargetWithGivenAcceptType(routeEntries, acceptType);
         
         return entry != null ? new RouteMatcher(entry.target, entry.execMethod, entry.httpMethod, entry.path, uri, acceptType) : null;
