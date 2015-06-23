@@ -117,7 +117,7 @@ public class RequestHandler {
         
         // 创建RequestWrapper And RequestWrapper
         RequestWrapper requestWrapper = new RequestWrapper();
-        ResponseWrapper responseWrapper = new ResponseWrapper();
+        ResponseWrapper responseWrapper = new ResponseWrapper(response);
         
         if(Blade.debug()){
         	LOGGER.debug("Request : " + method + "\t" + uri);
@@ -125,12 +125,13 @@ public class RequestHandler {
         
         HttpMethod httpMethod = HttpMethod.valueOf(method);
         
-        // 监控执行时间
-        JetmPoint point = JetmKit.createPoint(uri);
         try {
         	
+        	// 监控执行时间
+            JetmPoint point = JetmKit.createPoint(uri);
+            
         	// 执行before拦截
-        	before(requestWrapper, responseWrapper, httpRequest, httpResponse, uri, acceptType);
+        	before(requestWrapper, responseWrapper, httpRequest, uri, acceptType);
         	
         	// 查找用户请求的uri
 			RouteMatcher match = routeMatcher.findRouteMatcher(httpMethod, uri, acceptType);
@@ -151,9 +152,7 @@ public class RequestHandler {
 				} else {
 					request = RequestResponseBuilder.build(match, httpRequest);
 				}
-				
 				requestWrapper.setDelegate(request);
-                responseWrapper.setDelegate(response);
                 
 				BladeWebContext.put(requestWrapper, responseWrapper);
 				
@@ -161,7 +160,7 @@ public class RequestHandler {
 				Object result = executeMethod(targetObject, execMethod, requestWrapper, responseWrapper);
 				
 				// 执行after拦截
-	        	after(requestWrapper, responseWrapper, httpRequest, httpResponse, uri, acceptType);
+	        	after(requestWrapper, responseWrapper, httpRequest, uri, acceptType);
 	            
 	        	if(null != result){
 	        		render(responseWrapper, result);
@@ -203,25 +202,26 @@ public class RequestHandler {
 	 * @param requestWrapper		RequestWrapper对象，包装了Request对象
 	 * @param responseWrapper		ResponseWrapper对象，包装了Response对象
 	 * @param httpRequest			HttpServletRequest请求对象，用于构建Request
-	 * @param httpServletResponse	HttpServletResponse响应对象，用于构建Response
 	 * @param uri					请求的URI
 	 * @param acceptType			请求头过滤
 	 */
-	private void before(RequestWrapper requestWrapper, ResponseWrapper responseWrapper, HttpServletRequest httpRequest, HttpServletResponse httpServletResponse, final String uri, final String acceptType){
+	private void before(RequestWrapper requestWrapper, ResponseWrapper responseWrapper, HttpServletRequest httpRequest, final String uri, final String acceptType){
 		
 		List<RouteMatcher> matchSet = routeMatcher.findInterceptor(HttpMethod.BEFORE, uri, acceptType);
-		final Response response = RequestResponseBuilder.build(httpServletResponse);
-        
+		
 		for (RouteMatcher filterMatch : matchSet) {
-        	Class<?> target = filterMatch.getTarget();
-        	Object targetObject = container.getBean(target, Scope.SINGLE);
-			Method execMethod = filterMatch.getExecMethod();
-			Request request = RequestResponseBuilder.build(filterMatch, httpRequest);
 			
+        	Class<?> target = filterMatch.getTarget();
+        	
+        	Object targetObject = container.getBean(target, Scope.SINGLE);
+        	
+			Method execMethod = filterMatch.getExecMethod();
+			
+			Request request = RequestResponseBuilder.build(filterMatch, httpRequest);
 			requestWrapper.setDelegate(request);
-            responseWrapper.setDelegate(response);
-            
+			
 			executeMethod(targetObject, execMethod, requestWrapper, responseWrapper);
+			
         }
 	}
 	
@@ -231,13 +231,12 @@ public class RequestHandler {
 	 * @param requestWrapper		RequestWrapper对象，包装了Request对象
 	 * @param responseWrapper		ResponseWrapper对象，包装了Response对象
 	 * @param httpRequest			HttpServletRequest请求对象，用于构建Request
-	 * @param httpServletResponse	HttpServletResponse响应对象，用于构建Response
 	 * @param uri					请求的URI
 	 * @param acceptType			请求头过滤
 	 */
-	private String after(RequestWrapper requestWrapper, ResponseWrapper responseWrapper, HttpServletRequest httpRequest, HttpServletResponse httpServletResponse, final String uri, final String acceptType){
+	private String after(RequestWrapper requestWrapper, ResponseWrapper responseWrapper, HttpServletRequest httpRequest, final String uri, final String acceptType){
         List<RouteMatcher> matchSet = routeMatcher.findInterceptor(HttpMethod.AFTER, uri, acceptType);
-        final Response response = RequestResponseBuilder.build(httpServletResponse);
+        
         String bodyContent = null;
         for (RouteMatcher filterMatch : matchSet) {
         	Class<?> target = filterMatch.getTarget();
@@ -253,11 +252,9 @@ public class RequestHandler {
                 requestWrapper.initRequest(filterMatch);
             }
 			
-            responseWrapper.setDelegate(response);
-            
 			executeMethod(targetObject, execMethod, requestWrapper, responseWrapper);
 			
-			String bodyAfterFilter = response.body();
+			String bodyAfterFilter = responseWrapper.getDelegate().body();
 	        if (bodyAfterFilter != null) {
 	            bodyContent = bodyAfterFilter;
 	        }

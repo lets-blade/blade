@@ -181,15 +181,20 @@ public final class RouteMatcherBuilder {
 			After after = method.getAnnotation(After.class);
 			
 			if (null != before) {
+				
 				String path = before.value().startsWith("/") ? before.value() : "/" + before.value();
-				path = path.endsWith("/") ? path.substring(0, path.length() - 1) : path;
+				
+				path = path.length() > 1 && path.endsWith("/") ? path.substring(0, path.length() - 1) : path;
+				
 				String acceptType = before.acceptType();
 				buildInterceptor(interceptor, method, path, HttpMethod.BEFORE, acceptType);
 			}
 			
 			if (null != after) {
 				String path = after.value().startsWith("/") ? after.value() : "/" + after.value();
-				path = path.endsWith("/") ? path.substring(0, path.length() - 1) : path;
+				
+				path = path.length() > 1 && path.endsWith("/") ? path.substring(0, path.length() - 1) : path;
+				
 				String acceptType = after.acceptType();
 				buildInterceptor(interceptor, method, path, HttpMethod.AFTER, acceptType);
 			}
@@ -215,6 +220,7 @@ public final class RouteMatcherBuilder {
 		for (Method method : methods) {
 			
 			Route mapping = method.getAnnotation(Route.class);
+			
 			//route方法
 			if (null != mapping) {
 				
@@ -223,7 +229,8 @@ public final class RouteMatcherBuilder {
 				String path = mapping.value().startsWith("/") ? mapping.value() : "/" + mapping.value();
 				path = nameSpace + path;
 				path = path.replaceAll("[/]+", "/");
-				path = path.endsWith("/") ? path.substring(0, path.length() - 1) : path;
+				
+				path = path.length() > 1 && path.endsWith("/") ? path.substring(0, path.length() - 1) : path;
 				
 				HttpMethod methodType = mapping.method();
 				

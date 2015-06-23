@@ -112,9 +112,11 @@ public class RouteMatcher {
         }
         
         boolean match = false;
-        if (this.httpMethod == httpMethod) {
+        
+        if (this.httpMethod == HttpMethod.ALL || this.httpMethod == httpMethod) {
             match = matchPath(path);
         }
+        
         return match;
     }
 
@@ -189,8 +191,19 @@ public class RouteMatcher {
         }
     }
     
+    @Override
+    public boolean equals(Object obj) {
+    	if(obj instanceof RouteMatcher){
+    		RouteMatcher r = (RouteMatcher) obj;
+    		return this.httpMethod == r.httpMethod && this.execMethod.getName().equals(r.execMethod.getName()) 
+    				&& this.path.equals(r.path) && this.acceptType.equals(r.acceptType);
+    	}
+    	return false;
+    }
+    
+    @Override
     public String toString() {
-        return httpMethod.name() + "\t" + path;
+        return httpMethod.name() + "------" + path;
     }
 	
 }

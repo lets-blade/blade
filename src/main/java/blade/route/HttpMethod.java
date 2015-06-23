@@ -22,5 +22,5 @@ package blade.route;
  * @since	1.0
  */
 public enum HttpMethod {
-    GET, POST, PUT, PATCH, DELETE, HEAD, TRACE, CONNECT, OPTIONS, BEFORE, AFTER
+    ALL, GET, POST, PUT, PATCH, DELETE, HEAD, TRACE, CONNECT, OPTIONS, BEFORE, AFTER
 }

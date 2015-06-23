@@ -82,6 +82,7 @@ public class DefaultRouteMatcher {
 
         for (RouteMatcher routeEntry : routeEntries) {
             if (acceptType != null) {
+            	
                 String bestMatch = MimeParse.bestMatch(Arrays.asList(routeEntry.acceptType), acceptType);
 
                 if (routeWithGivenAcceptType(bestMatch)) {

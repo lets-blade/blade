@@ -54,7 +54,7 @@ public @interface Route {
 	/**
 	 * @return 请求类型 HttpMethod
 	 */
-	HttpMethod method() default HttpMethod.GET;
+	HttpMethod method() default HttpMethod.ALL;
 	
 	/**
 	 * @return 需要拦截的acceptType
