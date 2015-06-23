@@ -134,7 +134,7 @@ public class RequestHandler {
         	
         	// 查找用户请求的uri
 			RouteMatcher match = routeMatcher.findRouteMatcher(httpMethod, uri, acceptType);
-
+			
 			// 如果找到
 			if (match != null) {
 				
