@@ -115,6 +115,11 @@ OK, all this may seem simple, refer to the guidelines for use more ready-made ex
 
 ## Update Log
 
+### v1.0.8
+	1. Optimize the file upload
+	2. Optimized matching routing
+	3. Add methods perform monitoring
+	
 ### v1.0.4
 	1. Optimize the underlying IO
 	2. Simplify the plug-in extension
