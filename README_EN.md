@@ -125,7 +125,7 @@ OK, all this may seem simple, refer to the guidelines for use more ready-made ex
 	
 ### Update
 
-### v1.1.3
+### v1.2
 	1. Update Bug fix sql2o
 	2. Remove the blade-kit useless class
 	3. Add email support
@@ -133,8 +133,9 @@ OK, all this may seem simple, refer to the guidelines for use more ready-made ex
 	5. Add the HTTP request support network
 	6. Optimization of the built-in logging output
 	7. Add tasks to support regularly
+	8. Reconstruction project structure
 	
-### v1.1.0
+### v1.1.x
 	1. Remove excess public methods
 	2. Add the `Blade.run()` run jetty
 	3. Add the `Blade.register()` method register bean object
