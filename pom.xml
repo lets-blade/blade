@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	
+	<groupId>com.bladejava</groupId>
+	<artifactId>blade-root</artifactId>
+	<version>1.0</version>
+	<packaging>pom</packaging>
+	
+	<name>blade-root</name>
+	<url>https://github.com/biezhi/blade</url>
+	
+	<properties>
+		<maven.compiler.source>1.6</maven.compiler.source>
+		<maven.compiler.target>1.6</maven.compiler.target>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<junit.version>4.11</junit.version>
+		<blade.version>1.1.4</blade.version>
+		<servlet.version>3.0.1</servlet.version>
+	</properties>
+	
+	<modules>
+		<module>blade-kit</module>
+		<module>blade-core</module>
+		<module>blade-cache</module>
+    <module>blade-jetbrick</module>
+    <module>blade-sql2o</module>
+    <module>blade-velocity</module>
+    <module>blade-beetl</module>
+    <module>blade-redis</module>
+  </modules>
+	
+	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>${junit.version}</version>
+		</dependency>
+		<!-- servlet -->
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<version>${servlet.version}</version>
+			<scope>provided</scope>
+		</dependency>
+	</dependencies>
+	
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.3.2</version>
+				<configuration>
+					<source>1.6</source>
+					<target>1.6</target>
+					<encoding>UTF-8</encoding>
+				</configuration>
+			</plugin>
+			<!-- <plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>2.3.1</version>
+				
+				<configuration>
+					<excludes>
+						<exclude>javax/**</exclude>
+					</excludes>
+				</configuration>
+				
+			</plugin> -->
+		</plugins>
+	</build>
+	
+</project>
