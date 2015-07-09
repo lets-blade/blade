@@ -31,7 +31,7 @@
 ```xml
 <dependency>
 	<groupId>com.bladejava</groupId>
-	<artifactId>blade</artifactId>
+	<artifactId>blade-core</artifactId>
 	<version>x.x.x</version>
 </dependency>
 ```

@@ -33,7 +33,7 @@ First. Use maven to build a webapp, join dependency on the blade,Recommended for
 ```xml
 <dependency>
 	<groupId>com.bladejava</groupId>
-	<artifactId>blade</artifactId>
+	<artifactId>blade-core</artifactId>
 	<version>x.x.x</version>
 </dependency>
 ```
