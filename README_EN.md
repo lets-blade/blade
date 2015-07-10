@@ -157,6 +157,9 @@ OK, all this may seem simple, refer to the guidelines for use more ready-made ex
 Blade Framework based on the [Apache2 License](http://www.apache.org/licenses/LICENSE-2.0.html)
 
 ## Contact
+
+OSC Blog:[http://my.oschina.net/biezhi/blog](http://my.oschina.net/biezhi/blog)
+
 Mail: biezhi.me#gmail.com
 
 QQ Group: [1013565](http://shang.qq.com/wpa/qunwpa?idkey=932642920a5c0ef5f1ae902723c4f168c58ea63f3cef1139e30d68145d3b5b2f)
