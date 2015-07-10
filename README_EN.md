@@ -34,7 +34,7 @@ First. Use maven to build a webapp, join dependency on the blade,Recommended for
 <dependency>
 	<groupId>com.bladejava</groupId>
 	<artifactId>blade-core</artifactId>
-	<version>x.x.x</version>
+	<version>1.2.1</version>
 </dependency>
 ```
 	
