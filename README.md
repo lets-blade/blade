@@ -155,7 +155,7 @@ OK，这一切看起来多么的简单，查阅使用指南更多现成的例子
 Blade框架基于 [Apache2 License](http://www.apache.org/licenses/LICENSE-2.0.html)
 
 ## 联系我
-OSC Blog:[http://my.oschina.net/biezhi/blog](http://my.oschina.net/biezhi/blog)
+OSC Blog:[http://my.oschina.net/biezhi](http://my.oschina.net/biezhi)
 
 Mail: biezhi.me#gmail.com
 
