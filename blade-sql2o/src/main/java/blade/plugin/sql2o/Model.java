@@ -804,7 +804,7 @@ public class Model implements Serializable {
      * 执行并提交
      * @return
      */
-	public <T> T executeAndCommit(){
+	public <T> T executeAndCommit() {
     	return executeAndCommit(null);
     }
     
@@ -814,41 +814,45 @@ public class Model implements Serializable {
      * @return	返回主键
      */
     @SuppressWarnings("unchecked")
-	public <T> T executeAndCommit(Class<T> returnType){
+	public <T> T executeAndCommit(Class<T> returnType) {
     	
     	Query query = null;
-    	// 插入
-    	if(condition.dmlType.equals(DmlType.INSERT)){
-    		query = insertCommit(null);
-    		
-    		LOGGER.debug("更新缓存：" + model.getName() + " -> count,list");
-    		
-			sql2oCache.hdel(CACHE_KEY_COUNT);
-    		sql2oCache.hdel(CACHE_KEY_LIST);
+    	try {
+			// 插入
+			if(condition.dmlType.equals(DmlType.INSERT)){
+				query = insertCommit(null);
+				
+				LOGGER.debug("更新缓存：" + model.getName() + " -> count,list");
+				
+				sql2oCache.hdel(CACHE_KEY_COUNT);
+				sql2oCache.hdel(CACHE_KEY_LIST);
+				
+			}
 			
-    	}
-    	
-    	// 更新
-    	if(condition.dmlType.equals(DmlType.UPDATE)){
-    		query = updateCommit(null);
-    		
-    		LOGGER.debug("更新缓存：" + model.getName() + " -> detail,list");
-    		
-    		sql2oCache.hdel(CACHE_KEY_DETAIL);
-    		sql2oCache.hdel(CACHE_KEY_LIST);
-    	}
-    	
-    	// 删除
-    	if(condition.dmlType.equals(DmlType.DELETE)){
-    		query = deleteCommit(null);
-    		
-    		LOGGER.debug("更新缓存：" + model.getName() + " -> count,list,detail");
-    		
-    		sql2oCache.hdel(CACHE_KEY_COUNT);
-    		sql2oCache.hdel(CACHE_KEY_LIST);
-    		sql2oCache.hdel(CACHE_KEY_DETAIL);
-    		
-    	}
+			// 更新
+			if(condition.dmlType.equals(DmlType.UPDATE)){
+				query = updateCommit(null);
+				
+				LOGGER.debug("更新缓存：" + model.getName() + " -> detail,list");
+				
+				sql2oCache.hdel(CACHE_KEY_DETAIL);
+				sql2oCache.hdel(CACHE_KEY_LIST);
+			}
+			
+			// 删除
+			if(condition.dmlType.equals(DmlType.DELETE)){
+				query = deleteCommit(null);
+				
+				LOGGER.debug("更新缓存：" + model.getName() + " -> count,list,detail");
+				
+				sql2oCache.hdel(CACHE_KEY_COUNT);
+				sql2oCache.hdel(CACHE_KEY_LIST);
+				sql2oCache.hdel(CACHE_KEY_DETAIL);
+				
+			}
+		} catch (Exception e) {
+			LOGGER.error(e);
+		}
     	
     	condition.clearMap();
     	
