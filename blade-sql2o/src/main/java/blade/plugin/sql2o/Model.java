@@ -532,21 +532,25 @@ public class Model implements Serializable {
     			}
     		}
     		
-    		Connection conn = sql2o.open();
-    		Query query = conn.createQuery(sqlEnd);
-    		query = parseParams(query);
-    		
-    		LOGGER.debug("execute sql：" + query.toString());
-    		condition.printLog();
-    		condition.clearMap();
-    		
-    		res = (M) query.executeAndFetchFirst(model);
-    		
-    		// 重新放入缓存
-    		if(isCache() && null != res){
-    			sql2oCache.hset(CACHE_KEY_DETAIL, field, res);
-    		}
-    		return res;
+    		try {
+				Connection conn = sql2o.open();
+				Query query = conn.createQuery(sqlEnd);
+				query = parseParams(query);
+				
+				LOGGER.debug("execute sql：" + query.toString());
+				condition.printLog();
+				condition.clearMap();
+				
+				res = (M) query.executeAndFetchFirst(model);
+				
+				// 重新放入缓存
+				if(isCache() && null != res){
+					sql2oCache.hset(CACHE_KEY_DETAIL, field, res);
+				}
+				return res;
+			} catch (Exception e) {
+				LOGGER.error(e);
+			}
     	}
     	return null;
     }
@@ -570,20 +574,24 @@ public class Model implements Serializable {
     		
     		String sqlEnd = condition.sql + " where " + pk() + " = :pk";
     		
-    		Connection conn = sql2o.open();
-    		Query query = conn.createQuery(sqlEnd).addParameter("pk", pk);
+    		try {
+				Connection conn = sql2o.open();
+				Query query = conn.createQuery(sqlEnd).addParameter("pk", pk);
+				
+				LOGGER.debug("execute sql：" + query.toString());
+				condition.printLog();
+				condition.clearMap();
+				
+				res = (M) query.executeAndFetchFirst(model);
+				
+				if(isCache() && null != res){
+					sql2oCache.hset(CACHE_KEY_DETAIL, field, res);
+				}
+				return res;
+			} catch (Exception e) {
+				LOGGER.error(e);
+			}
     		
-    		LOGGER.debug("execute sql：" + query.toString());
-    		condition.printLog();
-    		condition.clearMap();
-    		
-    		res = (M) query.executeAndFetchFirst(model);
-    		
-    		if(isCache() && null != res){
-    			sql2oCache.hset(CACHE_KEY_DETAIL, field, res);
-    		}
-    		
-    		return res;
     	}
     	return null;
     }
@@ -597,15 +605,19 @@ public class Model implements Serializable {
     		
     		String sqlEnd = condition.getConditionSql();
     		
-    		Connection conn = sql2o.open();
-    		Query query = conn.createQuery(sqlEnd);
-    		query = parseParams(query);
-    		
-    		LOGGER.debug("execute sql：" + query.toString());
-    		condition.printLog();
-    		condition.clearMap();
-    		
-    		return (M) query.executeScalar();
+    		try {
+				Connection conn = sql2o.open();
+				Query query = conn.createQuery(sqlEnd);
+				query = parseParams(query);
+				
+				LOGGER.debug("execute sql：" + query.toString());
+				condition.printLog();
+				condition.clearMap();
+				
+				return (M) query.executeScalar();
+			} catch (Exception e) {
+				LOGGER.error(e);
+			}
     	}
     	return null;
     }
@@ -635,22 +647,26 @@ public class Model implements Serializable {
     			sqlEnd += " order by " + condition.orderby;
     		}
     		
-    		Connection conn = sql2o.open();
-    		Query query = conn.createQuery(sqlEnd);
-    		query = parseParams(query);
-    		
-    		LOGGER.debug("execute sql：" + query.toString());
-    		
-    		condition.printLog();
-    		condition.clearMap();
-    		
-    		result = (List<M>) query.executeAndFetch(model);
-    		
-    		if(isCache() && null != result){
-    			sql2oCache.hsetlist(CACHE_KEY_LIST, field, result);
-    		}
-    		
-    		return result;
+    		try {
+				Connection conn = sql2o.open();
+				Query query = conn.createQuery(sqlEnd);
+				query = parseParams(query);
+				
+				LOGGER.debug("execute sql：" + query.toString());
+				
+				condition.printLog();
+				condition.clearMap();
+				
+				result = (List<M>) query.executeAndFetch(model);
+				
+				if(isCache() && null != result){
+					sql2oCache.hsetlist(CACHE_KEY_LIST, field, result);
+				}
+				
+				return result;
+			} catch (Exception e) {
+				LOGGER.error(e);
+			}
     	}
     	return null;
     }
@@ -719,24 +735,28 @@ public class Model implements Serializable {
     		condition.equalsParams.put("page", page - 1);
     		condition.equalsParams.put("pageSize", pageSize);
 			
-			// 设置query
-			Connection conn = sql2o.open();
-    		Query query = conn.createQuery(sqlEnd);
-    		query = parseParams(query);
-    		
-    		LOGGER.debug("execute sql：" + query.toString());
-    		condition.printLog();
-    		
-    		results = query.executeAndFetch(this.model);
-			if(null != results && results.size() > 0){
+			try {
+				// 设置query
+				Connection conn = sql2o.open();
+				Query query = conn.createQuery(sqlEnd);
+				query = parseParams(query);
 				
-				if(isCache()){
-					sql2oCache.hsetlist(CACHE_KEY_LIST, field, results);
+				LOGGER.debug("execute sql：" + query.toString());
+				condition.printLog();
+				
+				results = query.executeAndFetch(this.model);
+				if(null != results && results.size() > 0){
+					
+					if(isCache()){
+						sql2oCache.hsetlist(CACHE_KEY_LIST, field, results);
+					}
+					pageModel.setResults((List<M>) results);
 				}
-				pageModel.setResults((List<M>) results);
+				
+				return pageModel;
+			} catch (Exception e) {
+				LOGGER.error(e);
 			}
-			
-    		return pageModel;
     	}
     	
     	condition.clearMap();
@@ -832,13 +852,19 @@ public class Model implements Serializable {
     	
     	condition.clearMap();
     	
-    	T key = null;
-    	if(null != returnType){
-    		key = query.executeUpdate().getKey(returnType);
-		} else {
-			key = (T) query.executeUpdate().getKey();
+    	try {
+			T key = null;
+			if(null != returnType){
+				key = query.executeUpdate().getKey(returnType);
+			} else {
+				key = (T) query.executeUpdate().getKey();
+			}
+			return key;
+		} catch (Exception e) {
+			LOGGER.error(e);
 		}
-		return key;
+    	
+    	return null;
 		
     }
 	
@@ -852,25 +878,29 @@ public class Model implements Serializable {
     	
     	Query query = null;
     	
-    	if(null == connection){
-    		connection = sql2o.beginTransaction();
-    	}
-    	
-    	// 插入
-    	if(condition.dmlType.equals(DmlType.INSERT)){
-    		query = insertCommit(connection);
-    	}
-    	
-    	// 更新
-    	if(condition.dmlType.equals(DmlType.UPDATE)){
-    		query = updateCommit(connection);
-    	}
-    	
-    	// 删除
-    	if(condition.dmlType.equals(DmlType.DELETE)){
-    		query = deleteCommit(connection);
-    	}
-    	
+		try {
+			if (null == connection) {
+				connection = sql2o.beginTransaction();
+			}
+
+			// 插入
+			if (condition.dmlType.equals(DmlType.INSERT)) {
+				query = insertCommit(connection);
+			}
+
+			// 更新
+			if (condition.dmlType.equals(DmlType.UPDATE)) {
+				query = updateCommit(connection);
+			}
+
+			// 删除
+			if (condition.dmlType.equals(DmlType.DELETE)) {
+				query = deleteCommit(connection);
+			}
+		} catch (Exception e) {
+			LOGGER.error(e);
+		}
+		
     	condition.clearMap();
     	
     	return query;
