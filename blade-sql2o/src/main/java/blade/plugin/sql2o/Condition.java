@@ -360,7 +360,9 @@ public class Condition {
      * @param value
      */
     public void like(String name, String value){
-    	if(StringKit.isNotBlank(name) && StringKit.isNotBlank(value) && !value.equals("%%")){
+    	
+    	if(StringKit.isNotBlank(name) && StringKit.isNotBlank(value) 
+    			&& value.indexOf("%null")==-1 && value.indexOf("null%")==-1 && !value.equals("%%")){
     		
     		if(null == this.likeParams){
     			this.likeParams = CollectionKit.newHashMap();

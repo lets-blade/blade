@@ -17,7 +17,7 @@ import blade.BladeWebContext;
 import blade.exception.BladeException;
 
 /**
- * Velocity渲染引擎
+ * Beetl渲染引擎
  * @author biezhi
  *
  */

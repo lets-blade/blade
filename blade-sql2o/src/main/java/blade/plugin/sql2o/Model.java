@@ -541,7 +541,7 @@ public class Model implements Serializable {
 				condition.printLog();
 				condition.clearMap();
 				
-				res = (M) query.executeAndFetchFirst(model);
+				res = (M) query.executeAndFetchFirst(this.model);
 				
 				// 重新放入缓存
 				if(isCache() && null != res){
@@ -582,7 +582,7 @@ public class Model implements Serializable {
 				condition.printLog();
 				condition.clearMap();
 				
-				res = (M) query.executeAndFetchFirst(model);
+				res = (M) query.executeAndFetchFirst(this.model);
 				
 				if(isCache() && null != res){
 					sql2oCache.hset(CACHE_KEY_DETAIL, field, res);
@@ -657,7 +657,7 @@ public class Model implements Serializable {
 				condition.printLog();
 				condition.clearMap();
 				
-				result = (List<M>) query.executeAndFetch(model);
+				result = (List<M>) query.executeAndFetch(this.model);
 				
 				if(isCache() && null != result){
 					sql2oCache.hsetlist(CACHE_KEY_LIST, field, result);
@@ -804,8 +804,8 @@ public class Model implements Serializable {
      * 执行并提交
      * @return
      */
-	public <T> T executeAndCommit() {
-    	return executeAndCommit(null);
+	public Integer executeAndCommit() {
+    	return executeAndCommit(Integer.class);
     }
     
     /**
