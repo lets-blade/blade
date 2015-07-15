@@ -32,4 +32,5 @@ public interface Sql2oCache<T extends Model> {
 	
 	void hdel(String key, String field);
 	
+	void clean();
 }

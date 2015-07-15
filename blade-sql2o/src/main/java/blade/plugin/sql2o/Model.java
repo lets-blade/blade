@@ -697,6 +697,14 @@ public class Model implements Serializable {
     @SuppressWarnings("unchecked")
 	public <M extends Model> Page<M> fetchPage(Integer page, Integer pageSize){
     	
+    	if(null == page || page < 1){
+    		page = 1;
+    	}
+    	
+    	if(null == pageSize || pageSize < 1){
+    		pageSize = 1;
+    	}
+    	
     	Page<M> pageModel = new Page<M>(0, page, pageSize);
     	
     	if(condition.dmlType.equals(DmlType.SELECT) && null != page && null != pageSize && page > 0 && pageSize > 0){
@@ -772,6 +780,14 @@ public class Model implements Serializable {
      * @return			返回分页后的Page<M>对象
      */
 	public Page<Map<String, Object>> fetchPageMap(Integer page, Integer pageSize){
+    	
+		if(null == page || page < 1){
+    		page = 1;
+    	}
+    	
+    	if(null == pageSize || pageSize < 1){
+    		pageSize = 1;
+    	}
     	
     	Page<Map<String, Object>> pageMap = new Page<Map<String, Object>>(0, page, pageSize);
     	

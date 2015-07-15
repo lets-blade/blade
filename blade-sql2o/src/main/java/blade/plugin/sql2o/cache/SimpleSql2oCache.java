@@ -102,5 +102,10 @@ public class SimpleSql2oCache<T extends Model> implements Sql2oCache<T> {
 	public <M extends Model> void hsetlist(String key, String field, List<M> value) {
 		cache.hset(key, field, value);
 	}
+	
+	@Override
+	public void clean() {
+		cache.clear();
+	}
 
 }
