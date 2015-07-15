@@ -123,7 +123,6 @@ public class DateKit {
 	/**
 	 * 使用默认格式 yyyy-MM-dd HH:mm:ss
 	 * 
-	 * @author Robin Chang
 	 * @param date
 	 * @return
 	 */
@@ -582,7 +581,6 @@ public class DateKit {
 	 * @param birthday
 	 * @return int
 	 * @exception
-	 * @author 豆皮
 	 * @Date Apr 24, 2008
 	 */
 	public static int getUserAge(Date birthday) {
@@ -604,19 +602,21 @@ public class DateKit {
 	 * @param unixTime
 	 *            1970年至今的秒数
 	 * @return
-	 * @author 郑卿
 	 */
 	public static Date getDateByUnixTime(int unixTime) {
 		return new Date(unixTime * 1000L);
 	}
 
+	public static int getCurrentUnixTime() {
+		return getUnixTimeByDate(new Date());
+	}
+	
 	/**
 	 * 将Date型时间转换成int型时间(1970年至今的秒数)
 	 * 
 	 * @param unixTime
 	 *            1970年至今的秒数
 	 * @return
-	 * @author 郑卿
 	 */
 	public static int getUnixTimeByDate(Date date) {
 		return (int) (date.getTime() / 1000);
@@ -765,7 +765,6 @@ public class DateKit {
 	 * @param dateFormat
 	 *            时间格式
 	 * @return
-	 * @author sky
 	 */
 	public static String formatDateByUnixTime(long unixTime, String dateFormat) {
 		return dateFormat(new Date(unixTime * 1000), dateFormat);

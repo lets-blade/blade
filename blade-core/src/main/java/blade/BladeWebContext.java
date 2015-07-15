@@ -106,6 +106,7 @@ public final class BladeWebContext {
      * @param response 		HttpServletResponse对象
      */
     public static void put(Request request, Response response) {
+    	remove();
     	currentRequest.set(request);
     	currentResponse.set(response);
     }
