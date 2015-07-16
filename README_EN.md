@@ -118,12 +118,17 @@ OK, all this may seem simple, refer to the guidelines for use more ready-made ex
 
 ### Plan
 	1. Perfect the documents
-	2. Complete with `blade` single-user blog system development
-	3. Write English document
-	4. Optimize the code performance
+	2. With `blade` development single-user blog system, music, pictures, etc
+	3. Optimize the code performance
+	4. Write English document
 	
 ### Update
 
+### v1.2.2
+	1. `DateKit` added to obtain the current Unix timestamp
+	2. fix `blade-sql2o` paging bug
+	3. fix `blade-beetl` not stored `ModelAndView` data
+	
 ### v1.2
 	1. Update Bug fix sql2o
 	2. Remove the blade-kit useless class
