@@ -740,9 +740,9 @@ public class Model implements Serializable {
     		
     		sqlEnd += " limit :page, :pageSize";
     		
-    		condition.equalsParams.put("page", page - 1);
-    		condition.equalsParams.put("pageSize", pageSize);
-			
+    		condition.where("page", page - 1);
+    		condition.where("pageSize", pageSize);
+    		
 			try {
 				// 设置query
 				Connection conn = sql2o.open();

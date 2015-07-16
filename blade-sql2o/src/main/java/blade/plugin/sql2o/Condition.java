@@ -1,8 +1,9 @@
 package blade.plugin.sql2o;
 
 import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import blade.kit.CollectionKit;
 import blade.kit.StringKit;
@@ -43,6 +44,8 @@ public class Condition {
 	Map<String, String> likeParams;
 	// in
 	Map<String, Object[]> inParams;
+	
+	List<Object> logParams = new LinkedList<Object>();
 	
 	enum DmlType {
 		SELECT, COUNT, INSERT, UPDATE, DELETE
@@ -106,30 +109,9 @@ public class Condition {
 	 * 打印参数列表
 	 */
 	public void printLog() {
-		if (null != equalsParams && equalsParams.size() > 0) {
-			LOGGER.debug("execute parameter：" + equalsParams.values());
-		}
-		if (null != greaterParams && greaterParams.size() > 0) {
-			LOGGER.debug("execute parameter：" + greaterParams.values());
-		}
-		if (null != lessParams && lessParams.size() > 0) {
-			LOGGER.debug("execute parameter：" + lessParams.values());
-		}
-		if (null != greaterThanParams && greaterThanParams.size() > 0) {
-			LOGGER.debug("execute parameter：" + greaterThanParams.values());
-		}
-		if (null != lessThanParams && lessThanParams.size() > 0) {
-			LOGGER.debug("execute parameter：" + lessThanParams.values());
-		}
-		if (null != likeParams && likeParams.size() > 0) {
-			LOGGER.debug("execute parameter：" + likeParams.values());
-		}
-		if (null != inParams && inParams.size() > 0) {
-			Set<String> keys = inParams.keySet();
-			for (String name : keys) {
-				LOGGER.debug("execute parameter："
-						+ Arrays.toString(inParams.get(name)));
-			}
+		
+		if (null != logParams && logParams.size() > 0) {
+			LOGGER.debug("execute parameter：" + logParams.toString());
 		}
 	}
 
@@ -178,6 +160,9 @@ public class Condition {
 			this.inParams = null;
 		}
     	
+		if(null != this.logParams){
+			this.logParams.clear();
+		}
 	}
 
 	public void select() {
@@ -275,6 +260,7 @@ public class Condition {
     public void param(String name, Object value){
     	if(StringKit.isNotBlank(name) && null != value){
     		this.params.put(name, value);
+    		this.logParams.add(value);
     	}
     }
 
@@ -287,6 +273,7 @@ public class Condition {
     public void where(String name, Object value){
     	if(StringKit.isNotBlank(name) && null != value){
     		this.equalsParams.put(name, value);
+    		this.logParams.add(value);
     	}
     }
     
@@ -302,6 +289,7 @@ public class Condition {
     			this.greaterParams = CollectionKit.newHashMap();
         	}
     		this.greaterParams.put(name, value);
+    		this.logParams.add(value);
     	}
     }
     
@@ -317,6 +305,7 @@ public class Condition {
     			this.greaterThanParams = CollectionKit.newHashMap();
         	}
     		this.greaterThanParams.put(name, value);
+    		this.logParams.add(value);
     	}
     }
     
@@ -333,6 +322,7 @@ public class Condition {
     			this.lessParams = CollectionKit.newHashMap();
         	}
     		this.lessParams.put(name, value);
+    		this.logParams.add(value);
     	}
     }
     
@@ -348,8 +338,8 @@ public class Condition {
     		if(null == this.lessThanParams){
     			this.lessThanParams = CollectionKit.newHashMap();
         	}
-    		
     		this.lessThanParams.put(name, value);
+    		this.logParams.add(value);
     	}
     }
     
@@ -368,6 +358,7 @@ public class Condition {
     			this.likeParams = CollectionKit.newHashMap();
         	}
     		this.likeParams.put(name, value);
+    		this.logParams.add(value);
     	}
     }
     
@@ -383,6 +374,7 @@ public class Condition {
     			this.inParams = CollectionKit.newHashMap();
         	}
     		this.inParams.put(name, values);
+    		this.logParams.add(Arrays.toString(values));
     	}
     }
     
