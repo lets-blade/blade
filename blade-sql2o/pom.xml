@@ -11,7 +11,7 @@
 
 	<artifactId>blade-sql2o</artifactId>
 	<packaging>jar</packaging>
-	<version>1.2.2</version>
+	<version>${blade.version}</version>
 	<name>blade-sql2o</name>
 	<url>https://github.com/biezhi/blade/blade-sql2o</url>
 
