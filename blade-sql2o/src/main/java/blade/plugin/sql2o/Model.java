@@ -67,7 +67,7 @@ public class Model implements Serializable {
     
     public Model() {
     	this.model = this.getClass();
-    	this.condition = new Condition(table(), pk());
+    	this.condition = new Condition(this.table(), this.pk());
 	}
     
     public Model(Class<? extends Model> clazz) {
@@ -331,7 +331,7 @@ public class Model implements Serializable {
 			cacheSql = cacheSql.substring(0, cacheSql.length() - 5);
 		}
 		
-		if(null != condition.orderby){
+		if(StringKit.isNotBlank(condition.orderby)){
 			cacheSql += " order by " + condition.orderby;
 		}
 		
@@ -557,10 +557,11 @@ public class Model implements Serializable {
     
     @SuppressWarnings("unchecked")
 	public <M extends Model> M fetchByPk(Serializable pk){
+    	M res = null;
     	
-    	if(condition.dmlType.equals(DmlType.SELECT) && null != pk){
+    	if(null != pk){
+    		this.select();
     		
-    		M res = null;
     		String field = null;
     		// 启用缓存
     		if(isCache()){
@@ -587,13 +588,11 @@ public class Model implements Serializable {
 				if(isCache() && null != res){
 					sql2oCache.hset(CACHE_KEY_DETAIL, field, res);
 				}
-				return res;
 			} catch (Exception e) {
 				LOGGER.error(e);
 			}
-    		
     	}
-    	return null;
+    	return res;
     }
     
 	/**
