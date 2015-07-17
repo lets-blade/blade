@@ -17,6 +17,7 @@ package blade.kit;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.List;
 
 import blade.kit.log.Logger;
 
@@ -56,16 +57,24 @@ public class TimwKit {
 	 *
 	 * @return
 	 */
-	public Number size() {
+	public int size() {
 		return numList.size();
 	}
 
+	public List<Number> numbers() {
+		return numList;
+	}
+	
+	public Number current() {
+		return numList.get(numList.size() - 1);
+	}
+	
 	/**
 	 * 获取平均数
 	 *
 	 * @return
 	 */
-	public Number getAverage() {
+	public Number avg() {
 		if (numList.size() == 0) {
 			return 0;
 		} else {
@@ -94,7 +103,7 @@ public class TimwKit {
 	 * @return
 	 */
 	public String printAvg() {
-		Number number = getAverage();
+		Number number = avg();
 		BigDecimal b = new BigDecimal(number.doubleValue());
 		double avg = b.setScale(3, BigDecimal.ROUND_HALF_UP).doubleValue();
 		String str = "平均耗时: " + avg + " ms";

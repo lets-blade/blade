@@ -31,77 +31,88 @@ public class TimwMonitor {
 	/**
 	 * 计时器
 	 */
-	private TimwCounter timeKit;
+	private TimwCounter timeCounter;
 	
 	/**
 	 * 均值器
 	 */
-	private TimwKit averager;
+	private TimwKit timwKit;
 	
 	TimwMonitor() {
-		this.timeKit = new TimwCounter();
-		this.averager = new TimwKit();
+		this.timeCounter = new TimwCounter();
+		this.timwKit = new TimwKit();
 	}
 	
 	
-	public TimwCounter getTimeKit() {
-		return timeKit;
+	public TimwCounter getTimeCounter() {
+		return timeCounter;
 	}
 
-	public TimwKit getAverager() {
-		return averager;
+	public TimwKit getTimwKit() {
+		return timwKit;
 	}
 
 	/**
 	 * 一个计时开始
 	 */
 	public void start() {
-		timeKit.start();
+		timeCounter.start();
 	}
 
 	/**
 	 * 一个计时结束
 	 */
 	public void end() {
-		long time = timeKit.duration();
-		averager.add(time);
+		long time = timeCounter.duration();
+		timwKit.add(time);
 	}
 
 	/**
 	 * 一个计时结束,并且启动下次计时。
 	 */
 	public long endAndRestart() {
-		long time = timeKit.durationRestart();
-		averager.add(time);
+		long time = timeCounter.durationRestart();
+		timwKit.add(time);
 		return time;
 	}
 
+	public int size() {
+		return timwKit.size();
+	}
+	
 	/**
 	 * 求全部计时均值
 	 */
-	public Number average() {
-		return averager.getAverage();
+	public Number avg() {
+		return timwKit.avg();
+	}
+	
+	/**
+	 * 求全部计时均值
+	 */
+	public Number current() {
+		return timwKit.current();
 	}
 
 	/**
 	 * 打印全部时间值
 	 */
 	public String render() {
-		return averager.print();
+		return timwKit.print();
 	}
 
 	/**
 	 * 打印全部时间值
 	 */
 	public String renderAvg() {
-		return averager.printAvg();
+		return timwKit.printAvg();
 	}
 
 	/**
 	 * 清楚数据
 	 */
 	public void clear() {
-		averager.clear();
+		timwKit.clear();
 	}
 
 }
