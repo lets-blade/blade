@@ -169,6 +169,7 @@ public class Condition {
 		this.sql = "select * from " + this.tableName;
     	this.equalsParams = CollectionKit.newHashMap();
     	this.dmlType = DmlType.SELECT;
+    	this.orderby = null;
 	}
 	
 	/**
@@ -179,6 +180,7 @@ public class Condition {
 		this.sql = sql;
     	this.equalsParams = CollectionKit.newHashMap();
     	this.dmlType = DmlType.SELECT;
+    	this.orderby = null;
 	}
 	
 	/**
@@ -188,6 +190,7 @@ public class Condition {
     	this.sql  = "select count(1) from " + this.tableName;
     	this.equalsParams = CollectionKit.newHashMap();
     	this.dmlType = DmlType.COUNT;
+    	this.orderby = null;
     }
     
     /**
@@ -199,6 +202,7 @@ public class Condition {
     	this.sql  = sql;
     	this.equalsParams = CollectionKit.newHashMap();
     	this.dmlType = DmlType.COUNT;
+    	this.orderby = null;
     }
     
     public void update(){

@@ -560,14 +560,15 @@ public class Model implements Serializable {
     	M res = null;
     	
     	if(null != pk){
-    		this.select();
+    		
+    		this.select().where(this.pk(), pk);
     		
     		String field = null;
     		// 启用缓存
     		if(isCache()){
+    			
     			field = MD5.create(getCacheKey(null));
     			res = sql2oCache.hget(CACHE_KEY_DETAIL, field);
-    			
     			if(null != res){
         			return res;
         		}
