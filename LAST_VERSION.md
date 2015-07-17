@@ -1,6 +1,6 @@
 # blade last version
 
-## blade-kit
+## [blade-kit](http://search.maven.org/#search%7Cga%7C1%7Cblade-kit)
 ```xml
 <dependency>
     <groupId>com.bladejava</groupId>
@@ -9,7 +9,7 @@
 </dependency>
 ```
 
-## blade-core
+## [blade-core](http://search.maven.org/#search%7Cga%7C1%7Cblade-core)
 ```xml
 <dependency>
     <groupId>com.bladejava</groupId>
@@ -17,7 +17,7 @@
     <version>1.2.3</version>
 </dependency>
 ```
-## blade-sql2o
+## [blade-sql2o](http://search.maven.org/#search%7Cga%7C1%7Cblade-sql2o)
 ```xml
 <dependency>
     <groupId>com.bladejava</groupId>
@@ -26,7 +26,7 @@
 </dependency>
 ```
 
-## blade-jetbrick
+## [blade-jetbrick](http://search.maven.org/#search%7Cga%7C1%7Cblade-jetbrick)
 ```xml
 <dependency>
     <groupId>com.bladejava</groupId>
@@ -35,7 +35,7 @@
 </dependency>
 ```
 
-## blade-beetl
+## [blade-beetl](http://search.maven.org/#search%7Cga%7C1%7Cblade-beetl)
 ```xml
 <dependency>
     <groupId>com.bladejava</groupId>
@@ -44,7 +44,7 @@
 </dependency>
 ```
 
-## blade-velocity
+## [blade-velocity](http://search.maven.org/#search%7Cga%7C1%7Cblade-velocity)
 ```xml
 <dependency>
     <groupId>com.bladejava</groupId>
@@ -53,7 +53,7 @@
 </dependency>
 ```
 
-## blade-cache
+## [blade-cache](http://search.maven.org/#search%7Cga%7C1%7Cblade-cache)
 ```xml
 <dependency>
     <groupId>com.bladejava</groupId>
@@ -62,7 +62,7 @@
 </dependency>
 ```
 
-## blade-redis
+## [blade-redis](http://search.maven.org/#search%7Cga%7C1%7Cblade-redis)
 ```xml
 <dependency>
     <groupId>com.bladejava</groupId>
