@@ -25,13 +25,13 @@
 * ...
 
 ## 快速入门
-第一步、用maven构建一个webapp，加入blade的依赖，推荐获取[最新版本](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.bladejava%22)
+第一步、用maven构建一个webapp，加入blade的依赖，推荐获取[最新版本](LAST_VERSION.md)
 
 ```xml
 <dependency>
 	<groupId>com.bladejava</groupId>
 	<artifactId>blade-core</artifactId>
-	<version>1.2.2</version>
+	<version>1.2.3</version>
 </dependency>
 ```
 	

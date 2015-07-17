@@ -27,13 +27,13 @@
 * ...
 
 ## Quick start
-First. Use maven to build a webapp, join dependency on the blade,Recommended for the [latest version](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.bladejava%22)
+First. Use maven to build a webapp, join dependency on the blade,Recommended for the [latest version](LAST_VERSION.md)
 
 ```xml
 <dependency>
 	<groupId>com.bladejava</groupId>
 	<artifactId>blade-core</artifactId>
-	<version>1.2.2</version>
+	<version>1.2.3</version>
 </dependency>
 ```
 	
