@@ -91,11 +91,14 @@ Long count = model.delete().where("pid", pid).executeAndCommit();
 
 ```
 
-### v1.1.4
-	1. 添加动态数据源支持
+### v1.2.x
+	1. 修复分页bug
+	2. 修复按主键查询bug
+	3. 添加内置缓存支持
 
-### v1.1.3
+### v1.1.x
 	1. 适配`blade`最新版本
+	2. 添加动态数据源支持
 		
 ### 联系我
 Mail: biezhi.me#gmail.com
