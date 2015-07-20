@@ -125,6 +125,11 @@ OK, all this may seem simple, refer to the guidelines for use more ready-made ex
 	
 ### Update
 
+### v1.2.4
+	1. Add a configuration file
+	2. Optimize the code performance
+	3. Add 404, 500 page configuration
+	
 ### v1.2.2
 	1. `DateKit` added to obtain the current Unix timestamp
 	2. fix `blade-sql2o` paging bug
