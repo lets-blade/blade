@@ -15,12 +15,17 @@
  */
 package blade;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
 
 import blade.ioc.Container;
 import blade.ioc.DefaultContainer;
+import blade.kit.IOKit;
+import blade.kit.PropertyKit;
+import blade.kit.json.JSONKit;
 import blade.render.Render;
 import blade.render.RenderFactory;
 import blade.route.DefaultRouteMatcher;
@@ -47,6 +52,8 @@ abstract class BladeBase {
 	public static String PACKAGE_INTERCEPTOR = "interceptor";
 	
 	public static final Charset UTF_8 = Charset.forName("UTF-8");
+	
+	public static Map<String, String> confMap = null;
 	
 	/**
 	 * 是否以jetty方式运行
@@ -462,6 +469,39 @@ abstract class BladeBase {
 	 */
 	public static synchronized void register(Object object){
 		container.registBean(object);
+	}
+	
+	/**
+	 * 设置配置文件名称
+	 * @param confName	配置文件名称
+	 */
+	public static synchronized void config(String confName){
+		confMap = PropertyKit.getPropertyMap(confName);
+		
+	}
+	
+	/**
+	 * 设置JSON配置文件名称
+	 * @param confName	配置文件名称
+	 */
+	public static synchronized void configJsonPath(String jsonPath){
+		InputStream inputStream = BladeBase.class.getResourceAsStream(jsonPath);
+		if(null != inputStream){
+			try {
+				String json = IOKit.toString(inputStream);
+				confMap = JSONKit.toMap(json);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	/**
+	 * 设置JSON配置
+	 * @param json	json配置
+	 */
+	public static synchronized void configJson(String json){
+		confMap = JSONKit.toMap(json);
 	}
 	
 	static synchronized void init() {
