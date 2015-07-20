@@ -25,6 +25,7 @@
 * Support JDK1.6 +
 * Jetty is started
 * Plug-in extension mechanism
+* Cache the data information
 * ...
 
 ## Quick start
