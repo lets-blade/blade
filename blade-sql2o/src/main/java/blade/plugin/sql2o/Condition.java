@@ -167,7 +167,7 @@ public class Condition {
 
 	public void select() {
 		this.sql = "select * from " + this.tableName;
-    	this.equalsParams = CollectionKit.newHashMap();
+    	this.equalsParams = CollectionKit.newLinkedHashMap();
     	this.dmlType = DmlType.SELECT;
     	this.orderby = null;
 	}
@@ -178,7 +178,7 @@ public class Condition {
 	 */
 	public void select(String sql) {
 		this.sql = sql;
-    	this.equalsParams = CollectionKit.newHashMap();
+    	this.equalsParams = CollectionKit.newLinkedHashMap();
     	this.dmlType = DmlType.SELECT;
     	this.orderby = null;
 	}
@@ -188,7 +188,7 @@ public class Condition {
      */
     public void count(){
     	this.sql  = "select count(1) from " + this.tableName;
-    	this.equalsParams = CollectionKit.newHashMap();
+    	this.equalsParams = CollectionKit.newLinkedHashMap();
     	this.dmlType = DmlType.COUNT;
     	this.orderby = null;
     }
@@ -200,15 +200,15 @@ public class Condition {
      */
     public void count(String sql){
     	this.sql  = sql;
-    	this.equalsParams = CollectionKit.newHashMap();
+    	this.equalsParams = CollectionKit.newLinkedHashMap();
     	this.dmlType = DmlType.COUNT;
     	this.orderby = null;
     }
     
     public void update(){
     	this.sql = "update " + this.tableName;
-    	this.params = CollectionKit.newHashMap();
-    	this.equalsParams = CollectionKit.newHashMap();
+    	this.params = CollectionKit.newLinkedHashMap();
+    	this.equalsParams = CollectionKit.newLinkedHashMap();
     	this.dmlType = DmlType.UPDATE;
     }
     
@@ -218,14 +218,14 @@ public class Condition {
      */
     public void update(String sql){
     	this.sql = sql;
-    	this.params = CollectionKit.newHashMap();
-    	this.equalsParams = CollectionKit.newHashMap();
+    	this.params = CollectionKit.newLinkedHashMap();
+    	this.equalsParams = CollectionKit.newLinkedHashMap();
     	this.dmlType = DmlType.UPDATE;
     }
     
     public void insert(){
     	this.sql = "insert into " + this.tableName;
-    	this.params = CollectionKit.newHashMap();
+    	this.params = CollectionKit.newLinkedHashMap();
     	this.dmlType = DmlType.INSERT;
     }
     
@@ -235,13 +235,13 @@ public class Condition {
      */
     public void insert(String sql){
     	this.sql = sql;
-    	this.params = CollectionKit.newHashMap();
+    	this.params = CollectionKit.newLinkedHashMap();
     	this.dmlType = DmlType.INSERT;
     }
     
     public void delete(){
     	this.sql = "delete from " + this.tableName;
-    	this.equalsParams = CollectionKit.newHashMap();
+    	this.equalsParams = CollectionKit.newLinkedHashMap();
     	this.dmlType = DmlType.DELETE;
     }
     
@@ -251,7 +251,7 @@ public class Condition {
      */
     public void delete(String sql){
     	this.sql = sql;
-    	this.equalsParams = CollectionKit.newHashMap();
+    	this.equalsParams = CollectionKit.newLinkedHashMap();
     	this.dmlType = DmlType.DELETE;
     }
     
@@ -290,7 +290,7 @@ public class Condition {
     public void greater(String name, Object value){
     	if(StringKit.isNotBlank(name) && null != value){
     		if(null == this.greaterParams){
-    			this.greaterParams = CollectionKit.newHashMap();
+    			this.greaterParams = CollectionKit.newLinkedHashMap();
         	}
     		this.greaterParams.put(name, value);
     		this.logParams.add(value);
@@ -306,7 +306,7 @@ public class Condition {
     public void greaterThan(String name, Object value){
     	if(StringKit.isNotBlank(name) && null != value){
     		if(null == this.greaterThanParams){
-    			this.greaterThanParams = CollectionKit.newHashMap();
+    			this.greaterThanParams = CollectionKit.newLinkedHashMap();
         	}
     		this.greaterThanParams.put(name, value);
     		this.logParams.add(value);
@@ -323,7 +323,7 @@ public class Condition {
     public void less(String name, Object value){
     	if(StringKit.isNotBlank(name) && null != value){
     		if(null == this.lessParams){
-    			this.lessParams = CollectionKit.newHashMap();
+    			this.lessParams = CollectionKit.newLinkedHashMap();
         	}
     		this.lessParams.put(name, value);
     		this.logParams.add(value);
@@ -340,7 +340,7 @@ public class Condition {
     	if(StringKit.isNotBlank(name) && null != value){
     		
     		if(null == this.lessThanParams){
-    			this.lessThanParams = CollectionKit.newHashMap();
+    			this.lessThanParams = CollectionKit.newLinkedHashMap();
         	}
     		this.lessThanParams.put(name, value);
     		this.logParams.add(value);
@@ -359,7 +359,7 @@ public class Condition {
     			&& value.indexOf("%null")==-1 && value.indexOf("null%")==-1 && !value.equals("%%")){
     		
     		if(null == this.likeParams){
-    			this.likeParams = CollectionKit.newHashMap();
+    			this.likeParams = CollectionKit.newLinkedHashMap();
         	}
     		this.likeParams.put(name, value);
     		this.logParams.add(value);
@@ -375,7 +375,7 @@ public class Condition {
     public void in(String name, Object... values){
     	if(StringKit.isNotBlank(name) && null != values && values.length > 1){
     		if(null == this.inParams){
-    			this.inParams = CollectionKit.newHashMap();
+    			this.inParams = CollectionKit.newLinkedHashMap();
         	}
     		this.inParams.put(name, values);
     		this.logParams.add(Arrays.toString(values));

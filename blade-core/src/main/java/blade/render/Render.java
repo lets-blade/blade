@@ -231,10 +231,10 @@ public abstract class Render {
 	 */
 	String disposeView(String view){
 		if(null != view){
-			view = Blade.viewPath() + view;
+			view = Blade.viewPrefix() + view;
 			view = view.replaceAll("[/]+", "/");
-			if(!view.endsWith(Blade.viewExt())){
-				view = view + Blade.viewExt();
+			if(!view.endsWith(Blade.viewSuffix())){
+				view = view + Blade.viewSuffix();
 			}
 		}
 		return view;

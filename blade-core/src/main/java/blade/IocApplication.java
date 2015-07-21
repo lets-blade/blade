@@ -17,7 +17,6 @@ package blade;
 
 import java.util.Set;
 
-import blade.BladeBase.PackageNames;
 import blade.ioc.Container;
 import blade.ioc.DefaultContainer;
 import blade.kit.log.Logger;
@@ -69,7 +68,7 @@ public final class IocApplication {
 	 * 
 	 */
 	private static void initIOC() {
-		String[] iocPackages = BladeBase.packageMap.get(PackageNames.ioc);
+		String[] iocPackages = BladeBase.iocs();
 		if(null != iocPackages && iocPackages.length > 0){
 			for(String packageName : iocPackages){
 				registerBean(packageName);

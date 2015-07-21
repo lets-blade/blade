@@ -26,6 +26,7 @@ import blade.annotation.Path;
 import blade.annotation.Route;
 import blade.ioc.Container;
 import blade.ioc.DefaultContainer;
+import blade.kit.StringKit;
 import blade.kit.log.Logger;
 import blade.kit.resource.ClassPathClassReader;
 import blade.kit.resource.ClassReader;
@@ -42,6 +43,16 @@ public final class RouteMatcherBuilder {
 
     private static DefaultRouteMatcher routeMatcher = null;
     
+    /**
+	 * 默认路由后缀包，用户扫描路由所在位置，默认为route，用户可自定义
+	 */
+    private final static String PACKAGE_ROUTE = "route";
+	
+	/**
+	 * 默认拦截器后缀包，用户扫描拦截器所在位置，默认为interceptor，用户可自定义
+	 */
+    private final static String PACKAGE_INTERCEPTOR = "interceptor";
+	
     /**
      * 类读取器,用于在指定规则中扫描类
      */
@@ -73,18 +84,16 @@ public final class RouteMatcherBuilder {
         	LOGGER.debug("creates RouteMatcher");
         }
         
-        String[] basePackages = Blade.defaultRoutes();
+        String basePackage = Blade.basePackage();
         
-        if(null != basePackages && basePackages.length > 0){
-        	
-        	String basePackage = basePackages[0];
+        if(StringKit.isNotBlank(basePackage)){
         	
         	// 处理如：com.xxx.* 表示递归扫描包
         	String suffix = basePackage.endsWith(".*") ? ".*" : "";
         	basePackage = basePackage.endsWith(".*") ? basePackage.substring(0, basePackage.length() - 2) : basePackage;
         	
-			String routePackage = basePackage + "." + Blade.PACKAGE_ROUTE + suffix;
-			String interceptorPackage = basePackage + "." + Blade.PACKAGE_INTERCEPTOR + suffix;
+			String routePackage = basePackage + "." + PACKAGE_ROUTE + suffix;
+			String interceptorPackage = basePackage + "." + PACKAGE_INTERCEPTOR + suffix;
 			
         	buildRoute(routePackage);
         	
@@ -98,9 +107,9 @@ public final class RouteMatcherBuilder {
 	    	}
 	    	
 			// 拦截器
-	    	String[] interceptorPackages = Blade.interceptor();
-	    	if(null != interceptorPackages && interceptorPackages.length > 0){
-	    		buildInterceptor(interceptorPackages);
+	    	String interceptorPackage = Blade.interceptor();
+	    	if(StringKit.isNotBlank(interceptorPackage)){
+	    		buildInterceptor(interceptorPackage);
 	    	}
 		}
         return routeMatcher;

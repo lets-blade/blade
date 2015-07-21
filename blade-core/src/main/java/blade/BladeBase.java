@@ -17,8 +17,6 @@ package blade;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.Charset;
-import java.util.HashMap;
 import java.util.Map;
 
 import blade.ioc.Container;
@@ -39,42 +37,13 @@ import blade.server.BladeServer;
  */
 abstract class BladeBase {
 	
-	/**
-	 * 默认路由后缀包，用户扫描路由所在位置，默认为route，用户可自定义
-	 */
-	public static String PACKAGE_ROUTE = "route";
-	
 	protected static final String DEFAULT_ACCEPT_TYPE = "*/*";
-	
-	/**
-	 * 默认拦截器后缀包，用户扫描拦截器所在位置，默认为interceptor，用户可自定义
-	 */
-	public static String PACKAGE_INTERCEPTOR = "interceptor";
-	
-	public static final Charset UTF_8 = Charset.forName("UTF-8");
-	
-	public static Map<String, String> confMap = null;
 	
 	/**
 	 * 是否以jetty方式运行
 	 */
 	public static boolean runJetty = false;
 	
-	/**
-	 * web应用根目录，应用启动时载入
-	 */
-	private static String WEB_ROOT = "";
-    
-	/**
-     * Blade默认编码，可修改
-     */
-    protected static String ENCODING = UTF_8.toString();
-    
-    /**
-     * 默认视图的路径，默认渲染引擎为JSP,设置WEB-INF目录更安全，可配置
-     */
-    protected static String VIEW_PATH = "/WEB-INF/";
-    
     /**
 	 * 静态资源所在文件夹
 	 */
@@ -85,11 +54,6 @@ abstract class BladeBase {
      */
     protected static boolean IS_INIT = false;
     
-    /**
-	 * 默认视图文件后缀名
-	 */
-	protected static String VIEW_EXT = ".jsp";
-	
 	/**
      * blade全局初始化对象，在web.xml中配置，必须
      */
@@ -101,45 +65,19 @@ abstract class BladeBase {
     protected static DefaultRouteMatcher routeMatcher;
     
     /**
-     * 存放要扫描的包map
-     */
-    protected static final Map<PackageNames, String[]> packageMap = new HashMap<PackageNames, String[]>();
-    
-    /**
-     * 默认的404视图
-     */
-    protected static String VIEW_404 = null;
-    
-    /**
-     * 默认的500视图
-     */
-    protected static String VIEW_500 = null;
-    
-    /**
      * jetty启动的默认端口
      */
     protected static int PORT = 9000;
     
-    protected static boolean DEBUG = true;
-    
+    /**
+	 * 全局配置对象
+	 */
+	private final static BladeConfig BLADE_CONFIG = new BladeConfig();
+	
     /**
      * IOC容器，存储路由到ioc中
      */
     private final static Container container = DefaultContainer.single();
-    
-    /**
-     * 包类型枚举
-     * 
-     * basepackge		基础包，默认的路由，拦截器包
-     * route			路由包，所有路由所在包，可递归
-     * interceptor		拦截器包，所有拦截器所在包，不可递归
-     * ioc				IOC对象所在包，可递归
-     * @author biezhi
-     *
-     */
-    public enum PackageNames {
-    	basepackge, route, interceptor, ioc
-    }
     
     protected BladeBase() {
 	}
@@ -150,11 +88,11 @@ abstract class BladeBase {
      * 设置路由包，如：com.baldejava.route
      * 可传入多个包，所有的路由类都在该包下
      * 
-     * @param pckages 	路由包路径
+     * @param packages 	路由包路径
      */
-    public static synchronized void routes(String...pckages){
-    	if(null != pckages && pckages.length >0){
-    		packageMap.put(PackageNames.route, pckages);
+    public static synchronized void routes(String...packages){
+    	if(null != packages && packages.length >0){
+    		BLADE_CONFIG.setRoutePackages(packages);
     	}
     }
     
@@ -166,7 +104,7 @@ abstract class BladeBase {
      */
     public static synchronized void defaultRoute(String basePackage){
     	if(null != basePackage){
-    		packageMap.put(PackageNames.basepackge, new String[]{basePackage});
+    		BLADE_CONFIG.setBasePackage(basePackage);
     	}
     }
     
@@ -177,18 +115,18 @@ abstract class BladeBase {
      */
 	public static synchronized void interceptor(String packageName) {
 		if(null != packageName && packageName.length() >0){
-    		packageMap.put(PackageNames.interceptor, new String[]{packageName});
+			BLADE_CONFIG.setInterceptorPackage(packageName);
     	}
 	}
 	
 	/**
      * 设置依赖注入包，如：com.bladejava.service
      * 
-     * @param pckages 	所有需要做注入的包，可传入多个
+     * @param packages 	所有需要做注入的包，可传入多个
      */
-    public static synchronized void ioc(String...pckages){
-    	if(null != pckages && pckages.length >0){
-    		packageMap.put(PackageNames.ioc, pckages);
+    public static synchronized void ioc(String...packages){
+    	if(null != packages && packages.length >0){
+    		BLADE_CONFIG.setIocPackages(packages);
     	}
     }
     
@@ -202,13 +140,13 @@ abstract class BladeBase {
 	}
 	
 	/**
-	 * 设置默认视图路径，默认为WEB_ROOT/WEB-INF目录
+	 * 设置默认视图前缀，默认为WEB_ROOT/WEB-INF目录
 	 * 
-	 * @param viewPath 	视图路径，如：/WEB-INF/views
+	 * @param prefix 	视图路径，如：/WEB-INF/views
 	 */
-	public static synchronized void viewPath(final String viewPath) {
-		if(null != viewPath && viewPath.startsWith("/")){
-			VIEW_PATH = viewPath;
+	public static synchronized void viewPrefix(final String prefix) {
+		if(null != prefix && prefix.startsWith("/")){
+			BLADE_CONFIG.setViewPrefix(prefix);
 		}
 	}
 	
@@ -217,9 +155,9 @@ abstract class BladeBase {
 	 * 
 	 * @param viewExt	视图后缀，如：.html	 .vm
 	 */
-	public static synchronized void viewExt(final String viewExt) {
-		if(null != viewExt && viewExt.startsWith(".")){
-			VIEW_EXT = viewExt;
+	public static synchronized void viewSuffix(final String suffix) {
+		if(null != suffix && suffix.startsWith(".")){
+			BLADE_CONFIG.setViewSuffix(suffix);
 		}
 	}
 	
@@ -230,17 +168,18 @@ abstract class BladeBase {
 	 * @param viewExt	视图后缀，如：.html	 .vm
 	 */
 	public static synchronized void view(final String viewPath, final String viewExt) {
-		viewPath(viewPath);
-		viewExt(viewExt);
+		viewPrefix(viewPath);
+		viewSuffix(viewExt);
 	}
 	
 	/**
 	 * 设置框架静态文件所在文件夹
 	 * 
-	 * @param folder
+	 * @param folders
 	 */
-	public static synchronized void staticFolder(final String ... folder) {
-		STATIC_FOLDER = folder;
+	public static synchronized void staticFolder(final String ... folders) {
+		BLADE_CONFIG.setStaticFolders(folders);
+		STATIC_FOLDER = folders;
 	}
 	
     /**
@@ -272,7 +211,7 @@ abstract class BladeBase {
      * @param view404	404视图页面
      */
     public static synchronized void view404(final String view404){
-    	BladeBase.VIEW_404 = view404;
+    	BLADE_CONFIG.setView404(view404);
     }
     
     /**
@@ -281,7 +220,7 @@ abstract class BladeBase {
      * @param view500	500视图页面
      */
     public static synchronized void view500(final String view500){
-    	BladeBase.VIEW_500 = view500;
+    	BLADE_CONFIG.setView500(view500);
     }
 
     /**
@@ -290,7 +229,7 @@ abstract class BladeBase {
      * @param webRoot	web根目录物理路径
      */
     public static synchronized void webRoot(final String webRoot){
-    	BladeBase.WEB_ROOT = webRoot;
+    	BLADE_CONFIG.setWebRoot(webRoot);
     }
     
     /**
@@ -298,7 +237,8 @@ abstract class BladeBase {
 	 * @param isdebug	true:是，默认true；false:否
 	 */
 	public static synchronized void debug(boolean isdebug){
-		BladeBase.DEBUG = isdebug;
+		BLADE_CONFIG.setDebug(isdebug);
+//		BladeBase.DEBUG = isdebug;
 	}
 	
     /**--------------------SET CONST:END-------------------------*/
@@ -307,81 +247,93 @@ abstract class BladeBase {
     
     /**--------------------GET CONST:START-------------------------*/
     
+	public static BladeConfig config(){
+    	return BLADE_CONFIG;
+    }
+	
     /**
      * @return	返回Blade要扫描的基础包
      */
-    public static String[] defaultRoutes(){
-    	return packageMap.get(PackageNames.basepackge);
+    public static String basePackage(){
+    	return BLADE_CONFIG.getBasePackage();
     }
     
 	/**
      * @return	返回路由包数组
      */
     public static String[] routes(){
-    	return packageMap.get(PackageNames.route);
+    	return BLADE_CONFIG.getRoutePackages();
+    }
+    
+    /**
+     * @return	返回IOC所有包
+     */
+    public static String[] iocs(){
+    	return BLADE_CONFIG.getIocPackages();
     }
     
     /**
      * @return	返回拦截器包数组，只有一个元素 这里统一用String[]
      */
-    public static String[] interceptor(){
-    	return packageMap.get(PackageNames.interceptor);
+    public static String interceptor(){
+    	return BLADE_CONFIG.getInterceptorPackage();
     }
+    
     
     /**
      * @return	返回视图存放路径
      */
-    public static String viewPath(){
-    	return VIEW_PATH;
+    public static String viewPrefix(){
+    	return BLADE_CONFIG.getViewPrefix();
     }
     
     /**
      * @return	返回系统默认字符编码
      */
     public static String encoding(){
-    	return ENCODING;
+    	return BLADE_CONFIG.getEncoding();
     }
     
     /**
      * @return	返回balde启动端口
      */
-    public static String viewExt(){
-    	return VIEW_EXT;
+    public static String viewSuffix(){
+    	return BLADE_CONFIG.getViewSuffix();
     }
     
     /**
      * @return	返回404视图
      */
     public static String view404(){
-    	return BladeBase.VIEW_404;
+    	return BLADE_CONFIG.getView404();
     }
     
     /**
      * @return	返回500视图
      */
     public static String view500(){
-    	return BladeBase.VIEW_500;
+    	return BLADE_CONFIG.getView500();
     }
     
     /**
      * @return	返回webroot路径
      */
     public static String webRoot(){
-    	return BladeBase.WEB_ROOT;
+    	return BLADE_CONFIG.getWebRoot();
     }
     
     /**
 	 * @return	返回系统是否以debug方式运行
 	 */
 	public static boolean debug(){
-		return BladeBase.DEBUG;
+		return BLADE_CONFIG.isDebug();
 	}
 	
 	/**
 	 * @return	返回静态资源目录
 	 */
 	public static String[] staticFolder(){
-		return BladeBase.STATIC_FOLDER;
+		return BLADE_CONFIG.getStaticFolders();
 	}
 	
 	/**
@@ -476,8 +428,8 @@ abstract class BladeBase {
 	 * @param confName	配置文件名称
 	 */
 	public static synchronized void config(String confName){
-		confMap = PropertyKit.getPropertyMap(confName);
-		
+		Map<String, String> configMap = PropertyKit.getPropertyMap(confName);
+		configuration(configMap);
 	}
 	
 	/**
@@ -489,7 +441,8 @@ abstract class BladeBase {
 		if(null != inputStream){
 			try {
 				String json = IOKit.toString(inputStream);
-				confMap = JSONKit.toMap(json);
+				Map<String, String> configMap = JSONKit.toMap(json);
+				configuration(configMap);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -501,7 +454,14 @@ abstract class BladeBase {
 	 * @param json	json配置
 	 */
 	public static synchronized void configJson(String json){
-		confMap = JSONKit.toMap(json);
+		Map<String, String> configMap = JSONKit.toMap(json);
+		configuration(configMap);
+	}
+	
+	private static void configuration(Map<String, String> configMap){
+		if(null != configMap && configMap.size() > 0){
+			
+		}
 	}
 	
 	static synchronized void init() {
