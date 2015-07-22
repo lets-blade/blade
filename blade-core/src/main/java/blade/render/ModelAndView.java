@@ -15,8 +15,9 @@
  */
 package blade.render;
 
-import java.util.HashMap;
 import java.util.Map;
+
+import blade.kit.CollectionKit;
 
 /**
  * ModelAndView使用模型和视图来渲染
@@ -43,7 +44,7 @@ public class ModelAndView {
      */
     public ModelAndView(String view) {
         super();
-        this.model = new HashMap<String, Object>();
+        this.model = CollectionKit.newHashMap();
         this.view = view;
     }
     

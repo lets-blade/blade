@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import blade.kit.StringKit;
+
 /**
  * http util
  * @author biezhi
@@ -21,11 +23,11 @@ public class HttpKit {
 	 */
 	public static Map<String, Object> parseQuery(String query, boolean decode) {
 		Map<String, Object> queryMap = new HashMap<String, Object>();
-		String[] kvArr = query.split("&");
+		String[] kvArr = StringKit.split(query, "&");
 		if(null != kvArr && kvArr.length > 0){
 			for(String k : kvArr){
 				if(k.indexOf("=") != -1){
-					String[] kv = k.split("=");
+					String[] kv = StringKit.split(k, "=");
 					queryMap.put(kv[0], kv[1]);
 				}
 			}

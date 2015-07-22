@@ -69,12 +69,12 @@ public class BladeConfigurator {
 			String debug = configMap.get(BLADE_DEBUG);
 			
 			if (StringKit.isNotBlank(route)) {
-				String[] blade_routes = route.split(",");
+				String[] blade_routes = StringKit.split(route, ",");
 				bladeConfig.setRoutePackages(blade_routes);
 			}
 			
 			if (StringKit.isNotBlank(filter_folder)) {
-				String[] blade_filter_folders = filter_folder.split(",");
+				String[] blade_filter_folders = StringKit.split(filter_folder, ",");
 				bladeConfig.setStaticFolders(blade_filter_folders);
 			}
 			
@@ -83,7 +83,7 @@ public class BladeConfigurator {
 			}
 			
 			if (StringKit.isNotBlank(ioc)) {
-				String[] blade_iocs = ioc.split(",");
+				String[] blade_iocs = StringKit.split(ioc, ",");
 				bladeConfig.setIocPackages(blade_iocs);
 			}
 			

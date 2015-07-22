@@ -15,13 +15,14 @@
  */
 package blade.servlet;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
+
+import blade.kit.CollectionKit;
 
 /**
  * 查询参数封装
@@ -42,7 +43,7 @@ public class QueryParamsMap {
     /**
      * 查询参数字典，存放url上传输的参数
      */
-    private Map<String, QueryParamsMap> queryMap = new HashMap<String, QueryParamsMap>();
+    private Map<String, QueryParamsMap> queryMap = CollectionKit.newHashMap();
 
     /**
      * 所有的值数组
@@ -257,7 +258,7 @@ public class QueryParamsMap {
      * @return 将queryMap转换为map
      */
     public Map<String, String[]> toMap() {
-        Map<String, String[]> map = new HashMap<String, String[]>();
+        Map<String, String[]> map = CollectionKit.newHashMap();
 
         for (Entry<String, QueryParamsMap> key : this.queryMap.entrySet()) {
             map.put(key.getKey(), key.getValue().values);

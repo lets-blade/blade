@@ -36,7 +36,7 @@ public interface Container {
 	 * @param scope		对象作用域，单例或者每次都创建
 	 * @return			一个bean对象
 	 */
-    Object getBean(String name, Scope scope);
+	<T> T getBean(String name, Scope scope);
 
     /**
      * 根据class和对象作用于获取一个bean对象
@@ -45,7 +45,7 @@ public interface Container {
      * @param scope		对象作用域，单例或者每次都创建
      * @return			一个bean对象
      */
-    Object getBean(Class<?> type, Scope scope);
+    <T> T getBean(Class<T> type, Scope scope);
 
     /**
      * @return 返回所有bean的名称集合
@@ -55,7 +55,7 @@ public interface Container {
     /**
      * @return 返回所有bean的集合
      */
-    Collection<Object> getBeans();
+    <T> Collection<T> getBeans();
     
     /**
      * 根据注解获取ioc容器中匹配的bean class集合
@@ -71,7 +71,7 @@ public interface Container {
      * @param annotation	annotation class类型
      * @return				返回符合annotation class类型的所有bean
      */
-    List<Object> getBeansByAnnotation(Class<? extends Annotation> annotation);
+    <T> List<T> getBeansByAnnotation(Class<? extends Annotation> annotation);
     
     /**
      * 判断是否存在一个bean，根据class类型

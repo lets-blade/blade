@@ -349,7 +349,7 @@ abstract class BladeBase {
      */
     public static synchronized void port(int port){
     	if(port > 0 && port < 65535){
-    		PORT = port;
+    		BladeBase.PORT = port;
     	}
     }
     
@@ -361,7 +361,7 @@ abstract class BladeBase {
      * @param context	context，应用上下文，默认为"/"
      */
 	public static void run(Integer port, String host, String context) {
-		PORT = port;
+		BladeBase.PORT = port;
 		BladeServer.run(port, host, context);
 	}
 	
@@ -369,7 +369,7 @@ abstract class BladeBase {
 	 * 运行jetty服务
 	 */
 	public static void run() {
-		run(PORT, null, null);
+		run(BladeBase.PORT, null, null);
 	}
 	
 	/**
@@ -378,7 +378,7 @@ abstract class BladeBase {
 	 * @param host		host，默认为本机；127.0.0.1/localhost
 	 */
 	public static void run(String host) {
-		run(PORT, host, null);
+		run(BladeBase.PORT, host, null);
 	}
 	
 	/**

@@ -16,8 +16,6 @@
 package blade.servlet;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -27,6 +25,7 @@ import java.util.regex.Pattern;
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 
+import blade.kit.CollectionKit;
 import blade.route.HttpMethod;
 
 /**
@@ -245,12 +244,12 @@ public class ServletFileUpload {
 			return;
 
 		if (allFileItems == null) {
-			allFileItems = new HashMap<String, List<FileItem>>();
+			allFileItems = CollectionKit.newHashMap();
 		}
 
 		List<FileItem> list = allFileItems.get(fileItem.getName());
 		if (list == null) {
-			list = new ArrayList<FileItem>();
+			list = CollectionKit.newArrayList();
 			allFileItems.put(fileItem.getName(), list);
 		}
 		

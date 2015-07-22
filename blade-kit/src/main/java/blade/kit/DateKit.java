@@ -697,7 +697,7 @@ public class DateKit {
 
 	public static Date getDatebyTime(Date date, int n) {
 		String str = DateKit.dateFormat(date, "yyyy-MM-dd");
-		String[] strs = str.split("-");
+		String[] strs = StringKit.split(str, "-");
 		int month = Integer.parseInt(strs[1]);
 		int monthnow = (month + n) % 12;
 		int year = Integer.parseInt(strs[0]) + (month + n) / 12;

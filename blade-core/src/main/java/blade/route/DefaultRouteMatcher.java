@@ -16,13 +16,12 @@
 package blade.route;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import blade.Blade;
+import blade.kit.CollectionKit;
 import blade.kit.MimeParse;
 import blade.kit.StringKit;
 import blade.kit.log.Logger;
@@ -43,8 +42,8 @@ public class DefaultRouteMatcher {
     private List<RouteMatcher> interceptors;
     
     public DefaultRouteMatcher() {
-        routes = new ArrayList<RouteMatcher>();
-        interceptors = new ArrayList<RouteMatcher>();
+        routes = CollectionKit.newArrayList();
+        interceptors = CollectionKit.newArrayList();
     }
 
     /**
@@ -57,7 +56,7 @@ public class DefaultRouteMatcher {
      */
     public RouteMatcher findRouteMatcher(HttpMethod httpMethod, String uri, String acceptType) {
     	
-    	uri = uri.length() > 1 && uri.endsWith("/") ? uri.substring(0, uri.length() - 1) : uri;
+    	uri = (uri.length() > 1 && uri.endsWith("/")) ? uri.substring(0, uri.length() - 1) : uri;
     	
         List<RouteMatcher> routeEntries = this.findRouteMatcher(httpMethod, uri);
         
@@ -78,7 +77,7 @@ public class DefaultRouteMatcher {
     	if(uri.length() > 1){
     		uri = uri.endsWith("/") ? uri.substring(0, uri.length() - 1) : uri;
     	}
-        List<RouteMatcher> matchSet = new ArrayList<RouteMatcher>();
+        List<RouteMatcher> matchSet = CollectionKit.newArrayList();
         List<RouteMatcher> routeEntries = this.findInterceptor(httpMethod, uri);
 
         for (RouteMatcher routeEntry : routeEntries) {
@@ -129,7 +128,6 @@ public class DefaultRouteMatcher {
         if (StringKit.isEmpty(path)) {
             throw new IllegalArgumentException("path cannot be null or blank");
         }
-
         return removeRoute((HttpMethod)null, path);
     }
     
@@ -186,7 +184,7 @@ public class DefaultRouteMatcher {
     }
     
     private Map<String, RouteMatcher> getAcceptedMimeTypes(List<RouteMatcher> routes) {
-        Map<String, RouteMatcher> acceptedTypes = new HashMap<String, RouteMatcher>();
+        Map<String, RouteMatcher> acceptedTypes = CollectionKit.newHashMap();
 
         for (RouteMatcher routeEntry : routes) {
             if (!acceptedTypes.containsKey(routeEntry.acceptType)) {
@@ -211,7 +209,7 @@ public class DefaultRouteMatcher {
     private List<RouteMatcher> findRouteMatcher(HttpMethod httpMethod, String path) {
     	path = path.length() > 1 && path.endsWith("/") ? path.substring(0, path.length() - 1) : path;
     	
-        List<RouteMatcher> matchSet = new ArrayList<RouteMatcher>();
+        List<RouteMatcher> matchSet = CollectionKit.newArrayList();
         for (RouteMatcher entry : routes) {
             if (entry.matches(httpMethod, path)) {
                 matchSet.add(entry);
@@ -228,7 +226,7 @@ public class DefaultRouteMatcher {
      * @return					返回匹配的所有路由集合
      */
     private List<RouteMatcher> findInterceptor(HttpMethod httpMethod, String path) {
-        List<RouteMatcher> matchSet = new ArrayList<RouteMatcher>();
+        List<RouteMatcher> matchSet = CollectionKit.newArrayList();
         for (RouteMatcher entry : interceptors) {
             if (entry.matches(httpMethod, path)) {
                 matchSet.add(entry);
@@ -263,7 +261,7 @@ public class DefaultRouteMatcher {
     }
 
     private boolean removeRoute(HttpMethod httpMethod, String path) {
-        List<RouteMatcher> forRemoval = new ArrayList<RouteMatcher>();
+        List<RouteMatcher> forRemoval = CollectionKit.newArrayList();
 
         for (RouteMatcher routeEntry : routes) {
             HttpMethod httpMethodToMatch = httpMethod;

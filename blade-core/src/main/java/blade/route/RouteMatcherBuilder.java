@@ -121,6 +121,8 @@ public final class RouteMatcherBuilder {
      * @param interceptorPackages	要添加的拦截器包
      */
     private static void buildInterceptor(String... interceptorPackages){
+    	// 扫描所有的Interceptor
+		Set<Class<?>> classes = null;
     	// 拦截器
 		for(String packageName : interceptorPackages){
 			
@@ -132,7 +134,7 @@ public final class RouteMatcherBuilder {
 			}
 			
     		// 扫描所有的Interceptor
-    		Set<Class<?>> classes = classReader.getClassByAnnotation(packageName, Interceptor.class, recursive);
+    		classes = classReader.getClassByAnnotation(packageName, Interceptor.class, recursive);
     		
     		if(null != classes && classes.size() > 0){
     			for(Class<?> interceptorClazz : classes){
@@ -148,6 +150,7 @@ public final class RouteMatcherBuilder {
      * @param routePackages		要添加的路由包
      */
     private static void buildRoute(String... routePackages){
+    	Set<Class<?>> classes = null;
     	// 路由
 		for(String packageName : routePackages){
 			
@@ -159,7 +162,7 @@ public final class RouteMatcherBuilder {
 			}
 			
     		// 扫描所有的Controoler
-    		Set<Class<?>> classes = classReader.getClassByAnnotation(packageName, Path.class, recursive);
+    		classes = classReader.getClassByAnnotation(packageName, Path.class, recursive);
     		
     		if(null != classes && classes.size() > 0){
     			for(Class<?> pathClazz : classes){

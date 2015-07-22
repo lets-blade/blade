@@ -63,13 +63,13 @@ public class MimeParse {
      * ('application', 'xhtml', {'q', '0.5'})
      */
     private static ParseResults parseMimeType(String mimeType) {
-        String[] parts = mimeType.split(";");
+        String[] parts = StringKit.split(mimeType, ";");
         ParseResults results = new ParseResults();
         results.params = new HashMap<String, String>();
 
         for (int i = 1; i < parts.length; ++i) {
             String p = parts[i];
-            String[] subParts = p.split("=");
+            String[] subParts = StringKit.split(p, "=");
             if (subParts.length == 2) {
                 results.params.put(subParts[0].trim(), subParts[1].trim());
             }
@@ -191,7 +191,8 @@ public class MimeParse {
     public static String bestMatch(Collection<String> supported, String header) {
         List<ParseResults> parseResults = new LinkedList<ParseResults>();
         List<FitnessAndQuality> weightedMatches = new LinkedList<FitnessAndQuality>();
-        for (String r : header.split(",")) {
+        String[] headers = StringKit.split(header, ",");
+        for (String r : headers) {
             parseResults.add(parseMediaRange(r));
         }
 

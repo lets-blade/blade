@@ -15,10 +15,8 @@
  */
 package blade.servlet;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +27,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import blade.kit.CollectionKit;
 import blade.kit.IOKit;
 import blade.kit.PathKit;
 import blade.kit.StringKit;
@@ -472,7 +471,7 @@ public class Request {
      * @return 返回cookies
      */
     public Map<String, String> cookies() {
-        Map<String, String> result = new HashMap<String, String>();
+        Map<String, String> result = CollectionKit.newHashMap();
         Cookie[] cookies = servletRequest.getCookies();
         if (cookies != null) {
             for (Cookie cookie : cookies) {
@@ -516,7 +515,7 @@ public class Request {
     
     private static Map<String, String> getPathParams(List<String> request, List<String> matched) {
     	
-        Map<String, String> params = new HashMap<String, String>();
+        Map<String, String> params = CollectionKit.newHashMap();
 
         for (int i = 0; (i < request.size()) && (i < matched.size()); i++) {
             String matchedPart = matched.get(i);
@@ -538,7 +537,7 @@ public class Request {
 
         boolean sameLength = (nbrOfRequestParts == nbrOfMatchedParts);
 
-        List<String> splat = new ArrayList<String>();
+        List<String> splat = CollectionKit.newArrayList();
 
         for (int i = 0; (i < nbrOfRequestParts) && (i < nbrOfMatchedParts); i++) {
             String matchedPart = matched.get(i);

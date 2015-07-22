@@ -39,6 +39,7 @@ import blade.kit.log.Logger;
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since	1.0
  */
+@SuppressWarnings("unchecked")
 public class DefaultContainer implements Container {
 	
     private static final Logger LOGGER = Logger.getLogger(DefaultContainer.class);
@@ -46,12 +47,12 @@ public class DefaultContainer implements Container {
     /**
      * 保存所有bean对象
      */
-    private static final Map<String, Object> beansMap = CollectionKit.newConcurrentHashMap();
+    private static final Map<String, Object> BEAN_CONTAINER = CollectionKit.newConcurrentHashMap();
     
     /**
      * 保存所有注解的class
      */
-    private static final Map<Class<? extends Annotation>, List<Object>> annotationMap = CollectionKit.newConcurrentHashMap();
+    private static final Map<Class<? extends Annotation>, List<Object>> ANNOTATION_CONTAINER = CollectionKit.newConcurrentHashMap();
     
     private DefaultContainer() {
     }
@@ -65,36 +66,36 @@ public class DefaultContainer implements Container {
     }
 
     public Map<String, Object> getBeanMap() {
-        return beansMap;
+        return BEAN_CONTAINER;
     }
     
-    @Override
-    public Object getBean(String name, Scope scope) {
-    	Object obj = beansMap.get(name);
+	@Override
+    public <T> T getBean(String name, Scope scope) {
+    	Object obj = BEAN_CONTAINER.get(name);
     	if(null != scope && scope == Scope.PROTOTYPE){
     		try {
-				return CloneKit.deepClone(obj);
+				return (T) CloneKit.deepClone(obj);
 			} catch (Exception e) {
 				LOGGER.error("克隆对象失败," + e.getMessage());
 			}
     	}
-        return obj;
+        return (T) obj;
     }
 
     @Override
-    public Object getBean(Class<?> type, Scope scope) {
-        Iterator<Object> it = beansMap.values().iterator();
+    public <T> T getBean(Class<T> type, Scope scope) {
+        Iterator<Object> it = BEAN_CONTAINER.values().iterator();
         while (it.hasNext()) {
             Object obj = it.next();
             if (type.isAssignableFrom(obj.getClass())) {
             	if(null != scope && scope == Scope.PROTOTYPE){
             		try {
-						return CloneKit.deepClone(obj);
+						return (T) CloneKit.deepClone(obj);
 					} catch (Exception e) {
 						LOGGER.error("克隆对象失败," + e.getMessage());
 					}
             	} else {
-            		return obj;
+            		return (T) obj;
 				}
             }
         }
@@ -103,12 +104,12 @@ public class DefaultContainer implements Container {
 
     @Override
     public Set<String> getBeanNames() {
-        return beansMap.keySet();
+        return BEAN_CONTAINER.keySet();
     }
     
     @Override
     public Collection<Object> getBeans() {
-        return beansMap.values();
+        return BEAN_CONTAINER.values();
     }
 
     @Override
@@ -129,13 +130,13 @@ public class DefaultContainer implements Container {
     
     @Override
 	public boolean removeBean(String name) {
-    	Object object = beansMap.remove(name);
+    	Object object = BEAN_CONTAINER.remove(name);
 		return (null != object);
 	}
 
 	@Override
 	public boolean removeBean(Class<?> clazz) {
-		Object object = beansMap.remove(clazz.getName());
+		Object object = BEAN_CONTAINER.remove(clazz.getName());
 		return (null != object);
 	}
 
@@ -178,8 +179,8 @@ public class DefaultContainer implements Container {
      * @param object		要进入IOC容器的bean对象
      */
     private void put(String name, Object object){
-    	if(null == beansMap.get(name)){
-    		beansMap.put(name, object);
+    	if(null == BEAN_CONTAINER.get(name)){
+    		BEAN_CONTAINER.put(name, object);
     	}
     }
     
@@ -191,14 +192,15 @@ public class DefaultContainer implements Container {
      */
     private void putAnnotationMap(Class<?> clazz, Object object){
     	Annotation[] annotations = clazz.getAnnotations();
+    	List<Object> listObject = null;
     	for(Annotation annotation : annotations){
     		if(null != annotation){
-    			List<Object> listObject = annotationMap.get(annotation.annotationType());
+    			listObject = ANNOTATION_CONTAINER.get(annotation.annotationType());
     			if(CollectionKit.isEmpty(listObject)){
     				listObject = CollectionKit.newArrayList();
     			}
     			listObject.add(object);
-    			put(annotation.annotationType(), listObject);
+    			this.put(annotation.annotationType(), listObject);
     		}
     	}
     }
@@ -210,8 +212,8 @@ public class DefaultContainer implements Container {
      * @param listObject	要注入的对象列表
      */
     private void put(Class<? extends Annotation> clazz, List<Object> listObject){
-    	if(null == annotationMap.get(clazz)){
-    		annotationMap.put(clazz, listObject);
+    	if(null == ANNOTATION_CONTAINER.get(clazz)){
+    		ANNOTATION_CONTAINER.put(clazz, listObject);
     	}
     }
     
@@ -220,7 +222,7 @@ public class DefaultContainer implements Container {
      */
     @Override
     public void initWired() throws RuntimeException {
-        Iterator<Object> it = beansMap.values().iterator();
+        Iterator<Object> it = BEAN_CONTAINER.values().iterator();
         try {
             while (it.hasNext()) {
             	
@@ -302,8 +304,8 @@ public class DefaultContainer implements Container {
 	}
 
 	@Override
-	public List<Object> getBeansByAnnotation(Class<? extends Annotation> annotation) {
-		return annotationMap.get(annotation);
+	public <T> List<T> getBeansByAnnotation(Class<? extends Annotation> annotation) {
+		return (List<T>) ANNOTATION_CONTAINER.get(annotation);
 	}
 	
 	@Override
@@ -324,8 +326,8 @@ public class DefaultContainer implements Container {
 
 	@Override
 	public boolean removeAll() {
-		beansMap.clear();
-		annotationMap.clear();
+		BEAN_CONTAINER.clear();
+		ANNOTATION_CONTAINER.clear();
 		return true;
 	}
 

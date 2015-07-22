@@ -17,7 +17,6 @@ package blade.kit;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -59,14 +58,17 @@ public final class PathKit {
     }
 
     public static List<String> convertRouteToList(String route) {
-        String[] pathArray = route.split("/");
-        List<String> path = new ArrayList<String>();
-        for (String p : pathArray) {
-            if (p.length() > 0) {
-                path.add(p);
+        String[] pathArray = StringKit.split(route, "/");
+        if(null != pathArray && pathArray.length > 0){
+        	List<String> path = CollectionKit.newArrayList();
+            for (String p : pathArray) {
+                if (p.length() > 0) {
+                    path.add(p);
+                }
             }
+            return path;
         }
-        return path;
+        return CollectionKit.newArrayList(0);
     }
     
     public static boolean isParam(String routePart) {

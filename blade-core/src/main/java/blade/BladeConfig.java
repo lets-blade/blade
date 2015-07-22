@@ -15,9 +15,10 @@
  */
 package blade;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import blade.kit.CollectionKit;
 
 /**
  * Blade配置类
@@ -28,9 +29,9 @@ import java.util.List;
  */
 public class BladeConfig {
 
-	private List<String> routePackages = new ArrayList<String>();
-	private List<String> iocPackages = new ArrayList<String>();
-	private List<String> staticFolders = new ArrayList<String>();
+	private List<String> routePackages = CollectionKit.newArrayList();
+	private List<String> iocPackages = CollectionKit.newArrayList();
+	private List<String> staticFolders = CollectionKit.newArrayList();
 	private String basePackage;
 	private String interceptorPackage;
 	private String encoding = "utf-8";
