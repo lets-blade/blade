@@ -453,22 +453,7 @@ abstract class BladeBase {
 	}
 	
 	/**
-	 * 配置文件属性
-	 * blade.route=
-	 * blade.interceptor=
-	 * blade.ioc=
-	 * blade.prefix=
-	 * blade.suffix=
-	 * blade.filter_folder=
-	 * blade.dburl=
-	 * blade.dbdriver=
-	 * blade.dbuser=
-	 * blade.dbpass=
-	 * blade.opencache=
-	 * blade.encoding=
-	 * blade.view404=
-	 * blade.view500=
-	 * blade.debug=
+	 * 配置
 	 * @param json	json配置
 	 */
 	private static void configuration(Map<String, String> configMap){

@@ -55,7 +55,11 @@ public final class IocApplication {
 		initIOC();
 		
 		// 初始化注入
-		container.initWired();
+		try {
+			container.initWired();
+		} catch (Exception e) {
+			LOGGER.error(e);
+		}
 	}
 	
 	private static void initApp(){

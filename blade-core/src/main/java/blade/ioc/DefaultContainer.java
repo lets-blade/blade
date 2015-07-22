@@ -27,6 +27,7 @@ import java.util.Set;
 import blade.annotation.Component;
 import blade.annotation.Inject;
 import blade.annotation.Path;
+import blade.exception.BladeException;
 import blade.kit.CloneKit;
 import blade.kit.CollectionKit;
 import blade.kit.ReflectKit;
@@ -218,7 +219,7 @@ public class DefaultContainer implements Container {
      * 初始化注入
      */
     @Override
-    public void initWired() {
+    public void initWired() throws RuntimeException {
         Iterator<Object> it = beansMap.values().iterator();
         try {
             while (it.hasNext()) {
@@ -250,7 +251,7 @@ public class DefaultContainer implements Container {
                             }
                         }
                         if (null == injectField) {
-                            throw new RuntimeException("Unable to load " + field.getType().getCanonicalName() + "！");
+                            throw new BladeException("Unable to load " + field.getType().getCanonicalName() + "！");
                         }
                         boolean accessible = field.isAccessible();
                         field.setAccessible(true);

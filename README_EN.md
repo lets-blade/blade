@@ -26,6 +26,7 @@
 * Jetty is started
 * Plug-in extension mechanism
 * Cache the data information
+* Coding/JSON/config file
 * ...
 
 ## Quick start
@@ -127,9 +128,8 @@ OK, all this may seem simple, refer to the guidelines for use more ready-made ex
 ### Update
 
 ### v1.2.4
-	1. Add a configuration file
+	1. Add JSON, configuration Properties file
 	2. Optimize the code performance
-	3. Add 404, 500 page configuration
 	
 ### v1.2.2
 	1. `DateKit` added to obtain the current Unix timestamp

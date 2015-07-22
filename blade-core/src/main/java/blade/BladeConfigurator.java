@@ -95,20 +95,17 @@ public class BladeConfigurator {
 				bladeConfig.setViewSuffix(suffix);
 			}
 			
-			if (StringKit.isNotBlank(dburl)) {
+			if (StringKit.isNotBlank(dburl) && StringKit.isNotBlank(dbdriver) &&
+					StringKit.isNotBlank(dbuser) && StringKit.isNotBlank(dbpass)) {
 				bladeConfig.setDbUrl(dburl);
-			}
-			
-			if (StringKit.isNotBlank(dbdriver)) {
 				bladeConfig.setDbDriver(dbdriver);
-			}
-			
-			if (StringKit.isNotBlank(dbuser)) {
 				bladeConfig.setDbUser(dbuser);
-			}
-			
-			if (StringKit.isNotBlank(dbpass)) {
 				bladeConfig.setDbPass(dbpass);
+				
+				if (StringKit.isNotBlank(opencache)) {
+					Boolean opencacheBool = Boolean.valueOf(opencache);
+					bladeConfig.setOpenCache(opencacheBool);
+				}
 			}
 			
 			if (StringKit.isNotBlank(encoding)) {
@@ -121,11 +118,6 @@ public class BladeConfigurator {
 			
 			if (StringKit.isNotBlank(view500)) {
 				bladeConfig.setView500(view500);
-			}
-			
-			if (StringKit.isNotBlank(opencache)) {
-				Boolean opencacheBool = Boolean.valueOf(opencache);
-				bladeConfig.setOpenCache(opencacheBool);
 			}
 			
 			if (StringKit.isNotBlank(debug)) {
