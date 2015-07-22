@@ -288,10 +288,10 @@ public class RequestHandler {
 	 * @param response		Response对象，作为参数注入
 	 * @return				返回方法执行后的返回值
 	 */
-	private Object executeMethod(Object object, Method method, Request request, Response response){
+	private Object executeMethod(Object object, Method method, RequestWrapper requestWrapper, ResponseWrapper responseWrapper){
 		int len = method.getParameterTypes().length;
 		if(len > 0){
-			Object[] args = getArgs(request, response, method.getParameterTypes());
+			Object[] args = getArgs(requestWrapper.getDelegate(), responseWrapper.getDelegate(), method.getParameterTypes());
 			return ReflectKit.invokeMehod(object, method, args);
 		} else {
 			return ReflectKit.invokeMehod(object, method);

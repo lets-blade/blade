@@ -54,7 +54,6 @@ public class Response {
         this.response = response;
     }
 
-
     /**
      * 设置响应状态码
      *

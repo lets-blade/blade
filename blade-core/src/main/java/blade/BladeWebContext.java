@@ -22,6 +22,8 @@ import javax.servlet.http.HttpServletResponse;
 import blade.servlet.Request;
 import blade.servlet.Response;
 import blade.servlet.Session;
+import blade.wrapper.RequestWrapper;
+import blade.wrapper.ResponseWrapper;
 
 /**
  * 全局的WeContext
@@ -34,12 +36,12 @@ public final class BladeWebContext {
 	/**
 	 * 当前线程的Request对象
 	 */
-    private static ThreadLocal<Request> currentRequest = new ThreadLocal<Request>();
+    private static ThreadLocal<RequestWrapper> currentRequest = new ThreadLocal<RequestWrapper>();
     
     /**
      * 当前线程的Response对象
      */
-    private static ThreadLocal<Response> currentResponse = new ThreadLocal<Response>();
+    private static ThreadLocal<ResponseWrapper> currentResponse = new ThreadLocal<ResponseWrapper>();
     
     /**
      * ServletContext对象，在应用初始化时创建
@@ -52,6 +54,13 @@ public final class BladeWebContext {
      * @return 返回当前线程的Request对象
      */
     public static Request request() {
+        return requestWrapper().getDelegate();
+    }
+    
+    /**
+     * @return 返回当前线程的RequestWrapper对象
+     */
+    public static RequestWrapper requestWrapper() {
         return currentRequest.get();
     }
     
@@ -66,8 +75,16 @@ public final class BladeWebContext {
      * @return 返回当前线程的Response对象
      */
     public static Response response() {
+        return responseWrapper().getDelegate();
+    }
+    
+    /**
+     * @return 返回当前线程的RequestWrapper对象
+     */
+    public static ResponseWrapper responseWrapper() {
         return currentResponse.get();
     }
+    
     
     /**
      * @return 返回当前线程的HttpServletResponse对象
@@ -102,13 +119,13 @@ public final class BladeWebContext {
     /**
      * 设置context对象到ActionContext中
      * 
-     * @param request 		HttpServletRequest对象
-     * @param response 		HttpServletResponse对象
+     * @param requestWrapper 		RequestWrapper对象
+     * @param responseWrapper 		ResponseWrapper对象
      */
-    public static void put(Request request, Response response) {
+    public static void put(RequestWrapper requestWrapper, ResponseWrapper responseWrapper) {
     	remove();
-    	currentRequest.set(request);
-    	currentResponse.set(response);
+    	currentRequest.set(requestWrapper);
+    	currentResponse.set(responseWrapper);
     }
     
     /**
