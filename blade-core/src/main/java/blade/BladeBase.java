@@ -45,11 +45,6 @@ abstract class BladeBase {
 	public static boolean runJetty = false;
 	
     /**
-	 * 静态资源所在文件夹
-	 */
-	protected static String[] STATIC_FOLDER = null;
-    
-    /**
      * 框架是否已经初始化
      */
     protected static boolean IS_INIT = false;
@@ -179,7 +174,6 @@ abstract class BladeBase {
 	 */
 	public static synchronized void staticFolder(final String ... folders) {
 		BLADE_CONFIG.setStaticFolders(folders);
-		STATIC_FOLDER = folders;
 	}
 	
     /**
@@ -458,10 +452,27 @@ abstract class BladeBase {
 		configuration(configMap);
 	}
 	
+	/**
+	 * 配置文件属性
+	 * blade.route=
+	 * blade.interceptor=
+	 * blade.ioc=
+	 * blade.prefix=
+	 * blade.suffix=
+	 * blade.filter_folder=
+	 * blade.dburl=
+	 * blade.dbdriver=
+	 * blade.dbuser=
+	 * blade.dbpass=
+	 * blade.opencache=
+	 * blade.encoding=
+	 * blade.view404=
+	 * blade.view500=
+	 * blade.debug=
+	 * @param json	json配置
+	 */
 	private static void configuration(Map<String, String> configMap){
-		if(null != configMap && configMap.size() > 0){
-			
-		}
+		new BladeConfigurator(BladeBase.BLADE_CONFIG, configMap).run();
 	}
 	
 	static synchronized void init() {

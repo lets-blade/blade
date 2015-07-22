@@ -2,6 +2,7 @@ package blade.plugin.sql2o;
 
 import javax.sql.DataSource;
 
+import blade.Blade;
 import blade.kit.StringKit;
 import blade.kit.log.Logger;
 import blade.plugin.Plugin;
@@ -29,6 +30,31 @@ public enum Sql2oPlugin implements Plugin {
 	/**
 	 * 设置数据库配置
 	 * 
+	 * @param dbConfig	数据库配置
+	 */
+	public Sql2oPlugin autoConfig(){
+		String drive = Blade.config().getDbDriver();
+		String url = Blade.config().getDbUrl();
+		String user = Blade.config().getDbUser();
+		String password = Blade.config().getDbPass();
+		INSTANCE.dbConfig = new DBConfig(drive, url, user, password);
+		INSTANCE.openCache = Blade.config().isOpenCache();
+		return INSTANCE;
+	}
+	
+	/**
+	 * 设置数据库配置
+	 * 
+	 * @param dbConfig	数据库配置
+	 */
+	public Sql2oPlugin config(DBConfig dbConfig){
+		INSTANCE.dbConfig = dbConfig;
+		return INSTANCE;
+	}
+	
+	/**
+	 * 设置数据库配置
+	 * 
 	 * @param url
 	 * @param driver
 	 * @param user
@@ -39,23 +65,23 @@ public enum Sql2oPlugin implements Plugin {
 		if(StringKit.isNotEmpty(url) && StringKit.isNotEmpty(driver)
 				&& StringKit.isNotEmpty(user) && StringKit.isNotEmpty(pass)){
 		
-			dbConfig = new DBConfig(driver, url,  user, pass);
+			INSTANCE.dbConfig = new DBConfig(driver, url,  user, pass);
 		}
 		
 		return INSTANCE;
 	}
 	
 	public Sql2oPlugin openCache(){
-		this.openCache = true;
+		INSTANCE.openCache = true;
 		return INSTANCE;
 	}
 	
 	public boolean isOpenCache() {
-		return openCache;
+		return INSTANCE.openCache;
 	}
 	
 	public DBConfig dbConfig(){
-		return dbConfig;
+		return INSTANCE.dbConfig;
 	}
 	
 	@Override

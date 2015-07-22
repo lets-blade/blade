@@ -44,7 +44,7 @@ public class BladeConfig {
 	private String dbUser;
 	private String dbPass;
 	private boolean isOpenCache = false;
-	private boolean isDebug = false;
+	private boolean isDebug = true;
 
 	public BladeConfig() {
 	}
