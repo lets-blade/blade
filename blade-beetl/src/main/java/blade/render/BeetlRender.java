@@ -1,12 +1,8 @@
 package blade.render;
 
 import java.io.IOException;
-import java.util.Enumeration;
 import java.util.Map;
 import java.util.Set;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.beetl.core.Configuration;
 import org.beetl.core.GroupTemplate;
@@ -17,6 +13,10 @@ import org.beetl.core.resource.WebAppResourceLoader;
 import blade.Blade;
 import blade.BladeWebContext;
 import blade.exception.BladeException;
+import blade.kit.log.Logger;
+import blade.servlet.Request;
+import blade.servlet.Response;
+import blade.servlet.Session;
 
 /**
  * Beetl渲染引擎
@@ -25,6 +25,8 @@ import blade.exception.BladeException;
  */
 public class BeetlRender extends Render {
     
+	private static final Logger LOGGER = Logger.getLogger(BeetlRender.class);
+	
 	private GroupTemplate groupTemplate = null;
 	
 	/**
@@ -32,20 +34,20 @@ public class BeetlRender extends Render {
 	 */
 	public BeetlRender() {
 		try {
-			String root = Blade.webRoot() + Blade.viewPath();
+			String root = Blade.webRoot() + Blade.viewPrefix();
 			WebAppResourceLoader resourceLoader = new WebAppResourceLoader();
 			resourceLoader.setAutoCheck(true);
 			resourceLoader.setRoot(root);
 			Configuration cfg = Configuration.defaultConfiguration();
 			groupTemplate = new GroupTemplate(resourceLoader, cfg);
 		} catch (IOException e) {
-			e.printStackTrace();
+			LOGGER.error(e);
 		}
 	}
 	
 	public BeetlRender(Configuration configuration) {
 		try {
-			String root = Blade.webRoot() + Blade.viewPath();
+			String root = Blade.webRoot() + Blade.viewPrefix();
 			WebAppResourceLoader resourceLoader = new WebAppResourceLoader();
 			resourceLoader.setAutoCheck(true);
 			resourceLoader.setRoot(root);
@@ -53,7 +55,7 @@ public class BeetlRender extends Render {
 			groupTemplate = new GroupTemplate(resourceLoader, cfg);
 			groupTemplate.setConf(configuration);
 		} catch (IOException e) {
-			e.printStackTrace();
+			LOGGER.error(e);
 		}
 	}
 	
@@ -63,28 +65,34 @@ public class BeetlRender extends Render {
 	@Override
 	public Object render(String view) {
 		
+		Response response = BladeWebContext.response();
 		try {
-			HttpServletRequest servletRequest = BladeWebContext.servletRequest();
-			HttpServletResponse servletResponse = BladeWebContext.servletResponse();
+			Request request = BladeWebContext.request();
+			Session session = BladeWebContext.session();
 			
 			view = disposeView(view);
 			
 			Template template = groupTemplate.getTemplate(view);
 			
-			Enumeration<String> attrs = servletRequest.getAttributeNames();
-			
-			if(null != attrs && attrs.hasMoreElements()){
-				while(attrs.hasMoreElements()){
-					String attr = attrs.nextElement();
-					template.binding(attr, servletRequest.getAttribute(attr));
+			Set<String> attrs = request.attributes();
+			if(null != attrs && attrs.size() > 0){
+				for(String attr : attrs){
+					template.binding(attr, request.attribute(attr));
 				}
 			}
 			
-			template.renderTo(servletResponse.getOutputStream());
+			Set<String> session_attrs = session.attributes();
+			if(null != session_attrs && session_attrs.size() > 0){
+				for(String attr : session_attrs){
+					template.binding(attr, session.attribute(attr));
+				}
+			}
+			
+			template.renderTo(response.outputStream());
 		} catch (BeetlException e) {
-			e.printStackTrace();
+			LOGGER.error(e);
 		} catch (IOException e) {
-			e.printStackTrace();
+			LOGGER.error(e);
 		}
 		return null;
 	}
@@ -95,30 +103,22 @@ public class BeetlRender extends Render {
 	 */
 	@Override
 	public Object render(ModelAndView modelAndView) {
-		HttpServletRequest servletRequest = BladeWebContext.servletRequest();
-		HttpServletResponse servletResponse = BladeWebContext.servletResponse();
 		
-		if(null == modelAndView){
-			throw new BladeException("modelAndView is null");
-		}
-		
+		Response response = BladeWebContext.response();
 		try {
+			
+			Request request = BladeWebContext.request();
+			Session session = BladeWebContext.session();
+			
+			if(null == modelAndView){
+				throw new BladeException("modelAndView is null");
+			}
 			
 			String view = disposeView(modelAndView.getView());
 			
 			Template template = groupTemplate.getTemplate(view);
 			
 			Map<String, Object> context = modelAndView.getModel();
-			
-			Enumeration<String> attrs = servletRequest.getAttributeNames();
-			
-			if(null != attrs && attrs.hasMoreElements()){
-				while(attrs.hasMoreElements()){
-					String attr = attrs.nextElement();
-					template.binding(attr, servletRequest.getAttribute(attr));
-				}
-			}
-			
 			if(null != context && context.size() > 0){
 				Set<String> keys = context.keySet();
 				for(String key : keys){
@@ -126,11 +126,25 @@ public class BeetlRender extends Render {
 				}
 			}
 			
-			template.renderTo(servletResponse.getOutputStream());
+			Set<String> attrs = request.attributes();
+			if(null != attrs && attrs.size() > 0){
+				for(String attr : attrs){
+					template.binding(attr, request.attribute(attr));
+				}
+			}
+			
+			Set<String> session_attrs = session.attributes();
+			if(null != session_attrs && session_attrs.size() > 0){
+				for(String attr : session_attrs){
+					template.binding(attr, session.attribute(attr));
+				}
+			}
+			
+			template.renderTo(response.outputStream());
 		} catch (BeetlException e) {
-			e.printStackTrace();
+			LOGGER.error(e);
 		} catch (IOException e) {
-			e.printStackTrace();
+			LOGGER.error(e);
 		}
 		
 		return null;
@@ -144,8 +158,8 @@ public class BeetlRender extends Render {
 	String disposeView(String view){
 		if(null != view){
 			view = view.replaceAll("[/]+", "/");
-			if(!view.endsWith(Blade.viewExt())){
-				view = view + Blade.viewExt();
+			if(!view.endsWith(Blade.viewSuffix())){
+				view = view + Blade.viewSuffix();
 			}
 		}
 		return view;

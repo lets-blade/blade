@@ -25,6 +25,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import blade.Blade;
 import blade.BladeWebContext;
+import blade.servlet.Response;
 /**
  * 渲染器抽象类
  * 
@@ -42,10 +43,10 @@ public abstract class Render {
 	/**
 	 * 404视图
 	 * 
-	 * @param httpResponse	HttpServletResponse对象
+	 * @param response		Responsee对象
 	 * @param viewName		视图名称
 	 */
-	public void render404(HttpServletResponse httpResponse, String viewName){
+	public void render404(Response response, String viewName){
         try {
         	String view404 = Blade.view404();
         	if(null != view404){
@@ -53,13 +54,12 @@ public abstract class Render {
         		modelAndView.add("viewName", viewName);
         		render(modelAndView);
         	} else {
-        		if(null == httpResponse){
-        			httpResponse = BladeWebContext.servletResponse();
+        		if(null == response){
+        			response = BladeWebContext.response();
         		}
-        		
-            	httpResponse.setContentType("text/html; charset=utf-8");
-            	httpResponse.setStatus(404);
-    			ServletOutputStream outputStream = httpResponse.getOutputStream();
+        		response.contentType("text/html; charset=utf-8");
+        		response.status(404);
+    			ServletOutputStream outputStream = response.outputStream();
     			outputStream.print(String.format(VIEW_NOTFOUND, viewName + " Not Found"));
     			outputStream.flush();
     			outputStream.close();

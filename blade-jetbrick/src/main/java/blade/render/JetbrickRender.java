@@ -1,13 +1,10 @@
 package blade.render;
 
 import java.io.IOException;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import java.util.Set;
 
 import jetbrick.io.resource.ResourceNotFoundException;
 import jetbrick.template.JetEngine;
@@ -15,6 +12,10 @@ import jetbrick.template.JetTemplate;
 import blade.Blade;
 import blade.BladeWebContext;
 import blade.exception.BladeException;
+import blade.kit.log.Logger;
+import blade.servlet.Request;
+import blade.servlet.Response;
+import blade.servlet.Session;
 
 /**
  * Velocity渲染引擎
@@ -23,6 +24,8 @@ import blade.exception.BladeException;
  */
 public class JetbrickRender extends Render {
     
+	private static final Logger LOGGER = Logger.getLogger(JetbrickRender.class);
+			
 	private JetEngine jetEngine;
     
 	private Properties config;
@@ -100,10 +103,10 @@ public class JetbrickRender extends Render {
 	@Override
 	public Object render(String view) {
 		
-		HttpServletRequest request = BladeWebContext.servletRequest();
-		HttpServletResponse response = BladeWebContext.servletResponse();
-		
+		Response response = BladeWebContext.response();
 		try {
+			Request request = BladeWebContext.request();
+			Session session = BladeWebContext.session();
 			
 			view = Blade.webRoot() + disposeView(view);
 			
@@ -111,20 +114,25 @@ public class JetbrickRender extends Render {
 			
 			Map<String, Object> context = new HashMap<String, Object>();
 			
-			Enumeration<String> attrs = request.getAttributeNames();
-			
-			if(null != attrs && attrs.hasMoreElements()){
-				while(attrs.hasMoreElements()){
-					String attr = attrs.nextElement();
-					context.put(attr, request.getAttribute(attr));
+			Set<String> attrs = request.attributes();
+			if(null != attrs && attrs.size() > 0){
+				for(String attr : attrs){
+					context.put(attr, request.attribute(attr));
 				}
 			}
 			
-			template.render(context, response.getOutputStream());
+			Set<String> session_attrs = session.attributes();
+			if(null != session_attrs && session_attrs.size() > 0){
+				for(String attr : session_attrs){
+					context.put(attr, session.attribute(attr));
+				}
+			}
+			
+			template.render(context, response.outputStream());
 		} catch (ResourceNotFoundException e) {
 			render404(response, view);
 		} catch (IOException e) {
-			e.printStackTrace();
+			LOGGER.error(e);
 		}
 		return null;
 	}
@@ -135,10 +143,12 @@ public class JetbrickRender extends Render {
 	 */
 	@Override
 	public Object render(ModelAndView modelAndView) {
-		HttpServletRequest request = BladeWebContext.servletRequest();
-		HttpServletResponse response = BladeWebContext.servletResponse();
+		
+		Response response = BladeWebContext.response();
 		
 		try {
+			Request request = BladeWebContext.request();
+			Session session = BladeWebContext.session();
 			
 			if(null == modelAndView){
 				throw new BladeException("modelAndView is null");
@@ -150,22 +160,26 @@ public class JetbrickRender extends Render {
 			
 			Map<String, Object> context = modelAndView.getModel();
 			
-			Enumeration<String> attrs = request.getAttributeNames();
-			
-			if(null != attrs && attrs.hasMoreElements()){
-				while(attrs.hasMoreElements()){
-					String attr = attrs.nextElement();
-					context.put(attr, request.getAttribute(attr));
+			Set<String> attrs = request.attributes();
+			if(null != attrs && attrs.size() > 0){
+				for(String attr : attrs){
+					context.put(attr, request.attribute(attr));
 				}
 			}
 			
+			Set<String> session_attrs = session.attributes();
+			if(null != session_attrs && session_attrs.size() > 0){
+				for(String attr : session_attrs){
+					context.put(attr, session.attribute(attr));
+				}
+			}
 			
-			template.render(context, response.getOutputStream());
+			template.render(context, response.outputStream());
 			
 		} catch (ResourceNotFoundException e) {
 			render404(response, modelAndView.getView());
 		} catch (IOException e) {
-			e.printStackTrace();
+			LOGGER.error(e);
 		}
 		return null;
 	}

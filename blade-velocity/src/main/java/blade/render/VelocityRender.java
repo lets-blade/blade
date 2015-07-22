@@ -5,11 +5,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
-import java.util.Enumeration;
 import java.util.Properties;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import java.util.Set;
 
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
@@ -22,6 +19,10 @@ import org.apache.velocity.exception.ResourceNotFoundException;
 import blade.Blade;
 import blade.BladeWebContext;
 import blade.exception.BladeException;
+import blade.kit.log.Logger;
+import blade.servlet.Request;
+import blade.servlet.Response;
+import blade.servlet.Session;
 
 /**
  * Velocity渲染引擎
@@ -30,6 +31,8 @@ import blade.exception.BladeException;
  */
 public class VelocityRender extends Render {
     
+	private static final Logger LOGGER = Logger.getLogger(VelocityRender.class);
+	
 	private final VelocityEngine velocityEngine;
     
 	/**
@@ -77,8 +80,8 @@ public class VelocityRender extends Render {
 	 * 手动构造Velocity引擎
 	 * @param velocityEngine_
 	 */
-	public VelocityRender(VelocityEngine velocityEngine_) {
-		velocityEngine = velocityEngine_;
+	public VelocityRender(VelocityEngine velocityEngine) {
+		this.velocityEngine = velocityEngine;
 	}
 	
 	/**
@@ -87,24 +90,32 @@ public class VelocityRender extends Render {
 	@Override
 	public Object render(String view) {
 		
-		HttpServletRequest servletRequest = BladeWebContext.servletRequest();
-		HttpServletResponse servletResponse = BladeWebContext.servletResponse();
-		
+		Response response = BladeWebContext.response();
 		try {
-			PrintWriter writer = null;
-			VelocityContext context = new VelocityContext();
-			
-			Enumeration<String> attrs = servletRequest.getAttributeNames();
-			while (attrs.hasMoreElements()) {
-				String attrName = attrs.nextElement();
-				context.put(attrName, servletRequest.getAttribute(attrName));
-			}
+			Request request = BladeWebContext.request();
+			Session session = BladeWebContext.session();
 			
 			view = disposeView(view);
 			
+			VelocityContext context = new VelocityContext();
+			
 			Template template = velocityEngine.getTemplate(view);
 			
-			writer = servletResponse.getWriter();
+			Set<String> attrs = request.attributes();
+			if(null != attrs && attrs.size() > 0){
+				for(String attr : attrs){
+					context.put(attr, request.attribute(attr));
+				}
+			}
+			
+			Set<String> session_attrs = session.attributes();
+			if(null != session_attrs && session_attrs.size() > 0){
+				for(String attr : session_attrs){
+					context.put(attr, session.attribute(attr));
+				}
+			}
+			
+			PrintWriter writer = response.writer();
 			
 			template.merge(context, writer);
 			
@@ -112,13 +123,13 @@ public class VelocityRender extends Render {
 			writer.close();
 			
 		} catch (ResourceNotFoundException e) {
-			render404(servletResponse, view);
+			render404(response, view);
 		} catch (ParseErrorException e) {
-			e.printStackTrace();
+			LOGGER.error(e);
 		} catch (MethodInvocationException e) {
-			e.printStackTrace();
+			LOGGER.error(e);
 		} catch (IOException e) {
-			e.printStackTrace();
+			LOGGER.error(e);
 		}
 		return null;
 	}
@@ -129,29 +140,36 @@ public class VelocityRender extends Render {
 	 */
 	@Override
 	public Object render(ModelAndView modelAndView) {
-		HttpServletRequest servletRequest = BladeWebContext.servletRequest();
-		HttpServletResponse servletResponse = BladeWebContext.servletResponse();
-		
+		Response response = BladeWebContext.response();
 		try {
+			Request request = BladeWebContext.request();
+			Session session = BladeWebContext.session();
 			
 			if(null == modelAndView){
 				throw new BladeException("modelAndView is null");
 			}
 			
-			PrintWriter writer = null;
+			String view = disposeView(modelAndView.getView());
+			
 			VelocityContext context = new VelocityContext(modelAndView.getModel());
 			
-			Enumeration<String> attrs = servletRequest.getAttributeNames();
-			while (attrs.hasMoreElements()) {
-				String attrName = attrs.nextElement();
-				context.put(attrName, servletRequest.getAttribute(attrName));
+			Set<String> attrs = request.attributes();
+			if(null != attrs && attrs.size() > 0){
+				for(String attr : attrs){
+					context.put(attr, request.attribute(attr));
+				}
 			}
 			
-			String view = disposeView(modelAndView.getView());
+			Set<String> session_attrs = session.attributes();
+			if(null != session_attrs && session_attrs.size() > 0){
+				for(String attr : session_attrs){
+					context.put(attr, session.attribute(attr));
+				}
+			}
 			
 			Template template = velocityEngine.getTemplate(view);
 			
-			writer = servletResponse.getWriter();
+			PrintWriter writer = response.writer();
 			
 			template.merge(context, writer);
 			
@@ -159,13 +177,13 @@ public class VelocityRender extends Render {
 			writer.close();
 			
 		} catch (ResourceNotFoundException e) {
-			render404(servletResponse, modelAndView.getView());
+			render404(response, modelAndView.getView());
 		} catch (ParseErrorException e) {
-			e.printStackTrace();
+			LOGGER.error(e);
 		} catch (MethodInvocationException e) {
-			e.printStackTrace();
+			LOGGER.error(e);
 		} catch (IOException e) {
-			e.printStackTrace();
+			LOGGER.error(e);
 		}
 		return null;
 	}

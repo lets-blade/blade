@@ -16,7 +16,9 @@
 package blade.servlet;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 
@@ -85,6 +87,22 @@ public class Response {
      */
     public String body() {
         return this.body;
+    }
+    
+    /**
+     * @return 返回输出流
+     * @throws IOException 
+     */
+    public ServletOutputStream outputStream() throws IOException {
+        return response.getOutputStream();
+    }
+    
+    /**
+     * @return 返回PrintWriter
+     * @throws IOException 
+     */
+    public PrintWriter writer() throws IOException {
+        return response.getWriter();
     }
     
     /**
@@ -262,7 +280,7 @@ public class Response {
 	 * @param viewName
 	 */
 	public void render404(String viewName){
-		render.render404(this.response, viewName);
+		render.render404(this, viewName);
 	}
 	
 	/**
