@@ -167,6 +167,7 @@ public class Condition {
 
 	public void select() {
 		this.sql = "select * from " + this.tableName;
+		clearMap();
     	this.equalsParams = CollectionKit.newLinkedHashMap();
     	this.dmlType = DmlType.SELECT;
     	this.orderby = null;
@@ -178,6 +179,7 @@ public class Condition {
 	 */
 	public void select(String sql) {
 		this.sql = sql;
+		clearMap();
     	this.equalsParams = CollectionKit.newLinkedHashMap();
     	this.dmlType = DmlType.SELECT;
     	this.orderby = null;
@@ -188,6 +190,7 @@ public class Condition {
      */
     public void count(){
     	this.sql  = "select count(1) from " + this.tableName;
+    	clearMap();
     	this.equalsParams = CollectionKit.newLinkedHashMap();
     	this.dmlType = DmlType.COUNT;
     	this.orderby = null;
@@ -200,6 +203,7 @@ public class Condition {
      */
     public void count(String sql){
     	this.sql  = sql;
+    	clearMap();
     	this.equalsParams = CollectionKit.newLinkedHashMap();
     	this.dmlType = DmlType.COUNT;
     	this.orderby = null;
@@ -207,6 +211,7 @@ public class Condition {
     
     public void update(){
     	this.sql = "update " + this.tableName;
+    	clearMap();
     	this.params = CollectionKit.newLinkedHashMap();
     	this.equalsParams = CollectionKit.newLinkedHashMap();
     	this.dmlType = DmlType.UPDATE;
@@ -218,6 +223,7 @@ public class Condition {
      */
     public void update(String sql){
     	this.sql = sql;
+    	clearMap();
     	this.params = CollectionKit.newLinkedHashMap();
     	this.equalsParams = CollectionKit.newLinkedHashMap();
     	this.dmlType = DmlType.UPDATE;
@@ -225,6 +231,7 @@ public class Condition {
     
     public void insert(){
     	this.sql = "insert into " + this.tableName;
+    	clearMap();
     	this.params = CollectionKit.newLinkedHashMap();
     	this.dmlType = DmlType.INSERT;
     }
@@ -235,12 +242,14 @@ public class Condition {
      */
     public void insert(String sql){
     	this.sql = sql;
+    	clearMap();
     	this.params = CollectionKit.newLinkedHashMap();
     	this.dmlType = DmlType.INSERT;
     }
     
     public void delete(){
     	this.sql = "delete from " + this.tableName;
+    	clearMap();
     	this.equalsParams = CollectionKit.newLinkedHashMap();
     	this.dmlType = DmlType.DELETE;
     }
@@ -251,6 +260,7 @@ public class Condition {
      */
     public void delete(String sql){
     	this.sql = sql;
+    	clearMap();
     	this.equalsParams = CollectionKit.newLinkedHashMap();
     	this.dmlType = DmlType.DELETE;
     }

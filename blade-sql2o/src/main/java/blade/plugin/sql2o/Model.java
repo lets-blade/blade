@@ -840,8 +840,10 @@ public class Model implements Serializable {
 				
 				LOGGER.debug("更新缓存：" + model.getName() + " -> count,list");
 				
-				sql2oCache.hdel(CACHE_KEY_COUNT);
-				sql2oCache.hdel(CACHE_KEY_LIST);
+				if(isCache()){
+					sql2oCache.hdel(CACHE_KEY_COUNT);
+					sql2oCache.hdel(CACHE_KEY_LIST);
+				}
 				
 			}
 			
@@ -851,8 +853,11 @@ public class Model implements Serializable {
 				
 				LOGGER.debug("更新缓存：" + model.getName() + " -> detail,list");
 				
-				sql2oCache.hdel(CACHE_KEY_DETAIL);
-				sql2oCache.hdel(CACHE_KEY_LIST);
+				if(isCache()){
+					sql2oCache.hdel(CACHE_KEY_DETAIL);
+					sql2oCache.hdel(CACHE_KEY_LIST);
+				}
+				
 			}
 			
 			// 删除
@@ -861,18 +866,14 @@ public class Model implements Serializable {
 				
 				LOGGER.debug("更新缓存：" + model.getName() + " -> count,list,detail");
 				
-				sql2oCache.hdel(CACHE_KEY_COUNT);
-				sql2oCache.hdel(CACHE_KEY_LIST);
-				sql2oCache.hdel(CACHE_KEY_DETAIL);
+				if(isCache()){
+					sql2oCache.hdel(CACHE_KEY_COUNT);
+					sql2oCache.hdel(CACHE_KEY_LIST);
+					sql2oCache.hdel(CACHE_KEY_DETAIL);
+				}
 				
 			}
-		} catch (Exception e) {
-			LOGGER.error(e);
-		}
-    	
-    	condition.clearMap();
-    	
-    	try {
+			condition.clearMap();
 			T key = null;
 			if(null != returnType){
 				key = query.executeUpdate().getKey(returnType);
@@ -883,9 +884,7 @@ public class Model implements Serializable {
 		} catch (Exception e) {
 			LOGGER.error(e);
 		}
-    	
     	return null;
-		
     }
 	
     /**
@@ -894,36 +893,45 @@ public class Model implements Serializable {
      * @param connection
      * @return
      */
-    public Query execute(Connection connection){
-    	
+    public Connection execute(Connection connection){
     	Query query = null;
-    	
 		try {
 			if (null == connection) {
 				connection = sql2o.beginTransaction();
 			}
-
 			// 插入
 			if (condition.dmlType.equals(DmlType.INSERT)) {
 				query = insertCommit(connection);
+				if(isCache()){
+					sql2oCache.hdel(CACHE_KEY_COUNT);
+					sql2oCache.hdel(CACHE_KEY_LIST);
+				}
 			}
-
 			// 更新
 			if (condition.dmlType.equals(DmlType.UPDATE)) {
 				query = updateCommit(connection);
+				if(isCache()){
+					sql2oCache.hdel(CACHE_KEY_DETAIL);
+					sql2oCache.hdel(CACHE_KEY_LIST);
+				}
 			}
-
 			// 删除
 			if (condition.dmlType.equals(DmlType.DELETE)) {
 				query = deleteCommit(connection);
+				if(isCache()){
+					sql2oCache.hdel(CACHE_KEY_COUNT);
+					sql2oCache.hdel(CACHE_KEY_LIST);
+					sql2oCache.hdel(CACHE_KEY_DETAIL);
+				}
+			}
+			condition.clearMap();
+			if(null != query){
+				return query.getConnection();
 			}
 		} catch (Exception e) {
 			LOGGER.error(e);
 		}
-		
-    	condition.clearMap();
-    	
-    	return query;
+    	return null;
     }
     
     /**
@@ -939,6 +947,7 @@ public class Model implements Serializable {
 		
 		Query query = conn.createQuery(deleteSql);
 		query = parseParams(query);
+		query.executeUpdate();
 		
 		LOGGER.debug("execute sql：" + query.toString());
 		LOGGER.debug("execute parameter：" + condition.equalsParams.values());
@@ -979,7 +988,7 @@ public class Model implements Serializable {
 		
 		Query query = conn.createQuery(insertSql);
 		query = parseParams(query);
-		
+		query.executeUpdate();
 		LOGGER.debug("execute sql：" + query.toString());
 		LOGGER.debug("execute parameter：" + condition.params.values());
 		
@@ -1024,7 +1033,7 @@ public class Model implements Serializable {
 				
 	    		Query query = conn.createQuery(updateSql);
 	    		query = parseParams(query);
-				
+	    		query.executeUpdate();
 				LOGGER.debug("execute sql：" + query.toString());
 	    		LOGGER.debug("execute parameter：" + condition.params.values() + condition.equalsParams.values());
 	    		
