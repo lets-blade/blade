@@ -29,22 +29,39 @@ import blade.kit.CollectionKit;
  */
 public class BladeConfig {
 
+	// 存放所有路由的包
 	private List<String> routePackages = CollectionKit.newArrayList();
+	// 存放所有IOC的包
 	private List<String> iocPackages = CollectionKit.newArrayList();
+	// 存放所有过滤目录
 	private List<String> staticFolders = CollectionKit.newArrayList();
+	// 基础包
 	private String basePackage;
+	// 拦截器包
 	private String interceptorPackage;
+	// 编码
 	private String encoding = "utf-8";
+	// 视图前缀
 	private String viewPrefix = "/WEB-INF/";
+	// 视图后缀
 	private String viewSuffix = ".jsp";
+	// webroot根目录，物理路径
 	private String webRoot;
+	// 404视图位置
 	private String view404;
+	// 500视图位置
 	private String view500;
+	// 数据库URL
 	private String dbUrl;
+	// 数据库驱动
 	private String dbDriver;
+	// 数据库登录名
 	private String dbUser;
+	// 数据库登录密码
 	private String dbPass;
+	// 是否开启数据库缓存
 	private boolean isOpenCache = false;
+	// 是否是DEBUG模式
 	private boolean isDebug = true;
 
 	public BladeConfig() {

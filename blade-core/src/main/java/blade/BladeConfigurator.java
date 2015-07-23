@@ -1,13 +1,36 @@
+/**
+ * Copyright (c) 2015, biezhi 王爵 (biezhi.me@gmail.com)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * 	http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package blade;
 
 import java.util.Map;
 
 import blade.kit.StringKit;
 
+/**
+ * Blade配置文件注入
+ * 
+ * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
+ * @since	1.0
+ */
 public class BladeConfigurator {
 
+	// 配置文件对象
 	private BladeConfig bladeConfig;
 	
+	// 配置map
 	private Map<String, String> configMap;
 	
 	public BladeConfigurator(BladeConfig bladeConfig,
@@ -32,24 +55,6 @@ public class BladeConfigurator {
 	private static final String BLADE_VIEW_500 = "blade.view500";
 	private static final String BLADE_DEBUG = "blade.debug";
 	
-	/**
-	 * 配置文件属性
-	 * blade.route=
-	 * blade.interceptor=
-	 * blade.ioc=
-	 * blade.prefix=
-	 * blade.suffix=
-	 * blade.filter_folder=
-	 * blade.dburl=
-	 * blade.dbdriver=
-	 * blade.dbuser=
-	 * blade.dbpass=
-	 * blade.opencache=
-	 * blade.encoding=
-	 * blade.view404=
-	 * blade.view500=
-	 * blade.debug=
-	 */
 	public void run() {
 		if (null != configMap && configMap.size() > 0) {
 			String route = configMap.get(BLADE_ROUTE);

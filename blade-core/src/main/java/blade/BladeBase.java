@@ -409,17 +409,23 @@ abstract class BladeBase {
 	/**----------------------jetty:END-------------------------*/
 	
 	/**
+	 * <pre>
 	 * 手动注册一个对象到ioc容器中
+	 * </pre>
 	 * 
-	 * @param object	要注册的object
+	 * @param object		要注册的object
 	 */
 	public static synchronized void register(Object object){
 		container.registBean(object);
 	}
 	
 	/**
-	 * 设置配置文件名称
-	 * @param confName	配置文件名称
+	 * <pre>
+	 * Properties配置文件方式
+	 * 文件的路径基于classpath
+	 * </pre>
+	 * 
+	 * @param confName		配置文件路径
 	 */
 	public static synchronized void config(String confName){
 		Map<String, String> configMap = PropertyKit.getPropertyMap(confName);
@@ -427,8 +433,12 @@ abstract class BladeBase {
 	}
 	
 	/**
-	 * 设置JSON配置文件名称
-	 * @param confName	配置文件名称
+	 * <pre>
+	 * JSON文件的配置
+	 * 文件的路径基于classpath
+	 * </pre>
+	 * 
+	 * @param jsonPath		json文件路径
 	 */
 	public static synchronized void configJsonPath(String jsonPath){
 		InputStream inputStream = BladeBase.class.getResourceAsStream(jsonPath);
@@ -444,8 +454,11 @@ abstract class BladeBase {
 	}
 	
 	/**
-	 * 设置JSON配置
-	 * @param json	json配置
+	 * <pre>
+	 * JSON格式的配置
+	 * </pre>
+	 * 
+	 * @param json		json配置
 	 */
 	public static synchronized void configJson(String json){
 		Map<String, String> configMap = JSONKit.toMap(json);
@@ -453,8 +466,11 @@ abstract class BladeBase {
 	}
 	
 	/**
-	 * 配置
-	 * @param json	json配置
+	 * <pre>
+	 * 根据配置map保存配置
+	 * </pre>
+	 * 
+	 * @param configMap		存放配置的map
 	 */
 	private static void configuration(Map<String, String> configMap){
 		new BladeConfigurator(BladeBase.BLADE_CONFIG, configMap).run();
