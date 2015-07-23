@@ -831,55 +831,52 @@ public class Model implements Serializable {
      */
     @SuppressWarnings("unchecked")
 	public <T> T executeAndCommit(Class<T> returnType) {
-    	
+    	T key = null;
     	Query query = null;
     	try {
 			// 插入
 			if(condition.dmlType.equals(DmlType.INSERT)){
 				query = insertCommit(null);
 				
-				LOGGER.debug("更新缓存：" + model.getName() + " -> count,list");
-				
 				if(isCache()){
+					LOGGER.debug("更新缓存：" + model.getName() + " -> count,list");
 					sql2oCache.hdel(CACHE_KEY_COUNT);
 					sql2oCache.hdel(CACHE_KEY_LIST);
 				}
 				
+				if(null != returnType){
+					key = query.executeUpdate().getKey(returnType);
+				} else {
+					key = (T) query.executeUpdate().getKey();
+				}
 			}
 			
 			// 更新
 			if(condition.dmlType.equals(DmlType.UPDATE)){
 				query = updateCommit(null);
 				
-				LOGGER.debug("更新缓存：" + model.getName() + " -> detail,list");
-				
 				if(isCache()){
+					LOGGER.debug("更新缓存：" + model.getName() + " -> detail,list");
 					sql2oCache.hdel(CACHE_KEY_DETAIL);
 					sql2oCache.hdel(CACHE_KEY_LIST);
 				}
-				
+				key = (T) Integer.valueOf(query.executeUpdate().getResult());
 			}
 			
 			// 删除
 			if(condition.dmlType.equals(DmlType.DELETE)){
 				query = deleteCommit(null);
 				
-				LOGGER.debug("更新缓存：" + model.getName() + " -> count,list,detail");
-				
 				if(isCache()){
+					LOGGER.debug("更新缓存：" + model.getName() + " -> count,list,detail");
 					sql2oCache.hdel(CACHE_KEY_COUNT);
 					sql2oCache.hdel(CACHE_KEY_LIST);
 					sql2oCache.hdel(CACHE_KEY_DETAIL);
 				}
-				
+				key = (T) Integer.valueOf(query.executeUpdate().getResult());
 			}
+			
 			condition.clearMap();
-			T key = null;
-			if(null != returnType){
-				key = query.executeUpdate().getKey(returnType);
-			} else {
-				key = (T) query.executeUpdate().getKey();
-			}
 			return key;
 		} catch (Exception e) {
 			LOGGER.error(e);
