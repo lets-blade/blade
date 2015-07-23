@@ -49,27 +49,32 @@ public class BladeFilter implements Filter {
     public void init(FilterConfig filterConfig) throws ServletException {
     	
     	// 防止重复初始化
-    	if(!Blade.IS_INIT){
-    		
-    		BladeBase.webRoot(filterConfig.getServletContext().getRealPath("/"));
-        	
-        	BladeWebContext.servletContext(filterConfig.getServletContext());
-        	
-            final BladeApplication application = getApplication(filterConfig);
-            application.init();
-            Blade.app(application);
-            
-            // 构建所有路由
-            RequestHandler.routeMatcher = RouteMatcherBuilder.building();
-            
-            // 全局初始化
-            IocApplication.init();
-            
-            application.contextInitialized(BladeWebContext.servletContext());
-            
-            LOGGER.info("blade init complete!");
-            BladeBase.init();
-    	}
+    	try {
+			if(!Blade.IS_INIT){
+				
+				BladeBase.webRoot(filterConfig.getServletContext().getRealPath("/"));
+				
+				BladeWebContext.servletContext(filterConfig.getServletContext());
+				
+			    final BladeApplication application = getApplication(filterConfig);
+			    application.init();
+			    Blade.app(application);
+			    
+			    // 构建所有路由
+			    RequestHandler.routeMatcher = RouteMatcherBuilder.building();
+			    
+			    // 全局初始化
+			    IocApplication.init();
+			    
+			    application.contextInitialized(BladeWebContext.servletContext());
+			    
+			    LOGGER.info("blade init complete!");
+			    BladeBase.init();
+			}
+		} catch (Exception e) {
+			LOGGER.error(e);
+			System.exit(0);
+		}
     	
     }
     

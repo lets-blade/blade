@@ -1,8 +1,9 @@
 package blade.kit.json;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import blade.kit.CollectionKit;
 
 @SuppressWarnings("unchecked")
 public class JSONKit {
@@ -17,13 +18,28 @@ public class JSONKit {
 		return null;
 	}
 	
+	public static <K,V> Map<K, V> toMap(JSONObject jsonObject){
+		try {
+			return JSONMap.toMap(jsonObject);
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
 	public static <T> List<T> toList(String json){
 		JSONArray jsonArray = new JSONArray(json);
-		List<T> list = new ArrayList<T>();
 		int len = jsonArray.length();
+		List<T> list = CollectionKit.newArrayList(len);
 		for(int i=0; i<len; i++){
-			T object = (T) jsonArray.get(i);
-			list.add(object);
+			Object object = jsonArray.get(i);
+			T t = null;
+			if(object instanceof JSONObject){
+				t = (T) JSONMap.toMap( (JSONObject)object );
+			} else {
+				t = (T) jsonArray.get(i);
+			}
+			list.add(t);
 		}
 		return list;
 	}

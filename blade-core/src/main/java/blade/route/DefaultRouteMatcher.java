@@ -17,6 +17,7 @@ package blade.route;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -60,12 +61,28 @@ public class DefaultRouteMatcher {
     	
         List<RouteMatcher> routeEntries = this.findRouteMatcher(httpMethod, uri);
         
+        // 优先匹配原则
+        giveMatch(uri, routeEntries);
+        
         RouteMatcher entry = findTargetWithGivenAcceptType(routeEntries, acceptType);
         
         return entry != null ? new RouteMatcher(entry.target, entry.execMethod, entry.httpMethod, entry.path, uri, acceptType) : null;
     }
     
-    /**
+    private void giveMatch(final String uri, List<RouteMatcher> routeEntries) {
+    	routeEntries.sort(new Comparator<RouteMatcher>() {
+			@Override
+			public int compare(RouteMatcher o1, RouteMatcher o2) {
+				if(o2.path.equals(uri)){
+					return o2.path.indexOf(uri);
+				}
+				return -1;
+			}
+		});
+//    	System.out.println(routeEntries.toString());
+	}
+
+	/**
      * 查询一个路由集合
      * 
      * @param httpMethod	http请求方法，GET/POST

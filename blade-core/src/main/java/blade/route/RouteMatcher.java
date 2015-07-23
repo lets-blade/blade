@@ -203,7 +203,7 @@ public class RouteMatcher {
     
     @Override
     public String toString() {
-        return httpMethod.name() + "------" + path;
+        return httpMethod.name() + ":" + path;
     }
 	
 }
