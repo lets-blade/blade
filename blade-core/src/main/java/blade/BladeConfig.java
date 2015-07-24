@@ -17,6 +17,7 @@ package blade;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import blade.kit.CollectionKit;
 
@@ -29,6 +30,8 @@ import blade.kit.CollectionKit;
  */
 public class BladeConfig {
 
+	// 存放所有变量
+	private Map<String, String> configMap = CollectionKit.newHashMap();
 	// 存放所有路由的包
 	private List<String> routePackages = CollectionKit.newArrayList();
 	// 存放所有IOC的包
@@ -67,6 +70,18 @@ public class BladeConfig {
 	public BladeConfig() {
 	}
 	
+	public Map<String, String> getConfigMap() {
+		return configMap;
+	}
+
+	public void setConfigMap(Map<String, String> configMap) {
+		this.configMap = configMap;
+	}
+	
+	public String get(String key){
+		return configMap.get(key);
+	}
+
 	public String[] getRoutePackages() {
 		String[] routeArr = new String[routePackages.size()];
 		return routePackages.toArray(routeArr);
