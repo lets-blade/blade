@@ -985,10 +985,8 @@ public class Model implements Serializable {
 		
 		Query query = conn.createQuery(insertSql);
 		query = parseParams(query);
-		query.executeUpdate();
 		LOGGER.debug("execute sql：" + query.toString());
 		LOGGER.debug("execute parameter：" + condition.params.values());
-		
 		return query;
     }
     
