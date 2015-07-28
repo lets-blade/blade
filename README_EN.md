@@ -23,7 +23,6 @@
 * Utility class
 * A template engine support
 * Support JDK1.6 +
-* Jetty is started
 * Plug-in extension mechanism
 * Cache the data information
 * Coding/JSON/config file
@@ -127,9 +126,10 @@ OK, all this may seem simple, refer to the guidelines for use more ready-made ex
 	
 ### Update
 
-### v1.2.4
+### v1.2.5
 	1. Add JSON, configuration Properties file
 	2. Optimize the code performance
+	3. Remove inlay Jetty Server
 	
 ### v1.2.2
 	1. `DateKit` added to obtain the current Unix timestamp

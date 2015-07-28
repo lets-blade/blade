@@ -27,7 +27,6 @@ import blade.kit.json.JSONKit;
 import blade.render.Render;
 import blade.render.RenderFactory;
 import blade.route.DefaultRouteMatcher;
-import blade.server.BladeServer;
 
 /**
  * Blade的基础类
@@ -339,75 +338,6 @@ abstract class BladeBase {
 	
     /**--------------------GET CONST:END-------------------------*/
     
-    
-    /**----------------------jetty:START-------------------------*/
-    
-    /**
-     * 设置jetty启动端口
-     * 
-     * @param port		端口号，范围在0~65535之间，默认为9000
-     */
-    public static synchronized void port(int port){
-    	if(port > 0 && port < 65535){
-    		BladeBase.PORT = port;
-    	}
-    }
-    
-    /**
-     * 运行jetty服务
-     * 
-     * @param port		端口号，范围在0~65535之间，默认为9000
-     * @param host		host，默认为本机；127.0.0.1/localhost
-     * @param context	context，应用上下文，默认为"/"
-     */
-	public static void run(Integer port, String host, String context) {
-		BladeBase.PORT = port;
-		BladeServer.run(port, host, context);
-	}
-	
-	/**
-	 * 运行jetty服务
-	 */
-	public static void run() {
-		run(BladeBase.PORT, null, null);
-	}
-	
-	/**
-	 * 运行jetty服务并设置主机
-	 * 
-	 * @param host		host，默认为本机；127.0.0.1/localhost
-	 */
-	public static void run(String host) {
-		run(BladeBase.PORT, host, null);
-	}
-	
-	/**
-	 * 运行jetty服务并设置端口
-	 * 
-	 * @param port		端口号，范围在0~65535之间，默认为9000
-	 */
-	public static void run(Integer port) {
-		run(port, null, null);
-	}
-	
-	public static void run(Class<? extends BladeApplication> clazz, Integer port) {
-		if(null != clazz){
-			app(clazz);
-		}
-		run(port, null, null);
-	}
-	
-	/**
-	 * 运行jetty服务并设置端口和主机
-	 * 
-	 * @param host		host，默认为本机；127.0.0.1/localhost
-	 * @param port		端口号，范围在0~65535之间，默认为9000
-	 */
-	public static void run(String host, Integer port) {
-		run(port, host, null);
-	}
-	/**----------------------jetty:END-------------------------*/
-	
 	/**
 	 * <pre>
 	 * 手动注册一个对象到ioc容器中

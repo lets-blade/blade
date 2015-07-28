@@ -13,9 +13,13 @@
 	<packaging>jar</packaging>
 	<version>${blade.version}</version>
 	<name>blade-jetbrick</name>
-	<url>https://github.com/biezhi/blade/blade-jetbrick</url>
+	<url>https://github.com/biezhi/blade/tree/master/blade-jetbrick</url>
 
 	<dependencies>
+		<dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+        </dependency>
 		<dependency>
 			<groupId>com.bladejava</groupId>
 			<artifactId>blade-core</artifactId>

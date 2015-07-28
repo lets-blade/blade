@@ -13,6 +13,12 @@
 	<packaging>jar</packaging>
 	<version>${blade.version}</version>
 	<name>blade-cache</name>
-	<url>https://github.com/biezhi/blade/blade-cache</url>
-
+	<url>https://github.com/biezhi/blade/tree/master/blade-cache</url>
+	
+	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+		</dependency>
+	</dependencies>
 </project>
