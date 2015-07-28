@@ -16,7 +16,7 @@
         <maven.compiler.target>1.6</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <junit.version>4.11</junit.version>
-        <blade.version>1.2.4</blade.version>
+        <blade.version>1.2.5-alpha</blade.version>
         <servlet.version>3.0.1</servlet.version>
     </properties>
 
@@ -46,6 +46,5 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
-    
 
 </project>
