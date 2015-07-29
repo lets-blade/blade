@@ -14,30 +14,16 @@
 	<version>${blade.version}</version>
 	<name>blade-core</name>
 	<url>https://github.com/biezhi/blade/blade-core</url>
-	
-	<properties>
-		<jetty.version>9.3.0.v20150612</jetty.version>
-	</properties>
-	
+		
 	<dependencies>
-		<!-- blade-kit -->
 		<dependency>
 			<groupId>com.bladejava</groupId>
 			<artifactId>blade-kit</artifactId>
-			<version>${blade.version}</version>
-		</dependency>
-		<!-- jetty -->
-		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-server</artifactId>
-			<version>${jetty.version}</version>
-			<scope>provided</scope>
+			<version>1.2.4</version>
 		</dependency>
 		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-webapp</artifactId>
-			<version>${jetty.version}</version>
-			<scope>provided</scope>
-		</dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+        </dependency>
 	</dependencies>
 </project>
