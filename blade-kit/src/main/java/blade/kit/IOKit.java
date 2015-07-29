@@ -15,9 +15,11 @@
  */
 package blade.kit;
 
+import java.io.BufferedReader;
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -67,7 +69,29 @@ public final class IOKit {
         copy(input, sw);
         return sw.toString();
     }
-
+    
+    public static String toString(File file) throws IOException {
+    	try {
+            BufferedReader reader = new BufferedReader(new FileReader(file));
+            StringBuilder data = readFromBufferedReader(reader);
+            reader.close();
+            return new String(data.toString().getBytes(), "utf-8");
+        } catch (IOException ex) {
+            throw new RuntimeException("File " + file + " not found.");
+        }
+    }
+    
+    private static StringBuilder readFromBufferedReader(BufferedReader reader) throws IOException {
+        StringBuilder builder = new StringBuilder();
+        char[] buffer = new char[DEFAULT_BUFFER_SIZE];
+        int numRead = 0;
+        while((numRead = reader.read(buffer)) != -1) {
+            builder.append(String.valueOf(buffer, 0, numRead));
+            buffer = new char[DEFAULT_BUFFER_SIZE];
+        }
+        return builder;
+    }
+    
     public static byte[] toByteArray(InputStream input) throws IOException {
         @SuppressWarnings("resource")
 		FastByteArrayOutputStream os = new FastByteArrayOutputStream();
