@@ -11,7 +11,7 @@
 
 	<artifactId>blade-beetl</artifactId>
 	<packaging>jar</packaging>
-	<version>${blade.version}</version>
+	<version>1.2.3</version>
 	<name>blade-beetl</name>
 	<url>https://github.com/biezhi/blade/tree/master/blade-beetl</url>
 

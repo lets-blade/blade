@@ -11,7 +11,7 @@
 
 	<artifactId>blade-velocity</artifactId>
 	<packaging>jar</packaging>
-	<version>${blade.version}</version>
+	<version>1.2.2</version>
 	<name>blade-velocity</name>
 	<url>https://github.com/biezhi/blade/tree/master/blade-velocity</url>
 
