@@ -25,7 +25,7 @@
 		<dependency>
 			<groupId>com.bladejava</groupId>
 			<artifactId>blade-cache</artifactId>
-			<version>${blade.version}</version>
+			<version>1.2.2</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
