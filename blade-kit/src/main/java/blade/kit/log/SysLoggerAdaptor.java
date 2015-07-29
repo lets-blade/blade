@@ -1,5 +1,6 @@
 package blade.kit.log;
 
+import java.io.PrintStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -13,6 +14,8 @@ public class SysLoggerAdaptor extends Logger {
 
 	private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss,SSS");
 	
+    private static PrintStream outprint = System.out;
+    
 	public SysLoggerAdaptor() {
 	}
 	
@@ -34,6 +37,7 @@ public class SysLoggerAdaptor extends Logger {
 			return "WARN";
 		}
 		if(level <= ERROR){
+			outprint = System.err;
 			return "ERROR";
 		}
 		if(level <= FATAL){
@@ -60,7 +64,8 @@ public class SysLoggerAdaptor extends Logger {
 		sb.append("[").append(Thread.currentThread().getName()).append("]").append(" ");
 		sb.append(getName()).append(" | ");
 		sb.append(format(message, args));
-		System.out.println(sb.toString());
+		
+		outprint.println(sb.toString());
 		if (t != null) {
 			t.printStackTrace(System.err);
 		}
