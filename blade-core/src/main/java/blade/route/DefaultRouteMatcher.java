@@ -17,6 +17,7 @@ package blade.route;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -70,9 +71,9 @@ public class DefaultRouteMatcher {
     }
     
     private void giveMatch(final String uri, List<RouteMatcher> routeEntries) {
-    	routeEntries.sort(new Comparator<RouteMatcher>() {
-			@Override
-			public int compare(RouteMatcher o1, RouteMatcher o2) {
+		Collections.sort(routeEntries, new Comparator<RouteMatcher>() {
+		    @Override
+		    public int compare(RouteMatcher o1, RouteMatcher o2) {
 				if(o2.path.equals(uri)){
 					return o2.path.indexOf(uri);
 				}
