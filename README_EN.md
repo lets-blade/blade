@@ -119,10 +119,11 @@ OK, all this may seem simple, refer to the guidelines for use more ready-made ex
 + [Some Examples](https://github.com/bladejava)
 
 ### Plan
-	1. Perfect the documents
-	2. With `blade` development single-user blog system, music, pictures, etc
-	3. Optimize the code performance
-	4. Write English document
+	1. Improve the document
+	2. Single user blog system development
+	3. The photo album system development
+	4. Music system development
+	5. Optimize the code performance
 	
 ### Update
 
