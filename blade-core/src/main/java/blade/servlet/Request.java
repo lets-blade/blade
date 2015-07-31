@@ -193,13 +193,6 @@ public class Request {
     }
 
     /**
-     * @return 返回realPath
-     */
-    public String realPath(String path) {
-        return servletRequest.getServletContext().getRealPath(path);
-    }
-    
-    /**
      * @return 返回url
      */
     public String url() {
