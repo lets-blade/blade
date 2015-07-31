@@ -18,11 +18,13 @@ package blade.kit;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.nio.channels.FileChannel;
 import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -1698,5 +1700,98 @@ public abstract class FileKit {
         File file = new File(filePath);
         return file.getAbsolutePath();
     }
+    
+    /**
+	 * 复制单个文件
+	 * @param sourceFile  准备复制的文件源
+	 * @param destFile 拷贝到新绝对路径带文件名
+	 * @return
+     * @throws IOException 
+	 */
+	@SuppressWarnings("resource")
+	public static void copy(String sourceFile, String destFile) throws IOException {
+			
+		File source = new File(sourceFile);
+		if (source.exists()) {
+			FileChannel inputChannel = null;
+			FileChannel outputChannel = null;
+			try {
+				File dest = new File(destFile);
+				inputChannel = new FileInputStream(source).getChannel();
+				outputChannel = new FileOutputStream(dest).getChannel();
+				outputChannel.transferFrom(inputChannel, 0, inputChannel.size());
+			} finally {
+				inputChannel.close();
+				outputChannel.close();
+			}
+		}
+	}
 
+	/**
+	 * 复制整个文件夹的内容
+	 * @param oldPath  准备拷贝的目录
+	 * @param newPath  指定绝对路径的新目录
+	 * @return
+	 */
+	@SuppressWarnings("resource")
+	public static void copyDir(String oldPath, String newPath) {
+		try {
+			/**如果文件夹不存在 则建立新文件**/
+			new File(newPath).mkdirs(); 
+			File a = new File(oldPath);
+			String[] file = a.list();
+			File temp = null;
+			for (int i = 0; i < file.length; i++) {
+				if (oldPath.endsWith(File.separator)) {
+					temp = new File(oldPath + file[i]);
+				} else {
+					temp = new File(oldPath + File.separator + file[i]);
+				}
+				if (temp.isFile()) {
+					
+					FileChannel inputChannel = null;
+					FileChannel outputChannel = null;
+					try {
+						File dest = new File(newPath + "/" + (temp.getName()).toString());
+						inputChannel = new FileInputStream(temp).getChannel();
+						outputChannel = new FileOutputStream(dest).getChannel();
+						outputChannel.transferFrom(inputChannel, 0, inputChannel.size());
+					} finally {
+						inputChannel.close();
+						outputChannel.close();
+					}
+				}
+				/**如果是子文件**/
+				if (temp.isDirectory()) {
+					copyDir(oldPath + "/" + file[i], newPath + "/" + file[i]);
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * 移动文件
+	 * @param oldPath
+	 * @param newPath
+	 * @return
+	 * @throws IOException 
+	 */
+	public static void moveFile(String oldPath, String newPath) throws IOException {
+		copy(oldPath, newPath);
+		delete(oldPath);
+	}
+
+	/**
+	 * 移动目录
+	 * @param oldPath
+	 * @param newPath
+	 * @return
+	 */
+	public static void moveFolder(String oldPath, String newPath) {
+		copyDir(oldPath, newPath);
+		deleteDir(oldPath);
+	}
+	
 }
