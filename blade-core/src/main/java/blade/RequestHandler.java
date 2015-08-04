@@ -122,11 +122,16 @@ public class RequestHandler {
         }
         
         HttpMethod httpMethod = HttpMethod.valueOf(method);
+        boolean isHandler = true;
         
         try {
         	
         	// 执行before拦截
-        	before(requestWrapper, responseWrapper, httpRequest, uri, acceptType);
+        	isHandler = before(requestWrapper, responseWrapper, httpRequest, uri, acceptType);
+        	
+        	if(!isHandler){
+        		return false;
+        	}
         	
         	// 查找用户请求的uri
 			RouteMatcher match = routeMatcher.findRouteMatcher(httpMethod, uri, acceptType);
@@ -155,8 +160,11 @@ public class RequestHandler {
 				Object result = executeMethod(targetObject, execMethod, requestWrapper, responseWrapper);
 				
 				// 执行after拦截
-	        	after(requestWrapper, responseWrapper, httpRequest, uri, acceptType);
-	            
+	        	isHandler = after(requestWrapper, responseWrapper, httpRequest, uri, acceptType);
+	        	if(!isHandler){
+	        		return false;
+	        	}
+	        	
 	        	if(null != result){
 	        		render(responseWrapper, result);
 	        	}
@@ -196,9 +204,11 @@ public class RequestHandler {
 	 * @param uri					请求的URI
 	 * @param acceptType			请求头过滤
 	 */
-	private void before(RequestWrapper requestWrapper, ResponseWrapper responseWrapper, HttpServletRequest httpRequest, final String uri, final String acceptType){
+	private boolean before(RequestWrapper requestWrapper, ResponseWrapper responseWrapper, HttpServletRequest httpRequest, final String uri, final String acceptType){
 		
 		List<RouteMatcher> matchSet = routeMatcher.findInterceptor(HttpMethod.BEFORE, uri, acceptType);
+		
+		boolean isHandler = true;
 		
 		for (RouteMatcher filterMatch : matchSet) {
 			
@@ -211,9 +221,16 @@ public class RequestHandler {
 			Request request = RequestResponseBuilder.build(filterMatch, httpRequest);
 			requestWrapper.setDelegate(request);
 			
-			executeMethod(targetObject, execMethod, requestWrapper, responseWrapper);
+			Object object = executeMethod(targetObject, execMethod, requestWrapper, responseWrapper);
 			
+			if(null != object && object instanceof Boolean){
+				isHandler = (Boolean) object;
+				if(!isHandler){
+					return false;
+				}
+			}
         }
+		return isHandler;
 	}
 	
 	/**
@@ -225,10 +242,11 @@ public class RequestHandler {
 	 * @param uri					请求的URI
 	 * @param acceptType			请求头过滤
 	 */
-	private String after(RequestWrapper requestWrapper, ResponseWrapper responseWrapper, HttpServletRequest httpRequest, final String uri, final String acceptType){
+	private boolean after(RequestWrapper requestWrapper, ResponseWrapper responseWrapper, HttpServletRequest httpRequest, final String uri, final String acceptType){
         List<RouteMatcher> matchSet = routeMatcher.findInterceptor(HttpMethod.AFTER, uri, acceptType);
         
-        String bodyContent = null;
+        boolean isHandler = true;
+        
         for (RouteMatcher filterMatch : matchSet) {
         	Class<?> target = filterMatch.getTarget();
         	
@@ -243,15 +261,15 @@ public class RequestHandler {
                 requestWrapper.initRequest(filterMatch);
             }
 			
-			executeMethod(targetObject, execMethod, requestWrapper, responseWrapper);
-			
-			String bodyAfterFilter = responseWrapper.getDelegate().body();
-	        if (bodyAfterFilter != null) {
-	            bodyContent = bodyAfterFilter;
-	        }
+			Object object = executeMethod(targetObject, execMethod, requestWrapper, responseWrapper);
+			if(null != object && object instanceof Boolean){
+				isHandler = (Boolean) object;
+				if(!isHandler){
+					return false;
+				}
+			}
         }
-        
-        return bodyContent;
+        return isHandler;
 	}
 	
 	/**
