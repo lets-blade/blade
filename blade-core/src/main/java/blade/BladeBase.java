@@ -300,6 +300,15 @@ abstract class BladeBase {
 		RouteMatcherBuilder.buildHandler(path, routeHandler, HttpMethod.OPTIONS);
 	}
 	
+	/**
+	 * 任意请求
+	 * @param path
+	 * @param routeHandler
+	 */
+	public static synchronized void all(String path, RouteHandler routeHandler){
+		RouteMatcherBuilder.buildHandler(path, routeHandler, HttpMethod.ALL);
+	}
+	
     /**--------------------SET CONST:END-------------------------*/
     
     
