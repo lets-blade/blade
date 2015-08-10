@@ -65,6 +65,10 @@ public class Request {
     protected Request() {
     }
 
+    public Request(HttpServletRequest request) {
+        this.servletRequest = request;
+    }
+    
     /**
      * 构造一个Request对象
      * 

@@ -154,7 +154,7 @@ public class RequestHandler {
 				}
 				requestWrapper.setDelegate(request);
                 
-				BladeWebContext.put(requestWrapper, responseWrapper);
+				BladeWebContext.init(requestWrapper, responseWrapper);
 				
 				// 执行route方法
 				Object result = executeMethod(targetObject, execMethod, requestWrapper, responseWrapper);

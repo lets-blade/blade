@@ -122,7 +122,7 @@ public final class BladeWebContext {
      * @param requestWrapper 		RequestWrapper对象
      * @param responseWrapper 		ResponseWrapper对象
      */
-    public static void put(RequestWrapper requestWrapper, ResponseWrapper responseWrapper) {
+    public static void init(RequestWrapper requestWrapper, ResponseWrapper responseWrapper) {
     	remove();
     	currentRequest.set(requestWrapper);
     	currentResponse.set(responseWrapper);

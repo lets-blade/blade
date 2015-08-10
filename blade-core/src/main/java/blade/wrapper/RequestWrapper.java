@@ -33,7 +33,7 @@ import blade.servlet.Session;
 public final class RequestWrapper extends Request {
 
     private Request delegate;
-
+    
     public void setDelegate(Request delegate) {	
         this.delegate = delegate;
     }
