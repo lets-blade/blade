@@ -2,7 +2,7 @@
 
 [![a concise and powerful web development framework](http://i1.tietuku.com/0c4b9726253b6268.png "a concise and powerful web development framework")](http://bladejava.com)
 
-[中文](https://github.com/biezhi/blade/blob/master/README.md)
+[中文](https://github.com/biezhi/blade/blob/master/README_CN.md)
 
 [![@biezhi on weibo](https://img.shields.io/badge/weibo-%40biezhi-red.svg)](http://weibo.com/u/5238733773)
 [![Hex.pm](https://img.shields.io/hexpm/l/plug.svg)](http://www.apache.org/licenses/LICENSE-2.0.html)
