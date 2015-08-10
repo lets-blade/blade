@@ -60,10 +60,9 @@ public class BladeFilter implements Filter {
 			    application.init();
 			    Blade.app(application);
 			    
-			    // 构建所有路由
-			    RequestHandler.routeMatcher = RouteMatcherBuilder.building();
+			    // 构建路由
+			    RouteMatcherBuilder.building();
 			    
-			    // 全局初始化
 			    IocApplication.init();
 			    
 			    application.contextInitialized(BladeWebContext.servletContext());
@@ -86,16 +85,21 @@ public class BladeFilter implements Filter {
      * @throws ServletException
      */
     private BladeApplication getApplication(FilterConfig filterConfig) throws ServletException {
+    	BladeApplication bladeApplication = null;
         try {
         	String applicationClassName = filterConfig.getInitParameter(APPLCATION_CLASS);
-        	if(!BladeBase.runJetty && null != applicationClassName){
+        	if(null != applicationClassName){
             	Class<?> applicationClass = Class.forName(applicationClassName);
-                return (BladeApplication) applicationClass.newInstance();
-        	}
-        	return BladeBase.bladeApplication;
+                if(null != applicationClass){
+                	bladeApplication = (BladeApplication) applicationClass.newInstance();
+                }
+        	} else {
+        		throw new ServletException("applicationClass is null !");
+			}
         } catch (Exception e) {
             throw new ServletException(e);
         }
+		return bladeApplication;
     }
     
     @Override

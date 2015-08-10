@@ -24,8 +24,10 @@ import blade.annotation.Before;
 import blade.annotation.Interceptor;
 import blade.annotation.Path;
 import blade.annotation.Route;
+import blade.exception.BladeException;
 import blade.ioc.Container;
 import blade.ioc.DefaultContainer;
+import blade.kit.ReflectKit;
 import blade.kit.StringKit;
 import blade.kit.log.Logger;
 import blade.kit.resource.ClassPathClassReader;
@@ -41,7 +43,7 @@ public final class RouteMatcherBuilder {
     
     private static final Logger LOGGER = Logger.getLogger(RouteMatcherBuilder.class);
 
-    private static DefaultRouteMatcher routeMatcher = null;
+    private static DefaultRouteMatcher defaultRouteMatcher = DefaultRouteMatcher.instance();
     
     /**
 	 * 默认路由后缀包，用户扫描路由所在位置，默认为route，用户可自定义
@@ -71,15 +73,7 @@ public final class RouteMatcherBuilder {
      * 
      * @return	返回构建路由后的构造器
      */
-    public static synchronized DefaultRouteMatcher building() {
-    	
-        if (routeMatcher != null) {
-        	routeMatcher.clearRoutes();
-        	routeMatcher = null;
-        }
-        
-        routeMatcher = new DefaultRouteMatcher();
-        
+    public static synchronized void building() {
         if(Blade.debug()){
         	LOGGER.debug("creates RouteMatcher");
         }
@@ -112,7 +106,40 @@ public final class RouteMatcherBuilder {
 	    		buildInterceptor(interceptorPackage);
 	    	}
 		}
-        return routeMatcher;
+    }
+    
+    /**
+     * 函数式路由构建
+     */
+    public static void buildFunctional(String path, Class<?> clazz, String methodName, HttpMethod httpMethod){
+    	if(StringKit.isNotBlank(path) && null != clazz && StringKit.isNotBlank(methodName)){
+    		if(null == httpMethod){
+    			httpMethod = HttpMethod.ALL;
+    		}
+    		// 查找
+    		Object target = container.getBean(clazz, null);
+    		if(null == target){
+    			container.registBean(clazz);
+    		}
+    		Method execMethod = ReflectKit.getMethodByName(clazz, methodName);
+    		defaultRouteMatcher.addRoute(clazz, execMethod, path, httpMethod, "*/*");
+    	} else {
+			 throw new BladeException("an unqualified configuration");
+		}
+    }
+    
+    /**
+     * Handler路由构建
+     */
+    public static void buildHandler(String path, RouteHandler routeHandler, HttpMethod httpMethod){
+    	if(StringKit.isNotBlank(path) && null != routeHandler){
+    		Class<?> clazz = RouteHandler.class;
+    		container.registBean(routeHandler);
+    		Method execMethod = ReflectKit.getMethodByName(clazz, "run");
+    		defaultRouteMatcher.addRoute(clazz, execMethod, path, httpMethod, "*/*");
+    	} else {
+			 throw new BladeException("an unqualified configuration");
+		}
     }
     
     /**
@@ -263,7 +290,7 @@ public final class RouteMatcherBuilder {
      * @param acceptType	路由acceptType
      */
     private static void buildRoute(Class<?> target, Method execMethod, String path, HttpMethod method, String acceptType){
-		routeMatcher.addRoute(target, execMethod, path, method, acceptType);
+    	defaultRouteMatcher.addRoute(target, execMethod, path, method, acceptType);
     }
     
     /**
@@ -276,7 +303,7 @@ public final class RouteMatcherBuilder {
      * @param acceptType	路由acceptType
      */
     private static void buildInterceptor(Class<?> target, Method execMethod, String path, HttpMethod method, String acceptType){
-		routeMatcher.addInterceptor(target, execMethod, path, method, acceptType);
+    	defaultRouteMatcher.addInterceptor(target, execMethod, path, method, acceptType);
     }
     
 }

@@ -57,6 +57,9 @@ public class BladeConfigurator {
 	
 	public void run() {
 		if (null != configMap && configMap.size() > 0) {
+			
+			bladeConfig.setConfigMap(configMap);
+			
 			String route = configMap.get(BLADE_ROUTE);
 			String interceptor = configMap.get(BLADE_INTERCEPTOR);
 			String ioc = configMap.get(BLADE_IOC);

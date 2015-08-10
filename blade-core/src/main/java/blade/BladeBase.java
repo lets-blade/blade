@@ -26,7 +26,9 @@ import blade.kit.PropertyKit;
 import blade.kit.json.JSONKit;
 import blade.render.Render;
 import blade.render.RenderFactory;
-import blade.route.DefaultRouteMatcher;
+import blade.route.HttpMethod;
+import blade.route.RouteHandler;
+import blade.route.RouteMatcherBuilder;
 
 /**
  * Blade的基础类
@@ -35,13 +37,6 @@ import blade.route.DefaultRouteMatcher;
  * @since	1.0
  */
 abstract class BladeBase {
-	
-	protected static final String DEFAULT_ACCEPT_TYPE = "*/*";
-	
-	/**
-	 * 是否以jetty方式运行
-	 */
-	public static boolean runJetty = false;
 	
     /**
      * 框架是否已经初始化
@@ -52,16 +47,6 @@ abstract class BladeBase {
      * blade全局初始化对象，在web.xml中配置，必须
      */
     protected static BladeApplication bladeApplication;
-
-    /**
-     * 路由匹配器，用于添加，删除，查找路由
-     */
-    protected static DefaultRouteMatcher routeMatcher;
-    
-    /**
-     * jetty启动的默认端口
-     */
-    protected static int PORT = 9000;
     
     /**
 	 * 全局配置对象
@@ -178,20 +163,6 @@ abstract class BladeBase {
     /**
      * 动态设置全局初始化类
      * 
-     * @param clazz 	全局初始化Class
-     */
-    public static synchronized void app(Class<? extends BladeApplication> clazz){
-    	try {
-			BladeBase.bladeApplication = clazz.newInstance();
-		} catch (InstantiationException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		}
-    }
-    /**
-     * 动态设置全局初始化类
-     * 
      * @param bladeApplication 	全局初始化bladeApplication
      */
     public static synchronized <T> void app(BladeApplication bladeApplication){
@@ -231,8 +202,47 @@ abstract class BladeBase {
 	 */
 	public static synchronized void debug(boolean isdebug){
 		BLADE_CONFIG.setDebug(isdebug);
-//		BladeBase.DEBUG = isdebug;
 	}
+	
+	/**
+	 * 注册一个函数式的路由
+	 * @param path			路由url	
+	 * @param clazz			路由处理类
+	 * @param methodName	路由处理方法名称
+	 */
+	public static synchronized void regRoute(String path, Class<?> clazz, String methodName){
+		RouteMatcherBuilder.buildFunctional(path, clazz, methodName, null);
+	}
+	
+	/**
+	 * 注册一个函数式的路由
+	 * @param path			路由url	
+	 * @param clazz			路由处理类
+	 * @param methodName	路由处理方法名称
+	 * @param httpMethod	请求类型,GET/POST
+	 */
+	public static synchronized void regRoute(String path, Class<?> clazz, String methodName, HttpMethod httpMethod){
+		RouteMatcherBuilder.buildFunctional(path, clazz, methodName, httpMethod);
+	}
+	
+	/**
+	 * GET请求
+	 * @param path
+	 * @param routeHandler
+	 */
+	public static synchronized void get(String path, RouteHandler routeHandler){
+		RouteMatcherBuilder.buildHandler(path, routeHandler, HttpMethod.GET);
+	}
+	
+	/**
+	 * POST请求
+	 * @param path
+	 * @param routeHandler
+	 */
+	public static synchronized void post(String path, RouteHandler routeHandler){
+		RouteMatcherBuilder.buildHandler(path, routeHandler, HttpMethod.POST);
+	}
+	
 	
     /**--------------------SET CONST:END-------------------------*/
     

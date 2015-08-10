@@ -33,7 +33,7 @@
 <dependency>
 	<groupId>com.bladejava</groupId>
 	<artifactId>blade-core</artifactId>
-	<version>1.2.5</version>
+	<version>1.2.6-alpha</version>
 </dependency>
 ```
 	
@@ -67,15 +67,36 @@ public class App extends BladeApplication{
 	Logger logger = Logger.getLogger(App.class);
 	@Override
 	public void init() {
-		// 设置路由、拦截器包所在包
-		Blade.defaultRoute("blade.sample");
+		// 注册函数式路由
+		Blade.regRoute("/hello", SayHi.class, "hello");
+		
+		// 匿名路由，java8方式更简化
+		Blade.get("/get", new RouteHandler() {
+			@Override
+			public String run(Request request, Response response) {
+				System.out.println("进入get!!");
+				System.out.println(request.query("name"));
+				return "get";
+			}
+		});
 	}
+}
+```
 	
+#### 函数式路由
+```java
+public class SayHi {
+	
+	public String hello(Request request, Response response){
+		System.out.println("进入hello~");
+		request.attribute("name", "rose baby");
+		return "hi";
+	}
 }
 ```
 
-	
-```java
+#### 控制器路由
+```
 @Path("/")
 public class Hello {
 	
@@ -112,61 +133,23 @@ public class Hello {
 	
 OK，这一切看起来多么的简单，查阅使用指南更多现成的例子供你参考:
 
++ [hello应用](https://github.com/bladejava/hello)
 + [API docs](http://bladejava.com/apidocs/)
 + [使用指南](http://bladejava.com/doc/cn/index.html) (完善中...)
-+ [一些例子](https://github.com/bladejava)
++ [更多例子](https://github.com/bladejava)
 
 ### 计划
 	1. 完善文档
-	2. 单用户博客系统开发
-	3. 相册系统开发
-	4. 音乐系统开发
-	5. 优化代码性能
+	2. 单用户博客系统
+	3. web聊天系统
+	4. 优化代码性能
 
-## 更新日志
+### [更新日志](https://github.com/biezhi/blade/blob/master/UPDATE_LOG.md)
 
-### v1.2.5
-	1. 添加JSON、Properties文件配置
-	2. 优化代码性能
-	3. 去除内置jetty服务
-	
-### v1.2.2
-	1. `DateKit`添加获取当前unix时间戳
-	2. 修复`blade-sql2o`分页bug
-	3. 修复`blade-beetl`没有存储`ModelAndView`的数据
-	
-### v1.2
-	1. 修复sql2o更新Bug
-	2. 去除blade-kit无用类
-	3. 添加邮件支持
-	4. 添加程序计时支持
-	5. 添加http网络请求支持
-	6. 优化内置日志输出
-	7. 添加定时任务支持
-	8. 重构项目结构
-		
-### v1.1.x
-	1. 去除对外公开的多余方法展示
-	2. 添加`Blade.run()`方式运行jetty
-	3. 添加`Blade.register()`方法注册bean对象
-	4. 优化IOC对象管理
-	5. 优化底层IO
-	6. 简化插件扩展
-	7. 拦截器路由匹配分离
-	8. 修复jetty在多maven环境下运行bug 
-	9. 添加初始化监听context
-	10. 优化文件上传
-	11. 优化路由匹配
-	12. 添加方法执行监测
-	13. 添加缓存支持
-
-### v1.0.0
-	第一个稳定版本发布
-
-## 开源协议
+### 开源协议
 Blade框架基于 [Apache2 License](http://www.apache.org/licenses/LICENSE-2.0.html)
 
-## 联系我
+### 联系我
 OSC Blog:[http://my.oschina.net/biezhi](http://my.oschina.net/biezhi)
 
 Mail: biezhi.me#gmail.com

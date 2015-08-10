@@ -128,7 +128,18 @@ public abstract class ReflectKit {
 		}
 		return ret;
 	}
-
+	
+	public static Method getMethodByName(Class<?> clazz, String methodName) {
+		Method ret = null;
+		for (Method method : clazz.getMethods()) {
+			if (method.getName().equals(methodName)) {
+				ret = method;
+				break;
+			}
+		}
+		return ret;
+	}
+	
 	/**
 	 * 
 	 * @param bean 类实例

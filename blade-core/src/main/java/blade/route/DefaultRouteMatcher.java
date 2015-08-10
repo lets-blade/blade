@@ -38,16 +38,23 @@ public class DefaultRouteMatcher {
 
     private static final Logger LOGGER = Logger.getLogger(DefaultRouteMatcher.class);
     
+    private static final DefaultRouteMatcher DEFAULT_ROUTE_MATCHER = new DefaultRouteMatcher();
+    
     // 存储所有路由
     private List<RouteMatcher> routes;
+    
     // 存储所有拦截器
     private List<RouteMatcher> interceptors;
     
-    public DefaultRouteMatcher() {
+    private DefaultRouteMatcher() {
         routes = CollectionKit.newArrayList();
         interceptors = CollectionKit.newArrayList();
     }
-
+    
+    public static DefaultRouteMatcher instance(){
+    	return DEFAULT_ROUTE_MATCHER;
+    }
+    
     /**
      * 查询是否有路由
      * 
@@ -60,7 +67,7 @@ public class DefaultRouteMatcher {
     	
     	uri = (uri.length() > 1 && uri.endsWith("/")) ? uri.substring(0, uri.length() - 1) : uri;
     	
-        List<RouteMatcher> routeEntries = this.findRouteMatcher(httpMethod, uri);
+        List<RouteMatcher> routeEntries = DEFAULT_ROUTE_MATCHER.findRouteMatcher(httpMethod, uri);
         
         // 优先匹配原则
         giveMatch(uri, routeEntries);
@@ -96,7 +103,7 @@ public class DefaultRouteMatcher {
     		uri = uri.endsWith("/") ? uri.substring(0, uri.length() - 1) : uri;
     	}
         List<RouteMatcher> matchSet = CollectionKit.newArrayList();
-        List<RouteMatcher> routeEntries = this.findInterceptor(httpMethod, uri);
+        List<RouteMatcher> routeEntries = DEFAULT_ROUTE_MATCHER.findInterceptor(httpMethod, uri);
 
         for (RouteMatcher routeEntry : routeEntries) {
             if (acceptType != null) {

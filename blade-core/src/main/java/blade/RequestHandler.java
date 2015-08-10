@@ -63,7 +63,7 @@ public class RequestHandler {
     /**
      * 路由处理器，查找请求过来的URL
      */
-    static DefaultRouteMatcher routeMatcher;
+    private static DefaultRouteMatcher defaultRouteMatcher = DefaultRouteMatcher.instance();
     
 	private RequestHandler(){}
 	
@@ -134,7 +134,7 @@ public class RequestHandler {
         	}
         	
         	// 查找用户请求的uri
-			RouteMatcher match = routeMatcher.findRouteMatcher(httpMethod, uri, acceptType);
+			RouteMatcher match = defaultRouteMatcher.findRouteMatcher(httpMethod, uri, acceptType);
 			
 			// 如果找到
 			if (match != null) {
@@ -206,7 +206,7 @@ public class RequestHandler {
 	 */
 	private boolean before(RequestWrapper requestWrapper, ResponseWrapper responseWrapper, HttpServletRequest httpRequest, final String uri, final String acceptType){
 		
-		List<RouteMatcher> matchSet = routeMatcher.findInterceptor(HttpMethod.BEFORE, uri, acceptType);
+		List<RouteMatcher> matchSet = defaultRouteMatcher.findInterceptor(HttpMethod.BEFORE, uri, acceptType);
 		
 		boolean isHandler = true;
 		
@@ -243,7 +243,7 @@ public class RequestHandler {
 	 * @param acceptType			请求头过滤
 	 */
 	private boolean after(RequestWrapper requestWrapper, ResponseWrapper responseWrapper, HttpServletRequest httpRequest, final String uri, final String acceptType){
-        List<RouteMatcher> matchSet = routeMatcher.findInterceptor(HttpMethod.AFTER, uri, acceptType);
+        List<RouteMatcher> matchSet = defaultRouteMatcher.findInterceptor(HttpMethod.AFTER, uri, acceptType);
         
         boolean isHandler = true;
         

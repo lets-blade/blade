@@ -35,7 +35,7 @@ First. Use maven to build a webapp, join dependency on the blade,Recommended for
 <dependency>
 	<groupId>com.bladejava</groupId>
 	<artifactId>blade-core</artifactId>
-	<version>1.2.5</version>
+	<version>1.2.6-alpha</version>
 </dependency>
 ```
 	
@@ -69,15 +69,37 @@ public class App extends BladeApplication{
 	Logger logger = Logger.getLogger(App.class);
 	@Override
 	public void init() {
-		// Set up routing and interceptor bag in bag
-		Blade.defaultRoute("blade.sample");
+		// register route
+		Blade.regRoute("/hello", SayHi.class, "hello");
+		
+		// anonymous router，java8 so simple
+		Blade.get("/get", new RouteHandler() {
+			@Override
+			public String run(Request request, Response response) {
+				System.out.println("come get!!");
+				System.out.println(request.query("name"));
+				return "get";
+			}
+		});
 	}
 	
 }
 ```
-
 	
+#### Functional routing
 ```java
+public class SayHi {
+	
+	public String hello(Request request, Response response){
+		System.out.println("come hello~");
+		request.attribute("name", "rose baby");
+		return "hi";
+	}
+}
+```
+
+#### The controller routing
+```
 @Path("/")
 public class Hello {
 	
@@ -114,6 +136,7 @@ public class Hello {
 	
 OK, all this may seem simple, refer to the guidelines for use more ready-made examples for your reference:
 
++ [hello project](https://github.com/bladejava/hello)
 + [API Docs](http://bladejava.com/apidocs/)
 + [Use Guide](http://bladejava.com/doc/cn/index.html) (The ongoing...)
 + [Some Examples](https://github.com/bladejava)
@@ -121,49 +144,10 @@ OK, all this may seem simple, refer to the guidelines for use more ready-made ex
 ### Plan
 	1. Improve the document
 	2. Single user blog system development
-	3. The photo album system development
-	4. Music system development
-	5. Optimize the code performance
+	3. web chat system
+	4. Optimize the code performance
 	
-### Update
-
-### v1.2.5
-	1. Add JSON, configuration Properties file
-	2. Optimize the code performance
-	3. Remove inlay Jetty Server
-	
-### v1.2.2
-	1. `DateKit` added to obtain the current Unix timestamp
-	2. fix `blade-sql2o` paging bug
-	3. fix `blade-beetl` not stored `ModelAndView` data
-	
-### v1.2
-	1. Update Bug fix sql2o
-	2. Remove the blade-kit useless class
-	3. Add email support
-	4. Add a program timing
-	5. Add the HTTP request support network
-	6. Optimization of the built-in logging output
-	7. Add tasks to support regularly
-	8. Reconstruction project structure
-	
-### v1.1.x
-	1. Remove excess public methods
-	2. Add the `Blade.run()` run jetty
-	3. Add the `Blade.register()` method register bean object
-	4. Optimize the ioc object management
-	5. Add initialization to monitor the context
-	6. Optimize the underlying IO
-	7. Simplify the plug-in extension
-	8. Matching vehicle routing separation
-	9. Repair jetty in running maven environment more bugs
-	10. Optimize the file upload
-	11. Optimized matching routing
-	12. Add methods perform monitoring
-	13. Add cache support
-
-### v1.0.0
-	The first stable release
+### [Update](https://github.com/biezhi/blade/blob/master/UPDATE_LOG.md)
 			
 ## licenses
 Blade Framework based on the [Apache2 License](http://www.apache.org/licenses/LICENSE-2.0.html)
