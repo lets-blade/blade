@@ -301,6 +301,15 @@ abstract class BladeBase {
 	}
 	
 	/**
+	 * connect请求
+	 * @param path
+	 * @param routeHandler
+	 */
+	public static synchronized void connect(String path, RouteHandler routeHandler){
+		RouteMatcherBuilder.buildHandler(path, routeHandler, HttpMethod.CONNECT);
+	}
+	
+	/**
 	 * 任意请求
 	 * @param path
 	 * @param routeHandler
