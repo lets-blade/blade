@@ -1,8 +1,8 @@
 #Blade
 
-[![简洁强大的JavaWeb框架](http://i1.tietuku.com/0c4b9726253b6268.png "简洁强大的JavaWeb框架")](http://bladejava.com)
+[![a concise and powerful web development framework](http://i1.tietuku.com/0c4b9726253b6268.png "a concise and powerful web development framework")](http://bladejava.com)
 
-[English](https://github.com/biezhi/blade/blob/master/README_EN.md)
+[中文](https://github.com/biezhi/blade/blob/master/README.md)
 
 [![@biezhi on weibo](https://img.shields.io/badge/weibo-%40biezhi-red.svg)](http://weibo.com/u/5238733773)
 [![Hex.pm](https://img.shields.io/hexpm/l/plug.svg)](http://www.apache.org/licenses/LICENSE-2.0.html)
@@ -10,24 +10,26 @@
 [![Circle CI](https://circleci.com/gh/biezhi/blade/tree/master.svg?style=svg)](https://circleci.com/gh/biezhi/blade/tree/master)
 [![release](https://img.shields.io/maven-central/v/com.bladejava/blade-core.svg)](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.bladejava%22)
 
-**blade** 是一个简洁强大的web框架，它内置了`IOC`管理，拦截器配置，`REST API`开发等众多主流web特性，集成了模板引擎，缓存插件，数据库操作，邮件发送等常用功能，简洁的源码值得你阅读和学习。如果你喜欢，欢迎[Star and Fork](https://github.com/biezhi/blade) ！
+## Introduction
 
-## Blade特性
+**blade** Is a concise and powerful web development framework, it is built into the `IOC` administration, the interceptor configuration, `REST API` development and so on many mainstream web features, integrate the template engine, a cache plug-in, database operations, commonly used functions such as email, concise source deserves your reading. If you like it, can be `Star or Fork`, thanks!
 
-* 简洁的MVC & 拦截器
-* REST风格API
-* 注解方式 开发
-* 微内核IOC容器
-* 实用工具类
-* 模板引擎支持
-* 支持JDK1.6+
-* 插件扩展机制
-* 缓存数据信息
-* 编码/JSON/配置文件
+## Features
+
+* Simple MVC & Interceptor
+* REST API
+* Annotation way development
+* The microkernel IOC container
+* Utility class
+* A template engine support
+* Support JDK1.6 +
+* Plug-in extension mechanism
+* Cache the data information
+* Coding/JSON/config file
 * ...
 
-## 快速入门
-第一步、用maven构建一个webapp，加入blade的依赖，推荐获取[最新版本](LAST_VERSION.md)
+## Quick start
+First. Use maven to build a webapp, join dependency on the blade,Recommended for the [latest version](LAST_VERSION.md)
 
 ```xml
 <dependency>
@@ -37,7 +39,7 @@
 </dependency>
 ```
 	
-第二步、在`web.xml`中配置Blade核心过滤器并设置你的初始化类，你也可以不配置(使用jetty启动)
+Second. Configuration in the `web.xml` Blade core filter initialization and set your class, and you can also not configuration(using jetty start)
 	
 ```xml
 <web-app>
@@ -59,7 +61,7 @@
 </web-app>
 ```
 
-第三步、编写App.java和路由文件，下面是一个示例
+Third. Write App.java and routing file, here is an example
 
 ```java
 public class App extends BladeApplication{
@@ -67,35 +69,36 @@ public class App extends BladeApplication{
 	Logger logger = Logger.getLogger(App.class);
 	@Override
 	public void init() {
-		// 注册函数式路由
+		// register route
 		Blade.regRoute("/hello", SayHi.class, "hello");
 		
-		// 匿名路由，java8方式更简化
+		// anonymous router，java8 so simple
 		Blade.get("/get", new RouteHandler() {
 			@Override
 			public String run(Request request, Response response) {
-				System.out.println("进入get!!");
+				System.out.println("come get!!");
 				System.out.println(request.query("name"));
 				return "get";
 			}
 		});
 	}
+	
 }
 ```
 	
-#### 函数式路由
+#### Functional routing
 ```java
 public class SayHi {
 	
 	public String hello(Request request, Response response){
-		System.out.println("进入hello~");
+		System.out.println("come hello~");
 		request.attribute("name", "rose baby");
 		return "hi";
 	}
 }
 ```
 
-#### 控制器路由
+#### The controller routing
 ```
 @Path("/")
 public class Hello {
@@ -131,27 +134,28 @@ public class Hello {
 }
 ```
 	
-OK，这一切看起来多么的简单，查阅使用指南更多现成的例子供你参考:
+OK, all this may seem simple, refer to the guidelines for use more ready-made examples for your reference:
 
-+ [hello应用](https://github.com/bladejava/hello)
-+ [API docs](http://bladejava.com/apidocs/)
-+ [使用指南](https://github.com/biezhi/blade/wiki) (完善中...)
-+ [更多例子](https://github.com/bladejava)
++ [hello project](https://github.com/bladejava/hello)
++ [API Docs](http://bladejava.com/apidocs/)
++ [Use Guide](https://github.com/biezhi/blade/wiki) (The ongoing...)
++ [Some Examples](https://github.com/bladejava)
 
-### 计划
-	1. 完善文档
-	2. 单用户博客系统
-	3. web聊天系统
-	4. 优化代码性能
+### Plan
+	1. Improve the document
+	2. Single user blog system development
+	3. web chat system
+	4. Optimize the code performance
+	
+### [Update](https://github.com/biezhi/blade/blob/master/UPDATE_LOG.md)
+			
+## licenses
+Blade Framework based on the [Apache2 License](http://www.apache.org/licenses/LICENSE-2.0.html)
 
-### [更新日志](https://github.com/biezhi/blade/blob/master/UPDATE_LOG.md)
+## Contact
 
-### 开源协议
-Blade框架基于 [Apache2 License](http://www.apache.org/licenses/LICENSE-2.0.html)
-
-### 联系我
 OSC Blog:[http://my.oschina.net/biezhi](http://my.oschina.net/biezhi)
 
 Mail: biezhi.me#gmail.com
 
-Java交流群: [1013565](http://shang.qq.com/wpa/qunwpa?idkey=932642920a5c0ef5f1ae902723c4f168c58ea63f3cef1139e30d68145d3b5b2f)
+QQ Group: [1013565](http://shang.qq.com/wpa/qunwpa?idkey=932642920a5c0ef5f1ae902723c4f168c58ea63f3cef1139e30d68145d3b5b2f)
