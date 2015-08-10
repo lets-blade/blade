@@ -205,7 +205,10 @@ abstract class BladeBase {
 	}
 	
 	/**
-	 * 注册一个函数式的路由
+	 * 注册一个函数式的路由</br>
+	 * <p>
+	 * 方法上指定请求类型，如：post:signin
+	 * </p>
 	 * @param path			路由url	
 	 * @param clazz			路由处理类
 	 * @param methodName	路由处理方法名称
@@ -226,7 +229,7 @@ abstract class BladeBase {
 	}
 	
 	/**
-	 * GET请求
+	 * get请求
 	 * @param path
 	 * @param routeHandler
 	 */
@@ -235,7 +238,7 @@ abstract class BladeBase {
 	}
 	
 	/**
-	 * POST请求
+	 * post请求
 	 * @param path
 	 * @param routeHandler
 	 */
@@ -243,6 +246,59 @@ abstract class BladeBase {
 		RouteMatcherBuilder.buildHandler(path, routeHandler, HttpMethod.POST);
 	}
 	
+	/**
+	 * delete请求
+	 * @param path
+	 * @param routeHandler
+	 */
+	public static synchronized void delete(String path, RouteHandler routeHandler){
+		RouteMatcherBuilder.buildHandler(path, routeHandler, HttpMethod.DELETE);
+	}
+	
+	/**
+	 * put请求
+	 * @param path
+	 * @param routeHandler
+	 */
+	public static synchronized void put(String path, RouteHandler routeHandler){
+		RouteMatcherBuilder.buildHandler(path, routeHandler, HttpMethod.PUT);
+	}
+	
+	/**
+	 * patch请求
+	 * @param path
+	 * @param routeHandler
+	 */
+	public static synchronized void patch(String path, RouteHandler routeHandler){
+		RouteMatcherBuilder.buildHandler(path, routeHandler, HttpMethod.PATCH);
+	}
+	
+	/**
+	 * head请求
+	 * @param path
+	 * @param routeHandler
+	 */
+	public static synchronized void head(String path, RouteHandler routeHandler){
+		RouteMatcherBuilder.buildHandler(path, routeHandler, HttpMethod.HEAD);
+	}
+	
+	/**
+	 * trace请求
+	 * @param path
+	 * @param routeHandler
+	 */
+	public static synchronized void trace(String path, RouteHandler routeHandler){
+		RouteMatcherBuilder.buildHandler(path, routeHandler, HttpMethod.TRACE);
+	}
+	
+	/**
+	 * options请求
+	 * @param path
+	 * @param routeHandler
+	 */
+	public static synchronized void options(String path, RouteHandler routeHandler){
+		RouteMatcherBuilder.buildHandler(path, routeHandler, HttpMethod.OPTIONS);
+	}
 	
     /**--------------------SET CONST:END-------------------------*/
     
@@ -355,7 +411,7 @@ abstract class BladeBase {
 	 * 
 	 * @param object		要注册的object
 	 */
-	public static synchronized void register(Object object){
+	public static synchronized void regObject(Object object){
 		container.registBean(object);
 	}
 	

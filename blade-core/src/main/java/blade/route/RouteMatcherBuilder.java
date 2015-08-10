@@ -113,15 +113,26 @@ public final class RouteMatcherBuilder {
      */
     public static void buildFunctional(String path, Class<?> clazz, String methodName, HttpMethod httpMethod){
     	if(StringKit.isNotBlank(path) && null != clazz && StringKit.isNotBlank(methodName)){
+    		
+    		// 字符串上写请求   get:hello
+    		if(methodName.indexOf(":") != -1){
+    			String[] methodArr = StringKit.split(methodName, ":");
+    			httpMethod = getHttpMethod(methodArr[0]);
+    			methodName = methodArr[1];
+    		}
+    		
     		if(null == httpMethod){
     			httpMethod = HttpMethod.ALL;
     		}
+    		
     		// 查找
     		Object target = container.getBean(clazz, null);
     		if(null == target){
     			container.registBean(clazz);
     		}
+    		
     		Method execMethod = ReflectKit.getMethodByName(clazz, methodName);
+    		
     		defaultRouteMatcher.addRoute(clazz, execMethod, path, httpMethod, "*/*");
     	} else {
 			 throw new BladeException("an unqualified configuration");
@@ -252,9 +263,9 @@ public final class RouteMatcherBuilder {
     		return;
     	}
     	
+    	container.registBean(router);
+    	
 		final String nameSpace = router.getAnnotation(Path.class).value();
-		
-		container.registBean(router);
 		
 		for (Method method : methods) {
 			
@@ -264,7 +275,6 @@ public final class RouteMatcherBuilder {
 			if (null != mapping) {
 				
 				////构建路由
-				
 				String path = mapping.value().startsWith("/") ? mapping.value() : "/" + mapping.value();
 				path = nameSpace + path;
 				path = path.replaceAll("[/]+", "/");
@@ -306,4 +316,12 @@ public final class RouteMatcherBuilder {
     	defaultRouteMatcher.addInterceptor(target, execMethod, path, method, acceptType);
     }
     
+    private static HttpMethod getHttpMethod(String name){
+    	try {
+			return Enum.valueOf(HttpMethod.class, name.toUpperCase());
+		} catch (Exception e) {
+			LOGGER.error("HttpMethod conversion failure", e);
+		}
+    	return null;
+    }
 }
