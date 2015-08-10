@@ -137,9 +137,9 @@ public class Hello {
 OK, all this may seem simple, refer to the guidelines for use more ready-made examples for your reference:
 
 + [hello project](https://github.com/bladejava/hello)
-+ [API Docs](http://bladejava.com/apidocs/)
-+ [Use Guide](https://github.com/biezhi/blade/wiki) (The ongoing...)
-+ [Some Examples](https://github.com/bladejava)
++ [api docs](http://bladejava.com/apidocs/)
++ [user guide](https://github.com/biezhi/blade/wiki) (The ongoing...)
++ [some examples](https://github.com/bladejava)
 
 ### Plan
 	1. Improve the document

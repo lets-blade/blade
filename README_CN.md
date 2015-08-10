@@ -133,8 +133,8 @@ public class Hello {
 	
 OK，这一切看起来多么的简单，查阅使用指南更多现成的例子供你参考:
 
-+ [hello应用](https://github.com/bladejava/hello)
-+ [API docs](http://bladejava.com/apidocs/)
++ [hello](https://github.com/bladejava/hello)
++ [api docs](http://bladejava.com/apidocs/)
 + [使用指南](https://github.com/biezhi/blade/wiki) (完善中...)
 + [更多例子](https://github.com/bladejava)
 
