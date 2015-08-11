@@ -69,7 +69,7 @@ public class App extends BladeApplication{
 	Logger logger = Logger.getLogger(App.class);
 	@Override
 	public void init() {
-		// register route
+		// register router
 		Blade.regRoute("/hello", SayHi.class, "hello");
 		
 		// anonymous router，java8 so simple
@@ -86,7 +86,7 @@ public class App extends BladeApplication{
 }
 ```
 	
-#### Functional routing
+#### Functional router
 ```java
 public class SayHi {
 	
@@ -98,7 +98,7 @@ public class SayHi {
 }
 ```
 
-#### The controller routing
+#### Annotations router
 ```
 @Path("/")
 public class Hello {
@@ -141,15 +141,19 @@ OK, all this may seem simple, refer to the guidelines for use more ready-made ex
 + [user guide](https://github.com/biezhi/blade/wiki) (The ongoing...)
 + [some examples](https://github.com/bladejava)
 
-### Plan
+## Plan
+
 	1. Improve the document
 	2. Single user blog system development
 	3. web chat system
 	4. Optimize the code performance
 	
-### [Update](https://github.com/biezhi/blade/blob/master/UPDATE_LOG.md)
+## Update
+
+[update log](https://github.com/biezhi/blade/blob/master/UPDATE_LOG.md)
 			
 ## licenses
+
 Blade Framework based on the [Apache2 License](http://www.apache.org/licenses/LICENSE-2.0.html)
 
 ## Contact

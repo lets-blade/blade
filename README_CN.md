@@ -2,7 +2,7 @@
 
 [![简洁强大的JavaWeb框架](http://i1.tietuku.com/0c4b9726253b6268.png "简洁强大的JavaWeb框架")](http://bladejava.com)
 
-[English](https://github.com/biezhi/blade/blob/master/README_EN.md)
+[English](https://github.com/biezhi/blade/blob/master/README.md)
 
 [![@biezhi on weibo](https://img.shields.io/badge/weibo-%40biezhi-red.svg)](http://weibo.com/u/5238733773)
 [![Hex.pm](https://img.shields.io/hexpm/l/plug.svg)](http://www.apache.org/licenses/LICENSE-2.0.html)
@@ -95,7 +95,7 @@ public class SayHi {
 }
 ```
 
-#### 控制器路由
+#### 注解路由
 ```
 @Path("/")
 public class Hello {
@@ -139,17 +139,22 @@ OK，这一切看起来多么的简单，查阅使用指南更多现成的例子
 + [更多例子](https://github.com/bladejava)
 
 ### 计划
+
 	1. 完善文档
 	2. 单用户博客系统
 	3. web聊天系统
 	4. 优化代码性能
 
-### [更新日志](https://github.com/biezhi/blade/blob/master/UPDATE_LOG.md)
+## 更新日志
 
-### 开源协议
+[更新日志](https://github.com/biezhi/blade/blob/master/UPDATE_LOG.md)
+
+## 开源协议
+
 Blade框架基于 [Apache2 License](http://www.apache.org/licenses/LICENSE-2.0.html)
 
-### 联系我
+## 联系我
+
 OSC Blog:[http://my.oschina.net/biezhi](http://my.oschina.net/biezhi)
 
 Mail: biezhi.me#gmail.com
