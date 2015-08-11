@@ -131,7 +131,7 @@ OK，这一切看起来多么的简单，查阅使用指南更多现成的例子
 
 + [hello](https://github.com/bladejava/hello)
 + [api docs](http://bladejava.com/apidocs/)
-+ [使用指南](https://github.com/biezhi/blade/wiki) (完善中...)
++ [使用指南](https://github.com/biezhi/blade/wiki)
 + [更多例子](https://github.com/bladejava)
 
 ### 计划

@@ -134,7 +134,7 @@ OK, all this may seem simple, refer to the guidelines for use more ready-made ex
 
 + [hello project](https://github.com/bladejava/hello)
 + [api docs](http://bladejava.com/apidocs/)
-+ [user guide](https://github.com/biezhi/blade/wiki) (The ongoing...)
++ [user guide](https://github.com/biezhi/blade/wiki)
 + [some examples](https://github.com/bladejava)
 
 ## Plan
