@@ -14,7 +14,7 @@
 
 ## Blade特性
 
-* 简洁的MVC & 拦截器
+* 简洁的MVC
 * RESTful
 * 多种路由配置方式
 * 微内核IOC容器
@@ -24,7 +24,6 @@
 * 支持JDK1.6+
 * 插件扩展机制
 * 缓存支持
-* ...
 
 ## 快速入门
 第一步、用maven构建一个webapp，加入blade的依赖，推荐获取[最新版本](LAST_VERSION.md)
@@ -33,7 +32,7 @@
 <dependency>
 	<groupId>com.bladejava</groupId>
 	<artifactId>blade-core</artifactId>
-	<version>1.2.6-alpha</version>
+	<version>1.2.6</version>
 </dependency>
 ```
 	
@@ -45,7 +44,7 @@
 	<filter-class>blade.BladeFilter</filter-class>
 	<init-param>
 		<param-name>applicationClass</param-name>
-		<param-value>blade.sample.App</param-value>
+		<param-value>hello.App</param-value>
 	</init-param>
 </filter>
 

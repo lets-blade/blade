@@ -16,17 +16,16 @@
 
 ## Features
 
-* Simple MVC & interceptor
-* RESTful
+* Simple MVC
+* Restful
 * Multiple routing configuration
 * Micro kernel IOC container
-* Practical tools
+* Utility class
 * Coding/JSON/configuration file
 * JDK1.6 +
 * Plug-in extension mechanism
 * Template engine Plugin
 * Cache Plugin
-* ...
 
 ## Quick start
 First. Use maven to build a webapp, join dependency on the blade,Recommended for the [latest version](LAST_VERSION.md)
@@ -35,7 +34,7 @@ First. Use maven to build a webapp, join dependency on the blade,Recommended for
 <dependency>
 	<groupId>com.bladejava</groupId>
 	<artifactId>blade-core</artifactId>
-	<version>1.2.6-alpha</version>
+	<version>1.2.6</version>
 </dependency>
 ```
 	
@@ -47,7 +46,7 @@ Second. Configuration in the `web.xml` Blade core filter initialization and set 
 	<filter-class>blade.BladeFilter</filter-class>
 	<init-param>
 		<param-name>applicationClass</param-name>
-		<param-value>blade.sample.App</param-value>
+		<param-value>hello.App</param-value>
 	</init-param>
 </filter>
 
