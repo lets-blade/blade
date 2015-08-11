@@ -99,7 +99,7 @@ public class SayHi {
 ```
 
 #### Annotations router
-```
+```java
 @Path("/")
 public class Hello {
 	

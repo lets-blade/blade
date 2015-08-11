@@ -96,7 +96,7 @@ public class SayHi {
 ```
 
 #### 注解路由
-```
+```java
 @Path("/")
 public class Hello {
 	
