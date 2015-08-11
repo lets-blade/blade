@@ -40,23 +40,19 @@
 第二步、在`web.xml`中配置Blade核心过滤器并设置你的初始化类，你也可以不配置(使用jetty启动)
 	
 ```xml
-<web-app>
-	<display-name>Archetype Created Web Application</display-name>
-	<filter>
-		<filter-name>BladeFilter</filter-name>
-		<filter-class>blade.BladeFilter</filter-class>
-		<init-param>
-			<param-name>applicationClass</param-name>
-			<param-value>blade.sample.App</param-value>
-		</init-param>
-	</filter>
-	
-	<filter-mapping>
-		<filter-name>BladeFilter</filter-name>
-		<url-pattern>/*</url-pattern>
-	</filter-mapping>
-	
-</web-app>
+<filter>
+	<filter-name>BladeFilter</filter-name>
+	<filter-class>blade.BladeFilter</filter-class>
+	<init-param>
+		<param-name>applicationClass</param-name>
+		<param-value>blade.sample.App</param-value>
+	</init-param>
+</filter>
+
+<filter-mapping>
+	<filter-name>BladeFilter</filter-name>
+	<url-pattern>/*</url-pattern>
+</filter-mapping>
 ```
 
 第三步、编写App.java和路由文件，下面是一个示例

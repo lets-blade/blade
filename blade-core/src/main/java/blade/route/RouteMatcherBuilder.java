@@ -154,6 +154,37 @@ public final class RouteMatcherBuilder {
     }
     
     /**
+     * 函数式拦截器构建
+     */
+    public static void buildInterceptor(String path, Class<?> clazz, String methodName, String acceptType){
+    	if(StringKit.isNotBlank(path) && null != clazz && StringKit.isNotBlank(methodName)){
+
+    		// 字符串上写请求   */*:hello
+    		if(methodName.indexOf(":") != -1){
+    			String[] methodArr = StringKit.split(methodName, ":");
+    			acceptType = methodArr[0];
+    			methodName = methodArr[1];
+    		}
+    		
+    		if(null == acceptType){
+    			acceptType = "*/*";
+    		}
+    		
+    		// 查找
+    		Object target = container.getBean(clazz, null);
+    		if(null == target){
+    			container.registBean(clazz);
+    		}
+    		
+    		Method execMethod = ReflectKit.getMethodByName(clazz, methodName);
+    		
+    		defaultRouteMatcher.addInterceptor(clazz, execMethod, path, HttpMethod.BEFORE, acceptType);
+    	} else {
+			 throw new BladeException("an unqualified configuration");
+		}
+    }
+    
+    /**
      * 构建拦截器
      * 
      * @param interceptorPackages	要添加的拦截器包

@@ -133,6 +133,19 @@ public class Request {
     }
     
     /**
+     * 返回long类型的path param
+     * @param param		参数名称
+     * @return			返回URL上对应的Long参数值
+     */
+    public Long pathParamToLong(String param) {
+        String value = pathParam(param);
+        if(null != value){
+        	return Long.valueOf(value);
+        }
+        return null;
+    }
+    
+    /**
      * @return	返回通配符
      */
     public String[] splat() {

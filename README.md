@@ -42,23 +42,19 @@ First. Use maven to build a webapp, join dependency on the blade,Recommended for
 Second. Configuration in the `web.xml` Blade core filter initialization and set your class, and you can also not configuration(using jetty start)
 	
 ```xml
-<web-app>
-	<display-name>Archetype Created Web Application</display-name>
-	<filter>
-		<filter-name>BladeFilter</filter-name>
-		<filter-class>blade.BladeFilter</filter-class>
-		<init-param>
-			<param-name>applicationClass</param-name>
-			<param-value>blade.sample.App</param-value>
-		</init-param>
-	</filter>
-	
-	<filter-mapping>
-		<filter-name>BladeFilter</filter-name>
-		<url-pattern>/*</url-pattern>
-	</filter-mapping>
-	
-</web-app>
+<filter>
+	<filter-name>BladeFilter</filter-name>
+	<filter-class>blade.BladeFilter</filter-class>
+	<init-param>
+		<param-name>applicationClass</param-name>
+		<param-value>blade.sample.App</param-value>
+	</init-param>
+</filter>
+
+<filter-mapping>
+	<filter-name>BladeFilter</filter-name>
+	<url-pattern>/*</url-pattern>
+</filter-mapping>
 ```
 
 Third. Write App.java and routing file, here is an example

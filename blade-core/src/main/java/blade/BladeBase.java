@@ -318,6 +318,33 @@ abstract class BladeBase {
 		RouteMatcherBuilder.buildHandler(path, routeHandler, HttpMethod.ALL);
 	}
 	
+	/**
+	 * 注册一个函数式的拦截器</br>
+	 * <p>
+	 * 方法上指定请求类型，如：post:signin
+	 * </p>
+	 * @param path			路由url	
+	 * @param clazz			路由处理类
+	 * @param methodName	路由处理方法名称
+	 */
+	public static synchronized void regInterceptor(String path, Class<?> clazz, String methodName){
+		RouteMatcherBuilder.buildInterceptor(path, clazz, methodName, null);
+	}
+	
+	/**
+	 * 注册一个函数式的拦截器</br>
+	 * <p>
+	 * 方法上指定请求类型，如：post:signin
+	 * </p>
+	 * @param path			路由url	
+	 * @param clazz			路由处理类
+	 * @param methodName	路由处理方法名称
+	 * @param acceptType	acceptType
+	 */
+	public static synchronized void regInterceptor(String path, Class<?> clazz, String methodName, String acceptType){
+		RouteMatcherBuilder.buildInterceptor(path, clazz, methodName, acceptType);
+	}
+	
     /**--------------------SET CONST:END-------------------------*/
     
     
