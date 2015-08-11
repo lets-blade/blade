@@ -214,7 +214,7 @@ public class HttpRequest {
   }
   
   /**
-   * Specify the {@link ConnectionFactory} used to create new requests.
+   * 设置一个ConnectionFactory，用于创建新的请求
    */
   public static void setConnectionFactory(final ConnectionFactory connectionFactory) {
     if (connectionFactory == null)
@@ -224,15 +224,14 @@ public class HttpRequest {
   }
 
   /**
-   * Operation that handles executing a callback once complete and handling
-   * nested exceptions
+   * 操作执行一个回调处理完成后和处理嵌套的异常
    *
    * @param <V>
    */
   protected static abstract class Operation<V> implements Callable<V> {
 	  
     /**
-     * Run operation
+     * 执行操作
      *
      * @return result
      * @throws HttpRequestException
@@ -241,7 +240,7 @@ public class HttpRequest {
     protected abstract V run() throws HttpRequestException, IOException;
 
     /**
-     * Operation complete callback
+     * 操作完成回调
      *
      * @throws IOException
      */
@@ -269,8 +268,7 @@ public class HttpRequest {
   }
 
   /**
-   * Class that ensures a {@link Closeable} gets closed with proper exception
-   * handling.
+   * 确保Closeable类关闭,使用适当的异常处理
    *
    * @param <V>
    */
@@ -281,13 +279,12 @@ public class HttpRequest {
     private final boolean ignoreCloseExceptions;
 
     /**
-     * Create closer for operation
+     * 创建一个关闭操作
      *
      * @param closeable
      * @param ignoreCloseExceptions
      */
-    protected CloseOperation(final Closeable closeable,
-        final boolean ignoreCloseExceptions) {
+    protected CloseOperation(final Closeable closeable, final boolean ignoreCloseExceptions) {
       this.closeable = closeable;
       this.ignoreCloseExceptions = ignoreCloseExceptions;
     }
@@ -335,7 +332,7 @@ public class HttpRequest {
   
 
   /**
-   * Represents array of any type as list of objects so we can easily iterate over it
+   * 表示任何类型的数组的对象列表,让我们可以很容易地遍历
    * @param array of elements
    * @return list with the same elements
    */
@@ -377,8 +374,7 @@ public class HttpRequest {
    * @return encoded URL
    * @throws HttpRequestException
    */
-  public static String encode(final String url)
-      throws HttpRequestException {
+  public static String encode(final String url) throws HttpRequestException {
     URL parsed;
     try {
       parsed = new URL(url.toString());
@@ -476,8 +472,8 @@ public class HttpRequest {
   }
 
   /**
-   * GET请求
-   * 
+   * Start a 'GET' request to the given URL
+   *
    * @param url
    * @return request
    * @throws HttpRequestException
@@ -488,8 +484,8 @@ public class HttpRequest {
   }
 
   /**
-   * GET请求
-   * 
+   * Start a 'GET' request to the given URL
+   *
    * @param url
    * @return request
    * @throws HttpRequestException
@@ -499,13 +495,21 @@ public class HttpRequest {
   }
 
   /**
-   * 带参数的GET请求
-   * @see #append(String, Map)
-   * @see #encode(String)
+   * Start a 'GET' request to the given URL along with the query params
+   *
+   * @param baseUrl
+   * @param params
+   *          The query parameters to include as part of the baseUrl
+   * @param encode
+   *          true to encode the full URL
+   *
+   * @see #append(CharSequence, Map)
+   * @see #encode(CharSequence)
    *
    * @return request
    */
-  public static HttpRequest get(final String baseUrl, final Map<?, ?> params, final boolean encode) {
+  public static HttpRequest get(final String baseUrl,
+      final Map<?, ?> params, final boolean encode) {
     String url = append(baseUrl, params);
     return get(encode ? encode(url) : url);
   }
@@ -520,8 +524,8 @@ public class HttpRequest {
    *          the name/value query parameter pairs to include as part of the
    *          baseUrl
    *
-   * @see #append(String, Object...)
-   * @see #encode(String)
+   * @see #append(CharSequence, Object...)
+   * @see #encode(CharSequence)
    *
    * @return request
    */
@@ -537,8 +541,7 @@ public class HttpRequest {
    * @return request
    * @throws HttpRequestException
    */
-  public static HttpRequest post(final String url)
-      throws HttpRequestException {
+  public static HttpRequest post(final String url) throws HttpRequestException {
     return new HttpRequest(url, MethodType.POST);
   }
 
