@@ -67,8 +67,9 @@ public class BladeFilter implements Filter {
 			    
 			    application.contextInitialized(BladeWebContext.servletContext());
 			    
-			    LOGGER.info("blade init complete!");
 			    BladeBase.init();
+			    
+			    LOGGER.info("blade init complete!");
 			}
 		} catch (Exception e) {
 			LOGGER.error(e);

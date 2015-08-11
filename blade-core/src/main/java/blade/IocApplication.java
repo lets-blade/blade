@@ -19,6 +19,7 @@ import java.util.Set;
 
 import blade.ioc.Container;
 import blade.ioc.DefaultContainer;
+import blade.ioc.Scope;
 import blade.kit.log.Logger;
 import blade.kit.resource.ClassPathClassReader;
 import blade.kit.resource.ClassReader;
@@ -49,7 +50,9 @@ public final class IocApplication {
 	public static void init(){
 		
 		// 初始化全局配置类
-		initApp();
+		if(null == container.getBean(BladeApplication.class, Scope.SINGLE)){
+			container.registBean(Blade.application());
+		}
 		
 		// 初始化ioc容器
 		initIOC();
@@ -60,10 +63,6 @@ public final class IocApplication {
 		} catch (Exception e) {
 			LOGGER.error(e);
 		}
-	}
-	
-	private static void initApp(){
-		container.registBean(Blade.application());
 	}
 	
 	/**
@@ -100,13 +99,6 @@ public final class IocApplication {
 			// 注册带有Component和Service注解的类
 			if (container.isRegister(clazz.getAnnotations())) {
 				container.registBean(clazz);
-			}
-		}
-		
-		if(Blade.debug()){
-			Set<String> beanNames = container.getBeanNames();
-			for(String beanName : beanNames){
-				LOGGER.debug("Load The Class：" + beanName);
 			}
 		}
 	}

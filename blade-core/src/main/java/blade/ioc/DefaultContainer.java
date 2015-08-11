@@ -22,8 +22,10 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
+import blade.Blade;
 import blade.annotation.Component;
 import blade.annotation.Inject;
 import blade.annotation.Path;
@@ -168,6 +170,11 @@ public class DefaultContainer implements Container {
 		    if(null != clazz.getDeclaredAnnotations()){
 		    	putAnnotationMap(clazz, object);
 		    }
+		    
+		    if(Blade.debug()){
+		    	LOGGER.info("register object：" + name + "=" + object);
+		    }
+		    
 		}
 		return object;
 	}
@@ -222,47 +229,53 @@ public class DefaultContainer implements Container {
      */
     @Override
     public void initWired() throws RuntimeException {
-        Iterator<Object> it = BEAN_CONTAINER.values().iterator();
+        Iterator<Entry<String, Object>> it = BEAN_CONTAINER.entrySet().iterator();
+        
         try {
-            while (it.hasNext()) {
-            	
-                Object obj = it.next();
-                
-                // 所有字段
-                Field[] fields = obj.getClass().getDeclaredFields();
-                for (Field field : fields) {
-                	
-                	// 需要注入的字段
-                    Inject inject = field.getAnnotation(Inject.class);
-                    if (null != inject) {
-                    	
-                        // 要注入的字段
-                        Object injectField = this.getBean(field.getType(), Scope.SINGLE);
-                        
-                        // 指定装配的类
-                        if (inject.value() != Class.class) {
-                        	injectField = this.getBean(inject.value(), Scope.SINGLE);
-                            // 容器有该类
-                            if (null == injectField) {
-                            	injectField = this.registBean(inject.value());
-                            }
-                        } else{
-                        	// 没有指定装配class, 容器没有该类，则创建一个对象放入容器
-                            if (null == injectField) {
-                            	injectField = this.registBean(field.getType());
-                            }
-                        }
-                        if (null == injectField) {
-                            throw new BladeException("Unable to load " + field.getType().getCanonicalName() + "！");
-                        }
-                        boolean accessible = field.isAccessible();
-                        field.setAccessible(true);
-                        field.set(obj, injectField);
-                        field.setAccessible(accessible);
-                    }
-                }
-            }
-        } catch (SecurityException e) {
+			while (it.hasNext()) {
+				
+				Map.Entry<String, Object> entry = (Map.Entry<String, Object>) it.next();
+				
+				Object obj = entry.getValue();
+				
+				// 所有字段
+			    Field[] fields = obj.getClass().getDeclaredFields();
+			    
+			    for (Field field : fields) {
+			    	
+			    	// 需要注入的字段
+			        Inject inject = field.getAnnotation(Inject.class);
+			        if (null != inject ) {
+			        	
+			        	// 要注入的字段
+			            Object injectField = this.getBean(field.getType(), Scope.SINGLE);
+			            injectField = null;
+			        	// 指定装配到哪个class
+			        	if(inject.value() != Class.class){
+			        		// 指定装配的类
+				            injectField = this.getBean(inject.value(), Scope.SINGLE);
+				            
+				            if (null == injectField) {
+			                	injectField = recursiveAssembly(inject.value());
+			                }
+				            
+			        	} else {
+			        		if (null == injectField) {
+			                	injectField = recursiveAssembly(field.getType());
+			                }
+						}
+			        	
+			            if (null == injectField) {
+			                throw new BladeException("Unable to load " + field.getType().getCanonicalName() + "！");
+			            }
+			            boolean accessible = field.isAccessible();
+			            field.setAccessible(true);
+			            field.set(obj, injectField);
+			            field.setAccessible(accessible);
+			        }
+			    }
+			}
+		} catch (SecurityException e) {
         	LOGGER.error(e.getMessage());
         } catch (IllegalArgumentException e) {
         	LOGGER.error(e.getMessage());
@@ -270,7 +283,23 @@ public class DefaultContainer implements Container {
         	LOGGER.error(e.getMessage());
         }
     }
-
+    
+    // 装配
+    private Object recursiveAssembly(Class<?> clazz){
+    	Object field = null;
+    	if(null != clazz){
+    		// 是接口或者抽象类
+    		if(clazz.isInterface() || Modifier.isAbstract(clazz.getModifiers())){
+    			String implClassName = clazz.getPackage().getName() + ".impl." + clazz.getSimpleName() + "Impl";
+    			return ReflectKit.newInstance(implClassName);
+    		} else {
+    			field = this.registBean(clazz);
+			}
+    	}
+    	return field;
+    }
+    
+    
     /**
      * 判断是否是可以注册的bean
      * 
@@ -321,6 +350,9 @@ public class DefaultContainer implements Container {
 	public Object registBean(Object object) {
 		String name = object.getClass().getName();
 		put(name, object);
+		if(Blade.debug()){
+	    	LOGGER.info("register object：" + name + "=" + object);
+	    }
 		return object;
 	}
 

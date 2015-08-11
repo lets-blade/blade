@@ -74,10 +74,7 @@ public final class RouteMatcherBuilder {
      * @return	返回构建路由后的构造器
      */
     public static synchronized void building() {
-        if(Blade.debug()){
-        	LOGGER.debug("creates RouteMatcher");
-        }
-        
+    	
         String basePackage = Blade.basePackage();
         
         if(StringKit.isNotBlank(basePackage)){
@@ -94,6 +91,7 @@ public final class RouteMatcherBuilder {
         	buildInterceptor(interceptorPackage);
         	
         } else {
+        	
         	// 路由
 	    	String[] routePackages = Blade.routes();
 	    	if(null != routePackages && routePackages.length > 0){
