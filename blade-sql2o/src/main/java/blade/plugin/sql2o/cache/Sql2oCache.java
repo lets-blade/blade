@@ -1,32 +1,35 @@
 package blade.plugin.sql2o.cache;
 
+import java.io.Serializable;
 import java.util.List;
 
-import blade.plugin.sql2o.Model;
+public interface Sql2oCache {
 
-public interface Sql2oCache<T extends Model> {
-
-	void set(String key, T value);
+	void set(String key, Serializable value);
 	
-	void set(String key, T value, long expire);
+	void set(String key, Serializable value, long expire);
 	
-	void hset(String key, String field, T value);
+	void hset(String key, String field, Serializable value);
 	
-	<V> void hsetV(String key, String field, V value);
+	void hsetV(String key, String field, Serializable value);
 	
-	<M extends Model> void hsetlist(String key, String field, List<M> value);
+	<T extends Serializable> void hsetlist(String key, String field, List<T> value);
 	
-	void hset(String key, String field, T value, long expire);
+	<S> void hsetlists(String key, String field, List<S> value);
 	
-	void hset(String key, String field, List<T> value, long expire);
+	void hset(String key, String field, Serializable value, long expire);
 	
-	<M extends Model> M get(String key);
+	void hset(String key, String field, List<Serializable> value, long expire);
 	
-	<M extends Model> M hget(String key, String field);
+	Serializable get(String key);
+	
+	<T extends Serializable> T hget(String key, String field);
 	
 	<V> V hgetV(String key, String field);
 	
-	<M extends Model> List<M> hgetlist(String key, String field);
+	<T extends Serializable> List<T> hgetlist(String key, String field);
+	
+	<S> List<S> hgetlists(String key, String field);
 	
 	void hdel(String key);
 	

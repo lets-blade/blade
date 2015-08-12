@@ -1,6 +1,5 @@
 package blade.plugin.sql2o.cache;
 
-import blade.plugin.sql2o.Model;
 
 /**
  * 缓存获取工厂
@@ -10,9 +9,9 @@ import blade.plugin.sql2o.Model;
  */
 public final class Sql2oCacheFactory {
 
-	private static Sql2oCache<Model> sql2oCache = new SimpleSql2oCache<Model>();
+	private static Sql2oCache sql2oCache = new SimpleSql2oCache();
 	
-	public static Sql2oCache<Model> getSql2oCache(){
+	public static Sql2oCache getSql2oCache(){
 		return sql2oCache;
 	}
 	
@@ -21,7 +20,7 @@ public final class Sql2oCacheFactory {
 	 * 
 	 * @param sql2oCache
 	 */
-	public static void setSql2oCache(Sql2oCache<Model> sql2oCache){
+	public static void setSql2oCache(Sql2oCache sql2oCache){
 		Sql2oCacheFactory.sql2oCache = sql2oCache;
 	}
 	

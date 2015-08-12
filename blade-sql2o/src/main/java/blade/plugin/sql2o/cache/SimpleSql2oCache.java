@@ -1,13 +1,13 @@
 package blade.plugin.sql2o.cache;
 
+import java.io.Serializable;
 import java.util.List;
 
 import blade.cache.Cache;
 import blade.cache.CacheManager;
-import blade.plugin.sql2o.Model;
 
 @SuppressWarnings("unchecked")
-public class SimpleSql2oCache<T extends Model> implements Sql2oCache<T> {
+public class SimpleSql2oCache implements Sql2oCache {
 
 	private CacheManager cm = CacheManager.getInstance();
 	
@@ -22,35 +22,35 @@ public class SimpleSql2oCache<T extends Model> implements Sql2oCache<T> {
 	}
 	
 	@Override
-	public void set(String key, T value) {
+	public void set(String key, Serializable value) {
 		cache.set(key, value);
 	}
 
 	@Override
-	public void set(String key, T value, long expire) {
+	public void set(String key, Serializable value, long expire) {
 		cache.set(key, value, expire);
 	}
 
 	@Override
-	public void hset(String key, String field, T value) {
+	public void hset(String key, String field, Serializable value) {
 		cache.hset(key, field, value);
 	}
 
 	@Override
-	public void hset(String key, String field, T value, long expire) {
+	public void hset(String key, String field, Serializable value, long expire) {
 		cache.hset(key, field, value, expire);
 	}
 
 	@Override
-	public void hset(String key, String field, List<T> value, long expire) {
+	public void hset(String key, String field, List<Serializable> value, long expire) {
 		cache.hset(key, field, value, expire);
 	}
 
 	@Override
-	public T get(String key) {
+	public Serializable get(String key) {
 		Object value = cache.get(key);
 		if(null != value){
-			return (T) value;
+			return (Serializable) value;
 		}
 		return null;
 	}
@@ -65,25 +65,34 @@ public class SimpleSql2oCache<T extends Model> implements Sql2oCache<T> {
 	}
 	
 	@Override
-	public <V> void hsetV(String key, String field, V value) {
+	public void hsetV(String key, String field, Serializable value) {
 		cache.hset(key, field, value);
 	}
 
 	@Override
-	public <M extends Model> M hget(String key, String field) {
+	public Serializable hget(String key, String field) {
 		Object object = cache.hget(key, field);
 		if(null != object){
-			return (M) object;
+			return (Serializable) object;
 		}
 		return null;
 	}
 	
 
 	@Override
-	public <M extends Model> List<M> hgetlist(String key, String field) {
+	public List<Serializable> hgetlist(String key, String field) {
 		Object object = cache.hget(key, field);
 		if(null != object){
-			return (List<M>) object;
+			return (List<Serializable>) object;
+		}
+		return null;
+	}
+	
+	@Override
+	public <S> List<S> hgetlists(String key, String field) {
+		Object object = cache.hget(key, field);
+		if(null != object){
+			return (List<S>) object;
 		}
 		return null;
 	}
@@ -99,7 +108,12 @@ public class SimpleSql2oCache<T extends Model> implements Sql2oCache<T> {
 	}
 
 	@Override
-	public <M extends Model> void hsetlist(String key, String field, List<M> value) {
+	public <T extends Serializable>  void hsetlist(String key, String field, List<T> value) {
+		cache.hset(key, field, value);
+	}
+	
+	@Override
+	public <S> void hsetlists(String key, String field, List<S> value) {
 		cache.hset(key, field, value);
 	}
 	

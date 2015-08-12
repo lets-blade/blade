@@ -26,10 +26,8 @@ import blade.plugin.sql2o.kit.MD5;
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since	1.0
  */
-public class Model implements Serializable {
+public class Model<T extends Serializable> {
 	
-	private static final long serialVersionUID = -8227936256753441060L;
-
 	private static final Logger LOGGER = Logger.getLogger(Model.class);
 	
 	/**
@@ -40,7 +38,7 @@ public class Model implements Serializable {
 	/**
 	 * 缓存操作
 	 */
-    private static Sql2oCache<Model> sql2oCache = isOpenCache ? Sql2oCacheFactory.getSql2oCache() : null;
+    private static Sql2oCache sql2oCache = isOpenCache ? Sql2oCacheFactory.getSql2oCache() : null;
     
     /**
      * sql2o对象，操作数据库
@@ -50,31 +48,26 @@ public class Model implements Serializable {
     /**
      * 当前class实例
      */
-    private Class<? extends Model> model;
+    private Class<T> model;
     
     /**
      * 条件对象
      */
     private Condition condition;
     
-    private final String CACHE_KEY_LIST = this.getClass().getName() + ":list";
-	private final String CACHE_KEY_COUNT = this.getClass().getName() + ":count";
-	private final String CACHE_KEY_DETAIL = this.getClass().getName() + ":detail";
+    private String CACHE_KEY_LIST;
+	private String CACHE_KEY_COUNT;
+	private String CACHE_KEY_DETAIL;
 	
-    public static Model getModel(Class<? extends Model> clazz){
-    	return new Model(clazz);
-    }
-    
-    public Model() {
-    	this.model = this.getClass();
-    	this.condition = new Condition(this.table(), this.pk());
-	}
-    
-    public Model(Class<? extends Model> clazz) {
+	public Model(Class<T> clazz) {
 		this.model = clazz;
 		this.condition = new Condition(table(), pk());
+		
+		CACHE_KEY_LIST = model.getName() + ":list";
+		CACHE_KEY_COUNT = model.getName() + ":count";
+		CACHE_KEY_DETAIL = model.getName() + ":detail";
 	}
-    
+	
     public Sql2o getSql2o(){
     	return sql2o;
     }
@@ -103,7 +96,7 @@ public class Model implements Serializable {
     /**
      * @return	返回查询model对象，推荐方式
      */
-    public Model select(){
+    public Model<T> select(){
     	condition.select();
     	return this;
     }
@@ -115,7 +108,7 @@ public class Model implements Serializable {
      * @param sql	要查询的sql语句
      * @return		返回查询model对象
      */
-    public Model select(String sql){
+    public Model<T> select(String sql){
     	condition.select(sql);
     	return this;
     }
@@ -123,7 +116,7 @@ public class Model implements Serializable {
     /**
      * @return	返回计算count
      */
-    public Model count(){
+    public Model<T> count(){
     	condition.count();
     	return this;
     }
@@ -134,7 +127,7 @@ public class Model implements Serializable {
      * @param sql	要查询的sql语句
      * @return		返回查询model对象
      */
-    public Model count(String sql){
+    public Model<T> count(String sql){
     	condition.count(sql);
     	return this;
     }
@@ -142,7 +135,7 @@ public class Model implements Serializable {
     /**
      * @return	返回更新model对象，推荐方式
      */
-    public Model update(){
+    public Model<T> update(){
     	condition.update();
     	return this;
     }
@@ -153,7 +146,7 @@ public class Model implements Serializable {
      * @param sql	自定义更新语句
      * @return		返回更新model对象
      */
-    public Model update(String sql){
+    public Model<T> update(String sql){
     	condition.update(sql);
     	return this;
     }
@@ -161,7 +154,7 @@ public class Model implements Serializable {
     /**
      * @return	返回插入model对象，推荐方式
      */
-    public Model insert(){
+    public Model<T> insert(){
     	condition.insert();
     	return this;
     }
@@ -171,7 +164,7 @@ public class Model implements Serializable {
      * @param sql	自定义插入语句
      * @return		返回插入model对象
      */
-    public Model insert(String sql){
+    public Model<T> insert(String sql){
     	condition.insert(sql);
     	return this;
     }
@@ -179,7 +172,7 @@ public class Model implements Serializable {
     /**
      * @return	返回删除model对象
      */
-    public Model delete(){
+    public Model<T> delete(){
     	condition.delete();
     	return this;
     }
@@ -190,7 +183,7 @@ public class Model implements Serializable {
      * @param sql	自定义删除语句
      * @return		返回自定义删除model对象
      */
-    public Model delete(String sql){
+    public Model<T> delete(String sql){
     	condition.delete(sql);
     	return this;
     }
@@ -202,7 +195,7 @@ public class Model implements Serializable {
      * @param value	参数值
      * @return		返回model对象
      */
-    public Model param(String name, Object value){
+    public Model<T> param(String name, Object value){
     	condition.param(name, value);
     	return this;
     }
@@ -214,7 +207,7 @@ public class Model implements Serializable {
      * @param value	参数值
      * @return		返回model对象
      */
-    public Model where(String name, Object value){
+    public Model<T> where(String name, Object value){
     	condition.where(name, value);
     	return this;
     }
@@ -225,7 +218,7 @@ public class Model implements Serializable {
      * @param value
      * @return
      */
-    public Model greater(String name, Object value){
+    public Model<T> greater(String name, Object value){
     	condition.greater(name, value);
     	return this;
     }
@@ -237,7 +230,7 @@ public class Model implements Serializable {
      * @param value	参数值
      * @return		返回model对象
      */
-    public Model greaterThan(String name, Object value){
+    public Model<T> greaterThan(String name, Object value){
     	condition.greaterThan(name, value);
     	return this;
     }
@@ -248,7 +241,7 @@ public class Model implements Serializable {
      * @param value	参数值
      * @return		返回model对象
      */
-    public Model less(String name, Object value){
+    public Model<T> less(String name, Object value){
     	condition.less(name, value);
     	return this;
     }
@@ -259,7 +252,7 @@ public class Model implements Serializable {
      * @param value	参数值
      * @return		返回model对象
      */
-    public Model lessThan(String name, Object value){
+    public Model<T> lessThan(String name, Object value){
     	condition.lessThan(name, value);
     	return this;
     }
@@ -270,7 +263,7 @@ public class Model implements Serializable {
      * @param value
      * @return
      */
-    public Model like(String name, String value){
+    public Model<T> like(String name, String value){
     	condition.like(name, value);
     	return this;
     }
@@ -281,7 +274,7 @@ public class Model implements Serializable {
      * @param value
      * @return
      */
-    public Model in(String name, Object... values){
+    public Model<T> in(String name, Object... values){
     	condition.in(name, values);
     	return this;
     }
@@ -292,7 +285,7 @@ public class Model implements Serializable {
      * @param orderby	排序字段和排序规则，如：ordernum desc
      * @return			返回model对象
      */
-    public Model orderBy(String orderby){
+    public Model<T> orderBy(String orderby){
     	condition.orderby = orderby;
     	return this;
     }
@@ -512,14 +505,13 @@ public class Model implements Serializable {
     /**
      * @return		返回查询一个对象
      */
-    @SuppressWarnings("unchecked")
-	public <M extends Model> M fetchOne(){
+	public T fetchOne(){
     	
     	if(condition.dmlType.equals(DmlType.SELECT)){
     		
     		String sqlEnd = condition.getConditionSql();
     		
-    		M res = null;
+    		T res = null;
     		String field = null;
     		
     		// 是否开启缓存查询
@@ -541,7 +533,7 @@ public class Model implements Serializable {
 				condition.printLog();
 				condition.clearMap();
 				
-				res = (M) query.executeAndFetchFirst(this.model);
+				res = (T) query.executeAndFetchFirst(this.model);
 				
 				// 重新放入缓存
 				if(isCache() && null != res){
@@ -555,9 +547,8 @@ public class Model implements Serializable {
     	return null;
     }
     
-    @SuppressWarnings("unchecked")
-	public <M extends Model> M fetchByPk(Serializable pk){
-    	M res = null;
+	public T fetchByPk(Serializable pk){
+    	T res = null;
     	
     	if(null != pk){
     		
@@ -584,7 +575,7 @@ public class Model implements Serializable {
 				condition.printLog();
 				condition.clearMap();
 				
-				res = (M) query.executeAndFetchFirst(this.model);
+				res = (T) query.executeAndFetchFirst(this.model);
 				
 				if(isCache() && null != res){
 					sql2oCache.hset(CACHE_KEY_DETAIL, field, res);
@@ -626,16 +617,16 @@ public class Model implements Serializable {
      * @return	查询list数据
      */
     @SuppressWarnings("unchecked")
-	public <M extends Model> List<M> fetchList(){
+	public List<T> fetchList(){
     	if(condition.dmlType.equals(DmlType.SELECT)){
     		
     		String field = null;
-    		List<M> result = null;
+    		List<T> result = null;
     		
     		// 开启缓存
     		if(isCache()){
     			field = MD5.create(getCacheKey(null));
-    			result = sql2oCache.hgetlist(CACHE_KEY_LIST, field);
+    			result = (List<T>) sql2oCache.hgetlist(CACHE_KEY_LIST, field);
     			if(null != result){
     				return result;
     			}
@@ -657,10 +648,59 @@ public class Model implements Serializable {
 				condition.printLog();
 				condition.clearMap();
 				
-				result = (List<M>) query.executeAndFetch(this.model);
+				result = (List<T>) query.executeAndFetch(this.model);
 				
 				if(isCache() && null != result){
 					sql2oCache.hsetlist(CACHE_KEY_LIST, field, result);
+				}
+				
+				return result;
+			} catch (Exception e) {
+				LOGGER.error(e);
+			}
+    	}
+    	return null;
+    }
+    
+    
+    /**
+     * @return	查询list数据
+     */
+	public <V> List<V> executeAndFetch(Class<V> clazz){
+    	if(condition.dmlType.equals(DmlType.SELECT)){
+    		
+    		String field = null;
+    		List<V> result = null;
+    		
+    		// 开启缓存
+    		if(isCache()){
+    			field = MD5.create(getCacheKey(null));
+    			result = sql2oCache.hgetlists(CACHE_KEY_LIST, field);
+    			if(null != result){
+    				return result;
+    			}
+    		}
+    		
+    		String sqlEnd = condition.getConditionSql();
+    		
+    		if(null != condition.orderby){
+    			sqlEnd += " order by " + condition.orderby;
+    		}
+    		
+    		try {
+				Connection conn = sql2o.open();
+				Query query = conn.createQuery(sqlEnd);
+				query = parseParams(query);
+				
+				LOGGER.debug("execute sql：" + query.toString());
+				
+				condition.printLog();
+				condition.clearMap();
+				
+				result = query.executeAndFetch(clazz);
+				
+				if(isCache() && null != result){
+					sql2oCache.hsetlists(CACHE_KEY_LIST, field, result);
 				}
 				
 				return result;
@@ -678,7 +718,7 @@ public class Model implements Serializable {
 		
     	if(condition.dmlType.equals(DmlType.SELECT)){
     		
-    		List<? extends Model> list = fetchList();
+    		List<T> list = fetchList();
     		if(null != list && list.size() > 0){
     			List<Map<String, Object>> result = BeanKit.toListMap(list);
     			return result;
@@ -694,8 +734,7 @@ public class Model implements Serializable {
      * @param pageSize	每页条数
      * @return			返回分页后的Page<M>对象
      */
-    @SuppressWarnings("unchecked")
-	public <M extends Model> Page<M> fetchPage(Integer page, Integer pageSize){
+	public Page<T> fetchPage(Integer page, Integer pageSize){
     	
     	if(null == page || page < 1){
     		page = 1;
@@ -705,7 +744,7 @@ public class Model implements Serializable {
     		pageSize = 1;
     	}
     	
-    	Page<M> pageModel = new Page<M>(0, page, pageSize);
+    	Page<T> pageModel = new Page<T>(0, page, pageSize);
     	
     	if(condition.dmlType.equals(DmlType.SELECT) && null != page && null != pageSize && page > 0 && pageSize > 0){
     		
@@ -713,7 +752,7 @@ public class Model implements Serializable {
     		long totalCount = getPageCount();
     		
     		String field = null;
-    		List<? extends Model> results = null;
+    		List<T> results = null;
     		
     		// 开启缓存
     		if(isCache()){
@@ -723,10 +762,10 @@ public class Model implements Serializable {
     			
     			results = sql2oCache.hgetlist(CACHE_KEY_LIST, field);
     			
-    			pageModel = new Page<M>(totalCount, page, pageSize);
+    			pageModel = new Page<T>(totalCount, page, pageSize);
         		
         		if(null != results && results.size() > 0){
-    				pageModel.setResults((List<M>) results);
+    				pageModel.setResults((List<T>) results);
     				return pageModel;
     			}
         		
@@ -752,13 +791,13 @@ public class Model implements Serializable {
 				LOGGER.debug("execute sql：" + query.toString());
 				condition.printLog();
 				
-				results = query.executeAndFetch(this.model);
+				results = (List<T>) query.executeAndFetch(this.model);
 				if(null != results && results.size() > 0){
 					
 					if(isCache()){
 						sql2oCache.hsetlist(CACHE_KEY_LIST, field, results);
 					}
-					pageModel.setResults((List<M>) results);
+					pageModel.setResults((List<T>) results);
 				}
 				
 				return pageModel;
@@ -793,13 +832,13 @@ public class Model implements Serializable {
     	
     	if(condition.dmlType.equals(DmlType.SELECT) && null != page && null != pageSize && page > 0 && pageSize > 0){
     		
-     		Page<Model> pageModel = fetchPage(page, pageSize);
+     		Page<T> pageModel = fetchPage(page, pageSize);
      		
 			if(null != pageModel && null != pageModel.getResults()){
 				
 				pageMap = new Page<Map<String, Object>>(pageModel.getTotalCount(), page, pageSize);
 				
-				List<Model> list = pageModel.getResults();
+				List<T> list = pageModel.getResults();
 				List<Map<String, Object>> result = BeanKit.toListMap(list);
 				pageMap.setResults(result);
 				
@@ -830,8 +869,8 @@ public class Model implements Serializable {
      * @return	返回主键
      */
     @SuppressWarnings("unchecked")
-	public <T> T executeAndCommit(Class<T> returnType) {
-    	T key = null;
+	public <V> V executeAndCommit(Class<V> returnType) {
+    	V key = null;
     	Query query = null;
     	try {
 			// 插入
@@ -847,7 +886,7 @@ public class Model implements Serializable {
 				if(null != returnType){
 					key = query.executeUpdate().getKey(returnType);
 				} else {
-					key = (T) query.executeUpdate().getKey();
+					key = (V) query.executeUpdate().getKey();
 				}
 			}
 			
@@ -860,7 +899,7 @@ public class Model implements Serializable {
 					sql2oCache.hdel(CACHE_KEY_DETAIL);
 					sql2oCache.hdel(CACHE_KEY_LIST);
 				}
-				key = (T) Integer.valueOf(query.executeUpdate().getResult());
+				key = (V) Integer.valueOf(query.executeUpdate().getResult());
 			}
 			
 			// 删除
@@ -873,7 +912,7 @@ public class Model implements Serializable {
 					sql2oCache.hdel(CACHE_KEY_LIST);
 					sql2oCache.hdel(CACHE_KEY_DETAIL);
 				}
-				key = (T) Integer.valueOf(query.executeUpdate().getResult());
+				key = (V) Integer.valueOf(query.executeUpdate().getResult());
 			}
 			
 			condition.clearMap();
