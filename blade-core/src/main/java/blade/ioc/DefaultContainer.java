@@ -116,7 +116,7 @@ public class DefaultContainer implements Container {
 
     @Override
     public boolean hasBean(Class<?> clz) {
-        if (null != this.getBean(clz, Scope.SINGLE)) {
+        if (null != single().getBean(clz, Scope.SINGLE)) {
             return true;
         }
         return false;
@@ -124,7 +124,7 @@ public class DefaultContainer implements Container {
 
     @Override
     public boolean hasBean(String name) {
-        if (null != this.getBean(name, Scope.SINGLE)) {
+        if (null != single().getBean(name, Scope.SINGLE)) {
             return true;
         }
         return false;
@@ -207,7 +207,7 @@ public class DefaultContainer implements Container {
     				listObject = CollectionKit.newArrayList();
     			}
     			listObject.add(object);
-    			this.put(annotation.annotationType(), listObject);
+    			single().put(annotation.annotationType(), listObject);
     		}
     	}
     }
@@ -248,12 +248,11 @@ public class DefaultContainer implements Container {
 			        if (null != inject ) {
 			        	
 			        	// 要注入的字段
-			            Object injectField = this.getBean(field.getType(), Scope.SINGLE);
-			            injectField = null;
+			            Object injectField = single().getBean(field.getType(), Scope.SINGLE);
 			        	// 指定装配到哪个class
 			        	if(inject.value() != Class.class){
 			        		// 指定装配的类
-				            injectField = this.getBean(inject.value(), Scope.SINGLE);
+				            injectField = single().getBean(inject.value(), Scope.SINGLE);
 				            
 				            if (null == injectField) {
 			                	injectField = recursiveAssembly(inject.value());
@@ -293,7 +292,7 @@ public class DefaultContainer implements Container {
     			String implClassName = clazz.getPackage().getName() + ".impl." + clazz.getSimpleName() + "Impl";
     			return ReflectKit.newInstance(implClassName);
     		} else {
-    			field = this.registBean(clazz);
+    			field = single().registBean(clazz);
 			}
     	}
     	return field;
@@ -341,7 +340,7 @@ public class DefaultContainer implements Container {
 	public void registBean(Set<Class<?>> classes) {
 		if(!CollectionKit.isEmpty(classes)){
 			for(Class<?> clazz : classes){
-				this.registBean(clazz);
+				single().registBean(clazz);
 			}
 		}
 	}
