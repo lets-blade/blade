@@ -26,6 +26,7 @@
 * Plug-in extension mechanism
 * Template engine Plugin
 * Cache Plugin
+* The source code of less than 100kb
 
 ## Quick start
 First. Use maven to build a webapp, join dependency on the blade,Recommended for the [latest version](LAST_VERSION.md)
