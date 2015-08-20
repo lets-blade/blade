@@ -37,7 +37,7 @@
 </dependency>
 ```
 	
-第二步、在`web.xml`中配置Blade核心过滤器并设置你的初始化类，你也可以不配置(使用jetty启动)
+第二步、在`web.xml`中配置Blade核心过滤器并设置你的初始化类
 	
 ```xml
 <filter>

@@ -39,7 +39,7 @@ First. Use maven to build a webapp, join dependency on the blade,Recommended for
 </dependency>
 ```
 	
-Second. Configuration in the `web.xml` Blade core filter initialization and set your class, and you can also not configuration(using jetty start)
+Second. Configuration in the `web.xml` Blade core filter initialization and set your class
 	
 ```xml
 <filter>
