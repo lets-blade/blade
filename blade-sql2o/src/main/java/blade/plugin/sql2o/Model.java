@@ -340,7 +340,7 @@ public class Model<T extends Serializable> {
     private Query parseParams(Query query){
     	
     	// insert、update参数
-    	if(null != condition.params && condition.params.size() > 0){
+    	if(null != condition.params){
 			Set<String> keys = condition.params.keySet();
 			for(String name : keys){
 				query.addParameter(condition.filterKeyWord(name), condition.params.get(name));
@@ -348,7 +348,7 @@ public class Model<T extends Serializable> {
 		}
     	
     	// 基础equals条件
-		if(null != condition.equalsParams && condition.equalsParams.size() > 0){
+		if(null != condition.equalsParams){
 			Set<String> keys = condition.equalsParams.keySet();
 			for(String name : keys){
 				query.addParameter(condition.filterKeyWord(name), condition.equalsParams.get(name));
@@ -356,7 +356,7 @@ public class Model<T extends Serializable> {
 		}
 		
 		// 大于条件
-		if(null != condition.greaterParams && condition.greaterParams.size() > 0){
+		if(null != condition.greaterParams){
 			Set<String> keys = condition.greaterParams.keySet();
 			for(String name : keys){
 				query.addParameter(condition.filterKeyWord(name), condition.greaterParams.get(name));
@@ -364,7 +364,7 @@ public class Model<T extends Serializable> {
 		}
 		
 		// 小于条件
-		if(null != condition.lessParams && condition.lessParams.size() > 0){
+		if(null != condition.lessParams){
 			Set<String> keys = condition.lessParams.keySet();
 			for(String name : keys){
 				query.addParameter(condition.filterKeyWord(name), condition.lessParams.get(name));
@@ -372,7 +372,7 @@ public class Model<T extends Serializable> {
 		}
 		
 		// 大于等于条件
-		if(null != condition.greaterThanParams && condition.greaterThanParams.size() > 0){
+		if(null != condition.greaterThanParams){
 			Set<String> keys = condition.greaterThanParams.keySet();
 			for(String name : keys){
 				query.addParameter(condition.filterKeyWord(name), condition.greaterThanParams.get(name));
@@ -380,7 +380,7 @@ public class Model<T extends Serializable> {
 		}
 		
 		// 小于等于条件
-		if(null != condition.lessThanParams && condition.lessThanParams.size() > 0){
+		if(null != condition.lessThanParams){
 			Set<String> keys = condition.lessThanParams.keySet();
 			for(String name : keys){
 				query.addParameter(condition.filterKeyWord(name), condition.lessThanParams.get(name));
@@ -388,7 +388,7 @@ public class Model<T extends Serializable> {
 		}
 		
 		// like条件
-		if(null != condition.likeParams && condition.likeParams.size() > 0){
+		if(null != condition.likeParams){
 			Set<String> keys = condition.likeParams.keySet();
 			for(String name : keys){
 				query.addParameter(condition.filterKeyWord(name), condition.likeParams.get(name));
@@ -396,7 +396,7 @@ public class Model<T extends Serializable> {
 		}
 		
 		// in条件
-		if(null != condition.inParams && condition.inParams.size() > 0){
+		if(null != condition.inParams){
 			Set<String> keys = condition.inParams.keySet();
 			
 			for(String name : keys){
@@ -940,11 +940,16 @@ public class Model<T extends Serializable> {
 					sql2oCache.hdel(CACHE_KEY_LIST);
 				}
 				
-				if(null != returnType){
-					key = query.executeUpdate().getKey(returnType);
+				if(null == query){
+					LOGGER.error("query is null");
 				} else {
-					key = (V) query.executeUpdate().getKey();
+					if(null != returnType){
+						key = query.executeUpdate().getKey(returnType);
+					} else {
+						key = (V) query.executeUpdate().getKey();
+					}
 				}
+				
 			}
 			
 			// 更新
@@ -956,7 +961,12 @@ public class Model<T extends Serializable> {
 					sql2oCache.hdel(CACHE_KEY_DETAIL);
 					sql2oCache.hdel(CACHE_KEY_LIST);
 				}
-				key = (V) Integer.valueOf(query.executeUpdate().getResult());
+				
+				if(null == query){
+					LOGGER.error("query is null");
+				} else {
+					key = (V) ((Integer) query.executeUpdate().getResult());
+				}
 			}
 			
 			// 删除
@@ -969,13 +979,18 @@ public class Model<T extends Serializable> {
 					sql2oCache.hdel(CACHE_KEY_LIST);
 					sql2oCache.hdel(CACHE_KEY_DETAIL);
 				}
-				key = (V) Integer.valueOf(query.executeUpdate().getResult());
+				if(null == query){
+					LOGGER.error("query is null");
+				} else {
+					key = (V) Integer.valueOf(query.executeUpdate().getResult());
+				}
+				
 			}
 			
 			condition.clearMap();
 			return key;
 		} catch (Exception e) {
-			LOGGER.error(e);
+			e.printStackTrace();
 		}
     	return null;
     }
@@ -1055,7 +1070,7 @@ public class Model<T extends Serializable> {
 		
     	String insertSql = condition.sql;
     	
-		if(!condition.params.isEmpty() && condition.params.size() > 0){
+		if(null != condition.params){
 			
 			StringBuffer paramBuf = new StringBuffer("(");
 			StringBuffer valuesBuf = new StringBuffer(" values(");
@@ -1091,7 +1106,7 @@ public class Model<T extends Serializable> {
      */
 	private Query updateCommit(Connection conn){
     	
-    	if(null != condition.params && condition.params.size() > 0){
+    	if(null != condition.params){
 			
 			StringBuffer setBuf = new StringBuffer(" set ");
 			StringBuffer whereBuf = new StringBuffer("(");
@@ -1114,22 +1129,19 @@ public class Model<T extends Serializable> {
 				whereSql = whereBuf.substring(0, whereBuf.length() - 2);
 			}
 			
-			if(setSql.length() > 0){
-				
-				String updateSql = condition.sql + setSql + whereSql;
-				
-				if(null == conn){
-					conn = sql2o.open();
-				}
-				
-	    		Query query = conn.createQuery(updateSql);
-	    		query = parseParams(query);
-//	    		query.executeUpdate();
-				LOGGER.debug("execute sql：" + query.toString());
-	    		LOGGER.debug("execute parameter：" + condition.params.values() + condition.equalsParams.values());
-	    		
-	    		return query;
+			String updateSql = condition.sql + setSql + whereSql;
+			
+			if(null == conn){
+				conn = sql2o.open();
 			}
+			
+    		Query query = conn.createQuery(updateSql);
+    		query = parseParams(query);
+//	    		query.executeUpdate();
+			LOGGER.debug("execute sql：" + query.toString());
+    		LOGGER.debug("execute parameter：" + condition.params.values() + condition.equalsParams.values());
+    		
+    		return query;
 		}
 		return null;
     }

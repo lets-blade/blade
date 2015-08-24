@@ -17,6 +17,12 @@
 
 	<dependencies>
 		<dependency>
+			<groupId>org.sql2o</groupId>
+			<artifactId>sql2o</artifactId>
+			<version>1.5.4</version>
+		</dependency>
+		
+		<dependency>
 			<groupId>com.bladejava</groupId>
 			<artifactId>blade-core</artifactId>
 			<version>${blade.version}</version>
@@ -28,16 +34,6 @@
 			<version>1.2.2</version>
 			<scope>provided</scope>
 		</dependency>
-		<dependency>
-			<groupId>mysql</groupId>
-			<artifactId>mysql-connector-java</artifactId>
-			<version>5.1.35</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.sql2o</groupId>
-			<artifactId>sql2o</artifactId>
-			<version>1.5.4</version>
-		</dependency>
+		
 	</dependencies>
 </project>
