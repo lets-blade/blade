@@ -209,24 +209,26 @@ public class Condition {
     	this.orderby = null;
     }
     
-    public void update(){
+    public Condition update(){
     	this.sql = "update " + this.tableName;
     	clearMap();
     	this.params = CollectionKit.newLinkedHashMap();
     	this.equalsParams = CollectionKit.newLinkedHashMap();
     	this.dmlType = DmlType.UPDATE;
+    	return this;
     }
     
     /**
      * 自定义更新语句
      * @param sql
      */
-    public void update(String sql){
+    public Condition update(String sql){
     	this.sql = sql;
     	clearMap();
     	this.params = CollectionKit.newLinkedHashMap();
     	this.equalsParams = CollectionKit.newLinkedHashMap();
     	this.dmlType = DmlType.UPDATE;
+    	return this;
     }
     
     public void insert(){

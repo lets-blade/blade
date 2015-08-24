@@ -22,6 +22,8 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 
+import blade.Blade;
+import blade.BladeWebContext;
 import blade.kit.log.Logger;
 import blade.render.ModelAndView;
 import blade.render.Render;
@@ -116,8 +118,26 @@ public class Response {
      * 
      * @param location		重定向的location
      */
+    public void go(String path) {
+        if (Blade.debug()) {
+            LOGGER.debug("Redirecting ({} {} to {}", "Found", HttpServletResponse.SC_FOUND, path);
+        }
+        try {
+        	String ctx = BladeWebContext.servletContext().getContextPath();
+        	String location = (ctx + path).replaceAll("//", "/");
+            response.sendRedirect(location);
+        } catch (IOException ioException) {
+            LOGGER.warn("Redirect failure", ioException);
+        }
+    }
+    
+    /**
+     * 重定向到location
+     * 
+     * @param location		重定向的location
+     */
     public void redirect(String location) {
-        if (LOGGER.isDebugEnabled()) {
+        if (Blade.debug()) {
             LOGGER.debug("Redirecting ({} {} to {}", "Found", HttpServletResponse.SC_FOUND, location);
         }
         try {

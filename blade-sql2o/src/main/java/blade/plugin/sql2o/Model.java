@@ -1124,7 +1124,7 @@ public class Model<T extends Serializable> {
 				
 	    		Query query = conn.createQuery(updateSql);
 	    		query = parseParams(query);
-	    		query.executeUpdate();
+//	    		query.executeUpdate();
 				LOGGER.debug("execute sql：" + query.toString());
 	    		LOGGER.debug("execute parameter：" + condition.params.values() + condition.equalsParams.values());
 	    		
