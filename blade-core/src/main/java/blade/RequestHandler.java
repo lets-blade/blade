@@ -173,7 +173,7 @@ public class RequestHandler {
 				response.render404(uri);
 			}
 		} catch (BladeException bex) {
-			LOGGER.error(bex);
+			bex.printStackTrace();
             httpResponse.setStatus(500);
             // 写入内容到浏览器
             if (!httpResponse.isCommitted()) {
@@ -181,9 +181,7 @@ public class RequestHandler {
                 return true;
             }
         } catch (Exception e) {
-        	LOGGER.error(e.getStackTrace()[0]);
         	e.printStackTrace();
-        	LOGGER.error(e);
         	httpResponse.setStatus(500);
         	// 写入内容到浏览器
             if (!httpResponse.isCommitted()) {
