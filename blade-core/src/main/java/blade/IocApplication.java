@@ -50,8 +50,8 @@ public final class IocApplication {
 	public static void init(){
 		
 		// 初始化全局配置类
-		if(null == container.getBean(BladeApplication.class, Scope.SINGLE)){
-			container.registBean(Blade.application());
+		if(null == container.getBean(Bootstrap.class, Scope.SINGLE)){
+			container.registBean(Blade.bootstrap());
 		}
 		
 		// 初始化ioc容器

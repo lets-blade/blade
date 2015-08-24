@@ -25,6 +25,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import blade.Blade;
 import blade.BladeWebContext;
+import blade.kit.log.Logger;
 import blade.servlet.Response;
 /**
  * 渲染器抽象类
@@ -33,6 +34,9 @@ import blade.servlet.Response;
  * @since	1.0
  */
 public abstract class Render {
+	
+	private static final Logger LOGGER = Logger.getLogger(Render.class);
+	
 	
 	static final String VIEW_NOTFOUND = "<html><body><h2>404 %s</h2></body></html>";
 	
@@ -65,7 +69,7 @@ public abstract class Render {
     			outputStream.close();
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			LOGGER.error(e);
 		}
 	}
 	
@@ -93,7 +97,7 @@ public abstract class Render {
     			outputStream.close();
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			LOGGER.error(e);
 		}
 	}
 	

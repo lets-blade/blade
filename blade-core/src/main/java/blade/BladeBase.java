@@ -43,10 +43,10 @@ abstract class BladeBase {
      */
     protected static boolean IS_INIT = false;
     
-	/**
+    /**
      * blade全局初始化对象，在web.xml中配置，必须
      */
-    protected static BladeApplication bladeApplication;
+    protected static Bootstrap bootstrap;
     
     /**
 	 * 全局配置对象
@@ -165,8 +165,8 @@ abstract class BladeBase {
      * 
      * @param bladeApplication 	全局初始化bladeApplication
      */
-    public static synchronized <T> void app(BladeApplication bladeApplication){
-    	BladeBase.bladeApplication = bladeApplication;
+    public static synchronized <T> void app(Bootstrap bootstrap){
+    	BladeBase.bootstrap = bootstrap;
     }
     
     /**
@@ -319,6 +319,24 @@ abstract class BladeBase {
 	}
 	
 	/**
+	 * 拦截器before请求
+	 * @param path
+	 * @param routeHandler
+	 */
+	public static synchronized void before(String path, RouteHandler routeHandler){
+		RouteMatcherBuilder.buildHandler(path, routeHandler, HttpMethod.BEFORE);
+	}
+	
+	/**
+	 * 拦截器after请求
+	 * @param path
+	 * @param routeHandler
+	 */
+	public static synchronized void after(String path, RouteHandler routeHandler){
+		RouteMatcherBuilder.buildHandler(path, routeHandler, HttpMethod.AFTER);
+	}
+	
+	/**
 	 * 注册一个函数式的拦截器</br>
 	 * <p>
 	 * 方法上指定请求类型，如：post:signin
@@ -441,10 +459,10 @@ abstract class BladeBase {
 	}
 	
 	/**
-	 * @return	返回BladeApplication对象
+	 * @return	返回Bootstrap对象
 	 */
-	public static BladeApplication application(){
-		return bladeApplication; 
+	public static Bootstrap bootstrap(){
+		return bootstrap; 
 	}
 	
     /**--------------------GET CONST:END-------------------------*/

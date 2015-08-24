@@ -25,6 +25,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import blade.Blade;
 import blade.BladeWebContext;
+import blade.kit.log.Logger;
 
 /**
  * JSP渲染引擎，默认的渲染器
@@ -33,6 +34,8 @@ import blade.BladeWebContext;
  * @since	1.0
  */
 public final class JspRender extends Render {
+	
+	private static final Logger LOGGER = Logger.getLogger(JspRender.class);
 	
 	private JspRender() {
 	}
@@ -56,9 +59,9 @@ public final class JspRender extends Render {
 			servletRequest.getRequestDispatcher(realPath).forward(servletRequest, servletResponse);
 			
 		} catch (ServletException e) {
-			e.printStackTrace();
+			LOGGER.error(e);
 		} catch (IOException e) {
-			e.printStackTrace();
+			LOGGER.error(e);
 		}
 		return null;
 	}
@@ -83,13 +86,12 @@ public final class JspRender extends Render {
 			}
 			servletRequest.getRequestDispatcher(realPath).forward(servletRequest, servletResponse);
 		} catch (ServletException e) {
-			e.printStackTrace();
+			LOGGER.error(e);
 		} catch (IOException e) {
-			e.printStackTrace();
+			LOGGER.error(e);
 		}
 		return null;
 	}
-
 	
 	public static JspRender single() {
         return JspRenderHolder.single;

@@ -36,5 +36,11 @@ public @interface Path{
 	 * @return String 
 	 */
 	String value() default "/";
-
+	
+	/**
+	 * 路由后缀
+	 * @return String 
+	 */
+	String suffix() default "";
+	
 }

@@ -41,6 +41,12 @@ public @interface Before {
 	String value() default "";
 	
 	/**
+	 * 路由后缀
+	 * @return String 
+	 */
+	String suffix() default "";
+	
+	/**
 	 * 允许的accept
 	 */
 	String acceptType() default "*/*";

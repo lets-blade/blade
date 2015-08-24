@@ -261,18 +261,27 @@ public final class RouteMatcherBuilder {
 			
 			if (null != before) {
 				
+				String beforeSuffix = before.suffix();
+				
 				String path = before.value().startsWith("/") ? before.value() : "/" + before.value();
 				
 				path = path.length() > 1 && path.endsWith("/") ? path.substring(0, path.length() - 1) : path;
+				
+				path = path + beforeSuffix;
 				
 				String acceptType = before.acceptType();
 				buildInterceptor(interceptor, method, path, HttpMethod.BEFORE, acceptType);
 			}
 			
 			if (null != after) {
+				
+				String afterSuffix = after.suffix();
+				
 				String path = after.value().startsWith("/") ? after.value() : "/" + after.value();
 				
 				path = path.length() > 1 && path.endsWith("/") ? path.substring(0, path.length() - 1) : path;
+				
+				path = path + afterSuffix;
 				
 				String acceptType = after.acceptType();
 				buildInterceptor(interceptor, method, path, HttpMethod.AFTER, acceptType);
@@ -296,6 +305,8 @@ public final class RouteMatcherBuilder {
     	
 		final String nameSpace = router.getAnnotation(Path.class).value();
 		
+		final String suffix = router.getAnnotation(Path.class).suffix();
+		
 		for (Method method : methods) {
 			
 			Route mapping = method.getAnnotation(Route.class);
@@ -309,6 +320,8 @@ public final class RouteMatcherBuilder {
 				path = path.replaceAll("[/]+", "/");
 				
 				path = path.length() > 1 && path.endsWith("/") ? path.substring(0, path.length() - 1) : path;
+				
+				path = path + suffix;
 				
 				HttpMethod methodType = mapping.method();
 				

@@ -56,7 +56,8 @@ public class RequestHandler {
     /**
      * 服务器500错误时返回的HTML
      */
-    private static final String INTERNAL_ERROR = "<html><body><h2>500 Internal Error</h2></body></html>";
+	
+    private static final String INTERNAL_ERROR = "<html><head><title>500 Internal Error</title></head><body bgcolor=\"white\"><center><h1>500 Internal Error</h1></center><hr><center>blade 1.2.7-beta</center></body></html>";
     
     private final static Container container = DefaultContainer.single();
     
@@ -106,8 +107,6 @@ public class RequestHandler {
         
         String acceptType = httpRequest.getHeader(ACCEPT_TYPE_REQUEST_MIME_HEADER);
         
-        // 响应体
-        String bodyContent = null;
         Request request = null;
         
         // 构建一个包装后的response
@@ -174,19 +173,21 @@ public class RequestHandler {
 				response.render404(uri);
 			}
 		} catch (BladeException bex) {
-			LOGGER.error(bex.getMessage());
+			LOGGER.error(bex);
             httpResponse.setStatus(500);
-            if (bex.getMessage() != null) {
-                bodyContent = bex.getMessage();
-            } else {
-                bodyContent = INTERNAL_ERROR;
-            }
-        }
-        boolean consumed = bodyContent != null;
-        if (consumed) {
             // 写入内容到浏览器
             if (!httpResponse.isCommitted()) {
-                response.render500(bodyContent);
+                response.render500(INTERNAL_ERROR);
+                return true;
+            }
+        } catch (Exception e) {
+        	LOGGER.error(e.getStackTrace()[0]);
+        	e.printStackTrace();
+        	LOGGER.error(e);
+        	httpResponse.setStatus(500);
+        	// 写入内容到浏览器
+            if (!httpResponse.isCommitted()) {
+                response.render500(INTERNAL_ERROR);
                 return true;
             }
         }
