@@ -2,6 +2,7 @@ package blade.plugin.sql2o.cache;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 import blade.cache.Cache;
 import blade.cache.CacheManager;
@@ -89,6 +90,15 @@ public class SimpleSql2oCache implements Sql2oCache {
 	}
 	
 	@Override
+	public List<Map<String, Object>> hgetlistmap(String key, String field) {
+		Object object = cache.hget(key, field);
+		if(null != object){
+			return (List<Map<String, Object>>) object;
+		}
+		return null;
+	}
+	
+	@Override
 	public <S> List<S> hgetlists(String key, String field) {
 		Object object = cache.hget(key, field);
 		if(null != object){
@@ -109,6 +119,11 @@ public class SimpleSql2oCache implements Sql2oCache {
 
 	@Override
 	public <T extends Serializable>  void hsetlist(String key, String field, List<T> value) {
+		cache.hset(key, field, value);
+	}
+	
+	@Override
+	public void hsetlistmap(String key, String field, List<Map<String, Object>> value) {
 		cache.hset(key, field, value);
 	}
 	

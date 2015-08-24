@@ -11,7 +11,6 @@ import org.sql2o.Connection;
 import org.sql2o.Query;
 import org.sql2o.Sql2o;
 
-import blade.kit.BeanKit;
 import blade.kit.StringKit;
 import blade.kit.log.Logger;
 import blade.plugin.sql2o.Condition.DmlType;
@@ -716,13 +715,46 @@ public class Model<T extends Serializable> {
 	 */
 	public List<Map<String, Object>> fetchListMap(){
 		
-    	if(condition.dmlType.equals(DmlType.SELECT)){
+		if(condition.dmlType.equals(DmlType.SELECT)){
     		
-    		List<T> list = fetchList();
-    		if(null != list && list.size() > 0){
-    			List<Map<String, Object>> result = BeanKit.toListMap(list);
-    			return result;
+    		String field = null;
+    		List<Map<String, Object>> result = null;
+    		
+    		// 开启缓存
+    		if(isCache()){
+    			field = MD5.create(getCacheKey(null));
+    			result = sql2oCache.hgetlistmap(CACHE_KEY_LIST, field);
+    			if(null != result){
+    				return result;
+    			}
     		}
+    		
+    		String sqlEnd = condition.getConditionSql();
+    		
+    		if(null != condition.orderby){
+    			sqlEnd += " order by " + condition.orderby;
+    		}
+    		
+    		try {
+				Connection conn = sql2o.open();
+				Query query = conn.createQuery(sqlEnd);
+				query = parseParams(query);
+				
+				LOGGER.debug("execute sql：" + query.toString());
+				
+				condition.printLog();
+				condition.clearMap();
+				
+				result = query.executeAndFetchTable().asList();
+				
+				if(isCache() && null != result){
+					sql2oCache.hsetlistmap(CACHE_KEY_LIST, field, result);
+				}
+				
+				return result;
+			} catch (Exception e) {
+				LOGGER.error(e);
+			}
     	}
     	return null;
     }
@@ -832,16 +864,41 @@ public class Model<T extends Serializable> {
     	
     	if(condition.dmlType.equals(DmlType.SELECT) && null != page && null != pageSize && page > 0 && pageSize > 0){
     		
-     		Page<T> pageModel = fetchPage(page, pageSize);
-     		
-			if(null != pageModel && null != pageModel.getResults()){
+    		// 查询总记录数
+    		long totalCount = getPageCount();
+    		
+    		List<Map<String, Object>> results = null;
+    		
+    		String sqlEnd = condition.getConditionSql();
+    				
+    		if(null != condition.orderby){
+    			sqlEnd += " order by " + condition.orderby;
+    		}
+    		
+    		sqlEnd += " limit :page, :pageSize";
+    		
+    		condition.where("page", page - 1);
+    		condition.where("pageSize", pageSize);
+    		
+			try {
+				// 设置query
+				Connection conn = sql2o.open();
+				Query query = conn.createQuery(sqlEnd);
+				query = parseParams(query);
 				
-				pageMap = new Page<Map<String, Object>>(pageModel.getTotalCount(), page, pageSize);
+				LOGGER.debug("execute sql：" + query.toString());
+				condition.printLog();
 				
-				List<T> list = pageModel.getResults();
-				List<Map<String, Object>> result = BeanKit.toListMap(list);
-				pageMap.setResults(result);
+				results = query.executeAndFetchTable().asList();
 				
+				pageMap = new Page<Map<String, Object>>(totalCount, page, pageSize);
+				
+				if(null != results && results.size() > 0){
+					pageMap.setResults(results);
+				}
+				
+			} catch (Exception e) {
+				LOGGER.error(e);
 			}
      		
 			condition.clearMap();

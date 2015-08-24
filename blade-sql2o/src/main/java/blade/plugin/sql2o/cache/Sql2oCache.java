@@ -2,6 +2,7 @@ package blade.plugin.sql2o.cache;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 public interface Sql2oCache {
 
@@ -14,6 +15,8 @@ public interface Sql2oCache {
 	void hsetV(String key, String field, Serializable value);
 	
 	<T extends Serializable> void hsetlist(String key, String field, List<T> value);
+	
+	void hsetlistmap(String key, String field, List<Map<String, Object>> value);
 	
 	<S> void hsetlists(String key, String field, List<S> value);
 	
@@ -28,6 +31,8 @@ public interface Sql2oCache {
 	<V> V hgetV(String key, String field);
 	
 	<T extends Serializable> List<T> hgetlist(String key, String field);
+	
+	List<Map<String, Object>> hgetlistmap(String key, String field);
 	
 	<S> List<S> hgetlists(String key, String field);
 	
