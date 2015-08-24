@@ -33,32 +33,33 @@
 <dependency>
 	<groupId>com.bladejava</groupId>
 	<artifactId>blade-core</artifactId>
-	<version>1.2.7-alpha</version>
+	<version>1.2.7-beta</version>
 </dependency>
 ```
 	
 第二步、在`web.xml`中配置Blade核心过滤器并设置你的初始化类
 	
 ```xml
-<filter>
-	<filter-name>BladeFilter</filter-name>
-	<filter-class>blade.BladeFilter</filter-class>
+<servlet>
+	<servlet-name>dispatcher</servlet-name>
+	<servlet-class>blade.DispatcherServlet</servlet-class>
 	<init-param>
-		<param-name>applicationClass</param-name>
-		<param-value>hello.App</param-value>
+		<param-name>bootstrapClass</param-name>
+        <param-value>blade.hello.App</param-value>
 	</init-param>
-</filter>
+	<load-on-startup>1</load-on-startup>
+</servlet>
 
-<filter-mapping>
-	<filter-name>BladeFilter</filter-name>
+<servlet-mapping>
+	<servlet-name>dispatcher</servlet-name>
 	<url-pattern>/*</url-pattern>
-</filter-mapping>
+</servlet-mapping>
 ```
 
 第三步、编写App.java和路由文件，下面是一个示例
 
 ```java
-public class App extends BladeApplication{
+public class App extends Bootstrap{
 
 	Logger logger = Logger.getLogger(App.class);
 	@Override

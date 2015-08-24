@@ -35,32 +35,33 @@ First. Use maven to build a webapp, join dependency on the blade,Recommended for
 <dependency>
 	<groupId>com.bladejava</groupId>
 	<artifactId>blade-core</artifactId>
-	<version>1.2.7-alpha</version>
+	<version>1.2.7-beta</version>
 </dependency>
 ```
 	
 Second. Configuration in the `web.xml` Blade core filter initialization and set your class
 	
 ```xml
-<filter>
-	<filter-name>BladeFilter</filter-name>
-	<filter-class>blade.BladeFilter</filter-class>
+<servlet>
+	<servlet-name>dispatcher</servlet-name>
+	<servlet-class>blade.DispatcherServlet</servlet-class>
 	<init-param>
-		<param-name>applicationClass</param-name>
-		<param-value>hello.App</param-value>
+		<param-name>bootstrapClass</param-name>
+        <param-value>blade.hello.App</param-value>
 	</init-param>
-</filter>
+	<load-on-startup>1</load-on-startup>
+</servlet>
 
-<filter-mapping>
-	<filter-name>BladeFilter</filter-name>
+<servlet-mapping>
+	<servlet-name>dispatcher</servlet-name>
 	<url-pattern>/*</url-pattern>
-</filter-mapping>
+</servlet-mapping>
 ```
 
 Third. Write App.java and routing file, here is an example
 
 ```java
-public class App extends BladeApplication{
+public class App extends Bootstrap{
 
 	Logger logger = Logger.getLogger(App.class);
 	@Override
