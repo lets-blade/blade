@@ -12,7 +12,7 @@ public interface Sql2oCache {
 	
 	void hset(String key, String field, Serializable value);
 	
-	void hsetV(String key, String field, Serializable value);
+	void hsetV(String key, String field, Object value);
 	
 	<T extends Serializable> void hsetlist(String key, String field, List<T> value);
 	

@@ -66,7 +66,7 @@ public class SimpleSql2oCache implements Sql2oCache {
 	}
 	
 	@Override
-	public void hsetV(String key, String field, Serializable value) {
+	public void hsetV(String key, String field, Object value) {
 		cache.hset(key, field, value);
 	}
 

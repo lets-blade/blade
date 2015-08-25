@@ -512,6 +512,7 @@ public class Model<T extends Serializable> {
     	}
     	return 0L;
     }
+    
     /**
      * @return		返回查询一个对象
      */
@@ -557,6 +558,57 @@ public class Model<T extends Serializable> {
     	return null;
     }
     
+	/**
+     * @return		返回查询一个对象
+     */
+	@SuppressWarnings("unchecked")
+	public <K, V> Map<K, V> fetchMap(){
+    	
+    	if(condition.dmlType.equals(DmlType.SELECT)){
+    		
+    		String sqlEnd = condition.getConditionSql();
+    		
+    		Map<K, V> res = null;
+    		String field = null;
+    		
+    		// 是否开启缓存查询
+    		if(isCache()){
+    			field = MD5.create(getCacheKey(null));
+    			
+    			res = sql2oCache.hgetV(CACHE_KEY_DETAIL, field);
+    			if(null != res){
+    				return res;
+    			}
+    		}
+    		
+    		try {
+				Connection conn = sql2o.open();
+				Query query = conn.createQuery(sqlEnd);
+				query = parseParams(query);
+				
+				LOGGER.debug("execute sql：" + query.toString());
+				condition.printLog();
+				condition.clearMap();
+				
+				org.sql2o.data.Table table = query.executeAndFetchTable();
+				if(null != table){
+					if(null != table.asList()){
+						res = (Map<K, V>) table.asList().get(0);
+					}
+				}
+				
+				// 重新放入缓存
+				if(isCache() && null != res){
+					sql2oCache.hsetV(CACHE_KEY_DETAIL, field, res);
+				}
+				return res;
+			} catch (Exception e) {
+				LOGGER.error(e);
+			}
+    	}
+    	return null;
+    }
+	
 	public T fetchByPk(Serializable pk){
     	T res = null;
     	
