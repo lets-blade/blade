@@ -55,6 +55,14 @@ public class Condition {
 	public Condition(String tableName, String pkName) {
 		this.tableName = tableName;
 		this.pkName = pkName;
+		this.params = CollectionKit.newHashMap();
+		this.equalsParams = CollectionKit.newHashMap();
+		this.greaterParams = CollectionKit.newHashMap();
+		this.greaterThanParams = CollectionKit.newHashMap();
+		this.lessParams = CollectionKit.newHashMap();
+		this.lessThanParams = CollectionKit.newHashMap();
+		this.likeParams = CollectionKit.newHashMap();
+		this.inParams = CollectionKit.newHashMap();
 	}
 
 	public String getConditionSql() {
@@ -122,27 +130,27 @@ public class Condition {
 		
 		if(null != this.params){
 			this.params.clear();
-			this.params = null;
+//			this.params = null;
 		}
 		
 		if(null != this.equalsParams){
 			this.equalsParams.clear();
-			this.equalsParams = null;
+//			this.equalsParams = null;
 		}
 		
 		if(null != this.greaterParams){
 			this.greaterParams.clear();
-			this.greaterParams = null;
+//			this.greaterParams = null;
 		}
 		
 		if(null != this.greaterThanParams){
 			this.greaterThanParams.clear();
-			this.greaterThanParams = null;
+//			this.greaterThanParams = null;
 		}
 		
 		if(null != this.lessParams){
 			this.lessParams.clear();
-			this.lessParams = null;
+//			this.lessParams = null;
 		}
 		
 		if(null != this.lessThanParams){
@@ -280,6 +288,42 @@ public class Condition {
     	}
     }
 
+    public void where(WhereParam whereParam){
+    	if(null != whereParam){
+    		if(whereParam.equalsParams.size() > 0){
+    			this.equalsParams.putAll(whereParam.equalsParams);
+    		}
+    		
+    		if(whereParam.greaterParams.size() > 0){
+    			this.greaterParams.putAll(whereParam.greaterParams);
+    		}
+    		
+    		if(whereParam.greaterThanParams.size() > 0){
+    			this.greaterThanParams.putAll(whereParam.greaterThanParams);
+    		}
+    		
+    		if(whereParam.lessParams.size() > 0){
+    			this.lessParams.putAll(whereParam.lessParams);
+    		}
+    		
+    		if(whereParam.lessThanParams.size() > 0){
+    			this.lessThanParams.putAll(whereParam.lessThanParams);
+    		}
+    		
+    		if(whereParam.likeParams.size() > 0){
+    			this.likeParams.putAll(whereParam.likeParams);
+    		}
+    		
+    		if(whereParam.inParams.size() > 0){
+    			this.inParams.putAll(whereParam.inParams);
+    		}
+    	
+    		if(whereParam.params.size() > 0){
+    			this.params.putAll(whereParam.params);
+    		}
+    	}
+    }
+    
     /**
      * 设置where参数列表，查询，更新，删除用到
      * 

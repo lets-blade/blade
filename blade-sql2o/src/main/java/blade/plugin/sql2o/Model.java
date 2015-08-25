@@ -212,6 +212,17 @@ public class Model<T extends Serializable> {
     }
     
     /**
+     * 设置where参数列表，查询，更新，删除用到
+     * 
+     * @param whereParam	保存参数的对象
+     * @return				返回model对象
+     */
+    public Model<T> where(WhereParam whereParam){
+    	condition.where(whereParam);
+    	return this;
+    }
+    
+    /**
      * 大于
      * @param name
      * @param value
