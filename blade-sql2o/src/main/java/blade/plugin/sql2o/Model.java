@@ -194,6 +194,18 @@ public class Model<T extends Serializable> {
      * @param value	参数值
      * @return		返回model对象
      */
+    public Model<T> set(String name, Object value){
+    	condition.param(name, value);
+    	return this;
+    }
+    
+    /**
+     * 设置参数列表，新增，更新用到
+     * 
+     * @param name	参数键
+     * @param value	参数值
+     * @return		返回model对象
+     */
     public Model<T> param(String name, Object value){
     	condition.param(name, value);
     	return this;
