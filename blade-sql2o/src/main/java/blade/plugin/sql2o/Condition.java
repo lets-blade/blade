@@ -330,7 +330,7 @@ public class Condition {
      * @param name
      * @param value
      */
-    public void where(String name, Object value){
+    public void eq(String name, Object value){
     	if(StringKit.isNotBlank(name) && null != value){
     		this.equalsParams.put(name, value);
     		this.logParams.add(value);

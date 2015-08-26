@@ -151,6 +151,17 @@ public final class RouteMatcherBuilder {
 		}
     }
     
+    public static void buildInterceptor(String path, RouteHandler routeHandler, HttpMethod httpMethod){
+    	if(StringKit.isNotBlank(path) && null != routeHandler){
+    		Class<?> clazz = RouteHandler.class;
+    		container.registBean(routeHandler);
+    		Method execMethod = ReflectKit.getMethodByName(clazz, "run");
+    		defaultRouteMatcher.addInterceptor(clazz, execMethod, path, httpMethod, "*/*");
+    	} else {
+			 throw new BladeException("an unqualified configuration");
+		}
+    }
+    
     /**
      * 函数式拦截器构建
      */

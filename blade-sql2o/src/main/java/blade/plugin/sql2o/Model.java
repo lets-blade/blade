@@ -206,8 +206,21 @@ public class Model<T extends Serializable> {
      * @param value	参数值
      * @return		返回model对象
      */
+    @Deprecated
     public Model<T> where(String name, Object value){
-    	condition.where(name, value);
+    	condition.eq(name, value);
+    	return this;
+    }
+    
+    /**
+     * 设置equals参数列表，查询，更新，删除用到
+     * 
+     * @param name	参数键
+     * @param value	参数值
+     * @return		返回model对象
+     */
+    public Model<T> eq(String name, Object value){
+    	condition.eq(name, value);
     	return this;
     }
     
@@ -874,8 +887,8 @@ public class Model<T extends Serializable> {
     		
     		sqlEnd += " limit :page, :pageSize";
     		
-    		condition.where("page", page - 1);
-    		condition.where("pageSize", pageSize);
+    		condition.eq("page", page - 1);
+    		condition.eq("pageSize", pageSize);
     		
 			try {
 				// 设置query
@@ -940,8 +953,8 @@ public class Model<T extends Serializable> {
     		
     		sqlEnd += " limit :page, :pageSize";
     		
-    		condition.where("page", page - 1);
-    		condition.where("pageSize", pageSize);
+    		condition.eq("page", page - 1);
+    		condition.eq("pageSize", pageSize);
     		
 			try {
 				// 设置query

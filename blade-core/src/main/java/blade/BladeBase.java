@@ -324,7 +324,7 @@ abstract class BladeBase {
 	 * @param routeHandler
 	 */
 	public static synchronized void before(String path, RouteHandler routeHandler){
-		RouteMatcherBuilder.buildHandler(path, routeHandler, HttpMethod.BEFORE);
+		RouteMatcherBuilder.buildInterceptor(path, routeHandler, HttpMethod.BEFORE);
 	}
 	
 	/**
@@ -333,7 +333,7 @@ abstract class BladeBase {
 	 * @param routeHandler
 	 */
 	public static synchronized void after(String path, RouteHandler routeHandler){
-		RouteMatcherBuilder.buildHandler(path, routeHandler, HttpMethod.AFTER);
+		RouteMatcherBuilder.buildInterceptor(path, routeHandler, HttpMethod.AFTER);
 	}
 	
 	/**
