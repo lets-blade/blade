@@ -329,8 +329,8 @@ public class Model<T extends Serializable> {
     
     private String getCacheCountKey(){
     	String cacheSql = getCacheKey(null);
-		if(cacheSql.indexOf("from") != -1 && cacheSql.indexOf("count(") == -1){
-			int start = cacheSql.indexOf("from") + 4;
+		if(cacheSql.indexOf("from ") != -1 && cacheSql.indexOf("count(") == -1){
+			int start = cacheSql.indexOf("from ") + 5;
 			cacheSql = "selectcount(1)from " + cacheSql.substring(start);
 		}
 		cacheSql = cacheSql.replaceAll("\\s", "");
@@ -471,8 +471,8 @@ public class Model<T extends Serializable> {
     		
     		String sqlEnd = condition.getConditionSql();
     		
-    		if(sqlEnd.indexOf("from") != -1 && sqlEnd.indexOf("count(") == -1){
-    			int start = sqlEnd.indexOf("from") + 4;
+    		if(sqlEnd.indexOf("from ") != -1 && sqlEnd.indexOf("count(") == -1){
+    			int start = sqlEnd.indexOf("from ") + 5;
     			sqlEnd = "select count(1) from " + sqlEnd.substring(start);
     		}
     		
@@ -515,8 +515,8 @@ public class Model<T extends Serializable> {
     		
     		String sqlEnd = condition.getConditionSql();
     		
-    		if(sqlEnd.indexOf("from") != -1 && sqlEnd.indexOf("count(") == -1){
-    			int start = sqlEnd.indexOf("from") + 4;
+    		if(sqlEnd.indexOf("from ") != -1 && sqlEnd.indexOf("count(") == -1){
+    			int start = sqlEnd.indexOf("from ") + 5;
     			sqlEnd = "select count(1) from " + sqlEnd.substring(start);
     		}
     		
@@ -586,14 +586,13 @@ public class Model<T extends Serializable> {
 	/**
      * @return		返回查询一个对象
      */
-	@SuppressWarnings("unchecked")
-	public <K, V> Map<K, V> fetchMap(){
+	public Map<String, Object> fetchMap(){
     	
     	if(condition.dmlType.equals(DmlType.SELECT)){
     		
     		String sqlEnd = condition.getConditionSql();
     		
-    		Map<K, V> res = null;
+    		Map<String, Object> res = null;
     		String field = null;
     		
     		// 是否开启缓存查询
@@ -617,8 +616,11 @@ public class Model<T extends Serializable> {
 				
 				org.sql2o.data.Table table = query.executeAndFetchTable();
 				if(null != table){
-					if(null != table.asList()){
-						res = (Map<K, V>) table.asList().get(0);
+					
+					List<Map<String, Object>> list = tableAsList(table);
+					
+					if(null != list && list.size() > 0){
+						res = list.get(0);
 					}
 				}
 				
@@ -977,7 +979,7 @@ public class Model<T extends Serializable> {
 				LOGGER.debug("execute sql：" + query.toString());
 				condition.printLog();
 				
-				results = query.executeAndFetchTable().asList();
+				results = tableAsList(query.executeAndFetchTable());
 				
 				pageMap = new Page<Map<String, Object>>(totalCount, page, pageSize);
 				
@@ -1219,13 +1221,15 @@ public class Model<T extends Serializable> {
 			
 			String updateSql = condition.sql + setSql + whereSql;
 			
+			updateSql = processUpdateSql(updateSql);
+			
 			if(null == conn){
 				conn = sql2o.open();
 			}
 			
     		Query query = conn.createQuery(updateSql);
     		query = parseParams(query);
-//	    		query.executeUpdate();
+    		
 			LOGGER.debug("execute sql：" + query.toString());
     		LOGGER.debug("execute parameter：" + condition.params.values() + condition.equalsParams.values());
     		
@@ -1234,7 +1238,21 @@ public class Model<T extends Serializable> {
 		return null;
     }
     
-    /**
+    private String processUpdateSql(String updateSql) {
+    	String[] sqlArr = updateSql.split(" set");
+		StringBuffer s = new StringBuffer(sqlArr[0] + " set");
+		int len = sqlArr.length;
+		for(int i=1; i<len; i++){
+			if(i != (len - 1)){
+				s.append(sqlArr[i]+",");
+			} else {
+				s.append(sqlArr[i]);
+			}
+		}
+		return s.toString();
+	}
+
+	/**
      * table转list
      * @param table
      * @return

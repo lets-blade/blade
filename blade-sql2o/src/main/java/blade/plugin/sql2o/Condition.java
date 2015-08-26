@@ -321,6 +321,10 @@ public class Condition {
     		if(whereParam.params.size() > 0){
     			this.params.putAll(whereParam.params);
     		}
+    		
+    		if(whereParam.logParams.size() > 0){
+    			this.logParams.addAll(whereParam.logParams);
+    		}
     	}
     }
     

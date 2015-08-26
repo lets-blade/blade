@@ -120,7 +120,7 @@ public class Response {
      */
     public void go(String path) {
         if (Blade.debug()) {
-            LOGGER.debug("Redirecting ({} {} to {}", "Found", HttpServletResponse.SC_FOUND, path);
+            LOGGER.debug("Redirecting (%s %s to %s", "Found", HttpServletResponse.SC_FOUND, path);
         }
         try {
         	String ctx = BladeWebContext.servletContext().getContextPath();
@@ -138,7 +138,7 @@ public class Response {
      */
     public void redirect(String location) {
         if (Blade.debug()) {
-            LOGGER.debug("Redirecting ({} {} to {}", "Found", HttpServletResponse.SC_FOUND, location);
+            LOGGER.debug("Redirecting (%s %s to %s", "Found", HttpServletResponse.SC_FOUND, location);
         }
         try {
             response.sendRedirect(location);
