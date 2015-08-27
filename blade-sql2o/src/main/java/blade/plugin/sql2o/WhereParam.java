@@ -61,6 +61,55 @@ public class WhereParam {
 		return this;
 	}
 	
+	public Object eq(String field){
+		if(StringKit.isNotBlank(field)){
+			return this.equalsParams.get(field);
+		}
+		return null;
+	}
+	
+	public String like(String field){
+		if(StringKit.isNotBlank(field)){
+			return this.likeParams.get(field);
+		}
+		return null;
+	}
+	
+	public Object less(String field){
+		if(StringKit.isNotBlank(field)){
+			return this.lessParams.get(field);
+		}
+		return null;
+	}
+	
+	public Object lessThan(String field){
+		if(StringKit.isNotBlank(field)){
+			return this.lessThanParams.get(field);
+		}
+		return null;
+	}
+	
+	public Object greater(String field){
+		if(StringKit.isNotBlank(field)){
+			return this.greaterParams.get(field);
+		}
+		return null;
+	}
+	
+	public Object greaterThan(String field){
+		if(StringKit.isNotBlank(field)){
+			return this.greaterThanParams.get(field);
+		}
+		return null;
+	}
+	
+	public Object[] in(String field){
+		if(StringKit.isNotBlank(field)){
+			return this.inParams.get(field);
+		}
+		return null;
+	}
+	
 	public WhereParam like(String field, String value){
 		if(StringKit.isNotBlank(field) && StringKit.isNotBlank(value) 
     			&& value.indexOf("%null")==-1 && value.indexOf("null%")==-1 && !value.equals("%%")){
