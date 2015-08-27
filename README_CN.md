@@ -66,9 +66,9 @@ public class App extends Bootstrap{
 		Blade.regRoute("/hello", SayHi.class, "hello");
 		
 		// 匿名路由，java8方式更简化
-		Blade.get("/get", new RouteHandler() {
+		Blade.get("/get", new Router() {
 			@Override
-			public String run(Request request, Response response) {
+			public String handler(Request request, Response response) {
 				System.out.println("进入get!!");
 				System.out.println(request.query("name"));
 				return "get";

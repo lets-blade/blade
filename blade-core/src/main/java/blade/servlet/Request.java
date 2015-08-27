@@ -49,8 +49,8 @@ public class Request {
 
     private static final String USER_AGENT = "user-agent";
     
-    private Map<String, String> pathParams;
-    private List<String> splat;
+    protected Map<String, String> pathParams;
+    protected List<String> splat;
     private QueryParamsMap queryMap;
 
     private HttpServletRequest servletRequest;
@@ -113,9 +113,9 @@ public class Request {
         }
         
         if (param.startsWith(":")) {
-            return this.pathParams.get(param.toLowerCase());
+            return pathParams.get(param.toLowerCase());
         } else {
-            return this.pathParams.get(":" + param.toLowerCase());
+            return pathParams.get(":" + param.toLowerCase());
         }
     }
     
@@ -523,7 +523,7 @@ public class Request {
         return servletRequest.getProtocol();
     }
     
-    private static Map<String, String> getPathParams(List<String> request, List<String> matched) {
+    protected static Map<String, String> getPathParams(List<String> request, List<String> matched) {
     	
         Map<String, String> params = CollectionKit.newHashMap();
 
@@ -540,7 +540,7 @@ public class Request {
         return Collections.unmodifiableMap(params);
     }
 
-    private static List<String> getSplat(List<String> request, List<String> matched) {
+    protected static List<String> getSplat(List<String> request, List<String> matched) {
     	
         int nbrOfRequestParts = request.size();
         int nbrOfMatchedParts = matched.size();

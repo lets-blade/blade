@@ -208,6 +208,54 @@ public class DefaultRouteMatcher {
         interceptors.add(entry);
     }
     
+    /**
+     * 添加一个路由对象
+     * 
+     * @param router		执行的匿名类
+     * @param url			路由url
+     * @param method		路由http方法
+     * @param acceptType	路由acceptType
+     */
+    public void addRoute(Router router, Method execMethod, String url, HttpMethod method, String acceptType) {
+    	RouteMatcher entry = new RouteMatcher();
+        entry.router = router;
+        entry.httpMethod = method;
+        entry.path = url;
+        entry.requestURI = url;
+        entry.acceptType = acceptType;
+        
+        if(Blade.debug()){
+        	LOGGER.debug("Add Route：" + entry);
+        }
+        
+        // 添加到路由集合
+        routes.add(entry);
+    }
+    
+    /**
+     * 添加一个拦截器对象
+     * 
+     * @param router		执行的匿名类
+     * @param url			路由url
+     * @param method		路由http方法
+     * @param acceptType	路由acceptType
+     */
+    public void addInterceptor(Router router, String url, HttpMethod method, String acceptType) {
+    	RouteMatcher entry = new RouteMatcher();
+        entry.router = router;
+        entry.httpMethod = method;
+        entry.path = url;
+        entry.requestURI = url;
+        entry.acceptType = acceptType;
+        
+        if(Blade.debug()){
+        	LOGGER.debug("Add Interceptor：" + entry);
+        }
+        
+        // 添加到路由集合
+        interceptors.add(entry);
+    }
+    
     private Map<String, RouteMatcher> getAcceptedMimeTypes(List<RouteMatcher> routes) {
         Map<String, RouteMatcher> acceptedTypes = CollectionKit.newHashMap();
 

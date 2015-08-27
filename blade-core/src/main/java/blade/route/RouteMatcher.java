@@ -33,6 +33,8 @@ public class RouteMatcher {
 	 */
 	Class<?> target;
 	
+	Router router;
+	
 	/**
 	 * 要运行的方法对象
 	 */
@@ -93,6 +95,10 @@ public class RouteMatcher {
 	
     public Class<?> getTarget() {
 		return target;
+	}
+    
+    public Router getRouter() {
+		return router;
 	}
     
     /**

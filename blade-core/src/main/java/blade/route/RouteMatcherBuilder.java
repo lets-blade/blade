@@ -140,22 +140,25 @@ public final class RouteMatcherBuilder {
     /**
      * Handler路由构建
      */
-    public static void buildHandler(String path, blade.route.Route routeHandler, HttpMethod httpMethod){
-    	if(StringKit.isNotBlank(path) && null != routeHandler){
-    		Class<?> clazz = blade.route.Route.class;
-    		container.registBean(routeHandler);
-    		Method execMethod = ReflectKit.getMethodByName(clazz, "run");
+    public static void buildHandler(String path, Router router, HttpMethod httpMethod){
+    	if(StringKit.isNotBlank(path) && null != router){
+    		Class<?> clazz = blade.route.Router.class;
+    		container.registBean(router);
+    		Method execMethod = ReflectKit.getMethodByName(clazz, "handler");
     		defaultRouteMatcher.addRoute(clazz, execMethod, path, httpMethod, "*/*");
     	} else {
 			 throw new BladeException("an unqualified configuration");
 		}
     }
     
-    public static void buildInterceptor(String path, blade.route.Route routeHandler, HttpMethod httpMethod){
-    	if(StringKit.isNotBlank(path) && null != routeHandler){
-    		Class<?> clazz = blade.route.Route.class;
-    		container.registBean(routeHandler);
-    		Method execMethod = ReflectKit.getMethodByName(clazz, "run");
+    /**
+     * 函数式构建拦截器
+     */
+    public static void buildInterceptor(String path, Router router, HttpMethod httpMethod){
+    	if(StringKit.isNotBlank(path) && null != router){
+    		Class<?> clazz = blade.route.Router.class;
+    		container.registBean(router);
+    		Method execMethod = ReflectKit.getMethodByName(clazz, "handler");
     		defaultRouteMatcher.addInterceptor(clazz, execMethod, path, httpMethod, "*/*");
     	} else {
 			 throw new BladeException("an unqualified configuration");

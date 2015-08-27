@@ -20,6 +20,7 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
+import blade.route.RouteMatcher;
 import blade.servlet.QueryParamsMap;
 import blade.servlet.Request;
 import blade.servlet.Session;
@@ -33,6 +34,9 @@ import blade.servlet.Session;
 public final class RequestWrapper extends Request {
 
     private Request delegate;
+    
+    public RequestWrapper() {
+	}
     
     public void setDelegate(Request delegate) {	
         this.delegate = delegate;
@@ -225,5 +229,9 @@ public final class RequestWrapper extends Request {
     @Override
     public String cookie(String name) {
         return delegate.cookie(name);
+    }
+
+    public void initRequest(RouteMatcher match) {
+    	delegate.initRequest(match);
     }
 }

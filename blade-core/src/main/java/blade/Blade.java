@@ -27,7 +27,7 @@ import blade.kit.json.JSONKit;
 import blade.render.Render;
 import blade.render.RenderFactory;
 import blade.route.HttpMethod;
-import blade.route.Route;
+import blade.route.Router;
 import blade.route.RouteMatcherBuilder;
 
 /**
@@ -304,7 +304,7 @@ public final class Blade {
 	 * @param path
 	 * @param routeHandler
 	 */
-	public static synchronized void get(String path, Route routeHandler){
+	public static synchronized void get(String path, Router routeHandler){
 		RouteMatcherBuilder.buildHandler(path, routeHandler, HttpMethod.GET);
 	}
 	
@@ -313,7 +313,7 @@ public final class Blade {
 	 * @param path
 	 * @param routeHandler
 	 */
-	public static synchronized void post(String path, Route routeHandler){
+	public static synchronized void post(String path, Router routeHandler){
 		RouteMatcherBuilder.buildHandler(path, routeHandler, HttpMethod.POST);
 	}
 	
@@ -322,7 +322,7 @@ public final class Blade {
 	 * @param path
 	 * @param routeHandler
 	 */
-	public static synchronized void delete(String path, Route routeHandler){
+	public static synchronized void delete(String path, Router routeHandler){
 		RouteMatcherBuilder.buildHandler(path, routeHandler, HttpMethod.DELETE);
 	}
 	
@@ -331,7 +331,7 @@ public final class Blade {
 	 * @param path
 	 * @param routeHandler
 	 */
-	public static synchronized void put(String path, Route routeHandler){
+	public static synchronized void put(String path, Router routeHandler){
 		RouteMatcherBuilder.buildHandler(path, routeHandler, HttpMethod.PUT);
 	}
 	
@@ -340,7 +340,7 @@ public final class Blade {
 	 * @param path
 	 * @param routeHandler
 	 */
-	public static synchronized void patch(String path, Route routeHandler){
+	public static synchronized void patch(String path, Router routeHandler){
 		RouteMatcherBuilder.buildHandler(path, routeHandler, HttpMethod.PATCH);
 	}
 	
@@ -349,7 +349,7 @@ public final class Blade {
 	 * @param path
 	 * @param routeHandler
 	 */
-	public static synchronized void head(String path, Route routeHandler){
+	public static synchronized void head(String path, Router routeHandler){
 		RouteMatcherBuilder.buildHandler(path, routeHandler, HttpMethod.HEAD);
 	}
 	
@@ -358,7 +358,7 @@ public final class Blade {
 	 * @param path
 	 * @param routeHandler
 	 */
-	public static synchronized void trace(String path, Route routeHandler){
+	public static synchronized void trace(String path, Router routeHandler){
 		RouteMatcherBuilder.buildHandler(path, routeHandler, HttpMethod.TRACE);
 	}
 	
@@ -367,7 +367,7 @@ public final class Blade {
 	 * @param path
 	 * @param routeHandler
 	 */
-	public static synchronized void options(String path, Route routeHandler){
+	public static synchronized void options(String path, Router routeHandler){
 		RouteMatcherBuilder.buildHandler(path, routeHandler, HttpMethod.OPTIONS);
 	}
 	
@@ -376,7 +376,7 @@ public final class Blade {
 	 * @param path
 	 * @param routeHandler
 	 */
-	public static synchronized void connect(String path, Route routeHandler){
+	public static synchronized void connect(String path, Router routeHandler){
 		RouteMatcherBuilder.buildHandler(path, routeHandler, HttpMethod.CONNECT);
 	}
 	
@@ -385,7 +385,7 @@ public final class Blade {
 	 * @param path
 	 * @param routeHandler
 	 */
-	public static synchronized void all(String path, Route routeHandler){
+	public static synchronized void all(String path, Router routeHandler){
 		RouteMatcherBuilder.buildHandler(path, routeHandler, HttpMethod.ALL);
 	}
 	
@@ -394,7 +394,7 @@ public final class Blade {
 	 * @param path
 	 * @param routeHandler
 	 */
-	public static synchronized void before(String path, Route routeHandler){
+	public static synchronized void before(String path, Router routeHandler){
 		RouteMatcherBuilder.buildInterceptor(path, routeHandler, HttpMethod.BEFORE);
 	}
 	
@@ -403,7 +403,7 @@ public final class Blade {
 	 * @param path
 	 * @param routeHandler
 	 */
-	public static synchronized void after(String path, Route routeHandler){
+	public static synchronized void after(String path, Router routeHandler){
 		RouteMatcherBuilder.buildInterceptor(path, routeHandler, HttpMethod.AFTER);
 	}
 	
@@ -434,8 +434,7 @@ public final class Blade {
 		RouteMatcherBuilder.buildInterceptor(path, clazz, methodName, acceptType);
 	}
 	
-	
-	public static BladeConfig config(){
+	public final static BladeConfig config(){
     	return BLADE_CONFIG;
     }
 	

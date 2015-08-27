@@ -32,6 +32,7 @@ import blade.render.ModelAndView;
 import blade.route.DefaultRouteMatcher;
 import blade.route.HttpMethod;
 import blade.route.RouteMatcher;
+import blade.route.Router;
 import blade.servlet.Request;
 import blade.servlet.Response;
 import blade.wrapper.RequestResponseBuilder;
@@ -104,10 +105,7 @@ public class RequestHandler {
         		return false;
         	}
         }
-        
         String acceptType = httpRequest.getHeader(ACCEPT_TYPE_REQUEST_MIME_HEADER);
-        
-        Request request = null;
         
         // 构建一个包装后的response
         Response response = RequestResponseBuilder.build(httpResponse);
@@ -124,54 +122,29 @@ public class RequestHandler {
         boolean isHandler = true;
         
         try {
-        	
         	// 执行before拦截
         	isHandler = before(requestWrapper, responseWrapper, httpRequest, uri, acceptType);
-        	
         	if(!isHandler){
         		return false;
         	}
         	
         	// 查找用户请求的uri
 			RouteMatcher match = defaultRouteMatcher.findRouteMatcher(httpMethod, uri, acceptType);
-			
 			// 如果找到
 			if (match != null) {
-				
-				Class<?> target = match.getTarget();
-				
-				Object targetObject = container.getBean(target, Scope.SINGLE);
-				
-				// 要执行的路由方法
-				Method execMethod = match.getExecMethod();
-				
-				if(null != requestWrapper.getDelegate()){
-					request  = requestWrapper.getDelegate();
-					request.initRequest(match);
-				} else {
-					request = RequestResponseBuilder.build(match, httpRequest);
-				}
-				requestWrapper.setDelegate(request);
-                
-				BladeWebContext.init(requestWrapper, responseWrapper);
-				
-				// 执行route方法
-				Object result = executeMethod(targetObject, execMethod, requestWrapper, responseWrapper);
-				
+				// 实际执行方法
+				Object result = realHandler(httpRequest, requestWrapper, responseWrapper, match);
 				// 执行after拦截
 	        	isHandler = after(requestWrapper, responseWrapper, httpRequest, uri, acceptType);
-	        	if(!isHandler){
-	        		return false;
-	        	}
-	        	
-	        	if(null != result){
-	        		render(responseWrapper, result);
-	        	}
+				if (!isHandler)
+					return false;
+				if (null != result)
+					render(responseWrapper, result);
 				return true;
-			} else {
-				// 没有找到
-				response.render404(uri);
 			}
+			
+			// 没有找到
+			response.render404(uri);
 		} catch (BladeException bex) {
 			bex.printStackTrace();
             httpResponse.setStatus(500);
@@ -191,6 +164,56 @@ public class RequestHandler {
         }
         return false;
         
+	}
+	
+	/**
+	 * 
+	 * 实际的路由方法执行
+	 * @param httpRequest		http请求对象
+	 * @param requestWrapper	request包装对象
+	 * @param responseWrapper	response包装对象
+	 * @param match				路由匹配对象
+	 * @return	object
+	 */
+	private Object realHandler(HttpServletRequest httpRequest, RequestWrapper requestWrapper, ResponseWrapper responseWrapper, RouteMatcher match){
+		Object result = null;
+		Router router = match.getRouter();
+		if(null != router){
+			if (requestWrapper.getDelegate() == null) {
+                Request request = RequestResponseBuilder.build(match, httpRequest);
+                requestWrapper.setDelegate(request);
+            } else {
+                requestWrapper.initRequest(match);
+            }
+			
+			// 初始化context
+			BladeWebContext.init(requestWrapper, responseWrapper);
+			
+			result = router.handler(requestWrapper, responseWrapper);
+			
+		} else {
+			Class<?> target = match.getTarget();
+			
+			Object targetObject = container.getBean(target, Scope.SINGLE);
+			
+			// 要执行的路由方法
+			Method execMethod = match.getExecMethod();
+			
+			if (requestWrapper.getDelegate() == null) {
+                Request request = RequestResponseBuilder.build(match, httpRequest);
+                requestWrapper.setDelegate(request);
+            } else {
+                requestWrapper.initRequest(match);
+            }
+			
+			// 初始化context
+			BladeWebContext.init(requestWrapper, responseWrapper);
+			
+			// 执行route方法
+			result = executeMethod(targetObject, execMethod, requestWrapper, responseWrapper);
+		}
+		
+		return result;
 	}
 	
 	/**
@@ -308,7 +331,7 @@ public class RequestHandler {
 	private Object executeMethod(Object object, Method method, RequestWrapper requestWrapper, ResponseWrapper responseWrapper){
 		int len = method.getParameterTypes().length;
 		if(len > 0){
-			Object[] args = getArgs(requestWrapper.getDelegate(), responseWrapper.getDelegate(), method.getParameterTypes());
+			Object[] args = getArgs(requestWrapper, responseWrapper, method.getParameterTypes());
 			return ReflectKit.invokeMehod(object, method, args);
 		} else {
 			return ReflectKit.invokeMehod(object, method);

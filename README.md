@@ -68,9 +68,9 @@ public class App extends Bootstrap{
 		Blade.regRoute("/hello", SayHi.class, "hello");
 		
 		// anonymous router，java8 so simple
-		Blade.get("/get", new RouteHandler() {
+		Blade.get("/get", new Router() {
 			@Override
-			public String run(Request request, Response response) {
+			public String handler(Request request, Response response) {
 				System.out.println("come get!!");
 				System.out.println(request.query("name"));
 				return "get";
