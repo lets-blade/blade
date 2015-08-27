@@ -86,9 +86,9 @@ public class DefaultContainer implements Container {
 
     @Override
     public <T> T getBean(Class<T> type, Scope scope) {
-        Iterator<Object> it = BEAN_CONTAINER.values().iterator();
-        while (it.hasNext()) {
-            Object obj = it.next();
+        Set<String> keys = BEAN_CONTAINER.keySet();
+        for(String key : keys){
+        	Object obj = BEAN_CONTAINER.get(key);
             if (type.isAssignableFrom(obj.getClass())) {
             	if(null != scope && scope == Scope.PROTOTYPE){
             		try {
