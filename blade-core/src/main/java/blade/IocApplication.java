@@ -71,7 +71,7 @@ public final class IocApplication {
 	 * 
 	 */
 	private static void initIOC() {
-		String[] iocPackages = BladeBase.iocs();
+		String[] iocPackages = Blade.iocs();
 		if(null != iocPackages && iocPackages.length > 0){
 			for(String packageName : iocPackages){
 				registerBean(packageName);

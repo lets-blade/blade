@@ -140,9 +140,9 @@ public final class RouteMatcherBuilder {
     /**
      * Handler路由构建
      */
-    public static void buildHandler(String path, RouteHandler routeHandler, HttpMethod httpMethod){
+    public static void buildHandler(String path, blade.route.Route routeHandler, HttpMethod httpMethod){
     	if(StringKit.isNotBlank(path) && null != routeHandler){
-    		Class<?> clazz = RouteHandler.class;
+    		Class<?> clazz = blade.route.Route.class;
     		container.registBean(routeHandler);
     		Method execMethod = ReflectKit.getMethodByName(clazz, "run");
     		defaultRouteMatcher.addRoute(clazz, execMethod, path, httpMethod, "*/*");
@@ -151,9 +151,9 @@ public final class RouteMatcherBuilder {
 		}
     }
     
-    public static void buildInterceptor(String path, RouteHandler routeHandler, HttpMethod httpMethod){
+    public static void buildInterceptor(String path, blade.route.Route routeHandler, HttpMethod httpMethod){
     	if(StringKit.isNotBlank(path) && null != routeHandler){
-    		Class<?> clazz = RouteHandler.class;
+    		Class<?> clazz = blade.route.Route.class;
     		container.registBean(routeHandler);
     		Method execMethod = ReflectKit.getMethodByName(clazz, "run");
     		defaultRouteMatcher.addInterceptor(clazz, execMethod, path, httpMethod, "*/*");

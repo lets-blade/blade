@@ -52,7 +52,7 @@ public class BladeFilter implements Filter {
     	try {
 			if(!Blade.IS_INIT){
 				
-				BladeBase.webRoot(filterConfig.getServletContext().getRealPath("/"));
+				Blade.webRoot(filterConfig.getServletContext().getRealPath("/"));
 				
 				BladeWebContext.servletContext(filterConfig.getServletContext());
 				
@@ -67,7 +67,7 @@ public class BladeFilter implements Filter {
 			    
 			    bootstrap.contextInitialized(BladeWebContext.servletContext());
 			    
-			    BladeBase.init();
+			    Blade.init();
 			    
 			    LOGGER.info("blade init complete!");
 			}
@@ -108,8 +108,8 @@ public class BladeFilter implements Filter {
     	HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
         
-        httpRequest.setCharacterEncoding(BladeBase.encoding());
-        httpResponse.setCharacterEncoding(BladeBase.encoding());
+        httpRequest.setCharacterEncoding(Blade.encoding());
+        httpResponse.setCharacterEncoding(Blade.encoding());
         
         /**
          * 是否被RequestHandler执行
