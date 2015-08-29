@@ -30,7 +30,10 @@ public class ResponseWrapper extends Response {
     private Response delegate;
 
     private boolean redirected = false;
-
+    
+    public ResponseWrapper() {
+		// TODO Auto-generated constructor stub
+	}
     
     public ResponseWrapper(Response delegate) {
 		this.delegate = delegate;

@@ -107,35 +107,41 @@ public class RequestHandler {
         }
         String acceptType = httpRequest.getHeader(ACCEPT_TYPE_REQUEST_MIME_HEADER);
         
-        // 构建一个包装后的response
-        Response response = RequestResponseBuilder.build(httpResponse);
-        
         // 创建RequestWrapper And RequestWrapper
         RequestWrapper requestWrapper = new RequestWrapper();
-        ResponseWrapper responseWrapper = new ResponseWrapper(response);
+        ResponseWrapper responseWrapper = new ResponseWrapper();
         
         if(Blade.debug()){
         	LOGGER.debug("Request : " + method + "\t" + uri);
         }
         
+        // 构建一个包装后的response
+        Response response = RequestResponseBuilder.build(httpResponse);
+        
         HttpMethod httpMethod = HttpMethod.valueOf(method);
         boolean isHandler = true;
-        
+        Object result = null;
         try {
-        	// 执行before拦截
-        	isHandler = before(requestWrapper, responseWrapper, httpRequest, uri, acceptType);
-        	if(!isHandler){
-        		return false;
-        	}
+        	responseWrapper.setDelegate(response);
         	
         	// 查找用户请求的uri
 			RouteMatcher match = defaultRouteMatcher.findRouteMatcher(httpMethod, uri, acceptType);
 			// 如果找到
 			if (match != null) {
+				// 执行before拦截
+				isHandler = before(httpRequest, requestWrapper, responseWrapper,  uri, acceptType);
+				
+				if(!isHandler){
+					return false;
+				}
+				
 				// 实际执行方法
-				Object result = realHandler(httpRequest, requestWrapper, responseWrapper, match);
+				responseWrapper.setDelegate(response);
+				result = realHandler(httpRequest, requestWrapper, responseWrapper, match);
+				
 				// 执行after拦截
-	        	isHandler = after(requestWrapper, responseWrapper, httpRequest, uri, acceptType);
+				responseWrapper.setDelegate(response);
+	        	isHandler = after(httpRequest, requestWrapper, responseWrapper, uri, acceptType);
 				if (!isHandler)
 					return false;
 				if (null != result)
@@ -178,16 +184,18 @@ public class RequestHandler {
 	private Object realHandler(HttpServletRequest httpRequest, RequestWrapper requestWrapper, ResponseWrapper responseWrapper, RouteMatcher match){
 		Object result = null;
 		Router router = match.getRouter();
+		
+		if (requestWrapper.getDelegate() == null) {
+            Request request = RequestResponseBuilder.build(match, httpRequest);
+            requestWrapper.setDelegate(request);
+        } else {
+            requestWrapper.initRequest(match);
+        }
+		
+		// 初始化context
+		BladeWebContext.init(requestWrapper, responseWrapper);
+					
 		if(null != router){
-			if (requestWrapper.getDelegate() == null) {
-                Request request = RequestResponseBuilder.build(match, httpRequest);
-                requestWrapper.setDelegate(request);
-            } else {
-                requestWrapper.initRequest(match);
-            }
-			
-			// 初始化context
-			BladeWebContext.init(requestWrapper, responseWrapper);
 			
 			result = router.handler(requestWrapper, responseWrapper);
 			
@@ -198,16 +206,6 @@ public class RequestHandler {
 			
 			// 要执行的路由方法
 			Method execMethod = match.getExecMethod();
-			
-			if (requestWrapper.getDelegate() == null) {
-                Request request = RequestResponseBuilder.build(match, httpRequest);
-                requestWrapper.setDelegate(request);
-            } else {
-                requestWrapper.initRequest(match);
-            }
-			
-			// 初始化context
-			BladeWebContext.init(requestWrapper, responseWrapper);
 			
 			// 执行route方法
 			result = executeMethod(targetObject, execMethod, requestWrapper, responseWrapper);
@@ -226,7 +224,7 @@ public class RequestHandler {
 	 * @param uri					请求的URI
 	 * @param acceptType			请求头过滤
 	 */
-	private boolean before(RequestWrapper requestWrapper, ResponseWrapper responseWrapper, HttpServletRequest httpRequest, final String uri, final String acceptType){
+	private boolean before(HttpServletRequest httpRequest, RequestWrapper requestWrapper, ResponseWrapper responseWrapper, final String uri, final String acceptType){
 		
 		List<RouteMatcher> matchSet = defaultRouteMatcher.findInterceptor(HttpMethod.BEFORE, uri, acceptType);
 		
@@ -234,16 +232,7 @@ public class RequestHandler {
 		
 		for (RouteMatcher filterMatch : matchSet) {
 			
-        	Class<?> target = filterMatch.getTarget();
-        	
-        	Object targetObject = container.getBean(target, Scope.SINGLE);
-        	
-			Method execMethod = filterMatch.getExecMethod();
-			
-			Request request = RequestResponseBuilder.build(filterMatch, httpRequest);
-			requestWrapper.setDelegate(request);
-			
-			Object object = executeMethod(targetObject, execMethod, requestWrapper, responseWrapper);
+			Object object = realHandler(httpRequest, requestWrapper, responseWrapper, filterMatch);
 			
 			if(null != object && object instanceof Boolean){
 				isHandler = (Boolean) object;
@@ -258,32 +247,19 @@ public class RequestHandler {
 	/**
 	 * 后置事件，在route执行后执行
 	 * 
+	 * @param httpRequest			HttpServletRequest请求对象，用于构建Request
 	 * @param requestWrapper		RequestWrapper对象，包装了Request对象
 	 * @param responseWrapper		ResponseWrapper对象，包装了Response对象
-	 * @param httpRequest			HttpServletRequest请求对象，用于构建Request
 	 * @param uri					请求的URI
 	 * @param acceptType			请求头过滤
 	 */
-	private boolean after(RequestWrapper requestWrapper, ResponseWrapper responseWrapper, HttpServletRequest httpRequest, final String uri, final String acceptType){
+	private boolean after(HttpServletRequest httpRequest, RequestWrapper requestWrapper, ResponseWrapper responseWrapper, final String uri, final String acceptType){
         List<RouteMatcher> matchSet = defaultRouteMatcher.findInterceptor(HttpMethod.AFTER, uri, acceptType);
         
         boolean isHandler = true;
         
         for (RouteMatcher filterMatch : matchSet) {
-        	Class<?> target = filterMatch.getTarget();
-        	
-        	Object targetObject = container.getBean(target, Scope.SINGLE);
-        	
-			Method execMethod = filterMatch.getExecMethod();
-			
-			if (requestWrapper.getDelegate() == null) {
-                Request request = RequestResponseBuilder.build(filterMatch, httpRequest);
-                requestWrapper.setDelegate(request);
-            } else {
-                requestWrapper.initRequest(filterMatch);
-            }
-			
-			Object object = executeMethod(targetObject, execMethod, requestWrapper, responseWrapper);
+        	Object object = realHandler(httpRequest, requestWrapper, responseWrapper, filterMatch);
 			if(null != object && object instanceof Boolean){
 				isHandler = (Boolean) object;
 				if(!isHandler){
