@@ -17,6 +17,7 @@ package blade.wrapper;
 
 import javax.servlet.http.HttpServletResponse;
 
+import blade.render.ModelAndView;
 import blade.servlet.Response;
 
 /**
@@ -77,6 +78,10 @@ public class ResponseWrapper extends Response {
         return delegate.servletResponse();
     }
 
+    public void go(String path) {
+    	delegate.go(path);
+    }
+    
     @Override
     public void redirect(String location) {
         redirected = true;
@@ -135,4 +140,78 @@ public class ResponseWrapper extends Response {
     public void removeCookie(String name) {
         delegate.removeCookie(name);
     }
+    
+    /**
+	 * 渲染一个视图
+	 * @param		view
+	 */
+	public void render(String view){
+		delegate.render(view);
+	}
+	
+	/**
+	 * 根据ModelAndView进行渲染
+	 * @param		modelAndView
+	 */
+	public void render(ModelAndView modelAndView){
+		delegate.render(modelAndView);
+	}
+	
+	/**
+	 * 返回文字格式
+	 * @param text
+	 */
+	public void text(String text){
+		delegate.text(text);
+	}
+	
+	/**
+	 * 返回json格式
+	 * @param json
+	 */
+	public void json(String json){
+		delegate.json(json);
+	}
+	
+	/**
+	 * 返回xml格式
+	 * @param xml
+	 */
+	public void xml(String xml){
+		delegate.xml(xml);
+	}
+	
+	/**
+	 * 返回js格式
+	 * @param javascript
+	 */
+	public void javascript(String javascript){
+		delegate.javascript(javascript);
+	}
+	
+	/**
+	 * 返回html格式
+	 * @param html
+	 */
+	public void html(String html){
+		delegate.html(html);
+	}
+	
+	/**
+	 * 404默认视图
+	 * 
+	 * @param viewName
+	 */
+	public void render404(String viewName){
+		delegate.render404(viewName);
+	}
+	
+	/**
+	 * 500默认视图
+	 * 
+	 * @param bodyContent
+	 */
+	public void render500(String bodyContent){
+		delegate.render500(bodyContent);
+	}
 }
