@@ -33,6 +33,9 @@ public class RouteMatcher {
 	 */
 	Class<?> target;
 	
+	/**
+	 * 执行的类实例
+	 */
 	Router router;
 	
 	/**
@@ -63,8 +66,8 @@ public class RouteMatcher {
     public RouteMatcher() {
     }
     
-    public RouteMatcher(Class<?> target, Method execMethod, HttpMethod httpMethod, String path, String requestUri, String acceptType) {
-        super();
+    public RouteMatcher(Router router, Class<?> target, Method execMethod, HttpMethod httpMethod, String path, String requestUri, String acceptType) {
+        this.router = router;
         this.target = target;
         this.execMethod = execMethod;
         this.httpMethod = httpMethod;

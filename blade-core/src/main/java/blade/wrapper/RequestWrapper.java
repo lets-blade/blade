@@ -231,7 +231,16 @@ public final class RequestWrapper extends Request {
         return delegate.cookie(name);
     }
 
+    public Object invoke(){
+    	return delegate.invoke();
+    }
+
+	public Object invoke(String locaiton) {
+		return delegate.invoke(locaiton);
+	}
+	
     public void initRequest(RouteMatcher match) {
     	delegate.initRequest(match);
     }
+    
 }

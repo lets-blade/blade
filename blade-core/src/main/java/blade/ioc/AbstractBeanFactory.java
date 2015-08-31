@@ -20,6 +20,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
+import blade.kit.log.Logger;
+
 /**
  * 抽象bean工厂，用于注册和获取bean对象
  *
@@ -28,6 +30,8 @@ import java.util.Set;
  */
 public abstract class AbstractBeanFactory {
 	
+	private static final Logger LOGGER = Logger.getLogger(AbstractBeanFactory.class);
+	
 	protected Container container = DefaultContainer.single();
 	
 	public abstract Object getBean(String className);
@@ -35,7 +39,7 @@ public abstract class AbstractBeanFactory {
 	public abstract Object getBean(Class<?> clazz);
 	
 	public boolean resetBean(Class<?> clazz, Object object){
-		System.out.println("resetBean object=" + object);
+		LOGGER.info("resetBean object=" + object);
 		if(null != clazz.getInterfaces() && null != object){
 			container.removeBean(clazz);
 			container.getBeanMap().put(clazz.getName(), object);

@@ -567,4 +567,20 @@ public class Request {
         return Collections.unmodifiableList(splat);
     }
 
+    /**
+     * 继续执行
+     * @return
+     */
+    public Object invoke(){
+    	return true;
+    }
+
+    /**
+     * 跳转到一个页面
+     * @param locaiton
+     * @return
+     */
+	public Object invoke(String locaiton) {
+		return "redirect." + locaiton;
+	}
 }

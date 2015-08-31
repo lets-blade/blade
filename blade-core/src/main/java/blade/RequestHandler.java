@@ -58,7 +58,8 @@ public class RequestHandler {
      * 服务器500错误时返回的HTML
      */
 	
-    private static final String INTERNAL_ERROR = "<html><head><title>500 Internal Error</title></head><body bgcolor=\"white\"><center><h1>500 Internal Error</h1></center><hr><center>blade 1.2.7-beta</center></body></html>";
+	private static final String INTERNAL_ERROR = "<html><head><title>500 Internal Error</title></head><body bgcolor=\"white\"><center><h1>500 Internal Error</h1></center><hr><center>blade "
+			+ Blade.VERSION +"</center></body></html>";
     
     private final static Container container = DefaultContainer.single();
     
@@ -119,7 +120,6 @@ public class RequestHandler {
         Response response = RequestResponseBuilder.build(httpResponse);
         
         HttpMethod httpMethod = HttpMethod.valueOf(method);
-        boolean isHandler = true;
         Object result = null;
         try {
         	responseWrapper.setDelegate(response);
@@ -129,10 +129,27 @@ public class RequestHandler {
 			// 如果找到
 			if (match != null) {
 				// 执行before拦截
-				isHandler = before(httpRequest, requestWrapper, responseWrapper,  uri, acceptType);
+				result = before(httpRequest, requestWrapper, responseWrapper,  uri, acceptType);
+				if(result instanceof Boolean){
+					boolean isHandler = (Boolean) result;
+					if(!isHandler){
+						return false;
+					}
+				}
 				
-				if(!isHandler){
-					return false;
+				if(result instanceof String){
+					String res = result.toString();
+					if(res.startsWith("redirect.")){
+						response.go(res.substring(9));
+					} else {
+						render(responseWrapper, res);
+					}
+					return true;
+				}
+				
+				if(result instanceof ModelAndView){
+					render(responseWrapper, result);
+					return true;
 				}
 				
 				// 实际执行方法
@@ -141,9 +158,8 @@ public class RequestHandler {
 				
 				// 执行after拦截
 				responseWrapper.setDelegate(response);
-	        	isHandler = after(httpRequest, requestWrapper, responseWrapper, uri, acceptType);
-				if (!isHandler)
-					return false;
+	        	after(httpRequest, requestWrapper, responseWrapper, uri, acceptType);
+	        	
 				if (null != result)
 					render(responseWrapper, result);
 				return true;
@@ -151,6 +167,7 @@ public class RequestHandler {
 			
 			// 没有找到
 			response.render404(uri);
+			return true;
 		} catch (BladeException bex) {
 			bex.printStackTrace();
             httpResponse.setStatus(500);
@@ -224,24 +241,18 @@ public class RequestHandler {
 	 * @param uri					请求的URI
 	 * @param acceptType			请求头过滤
 	 */
-	private boolean before(HttpServletRequest httpRequest, RequestWrapper requestWrapper, ResponseWrapper responseWrapper, final String uri, final String acceptType){
+	private Object before(HttpServletRequest httpRequest, RequestWrapper requestWrapper, ResponseWrapper responseWrapper, final String uri, final String acceptType){
 		
 		List<RouteMatcher> matchSet = defaultRouteMatcher.findInterceptor(HttpMethod.BEFORE, uri, acceptType);
 		
-		boolean isHandler = true;
-		
 		for (RouteMatcher filterMatch : matchSet) {
-			
 			Object object = realHandler(httpRequest, requestWrapper, responseWrapper, filterMatch);
-			
-			if(null != object && object instanceof Boolean){
-				isHandler = (Boolean) object;
-				if(!isHandler){
-					return false;
-				}
+			if(null != object){
+				return object;
 			}
         }
-		return isHandler;
+		
+		return true;
 	}
 	
 	/**
@@ -321,13 +332,12 @@ public class RequestHandler {
 	 * @param result
 	 * @return
 	 */
-	private Object render(Response response, Object result){
+	private void render(Response response, Object result){
 		if(result instanceof String){
 			response.render(result.toString());
 		} else if(result instanceof ModelAndView){
 			response.render( (ModelAndView) result );
 		}
-		return null;
 	}
 	
 	private boolean filterStaticFolder(String uri){

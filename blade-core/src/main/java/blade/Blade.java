@@ -23,14 +23,13 @@ import blade.ioc.Container;
 import blade.ioc.DefaultContainer;
 import blade.kit.IOKit;
 import blade.kit.PropertyKit;
-import blade.kit.ReflectKit;
 import blade.kit.json.JSONKit;
 import blade.render.Render;
 import blade.render.RenderFactory;
 import blade.route.HttpMethod;
 import blade.route.RouteBase;
-import blade.route.Router;
 import blade.route.RouteMatcherBuilder;
+import blade.route.Router;
 
 /**
  * Blade Core Class
@@ -282,11 +281,7 @@ public final class Blade {
 	 * @param route
 	 */
 	public static synchronized void load(Class<? extends RouteBase> route){
-		Object object = ReflectKit.newInstance(route);
-		if(null != object){
-			container.injection(object);
-			ReflectKit.invokeMehodByName(object, "run");
-		}
+		IocApplication.addRouteClass(route);
 	}
 	
 	/**

@@ -37,8 +37,8 @@ public abstract class Render {
 	
 	private static final Logger LOGGER = Logger.getLogger(Render.class);
 	
-	
-	static final String VIEW_NOTFOUND = "<html><body><h2>404 %s</h2></body></html>";
+	static final String VIEW_NOTFOUND = "<html><head><title>404 Not Found</title></head><body bgcolor=\"white\"><center><h1>[ %s ] Not Found</h1></center><hr><center>blade "
+			+ Blade.VERSION +"</center></body></html>";
 	
 	public void render404(String viewName){
 		render404(null, viewName);
@@ -64,7 +64,7 @@ public abstract class Render {
         		response.contentType("text/html; charset=utf-8");
         		response.status(404);
     			ServletOutputStream outputStream = response.outputStream();
-    			outputStream.print(String.format(VIEW_NOTFOUND, viewName + " Not Found"));
+    			outputStream.print(String.format(VIEW_NOTFOUND, viewName));
     			outputStream.flush();
     			outputStream.close();
 			}

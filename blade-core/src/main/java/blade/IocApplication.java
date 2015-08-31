@@ -15,14 +15,18 @@
  */
 package blade;
 
+import java.util.List;
 import java.util.Set;
 
 import blade.ioc.Container;
 import blade.ioc.DefaultContainer;
 import blade.ioc.Scope;
+import blade.kit.CollectionKit;
+import blade.kit.ReflectKit;
 import blade.kit.log.Logger;
 import blade.kit.resource.ClassPathClassReader;
 import blade.kit.resource.ClassReader;
+import blade.route.RouteBase;
 
 /**
  * IOC容器初始化类
@@ -47,6 +51,11 @@ public final class IocApplication {
 	 */
 	static final ClassReader classReader = new ClassPathClassReader();
 	
+	/**
+	 * 存放路由类
+	 */
+	static final List<Class<? extends RouteBase>> ROUTE_CLASS_LIST = CollectionKit.newArrayList();
+	
 	public static void init(){
 		
 		// 初始化全局配置类
@@ -60,6 +69,14 @@ public final class IocApplication {
 		// 初始化注入
 		try {
 			container.initWired();
+			
+			for(Class<?> clazz : ROUTE_CLASS_LIST){
+				Object object = ReflectKit.newInstance(clazz);
+				if(null != object){
+					container.injection(object);
+					ReflectKit.invokeMehodByName(object, "run");
+				}
+			}
 		} catch (Exception e) {
 			LOGGER.error(e);
 		}
@@ -78,7 +95,10 @@ public final class IocApplication {
 			}
 		}
 	}
-
+	
+	public static void addRouteClass(Class<? extends RouteBase> clazz){
+		ROUTE_CLASS_LIST.add(clazz);
+	}
 	/**
 	 * 注册一个包下的所有对象
 	 * 

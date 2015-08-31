@@ -74,7 +74,7 @@ public class DefaultRouteMatcher {
         
         RouteMatcher entry = findTargetWithGivenAcceptType(routeEntries, acceptType);
         
-        return entry != null ? new RouteMatcher(entry.target, entry.execMethod, entry.httpMethod, entry.path, uri, acceptType) : null;
+        return entry != null ? new RouteMatcher(entry.router, entry.target, entry.execMethod, entry.httpMethod, entry.path, uri, acceptType) : null;
     }
     
     private void giveMatch(final String uri, List<RouteMatcher> routeEntries) {
@@ -87,7 +87,6 @@ public class DefaultRouteMatcher {
 				return -1;
 			}
 		});
-//    	System.out.println(routeEntries.toString());
 	}
 
 	/**
