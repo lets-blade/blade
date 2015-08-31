@@ -45,11 +45,6 @@ public class BladeConfigurator {
 	private static final String BLADE_PREFIX = "blade.prefix";
 	private static final String BLADE_SUFFIX = "blade.suffix";
 	private static final String BLADE_FILTER_FOLDER = "blade.filter_folder";
-	private static final String BLADE_DBURL = "blade.dburl";
-	private static final String BLADE_DBDRIVER = "blade.dbdriver";
-	private static final String BLADE_DBUSER = "blade.dbuser";
-	private static final String BLADE_DBPASS = "blade.dbpass";
-	private static final String BLADE_OPENCACHE = "blade.opencache";
 	private static final String BLADE_ENCODING = "blade.encoding";
 	private static final String BLADE_VIEW_404 = "blade.view404";
 	private static final String BLADE_VIEW_500 = "blade.view500";
@@ -66,11 +61,6 @@ public class BladeConfigurator {
 			String prefix = configMap.get(BLADE_PREFIX);
 			String suffix = configMap.get(BLADE_SUFFIX);
 			String filter_folder = configMap.get(BLADE_FILTER_FOLDER);
-			String dburl = configMap.get(BLADE_DBURL);
-			String dbdriver = configMap.get(BLADE_DBDRIVER);
-			String dbuser = configMap.get(BLADE_DBUSER);
-			String dbpass = configMap.get(BLADE_DBPASS);
-			String opencache = configMap.get(BLADE_OPENCACHE);
 			String encoding = configMap.get(BLADE_ENCODING);
 			String view404 = configMap.get(BLADE_VIEW_404);
 			String view500 = configMap.get(BLADE_VIEW_500);
@@ -101,19 +91,6 @@ public class BladeConfigurator {
 			
 			if (StringKit.isNotBlank(suffix)) {
 				bladeConfig.setViewSuffix(suffix);
-			}
-			
-			if (StringKit.isNotBlank(dburl) && StringKit.isNotBlank(dbdriver) &&
-					StringKit.isNotBlank(dbuser) && StringKit.isNotBlank(dbpass)) {
-				bladeConfig.setDbUrl(dburl);
-				bladeConfig.setDbDriver(dbdriver);
-				bladeConfig.setDbUser(dbuser);
-				bladeConfig.setDbPass(dbpass);
-				
-				if (StringKit.isNotBlank(opencache)) {
-					Boolean opencacheBool = Boolean.valueOf(opencache);
-					bladeConfig.setOpenCache(opencacheBool);
-				}
 			}
 			
 			if (StringKit.isNotBlank(encoding)) {

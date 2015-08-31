@@ -230,57 +230,11 @@ public class DefaultContainer implements Container {
     @Override
     public void initWired() throws RuntimeException {
         Iterator<Entry<String, Object>> it = BEAN_CONTAINER.entrySet().iterator();
-        
-        try {
-			while (it.hasNext()) {
-				
-				Map.Entry<String, Object> entry = (Map.Entry<String, Object>) it.next();
-				
-				Object obj = entry.getValue();
-				
-				// 所有字段
-			    Field[] fields = obj.getClass().getDeclaredFields();
-			    
-			    for (Field field : fields) {
-			    	
-			    	// 需要注入的字段
-			        Inject inject = field.getAnnotation(Inject.class);
-			        if (null != inject ) {
-			        	
-			        	// 要注入的字段
-			            Object injectField = single().getBean(field.getType(), Scope.SINGLE);
-			        	// 指定装配到哪个class
-			        	if(inject.value() != Class.class){
-			        		// 指定装配的类
-				            injectField = single().getBean(inject.value(), Scope.SINGLE);
-				            
-				            if (null == injectField) {
-			                	injectField = recursiveAssembly(inject.value());
-			                }
-				            
-			        	} else {
-			        		if (null == injectField) {
-			                	injectField = recursiveAssembly(field.getType());
-			                }
-						}
-			        	
-			            if (null == injectField) {
-			                throw new BladeException("Unable to load " + field.getType().getCanonicalName() + "！");
-			            }
-			            boolean accessible = field.isAccessible();
-			            field.setAccessible(true);
-			            field.set(obj, injectField);
-			            field.setAccessible(accessible);
-			        }
-			    }
-			}
-		} catch (SecurityException e) {
-        	LOGGER.error(e.getMessage());
-        } catch (IllegalArgumentException e) {
-        	LOGGER.error(e.getMessage());
-        } catch (IllegalAccessException e) {
-        	LOGGER.error(e.getMessage());
-        }
+        while (it.hasNext()) {
+			Map.Entry<String, Object> entry = (Map.Entry<String, Object>) it.next();
+			Object object = entry.getValue();
+			injection(object);
+		}
     }
     
     // 装配
@@ -360,6 +314,51 @@ public class DefaultContainer implements Container {
 		BEAN_CONTAINER.clear();
 		ANNOTATION_CONTAINER.clear();
 		return true;
+	}
+
+	@Override
+	public void injection(Object object) {
+		// 所有字段
+	    try {
+			Field[] fields = object.getClass().getDeclaredFields();
+			for (Field field : fields) {
+				// 需要注入的字段
+			    Inject inject = field.getAnnotation(Inject.class);
+			    if (null != inject ) {
+			    	
+			    	// 要注入的字段
+			        Object injectField = single().getBean(field.getType(), Scope.SINGLE);
+			    	// 指定装配到哪个class
+			    	if(inject.value() != Class.class){
+			    		// 指定装配的类
+			            injectField = single().getBean(inject.value(), Scope.SINGLE);
+			            
+			            if (null == injectField) {
+			            	injectField = recursiveAssembly(inject.value());
+			            }
+			            
+			    	} else {
+			    		if (null == injectField) {
+			            	injectField = recursiveAssembly(field.getType());
+			            }
+					}
+			    	
+			        if (null == injectField) {
+			            throw new BladeException("Unable to load " + field.getType().getCanonicalName() + "！");
+			        }
+			        boolean accessible = field.isAccessible();
+			        field.setAccessible(true);
+			        field.set(object, injectField);
+			        field.setAccessible(accessible);
+			    }
+			}
+		} catch (SecurityException e) {
+        	LOGGER.error(e);
+        } catch (IllegalArgumentException e) {
+        	LOGGER.error(e);
+        } catch (IllegalAccessException e) {
+        	LOGGER.error(e);
+        }
 	}
 
 }

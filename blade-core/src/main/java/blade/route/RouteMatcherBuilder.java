@@ -142,10 +142,7 @@ public final class RouteMatcherBuilder {
      */
     public static void buildHandler(String path, Router router, HttpMethod httpMethod){
     	if(StringKit.isNotBlank(path) && null != router){
-    		Class<?> clazz = blade.route.Router.class;
-    		container.registBean(router);
-    		Method execMethod = ReflectKit.getMethodByName(clazz, "handler");
-    		defaultRouteMatcher.addRoute(clazz, execMethod, path, httpMethod, "*/*");
+    		defaultRouteMatcher.addRoute(router, path, httpMethod, "*/*");
     	} else {
 			 throw new BladeException("an unqualified configuration");
 		}
@@ -156,10 +153,7 @@ public final class RouteMatcherBuilder {
      */
     public static void buildInterceptor(String path, Router router, HttpMethod httpMethod){
     	if(StringKit.isNotBlank(path) && null != router){
-    		Class<?> clazz = blade.route.Router.class;
-    		container.registBean(router);
-    		Method execMethod = ReflectKit.getMethodByName(clazz, "handler");
-    		defaultRouteMatcher.addInterceptor(clazz, execMethod, path, httpMethod, "*/*");
+    		defaultRouteMatcher.addInterceptor(router, path, httpMethod, "*/*");
     	} else {
 			 throw new BladeException("an unqualified configuration");
 		}

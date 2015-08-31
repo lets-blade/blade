@@ -4,7 +4,6 @@ import java.util.Properties;
 
 import javax.sql.DataSource;
 
-import blade.Blade;
 import blade.kit.PropertyKit;
 import blade.kit.StringKit;
 import blade.kit.log.Logger;
@@ -27,8 +26,6 @@ public enum Sql2oPlugin implements Plugin {
 	private Logger LOGGER = Logger.getLogger(Sql2oPlugin.class);
 	
 	private PoolConfig poolConfig;
-	
-	private boolean openCache;
 	
 	private Sql2oPlugin() {
 	}
@@ -55,72 +52,76 @@ public enum Sql2oPlugin implements Plugin {
 		String isCheakPool = configProperties.getProperty(Constant.IS_CHECK_POOL);
 		String periodCheck = configProperties.getProperty(Constant.PERIOD_CHECK);
 		String lazyCheck = configProperties.getProperty(Constant.LAZY_CHECK);
+		String openCache = configProperties.getProperty(Constant.OPEN_CACHE);
 		String poolName = configProperties.getProperty(Constant.POOL_NAME);
 		
-		PoolConfig poolConfig = new PoolConfig();
+		if(null == INSTANCE.poolConfig){
+			INSTANCE.poolConfig = new PoolConfig();
+		}
 		
 		if(StringKit.isNotBlank(drive)){
-			poolConfig.setDriverName(drive);
+			INSTANCE.poolConfig.setDriverName(drive);
 		}
 		
 		if(StringKit.isNotBlank(url)){
-			poolConfig.setUrl(url);
+			INSTANCE.poolConfig.setUrl(url);
 		}
 		
 		if(StringKit.isNotBlank(username)){
-			poolConfig.setUserName(username);
+			INSTANCE.poolConfig.setUserName(username);
 		}
 		
 		if(StringKit.isNotBlank(password)){
-			poolConfig.setPassWord(password);
+			INSTANCE.poolConfig.setPassWord(password);
 		}
 		
 		if(StringKit.isNotBlank(keepAliveSql)){
-			poolConfig.setKeepAliveSql(keepAliveSql);
+			INSTANCE.poolConfig.setKeepAliveSql(keepAliveSql);
 		}
 		
 		if(StringKit.isNotBlank(minConn) && StringKit.isNumber(minConn.trim())){
-			poolConfig.setMinConn(Integer.valueOf(minConn.trim()));
+			INSTANCE.poolConfig.setMinConn(Integer.valueOf(minConn.trim()));
 		}
 		
 		if(StringKit.isNotBlank(maxConn) && StringKit.isNumber(maxConn.trim())){
-			poolConfig.setMaxConn(Integer.valueOf(maxConn.trim()));
+			INSTANCE.poolConfig.setMaxConn(Integer.valueOf(maxConn.trim()));
 		}
 		
 		if(StringKit.isNotBlank(initConn) && StringKit.isNumber(initConn.trim())){
-			poolConfig.setInitConn(Integer.valueOf(initConn.trim()));
+			INSTANCE.poolConfig.setInitConn(Integer.valueOf(initConn.trim()));
 		}
 		
 		if(StringKit.isNotBlank(maxActiveConn) && StringKit.isNumber(maxActiveConn.trim())){
-			poolConfig.setMaxActiveConn(Integer.valueOf(maxActiveConn.trim()));
+			INSTANCE.poolConfig.setMaxActiveConn(Integer.valueOf(maxActiveConn.trim()));
 		}
 		
 		if(StringKit.isNotBlank(connTimeOut) && StringKit.isNumber(connTimeOut.trim())){
-			poolConfig.setConnTimeOut(Long.valueOf(connTimeOut.trim()));
+			INSTANCE.poolConfig.setConnTimeOut(Long.valueOf(connTimeOut.trim()));
 		}
 		
 		if(StringKit.isNotBlank(connWaitTime) && StringKit.isNumber(connWaitTime.trim())){
-			poolConfig.setConnWaitTime(Long.valueOf(connWaitTime.trim()));
+			INSTANCE.poolConfig.setConnWaitTime(Long.valueOf(connWaitTime.trim()));
 		}
 		
 		if(StringKit.isNotBlank(isCheakPool)){
-			poolConfig.setCheakPool(Boolean.valueOf(isCheakPool.trim()));
+			INSTANCE.poolConfig.setCheakPool(Boolean.valueOf(isCheakPool.trim()));
 		}
 		
 		if(StringKit.isNotBlank(periodCheck) && StringKit.isNumber(periodCheck.trim())){
-			poolConfig.setPeriodCheck(Long.valueOf(periodCheck.trim()));
+			INSTANCE.poolConfig.setPeriodCheck(Long.valueOf(periodCheck.trim()));
 		}
 		
 		if(StringKit.isNotBlank(lazyCheck) && StringKit.isNumber(lazyCheck.trim())){
-			poolConfig.setInitDelay(Long.valueOf(lazyCheck.trim()));
+			INSTANCE.poolConfig.setInitDelay(Long.valueOf(lazyCheck.trim()));
+		}
+		
+		if(StringKit.isNotBlank(openCache)){
+			INSTANCE.poolConfig.setIsopenCache(Boolean.valueOf(openCache.trim()));
 		}
 		
 		if(StringKit.isNotBlank(poolName)){
-			poolConfig.setPoolName(poolName);
+			INSTANCE.poolConfig.setPoolName(poolName);
 		}
-		
-		INSTANCE.poolConfig = poolConfig;
-		INSTANCE.openCache = Blade.config().isOpenCache();
 		
 		return INSTANCE;
 	}
@@ -132,6 +133,14 @@ public enum Sql2oPlugin implements Plugin {
 	 */
 	public Sql2oPlugin config(PoolConfig poolConfig){
 		INSTANCE.poolConfig = poolConfig;
+		return INSTANCE;
+	}
+	
+	public Sql2oPlugin openCache(){
+		if(null == INSTANCE.poolConfig){
+			INSTANCE.poolConfig = new PoolConfig();
+			INSTANCE.poolConfig.setIsopenCache(true);
+		}
 		return INSTANCE;
 	}
 	
@@ -160,13 +169,8 @@ public enum Sql2oPlugin implements Plugin {
 		return INSTANCE;
 	}
 	
-	public Sql2oPlugin openCache(){
-		INSTANCE.openCache = true;
-		return INSTANCE;
-	}
-	
 	public boolean isOpenCache() {
-		return INSTANCE.openCache;
+		return INSTANCE.poolConfig.isIsopenCache();
 	}
 	
 	public PoolConfig poolConfig(){
@@ -175,6 +179,9 @@ public enum Sql2oPlugin implements Plugin {
 	
 	@Override
 	public void run() {
+		
+		DataSourceManager.run();
+		
 		DataSource dataSource = DataSourceManager.getDataSource();
 		ConnectionPool connectionPool = DataSourceManager.getConnectionPool();
 		

@@ -145,7 +145,13 @@ public interface Container {
      * 初始化IOC
      */
     void initWired();
-
+    
+    /**
+     * 注入一个类
+     * @param object
+     */
+    void injection(Object object);
+    
     /**
      * @return 返回ioc容器中的所有bean对象的K,V
      */

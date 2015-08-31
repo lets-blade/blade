@@ -54,16 +54,6 @@ public class BladeConfig {
 	private String view404;
 	// 500视图位置
 	private String view500;
-	// 数据库URL
-	private String dbUrl;
-	// 数据库驱动
-	private String dbDriver;
-	// 数据库登录名
-	private String dbUser;
-	// 数据库登录密码
-	private String dbPass;
-	// 是否开启数据库缓存
-	private boolean isOpenCache = false;
 	// 是否是DEBUG模式
 	private boolean isDebug = true;
 
@@ -140,46 +130,6 @@ public class BladeConfig {
 	
 	public void setStaticFolders(String ... packages) {
 		staticFolders.addAll(Arrays.asList(packages));
-	}
-
-	public String getDbUrl() {
-		return dbUrl;
-	}
-
-	public void setDbUrl(String dbUrl) {
-		this.dbUrl = dbUrl;
-	}
-
-	public String getDbDriver() {
-		return dbDriver;
-	}
-
-	public void setDbDriver(String dbDriver) {
-		this.dbDriver = dbDriver;
-	}
-
-	public String getDbUser() {
-		return dbUser;
-	}
-
-	public void setDbUser(String dbUser) {
-		this.dbUser = dbUser;
-	}
-
-	public String getDbPass() {
-		return dbPass;
-	}
-
-	public void setDbPass(String dbPass) {
-		this.dbPass = dbPass;
-	}
-
-	public boolean isOpenCache() {
-		return isOpenCache;
-	}
-
-	public void setOpenCache(boolean isOpenCache) {
-		this.isOpenCache = isOpenCache;
 	}
 
 	public String getView404() {

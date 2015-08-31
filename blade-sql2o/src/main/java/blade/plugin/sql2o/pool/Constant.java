@@ -79,6 +79,11 @@ public final class Constant {
 	 * 连接池名称
 	 */
 	public static final String POOL_NAME = "blade.db.poolName";
+	
+	/**
+	 * 是否开启缓存
+	 */
+	public static final String OPEN_CACHE = "blade.db.opencache";
 
 	/**
 	 * 默认连接池名称

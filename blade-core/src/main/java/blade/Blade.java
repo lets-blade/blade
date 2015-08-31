@@ -27,6 +27,7 @@ import blade.kit.json.JSONKit;
 import blade.render.Render;
 import blade.render.RenderFactory;
 import blade.route.HttpMethod;
+import blade.route.RouteBase;
 import blade.route.Router;
 import blade.route.RouteMatcherBuilder;
 
@@ -273,6 +274,14 @@ public final class Blade {
 	 */
 	public static synchronized void debug(boolean isdebug){
 		BLADE_CONFIG.setDebug(isdebug);
+	}
+	
+	/**
+	 * 加载一个Route
+	 * @param route
+	 */
+	public static synchronized void load(Class<? extends RouteBase> route){
+		//Object object = Class
 	}
 	
 	/**

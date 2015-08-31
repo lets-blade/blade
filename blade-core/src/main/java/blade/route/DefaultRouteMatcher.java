@@ -216,7 +216,7 @@ public class DefaultRouteMatcher {
      * @param method		路由http方法
      * @param acceptType	路由acceptType
      */
-    public void addRoute(Router router, Method execMethod, String url, HttpMethod method, String acceptType) {
+    public void addRoute(Router router, String url, HttpMethod method, String acceptType) {
     	RouteMatcher entry = new RouteMatcher();
         entry.router = router;
         entry.httpMethod = method;

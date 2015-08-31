@@ -32,8 +32,7 @@ public final class DataSourceManager {
 	private DataSourceManager() {
 	}
 	
-	static{
-		
+	public static void run(){
 		Object dsFactoryObj = beanFactory.getBean(AbstractDataSource.class);
 		if(null != dsFactoryObj && dsFactoryObj instanceof AbstractDataSource){
 			DataSourceManager.dataSource = ((AbstractDataSource) dsFactoryObj).getDataSource();

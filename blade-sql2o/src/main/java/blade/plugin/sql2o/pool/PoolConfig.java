@@ -77,6 +77,8 @@ public class PoolConfig {
 	 */
 	private long initDelay = Constant.DEFAULT_INIT_DELAY;
 
+	private boolean isopenCache = false;
+	
 	/**
 	 * 数据库连接池的名称
 	 */
@@ -206,6 +208,14 @@ public class PoolConfig {
 
 	public void setKeepAliveSql(String keepAliveSql) {
 		this.keepAliveSql = keepAliveSql;
+	}
+
+	public boolean isIsopenCache() {
+		return isopenCache;
+	}
+	
+	public void setIsopenCache(boolean isopenCache) {
+		this.isopenCache = isopenCache;
 	}
 
 	@Override

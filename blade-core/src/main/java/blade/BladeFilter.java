@@ -72,7 +72,7 @@ public class BladeFilter implements Filter {
 			    LOGGER.info("blade init complete!");
 			}
 		} catch (Exception e) {
-			LOGGER.error(e);
+			e.printStackTrace();
 			System.exit(0);
 		}
     	
