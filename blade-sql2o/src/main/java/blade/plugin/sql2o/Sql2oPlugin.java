@@ -1,12 +1,18 @@
 package blade.plugin.sql2o;
 
+import java.util.Properties;
+
 import javax.sql.DataSource;
 
 import blade.Blade;
+import blade.kit.PropertyKit;
 import blade.kit.StringKit;
 import blade.kit.log.Logger;
 import blade.plugin.Plugin;
 import blade.plugin.sql2o.ds.DataSourceManager;
+import blade.plugin.sql2o.pool.ConnectionPool;
+import blade.plugin.sql2o.pool.Constant;
+import blade.plugin.sql2o.pool.PoolConfig;
 
 /**
  * sql2o数据库插件
@@ -20,7 +26,7 @@ public enum Sql2oPlugin implements Plugin {
 	
 	private Logger LOGGER = Logger.getLogger(Sql2oPlugin.class);
 	
-	private DBConfig dbConfig;
+	private PoolConfig poolConfig;
 	
 	private boolean openCache;
 	
@@ -32,23 +38,100 @@ public enum Sql2oPlugin implements Plugin {
 	 * 
 	 * @param dbConfig	数据库配置
 	 */
-	public Sql2oPlugin autoConfig(){
-		String drive = Blade.config().getDbDriver();
-		String url = Blade.config().getDbUrl();
-		String user = Blade.config().getDbUser();
-		String password = Blade.config().getDbPass();
-		INSTANCE.dbConfig = new DBConfig(drive, url, user, password);
+	public Sql2oPlugin load(String filePath){
+		
+		Properties configProperties = PropertyKit.getProperty(filePath);
+		String drive = configProperties.getProperty(Constant.DRIVE);
+		String url = configProperties.getProperty(Constant.URL);
+		String username = configProperties.getProperty(Constant.USERNAME);
+		String password = configProperties.getProperty(Constant.PASSWORD);
+		String keepAliveSql = configProperties.getProperty(Constant.KEEPALIVESQL);
+		String minConn = configProperties.getProperty(Constant.MIN_CONN);
+		String maxConn = configProperties.getProperty(Constant.MAX_CONN);
+		String initConn = configProperties.getProperty(Constant.INIT_CONN);
+		String maxActiveConn = configProperties.getProperty(Constant.MAX_ACTIVE_CONN);
+		String connWaitTime = configProperties.getProperty(Constant.CONN_WAIT_TIME);
+		String connTimeOut = configProperties.getProperty(Constant.CONN_TIME_OUT);
+		String isCheakPool = configProperties.getProperty(Constant.IS_CHECK_POOL);
+		String periodCheck = configProperties.getProperty(Constant.PERIOD_CHECK);
+		String lazyCheck = configProperties.getProperty(Constant.LAZY_CHECK);
+		String poolName = configProperties.getProperty(Constant.POOL_NAME);
+		
+		PoolConfig poolConfig = new PoolConfig();
+		
+		if(StringKit.isNotBlank(drive)){
+			poolConfig.setDriverName(drive);
+		}
+		
+		if(StringKit.isNotBlank(url)){
+			poolConfig.setUrl(url);
+		}
+		
+		if(StringKit.isNotBlank(username)){
+			poolConfig.setUserName(username);
+		}
+		
+		if(StringKit.isNotBlank(password)){
+			poolConfig.setPassWord(password);
+		}
+		
+		if(StringKit.isNotBlank(keepAliveSql)){
+			poolConfig.setKeepAliveSql(keepAliveSql);
+		}
+		
+		if(StringKit.isNotBlank(minConn) && StringKit.isNumber(minConn.trim())){
+			poolConfig.setMinConn(Integer.valueOf(minConn.trim()));
+		}
+		
+		if(StringKit.isNotBlank(maxConn) && StringKit.isNumber(maxConn.trim())){
+			poolConfig.setMaxConn(Integer.valueOf(maxConn.trim()));
+		}
+		
+		if(StringKit.isNotBlank(initConn) && StringKit.isNumber(initConn.trim())){
+			poolConfig.setInitConn(Integer.valueOf(initConn.trim()));
+		}
+		
+		if(StringKit.isNotBlank(maxActiveConn) && StringKit.isNumber(maxActiveConn.trim())){
+			poolConfig.setMaxActiveConn(Integer.valueOf(maxActiveConn.trim()));
+		}
+		
+		if(StringKit.isNotBlank(connTimeOut) && StringKit.isNumber(connTimeOut.trim())){
+			poolConfig.setConnTimeOut(Long.valueOf(connTimeOut.trim()));
+		}
+		
+		if(StringKit.isNotBlank(connWaitTime) && StringKit.isNumber(connWaitTime.trim())){
+			poolConfig.setConnWaitTime(Long.valueOf(connWaitTime.trim()));
+		}
+		
+		if(StringKit.isNotBlank(isCheakPool)){
+			poolConfig.setCheakPool(Boolean.valueOf(isCheakPool.trim()));
+		}
+		
+		if(StringKit.isNotBlank(periodCheck) && StringKit.isNumber(periodCheck.trim())){
+			poolConfig.setPeriodCheck(Long.valueOf(periodCheck.trim()));
+		}
+		
+		if(StringKit.isNotBlank(lazyCheck) && StringKit.isNumber(lazyCheck.trim())){
+			poolConfig.setInitDelay(Long.valueOf(lazyCheck.trim()));
+		}
+		
+		if(StringKit.isNotBlank(poolName)){
+			poolConfig.setPoolName(poolName);
+		}
+		
+		INSTANCE.poolConfig = poolConfig;
 		INSTANCE.openCache = Blade.config().isOpenCache();
+		
 		return INSTANCE;
 	}
-	
+
 	/**
 	 * 设置数据库配置
 	 * 
 	 * @param dbConfig	数据库配置
 	 */
-	public Sql2oPlugin config(DBConfig dbConfig){
-		INSTANCE.dbConfig = dbConfig;
+	public Sql2oPlugin config(PoolConfig poolConfig){
+		INSTANCE.poolConfig = poolConfig;
 		return INSTANCE;
 	}
 	
@@ -60,13 +143,19 @@ public enum Sql2oPlugin implements Plugin {
 	 * @param user
 	 * @param pass
 	 */
-	public Sql2oPlugin config(String url, String driver, String user, String pass){
+	public Sql2oPlugin config(String url, String user, String pass){
 		
-		if(StringKit.isNotEmpty(url) && StringKit.isNotEmpty(driver)
-				&& StringKit.isNotEmpty(user) && StringKit.isNotEmpty(pass)){
+		return config(null, url, user, pass);
+	}
+	
+	public Sql2oPlugin config(String driver, String url, String user, String pass){
 		
-			INSTANCE.dbConfig = new DBConfig(driver, url,  user, pass);
-		}
+		PoolConfig poolConfig = new PoolConfig();
+		poolConfig.setDriverName(driver);
+		poolConfig.setUrl(url);
+		poolConfig.setUserName(user);
+		poolConfig.setPassWord(pass);
+		INSTANCE.poolConfig = poolConfig;
 		
 		return INSTANCE;
 	}
@@ -80,17 +169,19 @@ public enum Sql2oPlugin implements Plugin {
 		return INSTANCE.openCache;
 	}
 	
-	public DBConfig dbConfig(){
-		return INSTANCE.dbConfig;
+	public PoolConfig poolConfig(){
+		return INSTANCE.poolConfig;
 	}
 	
 	@Override
 	public void run() {
 		DataSource dataSource = DataSourceManager.getDataSource();
-		if(null != dataSource){
-			LOGGER.debug("数据库插件配置成功...");
-		} else {
+		ConnectionPool connectionPool = DataSourceManager.getConnectionPool();
+		
+		if(null == dataSource && null == connectionPool){
 			LOGGER.error("数据库插件配置失败");
+		} else {
+			LOGGER.debug("数据库插件配置成功...");
 		}
 	}
 
