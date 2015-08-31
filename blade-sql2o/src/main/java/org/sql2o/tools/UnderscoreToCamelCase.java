@@ -1,8 +1,5 @@
 package org.sql2o.tools;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * Takes a string formatted like: 'my_string_variable' and returns it as: 'myStringVariable'
  * 

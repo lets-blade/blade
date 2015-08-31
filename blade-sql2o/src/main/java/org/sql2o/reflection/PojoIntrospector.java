@@ -20,7 +20,6 @@ import static java.lang.reflect.Modifier.isStatic;
 
 // TODO: move introspection code from PojoMetadata to PojoIntrospector
 
-@SuppressWarnings("UnusedDeclaration")
 public class PojoIntrospector {
     private static final AbstractCache<Class<?>, Map<String, ReadableProperty>, Void> rpCache =
             new AbstractCache<Class<?>, Map<String, ReadableProperty>, Void>() {

@@ -170,6 +170,9 @@ public enum Sql2oPlugin implements Plugin {
 	}
 	
 	public boolean isOpenCache() {
+		if(null == INSTANCE.poolConfig){
+			return false;
+		}
 		return INSTANCE.poolConfig.isIsopenCache();
 	}
 	

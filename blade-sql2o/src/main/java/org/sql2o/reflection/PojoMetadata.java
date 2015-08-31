@@ -24,7 +24,7 @@ public class PojoMetadata {
     private boolean caseSensitive;
     private boolean autoDeriveColumnNames;
     public final boolean throwOnMappingFailure;
-    private Class clazz;
+    private Class<?> clazz;
 
     public boolean isCaseSensitive() {
         return caseSensitive;
@@ -56,7 +56,7 @@ public class PojoMetadata {
         return result;
     }
 
-    public PojoMetadata(Class clazz, boolean caseSensitive, boolean autoDeriveColumnNames, Map<String, String> columnMappings, boolean throwOnMappingError) {
+    public PojoMetadata(Class<?> clazz, boolean caseSensitive, boolean autoDeriveColumnNames, Map<String, String> columnMappings, boolean throwOnMappingError) {
         this.caseSensitive = caseSensitive;
         this.autoDeriveColumnNames = autoDeriveColumnNames;
         this.clazz = clazz;
@@ -83,7 +83,7 @@ public class PojoMetadata {
         HashMap<String, Setter> propertySetters = new HashMap<String, Setter>();
         HashMap<String, Field> fields = new HashMap<String, Field>();
 
-        Class theClass = clazz;
+        Class<?> theClass = clazz;
         ObjectConstructor objectConstructor = factoryFacade.newConstructor(theClass);
         do {
             for (Field f : theClass.getDeclaredFields()) {
@@ -149,7 +149,7 @@ public class PojoMetadata {
         return propertyInfo.propertySetters.get(name);
     }
 
-    public Class getType() {
+    public Class<?> getType() {
         return this.clazz;
     }
 
@@ -164,9 +164,9 @@ public class PojoMetadata {
         }
     }
 
-    private static class Cache extends AbstractCache<Class, PropertyAndFieldInfo, PojoMetadata> {
+    private static class Cache extends AbstractCache<Class<?>, PropertyAndFieldInfo, PojoMetadata> {
         @Override
-        protected PropertyAndFieldInfo evaluate(Class key, PojoMetadata param) {
+        protected PropertyAndFieldInfo evaluate(Class<?> key, PojoMetadata param) {
             return param.initializePropertyInfo();
         }
     }

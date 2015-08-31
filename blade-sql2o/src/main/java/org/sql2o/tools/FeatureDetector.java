@@ -1,11 +1,12 @@
 package org.sql2o.tools;
 
+import blade.kit.ReflectKit;
+
 /**
  * Detects whether optional sql2o features are available.
  *
  * @author Alden Quimby
  */
-@SuppressWarnings("UnusedDeclaration")
 public final class FeatureDetector {
 
     private FeatureDetector()
@@ -25,7 +26,7 @@ public final class FeatureDetector {
      */
     public static boolean isJodaTimeAvailable() {
         if (jodaTimeAvailable == null) {
-            jodaTimeAvailable = ClassUtils.isPresent("org.joda.time.DateTime");
+            jodaTimeAvailable = ReflectKit.isPresent("org.joda.time.DateTime");
         }
         return jodaTimeAvailable;
     }
@@ -35,7 +36,7 @@ public final class FeatureDetector {
      */
     public static boolean isSlf4jAvailable() {
         if (slf4jAvailable == null) {
-            slf4jAvailable = ClassUtils.isPresent("org.slf4j.Logger");
+            slf4jAvailable = ReflectKit.isPresent("org.slf4j.Logger");
         }
         return slf4jAvailable;
     }
@@ -45,7 +46,7 @@ public final class FeatureDetector {
      */
     public static boolean isOracleAvailable() {
         if (oracleAvailable == null) {
-            oracleAvailable = ClassUtils.isPresent("oracle.sql.TIMESTAMP");
+            oracleAvailable = ReflectKit.isPresent("oracle.sql.TIMESTAMP");
         }
         return oracleAvailable;
     }

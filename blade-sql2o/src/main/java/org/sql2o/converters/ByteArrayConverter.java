@@ -1,11 +1,11 @@
 package org.sql2o.converters;
 
-import org.sql2o.tools.IOUtils;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Blob;
 import java.sql.SQLException;
+
+import blade.kit.IOKit;
 
 /**
  * User: lars
@@ -23,7 +23,7 @@ public class ByteArrayConverter extends ConverterBase<byte[]> {
             try {
                 try {
                     stream = b.getBinaryStream();
-                    return IOUtils.toByteArray(stream);
+                    return IOKit.toByteArray(stream);
                 } finally {
                     if(stream!=null) {
                         try {
