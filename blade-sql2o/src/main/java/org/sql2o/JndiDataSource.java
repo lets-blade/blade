@@ -1,19 +1,18 @@
 package org.sql2o;
 
-import org.sql2o.logging.LocalLoggerFactory;
-import org.sql2o.logging.Logger;
-
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
+
+import blade.kit.log.Logger;
 
 /**
  * Created by lars on 16.09.2014.
  */
 public class JndiDataSource {
 
-    private final static Logger logger = LocalLoggerFactory.getLogger(JndiDataSource.class);
+    private final static Logger logger = Logger.getLogger(JndiDataSource.class);
 
     static DataSource getJndiDatasource(String jndiLookup) {
         Context ctx = null;

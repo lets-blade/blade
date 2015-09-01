@@ -25,18 +25,17 @@ import org.sql2o.data.LazyTable;
 import org.sql2o.data.Row;
 import org.sql2o.data.Table;
 import org.sql2o.data.TableResultSetIterator;
-import org.sql2o.logging.LocalLoggerFactory;
-import org.sql2o.logging.Logger;
 import org.sql2o.quirks.Quirks;
 import org.sql2o.reflection.PojoIntrospector;
+
+import blade.kit.log.Logger;
 
 /**
  * Represents a sql2o statement. With sql2o, all statements are instances of the Query class.
  */
-@SuppressWarnings("UnusedDeclaration")
 public class Query implements AutoCloseable {
 
-    private final static Logger logger = LocalLoggerFactory.getLogger(Query.class);
+    private final static Logger logger = Logger.getLogger(Query.class);
 
     private Connection connection;
     private Map<String, String> caseSensitiveColumnMappings;
@@ -356,7 +355,7 @@ public class Query implements AutoCloseable {
 
                     // log the query
                     long afterClose = System.currentTimeMillis();
-                    logger.debug("total: {} ms, execution: {} ms, reading and parsing: {} ms; executed [{}]", new Object[]{
+                    logger.debug("total: %s ms, execution: %s ms, reading and parsing: %s ms; executed [%s]", new Object[]{
                             afterClose - start,
                             afterExecQuery-start,
                             afterClose - afterExecQuery,
@@ -546,7 +545,7 @@ public class Query implements AutoCloseable {
         }
 
         long end = System.currentTimeMillis();
-        logger.debug("total: {} ms; executed update [{}]", new Object[]{
+        logger.debug("total: %s ms; executed update [%s]", new Object[]{
                 end - start,
                 this.getName() == null ? "No name" : this.getName()
         });
@@ -561,7 +560,7 @@ public class Query implements AutoCloseable {
             if (rs.next()){
                 Object o = getQuirks().getRSVal(rs, 1);
                 long end = System.currentTimeMillis();
-                logger.debug("total: {} ms; executed scalar [{}]", new Object[]{
+                logger.debug("total: %s ms; executed scalar [%s]", new Object[]{
                         end - start,
                         this.getName() == null ? "No name" : this.getName()
                 });
@@ -664,7 +663,7 @@ public class Query implements AutoCloseable {
         }
 
         long end = System.currentTimeMillis();
-        logger.debug("total: {} ms; executed batch [{}]", new Object[]{
+        logger.debug("total: %s ms; executed batch [%s]", new Object[]{
                 end - start,
                 this.getName() == null ? "No name" : this.getName()
         });

@@ -1,10 +1,6 @@
 package org.sql2o;
 
-import org.sql2o.converters.Converter;
-import org.sql2o.converters.ConverterException;
-import org.sql2o.logging.LocalLoggerFactory;
-import org.sql2o.logging.Logger;
-import org.sql2o.quirks.Quirks;
+import static org.sql2o.converters.Convert.throwIfNull;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -14,14 +10,19 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static org.sql2o.converters.Convert.throwIfNull;
+import org.sql2o.converters.Converter;
+import org.sql2o.converters.ConverterException;
+import org.sql2o.quirks.Quirks;
+
+import blade.kit.log.Logger;
 
 /**
  * Represents a connection to the database with a transaction.
  */
 public class Connection implements AutoCloseable {
     
-    private final static Logger logger = LocalLoggerFactory.getLogger(Connection.class);
+//    private final static Logger logger = LocalLoggerFactory.getLogger(Connection.class);
+    private final static Logger logger = Logger.getLogger(Connection.class);
 
     private java.sql.Connection jdbcConnection;
     private Sql2o sql2o;
@@ -115,7 +116,7 @@ public class Connection implements AutoCloseable {
             jdbcConnection.rollback();
         }
         catch (SQLException e) {
-            logger.warn("Could not roll back transaction. message: {}", e);
+            logger.warn("Could not roll back transaction.", e);
         }
         finally {
             if(closeConnection) this.closeJdbcConnection();
@@ -303,7 +304,7 @@ public class Connection implements AutoCloseable {
             jdbcConnection.close();
         }
         catch (SQLException e) {
-            logger.warn("Could not close connection. message: {}", e);
+            logger.warn("Could not close connection.", e);
         }
     }
 }
