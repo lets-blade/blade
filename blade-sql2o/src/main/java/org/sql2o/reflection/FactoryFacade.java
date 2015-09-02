@@ -3,6 +3,7 @@ package org.sql2o.reflection;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
+@SuppressWarnings("Unsafe")
 public class FactoryFacade {
     private final static FactoryFacade instance;
 
@@ -20,7 +21,7 @@ public class FactoryFacade {
         }
         FieldSetterFactory f;
         try {
-            Class<?> cls = Class.forName("org.sql2o.reflection.UnsafeFieldSetterFactory");
+            Class cls = Class.forName("org.sql2o.reflection.UnsafeFieldSetterFactory");
             f = (FieldSetterFactory) cls.newInstance();
             if(o==null) o = (ObjectConstructorFactory) f;
         } catch (Throwable ex) {

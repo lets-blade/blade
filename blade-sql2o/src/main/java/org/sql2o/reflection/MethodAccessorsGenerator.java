@@ -1,21 +1,19 @@
 package org.sql2o.reflection;
 
+import org.sql2o.Sql2oException;
+import sun.reflect.ConstructorAccessor;
+import sun.reflect.FieldAccessor;
+import sun.reflect.MethodAccessor;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import org.sql2o.Sql2oException;
-
-import sun.reflect.ConstructorAccessor;
-import sun.reflect.FieldAccessor;
-import sun.reflect.MethodAccessor;
-
-@SuppressWarnings("restriction")
+@SuppressWarnings("UnusedDeclaration")
 public class MethodAccessorsGenerator implements MethodSetterFactory, ObjectConstructorFactory {
     private static final ThreadLocal<Object> generatorObjectHolder;
-    
-	private static final MethodAccessor generateMethod;
+    private static final MethodAccessor generateMethod;
     private static final MethodAccessor generateConstructor;
     private static final MethodAccessor generateSerializationConstructor;
     private static final MethodAccessor newFieldAccessor;
@@ -119,7 +117,7 @@ public class MethodAccessorsGenerator implements MethodSetterFactory, ObjectCons
     }
 
     public Setter newSetter(final Method method) {
-        final Class<?> type = method.getParameterTypes()[0];
+        final Class type = method.getParameterTypes()[0];
         final MethodAccessor methodAccessor = newMethodAccessor(method);
         return new Setter() {
             public void setProperty(Object obj, Object value) {
@@ -131,7 +129,7 @@ public class MethodAccessorsGenerator implements MethodSetterFactory, ObjectCons
                 }
             }
 
-            public Class<?> getType() {
+            public Class getType() {
                 return type;
             }
         };
@@ -152,7 +150,7 @@ public class MethodAccessorsGenerator implements MethodSetterFactory, ObjectCons
                             return constructorAccessor.newInstance(null);
                         } catch (InstantiationException e) {
                             throw new Sql2oException("Could not create a new instance of class " + cls, e);
-                        } catch (InvocationTargetException e) {
+                        }catch (InvocationTargetException e) {
                             throw new Sql2oException("Could not create a new instance of class " + cls, e);
                         }
                     }

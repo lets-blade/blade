@@ -32,7 +32,7 @@ public class MethodSetter implements  Setter{
         }
     }
 
-    public Class<?> getType() {
+    public Class getType() {
         return type;
     }
 }

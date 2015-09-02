@@ -28,7 +28,7 @@ public class FieldSetter implements Setter{
         }
     }
 
-    public Class<?> getType() {
+    public Class getType() {
         return field.getType();
     }
 }

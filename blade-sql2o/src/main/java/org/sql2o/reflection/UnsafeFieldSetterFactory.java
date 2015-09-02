@@ -1,19 +1,17 @@
 package org.sql2o.reflection;
 
+import org.sql2o.Sql2oException;
+import sun.misc.Unsafe;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
-import org.sql2o.Sql2oException;
-
-import sun.misc.Unsafe;
-
-@SuppressWarnings("restriction")
+@SuppressWarnings("Unsafe")
 public class UnsafeFieldSetterFactory implements FieldSetterFactory, ObjectConstructorFactory {
-    
-	private final static Unsafe theUnsafe;
+    private final static Unsafe theUnsafe;
     static {
         try {
-            Class<?> unsafeClass = Class.forName("sun.misc.Unsafe");
+            Class unsafeClass = Class.forName("sun.misc.Unsafe");
             Field declaredField = unsafeClass.getDeclaredField("theUnsafe");
             declaredField.setAccessible(true);
             theUnsafe = (Unsafe) declaredField.get(null);

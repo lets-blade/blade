@@ -29,7 +29,7 @@ public class Pojo {
         object = objectConstructor.newInstance();
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @SuppressWarnings("unchecked")
     public void setProperty(String propertyPath, Object value, Quirks quirks){
         // String.split uses RegularExpression
         // this is overkill for every column for every row

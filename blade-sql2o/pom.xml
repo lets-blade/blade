@@ -34,12 +34,5 @@
 			<version>2.8.2</version>
 			<optional>true</optional>
 		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>1.6.4</version>
-			<optional>true</optional>
-		</dependency>
-
 	</dependencies>
 </project>

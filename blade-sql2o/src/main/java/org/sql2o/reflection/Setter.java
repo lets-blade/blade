@@ -6,6 +6,5 @@ package org.sql2o.reflection;
 public interface Setter {
 
     void setProperty(Object obj, Object value);
-    @SuppressWarnings("rawtypes")
-	Class getType();
+    Class getType();
 }
