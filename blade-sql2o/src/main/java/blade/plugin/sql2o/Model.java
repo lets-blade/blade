@@ -126,6 +126,9 @@ public class Model<T extends Serializable> {
     private void init(){
     	this.queryIsOpen = false;
     	this.cache = isOpenCache;
+    	if(null == this.sql2o){
+    		this.sql2o = DataSourceManager.getSql2o();
+    	}
     }
     
     /**
@@ -178,6 +181,7 @@ public class Model<T extends Serializable> {
      * @return	返回更新model对象，推荐方式
      */
     public Model<T> update(){
+    	init();
     	condition.update();
     	return this;
     }
@@ -189,6 +193,7 @@ public class Model<T extends Serializable> {
      * @return		返回更新model对象
      */
     public Model<T> update(String sql){
+    	init();
     	condition.update(sql);
     	return this;
     }
@@ -197,6 +202,7 @@ public class Model<T extends Serializable> {
      * @return	返回插入model对象，推荐方式
      */
     public Model<T> insert(){
+    	init();
     	condition.insert();
     	return this;
     }
@@ -207,6 +213,7 @@ public class Model<T extends Serializable> {
      * @return		返回插入model对象
      */
     public Model<T> insert(String sql){
+    	init();
     	condition.insert(sql);
     	return this;
     }
@@ -215,6 +222,7 @@ public class Model<T extends Serializable> {
      * @return	返回删除model对象
      */
     public Model<T> delete(){
+    	init();
     	condition.delete();
     	return this;
     }
@@ -226,6 +234,7 @@ public class Model<T extends Serializable> {
      * @return		返回自定义删除model对象
      */
     public Model<T> delete(String sql){
+    	init();
     	condition.delete(sql);
     	return this;
     }

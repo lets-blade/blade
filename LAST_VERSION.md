@@ -22,7 +22,7 @@
 <dependency>
     <groupId>com.bladejava</groupId>
     <artifactId>blade-sql2o</artifactId>
-    <version>1.2.8-alpha</version>
+    <version>1.2.8-beta</version>
 </dependency>
 ```
 

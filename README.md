@@ -139,9 +139,9 @@ OK, all this may seem simple, refer to the guidelines for use more ready-made ex
 ## Plan
 
 	1. Improve the document
-	2. Single user blog system development
-	3. web chat system
-	4. Optimize the code performance
+	2. Add configurable log
+	3. To optimize the database query, connection pool
+	4. Complete the Java China BBS
 	
 ## Update
 
