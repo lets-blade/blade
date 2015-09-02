@@ -5,20 +5,25 @@ import java.sql.SQLException;
 import java.util.Hashtable;
 import java.util.List;
 
+import blade.kit.log.Logger;
+
 /**
  * 数据连接池管理器
+ * 
  * @author biezhi
  *
  */
 public class ConnectionPoolManager {
 
+	private static final Logger LOGGER = Logger.getLogger(ConnectionPoolManager.class);
+
 	private static ConnectionPoolManager connectionPoolManager;
-	
+
 	/**
 	 * 连接池存放
 	 */
 	private Hashtable<String, ConnectionPool> pools;
-	
+
 	/**
 	 * 总的连接数
 	 */
@@ -33,14 +38,15 @@ public class ConnectionPoolManager {
 	private void init() {
 
 		List<PoolConfig> poolConfigs = InitPoolConfig.poolConfigList;
-		
-		for(PoolConfig config : poolConfigs){
+
+		for (PoolConfig config : poolConfigs) {
 			ConnectionPool pool = new ConnectionPool(config);
 			if (pool != null) {
 				pools.put(config.getPoolName(), pool);
+				LOGGER.info("Init connection successed -> " + config.getPoolName());
 			}
 		}
-		
+
 	}
 
 	/**
@@ -72,7 +78,11 @@ public class ConnectionPoolManager {
 	 */
 	public Connection getConnection(String poolName) {
 		Connection conn = null;
-		conn = getPool(poolName).getConnection();
+		if (pools.size() > 0 && pools.containsKey(poolName)) {
+			conn = getPool(poolName).getConnection();
+		} else {
+			LOGGER.error("Can't find this connecion pool -> " + poolName);
+		}
 		return conn;
 	}
 
@@ -80,13 +90,13 @@ public class ConnectionPoolManager {
 	 * 释放连接
 	 */
 	public void releaseConnection(String poolName, Connection conn) {
-
 		try {
 			ConnectionPool pool = getPool(poolName);
 			if (null != null) {
 				pool.releaseConnection(conn);
 			}
 		} catch (SQLException e) {
+			LOGGER.warn("connection is release");
 			e.printStackTrace();
 		}
 	}
@@ -105,12 +115,11 @@ public class ConnectionPoolManager {
 
 	/**
 	 * 获得连接数
+	 * 
 	 * @return
 	 */
 	public static int getClients() {
 		return clients;
 	}
-	
-	
 
 }

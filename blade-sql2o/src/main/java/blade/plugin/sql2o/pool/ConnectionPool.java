@@ -65,6 +65,9 @@ public class ConnectionPool {
 
 	}
 
+	/**
+	 * 创建连接池
+	 */
 	private void createConnectionPool() {
 		try {
 			Class.forName(poolConfig.getDriverName());
@@ -81,6 +84,10 @@ public class ConnectionPool {
 		}
 	}
 
+	/**
+	 * 检查sql测试语句
+	 * @throws SQLException
+	 */
 	protected void sendCheckSQL() throws SQLException {
 		Statement statement = null;
 		Connection internalConnection = null;
@@ -93,48 +100,54 @@ public class ConnectionPool {
 				statement = internalConnection.createStatement();
 				statement.execute(keepAliveSQL);
 			}
-			LOGGER.debug("连接测试语句执行成功");
+			LOGGER.debug("keepalive test success!");
 		} catch (SQLException e) {
-			LOGGER.error("连接测试语句执行失败", e);
+			LOGGER.error("keepalive test error!", e);
 			throw e;
 		} finally {
-			closeConnection(internalConnection);
+			internalConnection.close();
 		}
 	}
 	
+	/**
+	 * 创建一个连接
+	 * @return
+	 * @throws SQLException
+	 */
 	private Connection obtainInternalConnection() throws SQLException {
 		return DriverManager.getConnection(poolConfig.getUrl(), poolConfig.getUserName(), poolConfig.getPassWord());
 	}
 	
+	/**
+	 * 连接池创建一个连接
+	 * @return
+	 * @throws ClassNotFoundException
+	 * @throws SQLException
+	 */
 	private synchronized Connection createConn() throws ClassNotFoundException, SQLException {
 		Connection conn = null;
 		if (null != poolConfig) {
-			Class.forName(poolConfig.getDriverName());
 			conn = DriverManager.getConnection(poolConfig.getUrl(),
 					poolConfig.getUserName(), poolConfig.getPassWord());
 			totalConn++;
 		}
-
 		return conn;
 	}
 
 	/**
 	 * 获得连接
-	 * 
 	 * @return
 	 */
 	public synchronized Connection getConnection() {
 
 		Connection conn = null;
-
 		try {
-
 			if (null == poolConfig) {
 				return conn;
 			}
+			
 			// 如果已经创建的连接数小于数据库的最大连接数而且小于连接池最大的连接数，那么再创建连接数
-			if (totalConn < poolConfig.getMaxActiveConn()
-					&& totalConn < poolConfig.getMaxActiveConn()) {
+			if (totalConn < poolConfig.getMaxActiveConn() && totalConn < poolConfig.getMaxActiveConn()) {
 
 				if (freeConnections.size() > 0) {// 如果还有空闲连接
 					conn = freeConnections.get(0);
@@ -152,7 +165,7 @@ public class ConnectionPool {
 				wait(poolConfig.getConnWaitTime());
 				conn = getConnection();
 			}
-
+			
 			if (isValid(conn)) {
 				activeConnections.add(conn);
 			}
@@ -170,13 +183,13 @@ public class ConnectionPool {
 
 	private boolean isValid(Connection conn) {
 		try {
-			if (conn.isClosed()) {
+			if (conn == null || conn.isClosed()) {
 				return false;
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return true;
+        return true;  
 	}
 
 	/**
@@ -200,10 +213,11 @@ public class ConnectionPool {
 	 */
 	public synchronized void releaseConnection(Connection conn)  throws SQLException {
 
-		if (isValid(conn)) {
+		if (isValid(conn) && !(freeConnections.size() > poolConfig.getMaxConn())) {
 			freeConnections.add(conn);
 			activeConnections.remove(conn);
 			threadLocal.remove();
+			totalConn--;
 			// 唤醒所有正待等待的线程，去抢连接
 			notifyAll();
 		}
@@ -217,7 +231,6 @@ public class ConnectionPool {
 	 * @throws SQLException 
 	 */
 	public synchronized void closeConnection(Connection conn) throws SQLException {
-
 		conn.close();
 		freeConnections.remove(conn);
 		activeConnections.remove(conn);
@@ -249,7 +262,11 @@ public class ConnectionPool {
 		isActive = false;
 		totalConn = 0;
 		
-		TaskKit.depose();
+		// 停止监控线程
+		/*if(null != scheduledFuture){
+			scheduledFuture.cancel(false);
+			TaskKit.reset();
+		}*/
 	}
 
 	/**
@@ -279,8 +296,12 @@ public class ConnectionPool {
 		return freeConnections.size();
 	}
 	
+	/**
+	 * 定时检查连接池
+	 */
 	private void checkConnectionPool() {
 		
+		// 测试语句
 		if(StringKit.isNotBlank(poolConfig.getKeepAliveSql())){
 			try {
 				sendCheckSQL();
@@ -290,15 +311,18 @@ public class ConnectionPool {
 		}
 		
 		if (poolConfig.isCheakPool()) {
+			
 			TaskKit.scheduleWithFixedDelay(new TimerTask() {
 				@Override
 				public void run() {
-					LOGGER.debug("空线池连接数：" + freeConnections.size());
-					LOGGER.debug("活动连接数：" + activeConnections.size());
-					LOGGER.debug("总的连接数：" + totalConn);
-					LOGGER.debug("连接池活动状态：" + isActive);
+					LOGGER.debug("idle connection count：" + freeConnections.size());
+					LOGGER.debug("active connection count：" + activeConnections.size());
+					LOGGER.debug("total connection count：" + totalConn);
+					LOGGER.debug("pool active status：" + isActive);
 				}
 			}, poolConfig.getInitDelay(), poolConfig.getPeriodCheck(), TimeUnit.SECONDS);
+			
+			
 		}
 
 	}
