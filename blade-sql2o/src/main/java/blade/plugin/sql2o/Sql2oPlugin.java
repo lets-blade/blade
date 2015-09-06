@@ -168,5 +168,10 @@ public class Sql2oPlugin implements Plugin {
 		}
 		
 	}
+
+	public Sql2oPlugin cache(Boolean cache) {
+		this.isOpenCache = cache;
+		return this;
+	}
 	
 }
