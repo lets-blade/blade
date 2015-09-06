@@ -3,14 +3,18 @@ package blade.plugin.sql2o.cache;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 import blade.cache.Cache;
+import blade.cache.CacheException;
 import blade.cache.CacheManager;
 
 @SuppressWarnings("unchecked")
 public class SimpleSql2oCache implements Sql2oCache {
 
-	private CacheManager cm = CacheManager.getInstance();
+	private CacheManager cm = CacheManager.me();
+	
+	private static final String CACHE_ID = "sql2o_cache";
 	
 	private Cache<String, Object> cache;
 	
@@ -19,41 +23,12 @@ public class SimpleSql2oCache implements Sql2oCache {
 		long cleanTime = 1000 * 3600 * 300;
 		cm.setCleanInterval(cleanTime);
 		// 存放1000个缓存，超过即自动清除
-		cache = cm.newLRUCache("sql2o_cache").cacheSize(1000);
+		cache = cm.newLRUCache(CACHE_ID).cacheSize(1000);
 	}
 	
 	@Override
-	public void set(String key, Serializable value) {
-		cache.set(key, value);
-	}
-
-	@Override
-	public void set(String key, Serializable value, long expire) {
-		cache.set(key, value, expire);
-	}
-
-	@Override
 	public void hset(String key, String field, Serializable value) {
 		cache.hset(key, field, value);
-	}
-
-	@Override
-	public void hset(String key, String field, Serializable value, long expire) {
-		cache.hset(key, field, value, expire);
-	}
-
-	@Override
-	public void hset(String key, String field, List<Serializable> value, long expire) {
-		cache.hset(key, field, value, expire);
-	}
-
-	@Override
-	public Serializable get(String key) {
-		Object value = cache.get(key);
-		if(null != value){
-			return (Serializable) value;
-		}
-		return null;
 	}
 	
 	@Override
@@ -113,11 +88,6 @@ public class SimpleSql2oCache implements Sql2oCache {
 	}
 
 	@Override
-	public void hdel(String key, String field) {
-		cache.del(key, field);
-	}
-
-	@Override
 	public <T extends Serializable>  void hsetlist(String key, String field, List<T> value) {
 		cache.hset(key, field, value);
 	}
@@ -135,6 +105,17 @@ public class SimpleSql2oCache implements Sql2oCache {
 	@Override
 	public void clean() {
 		cache.clear();
+	}
+
+	@Override
+	public void destroy() throws CacheException {
+		try {
+			CacheManager.me().destroy();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		} catch (ExecutionException e) {
+			e.printStackTrace();
+		}
 	}
 
 }

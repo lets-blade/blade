@@ -1,14 +1,18 @@
 package blade.plugin.sql2o;
 
+import java.sql.DriverManager;
 import java.util.Properties;
 
 import javax.sql.DataSource;
 
 import blade.Blade;
+import blade.cache.CacheException;
 import blade.kit.PropertyKit;
 import blade.kit.StringKit;
 import blade.kit.log.Logger;
 import blade.plugin.Plugin;
+import blade.plugin.sql2o.cache.Sql2oCache;
+import blade.plugin.sql2o.cache.Sql2oCacheFactory;
 import blade.plugin.sql2o.ds.DataSourceManager;
 
 /**
@@ -17,9 +21,7 @@ import blade.plugin.sql2o.ds.DataSourceManager;
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since	1.0
  */
-public enum Sql2oPlugin implements Plugin {
-	
-	INSTANCE;
+public class Sql2oPlugin implements Plugin {
 	
 	private Logger LOGGER = Logger.getLogger(Sql2oPlugin.class);
 	
@@ -27,7 +29,7 @@ public enum Sql2oPlugin implements Plugin {
 	
 	private boolean isOpenCache = false;
 	
-	private Sql2oPlugin() {
+	public Sql2oPlugin() {
 	}
 	
 	/**
@@ -44,30 +46,30 @@ public enum Sql2oPlugin implements Plugin {
 		String password = configProperties.getProperty(Constant.PASSWORD);
 		String openCache = configProperties.getProperty(Constant.OPEN_CACHE);
 		
-		if(null == INSTANCE.dbConfig){
-			INSTANCE.dbConfig = new DBConfig();
+		if(null == dbConfig){
+			dbConfig = new DBConfig();
 		}
 		
 		if(StringKit.isNotBlank(drive)){
-			INSTANCE.dbConfig.setDriverName(drive);
+			dbConfig.setDriverName(drive);
 		}
 		
 		if(StringKit.isNotBlank(url)){
-			INSTANCE.dbConfig.setUrl(url);
+			dbConfig.setUrl(url);
 		}
 		
 		if(StringKit.isNotBlank(username)){
-			INSTANCE.dbConfig.setUserName(username);
+			dbConfig.setUserName(username);
 		}
 		
 		if(StringKit.isNotBlank(password)){
-			INSTANCE.dbConfig.setPassWord(password);
+			dbConfig.setPassWord(password);
 		}
 		
 		if(StringKit.isNotBlank(openCache)){
 			isOpenCache = Boolean.valueOf(openCache.trim());
 		}
-		return INSTANCE;
+		return this;
 	}
 
 	/**
@@ -76,8 +78,8 @@ public enum Sql2oPlugin implements Plugin {
 	 * @param dbConfig	数据库配置
 	 */
 	public Sql2oPlugin config(DBConfig dbConfig){
-		INSTANCE.dbConfig = dbConfig;
-		return INSTANCE;
+		this.dbConfig = dbConfig;
+		return this;
 	}
 	
 	/**
@@ -90,12 +92,12 @@ public enum Sql2oPlugin implements Plugin {
 			isOpenCache = Boolean.valueOf(opencache);
 		}
 		DataSourceManager.me().setDataSource(dataSource);
-		return INSTANCE;
+		return this;
 	}
 	
 	public Sql2oPlugin openCache(){
 		isOpenCache = true;
-		return INSTANCE;
+		return this;
 	}
 	
 	/**
@@ -119,7 +121,7 @@ public enum Sql2oPlugin implements Plugin {
 		dbConfig.setUrl(url);
 		dbConfig.setUserName(user);
 		dbConfig.setPassWord(pass);
-		return INSTANCE;
+		return this;
 	}
 	
 	public boolean isOpenCache() {
@@ -142,4 +144,25 @@ public enum Sql2oPlugin implements Plugin {
 		}
 	}
 
+	@Override
+	public void destroy() {
+		
+		LOGGER.debug("sql2o destroy!");
+		
+		// 卸载数据库驱动
+		try {
+			DriverManager.deregisterDriver(DriverManager.getDrivers().nextElement());
+			// 清理缓存处理线程
+			if(isOpenCache){
+				Sql2oCache sql2oCache = Sql2oCacheFactory.getSql2oCache();
+				sql2oCache.destroy();
+			}
+		} catch (CacheException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+	}
+	
 }

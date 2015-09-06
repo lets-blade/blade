@@ -26,6 +26,7 @@ import blade.kit.ReflectKit;
 import blade.kit.log.Logger;
 import blade.kit.resource.ClassPathClassReader;
 import blade.kit.resource.ClassReader;
+import blade.plugin.Plugin;
 import blade.route.RouteBase;
 
 /**
@@ -50,6 +51,8 @@ public final class IocApplication {
 	 * 类读取对象，加载class
 	 */
 	static final ClassReader classReader = new ClassPathClassReader();
+	
+	static final List<Plugin> PLUGINS = CollectionKit.newArrayList();
 	
 	/**
 	 * 存放路由类
@@ -80,6 +83,7 @@ public final class IocApplication {
 		} catch (Exception e) {
 			LOGGER.error(e);
 		}
+		
 	}
 	
 	/**
@@ -94,6 +98,18 @@ public final class IocApplication {
 				registerBean(packageName);
 			}
 		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static <T extends Plugin> T registerPlugin(Class<T> pluginClazz){
+		Object object = container.registBean(pluginClazz);
+		T plugin = (T) object;
+		PLUGINS.add(plugin);
+		return plugin;
+	}
+
+	public static <T extends Plugin> T getPlugin(Class<T> pluginClazz){
+		return container.getBean(pluginClazz, Scope.SINGLE);
 	}
 	
 	public static void addRouteClass(Class<? extends RouteBase> clazz){
@@ -129,6 +145,8 @@ public final class IocApplication {
 	public static void destroy() {
 		// 清空ioc容器
 		container.removeAll();
+		for(Plugin plugin : PLUGINS){
+			plugin.destroy();
+		}
 	}
-	
 }

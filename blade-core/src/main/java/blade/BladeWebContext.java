@@ -136,4 +136,9 @@ public final class BladeWebContext {
     	currentResponse.remove();
     }
 
+    public static void destroy(){
+    	remove();
+    	currentRequest = null;
+    	currentResponse = null;
+    }
 }

@@ -4,12 +4,10 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
+import blade.cache.CacheException;
+
 public interface Sql2oCache {
 
-	void set(String key, Serializable value);
-	
-	void set(String key, Serializable value, long expire);
-	
 	void hset(String key, String field, Serializable value);
 	
 	void hsetV(String key, String field, Object value);
@@ -19,12 +17,6 @@ public interface Sql2oCache {
 	void hsetlistmap(String key, String field, List<Map<String, Object>> value);
 	
 	<S> void hsetlists(String key, String field, List<S> value);
-	
-	void hset(String key, String field, Serializable value, long expire);
-	
-	void hset(String key, String field, List<Serializable> value, long expire);
-	
-	Serializable get(String key);
 	
 	<T extends Serializable> T hget(String key, String field);
 	
@@ -38,7 +30,7 @@ public interface Sql2oCache {
 	
 	void hdel(String key);
 	
-	void hdel(String key, String field);
-	
 	void clean();
+	
+	void destroy() throws CacheException;
 }

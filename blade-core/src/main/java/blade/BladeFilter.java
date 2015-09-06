@@ -26,6 +26,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import blade.kit.TaskKit;
 import blade.kit.log.Logger;
 import blade.route.RouteMatcherBuilder;
 
@@ -122,8 +123,10 @@ public class BladeFilter implements Filter {
 	
     @Override
     public void destroy() {
-    	IocApplication.destroy();
     	LOGGER.info("blade destroy!");
+    	BladeWebContext.remove();
+    	IocApplication.destroy();
+    	TaskKit.depose();
     }
 
 }

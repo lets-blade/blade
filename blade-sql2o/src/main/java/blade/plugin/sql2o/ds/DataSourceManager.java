@@ -4,6 +4,7 @@ import javax.sql.DataSource;
 
 import org.sql2o.Sql2o;
 
+import blade.Blade;
 import blade.plugin.sql2o.DBConfig;
 import blade.plugin.sql2o.Sql2oPlugin;
 import blade.plugin.sql2o.exception.DataSourceException;
@@ -32,7 +33,7 @@ public final class DataSourceManager {
 		if(null != this.dataSource){
 			sql2o = new Sql2o(this.dataSource);
 		} else {
-			DBConfig dbConfig = Sql2oPlugin.INSTANCE.dbConfig();
+			DBConfig dbConfig = Blade.plugin(Sql2oPlugin.class).dbConfig();
 			if(null == dbConfig){
 				throw new DataSourceException("数据库配置失败");
 			}

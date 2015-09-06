@@ -28,4 +28,8 @@ public interface Plugin {
 	 */
 	void run();
 	
+	/**
+	 * 销毁，释放资源
+	 */
+	void destroy();
 }

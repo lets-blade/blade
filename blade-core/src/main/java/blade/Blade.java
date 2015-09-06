@@ -24,6 +24,7 @@ import blade.ioc.DefaultContainer;
 import blade.kit.IOKit;
 import blade.kit.PropertyKit;
 import blade.kit.json.JSONKit;
+import blade.plugin.Plugin;
 import blade.render.Render;
 import blade.render.RenderFactory;
 import blade.route.HttpMethod;
@@ -538,4 +539,19 @@ public final class Blade {
 	public static Bootstrap bootstrap(){
 		return bootstrap; 
 	}
+	
+	/**
+	 * 返回插件对象
+	 * @param pluginClazz	插件class
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public static <T extends Plugin> T plugin(Class<T> pluginClazz){
+		Object object = IocApplication.getPlugin(pluginClazz);
+		if(null == object){
+			object = IocApplication.registerPlugin(pluginClazz);
+		}
+		return (T) object;
+	}
+	
 }
