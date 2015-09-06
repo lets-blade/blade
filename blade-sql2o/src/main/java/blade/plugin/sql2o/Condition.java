@@ -130,42 +130,34 @@ public class Condition {
 		
 		if(null != this.params){
 			this.params.clear();
-//			this.params = null;
 		}
 		
 		if(null != this.equalsParams){
 			this.equalsParams.clear();
-//			this.equalsParams = null;
 		}
 		
 		if(null != this.greaterParams){
 			this.greaterParams.clear();
-//			this.greaterParams = null;
 		}
 		
 		if(null != this.greaterThanParams){
 			this.greaterThanParams.clear();
-//			this.greaterThanParams = null;
 		}
 		
 		if(null != this.lessParams){
 			this.lessParams.clear();
-//			this.lessParams = null;
 		}
 		
 		if(null != this.lessThanParams){
 			this.lessThanParams.clear();
-			this.lessThanParams = null;
 		}
 		
 		if(null != this.likeParams){
 			this.likeParams.clear();
-			this.likeParams = null;
 		}
 		
 		if(null != this.inParams){
 			this.inParams.clear();
-			this.inParams = null;
 		}
     	
 		if(null != this.logParams){

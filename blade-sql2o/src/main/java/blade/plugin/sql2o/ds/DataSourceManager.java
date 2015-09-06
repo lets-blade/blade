@@ -4,15 +4,9 @@ import javax.sql.DataSource;
 
 import org.sql2o.Sql2o;
 
-import blade.ioc.AbstractBeanFactory;
-import blade.ioc.SingleBean;
+import blade.plugin.sql2o.DBConfig;
 import blade.plugin.sql2o.Sql2oPlugin;
 import blade.plugin.sql2o.exception.DataSourceException;
-import blade.plugin.sql2o.exception.PoolException;
-import blade.plugin.sql2o.pool.ConnectionPool;
-import blade.plugin.sql2o.pool.ConnectionPoolManager;
-import blade.plugin.sql2o.pool.InitPoolConfig;
-import blade.plugin.sql2o.pool.PoolConfig;
 
 /**
  * 数据源连接管理器
@@ -21,66 +15,52 @@ import blade.plugin.sql2o.pool.PoolConfig;
  */
 public final class DataSourceManager {
 
-	private static DataSource dataSource;
+	private static final DataSourceManager DATA_SOURCE_MANAGER = new DataSourceManager();
 	
-	private static ConnectionPool connectionPool;
+	private DataSource dataSource;
 	
-	private static Sql2o sql2o = null;
-	
-	private static final AbstractBeanFactory beanFactory = new SingleBean();
+	private Sql2o sql2o = null;
 	
 	private DataSourceManager() {
 	}
 	
-	public static void run(){
-		Object dsFactoryObj = beanFactory.getBean(AbstractDataSource.class);
-		if(null != dsFactoryObj && dsFactoryObj instanceof AbstractDataSource){
-			DataSourceManager.dataSource = ((AbstractDataSource) dsFactoryObj).getDataSource();
-			if(null == DataSourceManager.dataSource){
-				throw new DataSourceException("数据源初始化失败！");
-			}
+	public static DataSourceManager me(){
+		return DATA_SOURCE_MANAGER;
+	}
+	
+	public void run(){
+		if(null != this.dataSource){
+			sql2o = new Sql2o(this.dataSource);
 		} else {
-			// 内部连接池
-			DataSourceManager.connectionPool = getConnectionPool();
-		}
-		
-		if(null != DataSourceManager.dataSource){
-			sql2o = new Sql2o(DataSourceManager.dataSource);
-		}
-		
-		if(null != DataSourceManager.connectionPool){
-			sql2o = new Sql2o(connectionPool);
+			DBConfig dbConfig = Sql2oPlugin.INSTANCE.dbConfig();
+			if(null == dbConfig){
+				throw new DataSourceException("数据库配置失败");
+			}
+			try {
+				Class.forName(dbConfig.getDriverName());
+				sql2o = new Sql2o(dbConfig.getUrl(), dbConfig.getUserName(), dbConfig.getPassWord());
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 	
-	public static Sql2o getSql2o(){
+	public synchronized Sql2o getSql2o(){
 		return sql2o;
 	}
 	
-	public static ConnectionPool getConnectionPool() {
-		if(null == connectionPool){
-			PoolConfig poolConfig = Sql2oPlugin.INSTANCE.poolConfig();
-			if(null == poolConfig){
-				throw new PoolException("数据库配置失败");
-			}
-			InitPoolConfig.add(poolConfig);
-			return ConnectionPoolManager.me().getPool(poolConfig.getPoolName());
-		}
-		return connectionPool;
-	}
-
 	/**
 	 * 提供动态注入datasource
 	 * @param dataSource_
 	 */
-	public static void setDataSource(DataSource dataSource){
-		DataSourceManager.dataSource = dataSource;
-		if(null != DataSourceManager.dataSource){
-			sql2o = new Sql2o(DataSourceManager.dataSource);
+	public void setDataSource(DataSource dataSource){
+		this.dataSource = dataSource;
+		if(null != this.dataSource){
+			sql2o = new Sql2o(this.dataSource);
 		}
 	}
 	
-	public static DataSource getDataSource(){
+	public DataSource getDataSource(){
 		return dataSource;
 	}
 	

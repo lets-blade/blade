@@ -30,19 +30,14 @@ public class Model<T extends Serializable> {
 	private static final Logger LOGGER = Logger.getLogger(Model.class);
 	
 	/**
-	 * 是否开启缓存
+	 * 缓存对象
 	 */
-	private boolean isOpenCache = Sql2oPlugin.INSTANCE.isOpenCache();
-	
-	/**
-	 * 缓存操作
-	 */
-    public Sql2oCache sql2oCache = isOpenCache ? Sql2oCacheFactory.getSql2oCache() : null;
+    public Sql2oCache sql2oCache = Sql2oCacheFactory.getSql2oCache();
     
     /**
      * sql2o对象，操作数据库
      */
-    private Sql2o sql2o = DataSourceManager.getSql2o();
+    private Sql2o sql2o = DataSourceManager.me().getSql2o();
     
     /**
      * 当前class实例
@@ -102,7 +97,7 @@ public class Model<T extends Serializable> {
     	if(this.queryIsOpen){
     		return true;
     	}
-    	return isOpenCache && model.getAnnotation(Table.class).isCache() && this.cache;
+    	return Sql2oPlugin.INSTANCE.isOpenCache() && model.getAnnotation(Table.class).isCache() && this.cache;
     }
     
     /**
@@ -125,9 +120,9 @@ public class Model<T extends Serializable> {
      */
     private void init(){
     	this.queryIsOpen = false;
-    	this.cache = isOpenCache;
+    	this.cache = Sql2oPlugin.INSTANCE.isOpenCache();
     	if(null == this.sql2o){
-    		this.sql2o = DataSourceManager.getSql2o();
+    		this.sql2o = DataSourceManager.me().getSql2o();
     	}
     }
     
@@ -141,7 +136,7 @@ public class Model<T extends Serializable> {
     }
     
     public boolean isOpenCache() {
-		return isOpenCache;
+		return Sql2oPlugin.INSTANCE.isOpenCache();
 	}
 
 	/**

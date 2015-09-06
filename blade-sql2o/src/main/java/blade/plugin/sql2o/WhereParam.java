@@ -124,7 +124,7 @@ public class WhereParam {
 	}
 	
 	public WhereParam in(String field, Object... values){
-		if(StringKit.isNotBlank(field) && null != values && values.length > 1){
+		if(StringKit.isNotBlank(field) && null != values && values.length > 0){
     		if(null == this.inParams){
     			this.inParams = CollectionKit.newLinkedHashMap();
         	}
