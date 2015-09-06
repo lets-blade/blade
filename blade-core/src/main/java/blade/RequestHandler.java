@@ -317,6 +317,7 @@ public class RequestHandler {
 	 */
 	private Object executeMethod(Object object, Method method, RequestWrapper requestWrapper, ResponseWrapper responseWrapper){
 		int len = method.getParameterTypes().length;
+		method.setAccessible(true);
 		if(len > 0){
 			Object[] args = getArgs(requestWrapper, responseWrapper, method.getParameterTypes());
 			return ReflectKit.invokeMehod(object, method, args);

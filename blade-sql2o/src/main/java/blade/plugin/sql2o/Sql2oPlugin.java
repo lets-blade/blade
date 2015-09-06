@@ -1,6 +1,8 @@
 package blade.plugin.sql2o;
 
+import java.sql.Driver;
 import java.sql.DriverManager;
+import java.util.Enumeration;
 import java.util.Properties;
 
 import javax.sql.DataSource;
@@ -134,13 +136,12 @@ public class Sql2oPlugin implements Plugin {
 	
 	@Override
 	public void run() {
-		
 		DataSourceManager.me().run();
 		DataSource dataSource = DataSourceManager.me().getDataSource();
 		if(null == dataSource){
-			LOGGER.error("数据库插件配置失败");
+			LOGGER.error("blade sql2o config fail!");
 		} else {
-			LOGGER.debug("数据库插件配置成功...");
+			LOGGER.debug("blade sql2o config success!");
 		}
 	}
 
@@ -151,7 +152,10 @@ public class Sql2oPlugin implements Plugin {
 		
 		// 卸载数据库驱动
 		try {
-			DriverManager.deregisterDriver(DriverManager.getDrivers().nextElement());
+			Enumeration<Driver> em = DriverManager.getDrivers();
+			if(null != em && em.hasMoreElements()){
+				DriverManager.deregisterDriver(em.nextElement());
+			}
 			// 清理缓存处理线程
 			if(isOpenCache){
 				Sql2oCache sql2oCache = Sql2oCacheFactory.getSql2oCache();
