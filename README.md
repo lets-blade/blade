@@ -12,27 +12,35 @@
 **blade** Is a concise and powerful web development framework, it is built into the `IOC` administration, the interceptor configuration, `REST API` development and so on many mainstream web features, integrate the template engine, a cache plug-in, database operations, commonly used functions such as email, concise source deserves your reading. If you like it, can be [Star and Fork](https://github.com/biezhi/blade), thanks!
 
 - __Simple MVC__
+
 use Java language to complete the MVC more concise
 
 - __Restful__
+
 provide a Restful style routing interface
 
 - __Multiple routing configuration__
+
 routing configuration in the form of more functional routing, annotations routing, routing reflection way
 
 - __Coding/JSON/configuration file__
+
 blade offers a variety of configurations, including JSON, the Properties file, hard coding
 
 - __Plug-in extension mechanism__
+
 blade extensions support you use third party components, modular development of more convenient
 
 - __Template engine Plugin__
+
 support access to mainstream template engine, there are beetl, jetbrick, velocity engine
 
 - __Support JDK1.6 +__
+
 Support jdk1.6 or higher version
 
 - __The source code of less than 100kb__
+
 the source code of the blade framework is less than 100 KB, learn easy, get started quickly, the code is simple
 
 ## Quick start
