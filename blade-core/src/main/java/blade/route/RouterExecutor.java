@@ -33,8 +33,16 @@ public class RouterExecutor{
 	}
 	
 	public void run(Router router) {
-		for(String path : paths){
-			RouteMatcherBuilder.buildHandler(path, router, httpMethod);
+		// 拦截器
+		if(this.httpMethod == HttpMethod.BEFORE || this.httpMethod == HttpMethod.AFTER){
+			for(String path : paths){
+				RouteMatcherBuilder.buildInterceptor(path, router, httpMethod);
+			}
+		} else {
+			// 路由
+			for(String path : paths){
+				RouteMatcherBuilder.buildHandler(path, router, httpMethod);
+			}
 		}
 	}
 	

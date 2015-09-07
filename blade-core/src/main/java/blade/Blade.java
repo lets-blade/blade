@@ -517,6 +517,17 @@ public final class Blade {
 	public static synchronized void before(String path, Router routeHandler){
 		RouteMatcherBuilder.buildInterceptor(path, routeHandler, HttpMethod.BEFORE);
 	}
+
+	/**
+	 * before请求，多个路由
+	 * @param paths
+	 */
+	public static synchronized RouterExecutor before(String... paths){
+		if(null != paths && paths.length > 0){
+			return new RouterExecutor(paths, HttpMethod.BEFORE);
+		}
+		return null;
+	}
 	
 	/**
 	 * 拦截器after请求
@@ -528,30 +539,14 @@ public final class Blade {
 	}
 	
 	/**
-	 * 注册一个函数式的拦截器</br>
-	 * <p>
-	 * 方法上指定请求类型，如：post:signin
-	 * </p>
-	 * @param path			路由url	
-	 * @param clazz			路由处理类
-	 * @param methodName	路由处理方法名称
+	 * after请求，多个路由
+	 * @param paths
 	 */
-	public static synchronized void regInterceptor(String path, Class<?> clazz, String methodName){
-		RouteMatcherBuilder.buildInterceptor(path, clazz, methodName, null);
-	}
-	
-	/**
-	 * 注册一个函数式的拦截器</br>
-	 * <p>
-	 * 方法上指定请求类型，如：post:signin
-	 * </p>
-	 * @param path			路由url	
-	 * @param clazz			路由处理类
-	 * @param methodName	路由处理方法名称
-	 * @param acceptType	acceptType
-	 */
-	public static synchronized void regInterceptor(String path, Class<?> clazz, String methodName, String acceptType){
-		RouteMatcherBuilder.buildInterceptor(path, clazz, methodName, acceptType);
+	public static synchronized RouterExecutor after(String... paths){
+		if(null != paths && paths.length > 0){
+			return new RouterExecutor(paths, HttpMethod.AFTER);
+		}
+		return null;
 	}
 	
 	public final static BladeConfig config(){

@@ -47,8 +47,8 @@ public @interface Before {
 	String suffix() default "";
 	
 	/**
-	 * 允许的accept
+	 * 多个后置拦截
+	 * @return
 	 */
-	String acceptType() default "*/*";
-	
+	String[] values() default {};
 }

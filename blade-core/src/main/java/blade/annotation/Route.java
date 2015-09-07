@@ -57,8 +57,8 @@ public @interface Route {
 	HttpMethod method() default HttpMethod.ALL;
 	
 	/**
-	 * @return 需要拦截的acceptType
+	 * @return 多个请求
 	 */
-	String acceptType() default "*/*";
+	String[] values() default {};
 	
 }

@@ -131,7 +131,12 @@ public final class RouteMatcherBuilder {
     		
     		Method execMethod = ReflectKit.getMethodByName(clazz, methodName);
     		
-    		defaultRouteMatcher.addRoute(clazz, execMethod, path, httpMethod, "*/*");
+    		// 拦截器
+    		if(httpMethod == HttpMethod.AFTER || httpMethod == HttpMethod.BEFORE){
+    			defaultRouteMatcher.addInterceptor(clazz, execMethod, path, httpMethod);
+    		} else {
+    			defaultRouteMatcher.addRoute(clazz, execMethod, path, httpMethod);
+			}
     	} else {
 			 throw new BladeException("an unqualified configuration");
 		}
@@ -162,18 +167,13 @@ public final class RouteMatcherBuilder {
     /**
      * 函数式拦截器构建
      */
-    public static void buildInterceptor(String path, Class<?> clazz, String methodName, String acceptType){
+    public static void buildInterceptor(String path, Class<?> clazz, String methodName){
     	if(StringKit.isNotBlank(path) && null != clazz && StringKit.isNotBlank(methodName)){
 
-    		// 字符串上写请求   */*:hello
+    		// 字符串上写请求   hello
     		if(methodName.indexOf(":") != -1){
     			String[] methodArr = StringKit.split(methodName, ":");
-    			acceptType = methodArr[0];
     			methodName = methodArr[1];
-    		}
-    		
-    		if(null == acceptType){
-    			acceptType = "*/*";
     		}
     		
     		// 查找
@@ -184,7 +184,7 @@ public final class RouteMatcherBuilder {
     		
     		Method execMethod = ReflectKit.getMethodByName(clazz, methodName);
     		
-    		defaultRouteMatcher.addInterceptor(clazz, execMethod, path, HttpMethod.BEFORE, acceptType);
+    		defaultRouteMatcher.addInterceptor(clazz, execMethod, path, HttpMethod.BEFORE);
     	} else {
 			 throw new BladeException("an unqualified configuration");
 		}
@@ -269,30 +269,36 @@ public final class RouteMatcherBuilder {
 			
 			if (null != before) {
 				
-				String beforeSuffix = before.suffix();
+				String suffix = before.suffix();
 				
-				String path = before.value().startsWith("/") ? before.value() : "/" + before.value();
+				String path = getRoutePath(before.value(), "", suffix);
 				
-				path = path.length() > 1 && path.endsWith("/") ? path.substring(0, path.length() - 1) : path;
+				buildInterceptor(path, interceptor, method, HttpMethod.BEFORE);
 				
-				path = path + beforeSuffix;
-				
-				String acceptType = before.acceptType();
-				buildInterceptor(interceptor, method, path, HttpMethod.BEFORE, acceptType);
+				String[] paths = before.values();
+				if(null != paths && paths.length > 0){
+					for(String value : paths){
+						String pathV = getRoutePath(value, "", suffix);
+						buildInterceptor(pathV, interceptor, method, HttpMethod.BEFORE);
+					}
+				}
 			}
 			
 			if (null != after) {
 				
-				String afterSuffix = after.suffix();
+				String suffix = after.suffix();
 				
-				String path = after.value().startsWith("/") ? after.value() : "/" + after.value();
+				String path = getRoutePath(after.value(), "", suffix);
 				
-				path = path.length() > 1 && path.endsWith("/") ? path.substring(0, path.length() - 1) : path;
+				buildInterceptor(path, interceptor, method, HttpMethod.AFTER);
 				
-				path = path + afterSuffix;
-				
-				String acceptType = after.acceptType();
-				buildInterceptor(interceptor, method, path, HttpMethod.AFTER, acceptType);
+				String[] paths = before.values();
+				if(null != paths && paths.length > 0){
+					for(String value : paths){
+						String pathV = getRoutePath(value, "", suffix);
+						buildInterceptor(pathV, interceptor, method, HttpMethod.AFTER);
+					}
+				}
 			}
 		}
     }
@@ -323,34 +329,34 @@ public final class RouteMatcherBuilder {
 			if (null != mapping) {
 				
 				////构建路由
-				String path = mapping.value().startsWith("/") ? mapping.value() : "/" + mapping.value();
-				path = nameSpace + path;
-				path = path.replaceAll("[/]+", "/");
-				
-				path = path.length() > 1 && path.endsWith("/") ? path.substring(0, path.length() - 1) : path;
-				
-				path = path + suffix;
+				String path = getRoutePath(mapping.value(), nameSpace, suffix);
 				
 				HttpMethod methodType = mapping.method();
 				
-				String acceptType = mapping.acceptType();
+				buildRoute(router, method, path, methodType);
 				
-				buildRoute(router, method, path, methodType, acceptType);
+				// 构建多个路由
+				String[] paths = mapping.values();
+				if(null != paths && paths.length > 0){
+					for(String value : paths){
+						String pathV = getRoutePath(value, nameSpace, suffix);
+						buildRoute(router, method, pathV, methodType);
+					}
+				}
 			}
 		}
     }
     
-    /**
-     * 构建一个路由
-     * 
-     * @param target		路由目标执行的class
-     * @param execMethod	路由执行方法
-     * @param path			路由url
-     * @param method		路由http方法
-     * @param acceptType	路由acceptType
-     */
-    private static void buildRoute(Class<?> target, Method execMethod, String path, HttpMethod method, String acceptType){
-    	defaultRouteMatcher.addRoute(target, execMethod, path, method, acceptType);
+    private static String getRoutePath(String value, String nameSpace, String suffix){
+    	String path = value.startsWith("/") ? value : "/" + value;
+		path = nameSpace + path;
+		path = path.replaceAll("[/]+", "/");
+		
+		path = path.length() > 1 && path.endsWith("/") ? path.substring(0, path.length() - 1) : path;
+		
+		path = path + suffix;
+		
+		return path;
     }
     
     /**
@@ -362,8 +368,21 @@ public final class RouteMatcherBuilder {
      * @param method		路由http方法
      * @param acceptType	路由acceptType
      */
-    private static void buildInterceptor(Class<?> target, Method execMethod, String path, HttpMethod method, String acceptType){
-    	defaultRouteMatcher.addInterceptor(target, execMethod, path, method, acceptType);
+    private static void buildRoute(Class<?> target, Method execMethod, String path, HttpMethod method){
+    	defaultRouteMatcher.addRoute(target, execMethod, path, method);
+    }
+    
+    /**
+     * 构建一个路由
+     * 
+     * @param path			路由url
+     * @param target		路由目标执行的class
+     * @param execMethod	路由执行方法
+     * @param method		路由http方法
+     * @param acceptType	路由acceptType
+     */
+    private static void buildInterceptor(String path, Class<?> target, Method execMethod, HttpMethod method){
+    	defaultRouteMatcher.addInterceptor(target, execMethod, path, method);
     }
     
     private static HttpMethod getHttpMethod(String name){
