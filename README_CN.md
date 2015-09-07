@@ -1,30 +1,32 @@
-#Blade
-
 [![简洁强大的JavaWeb框架](http://i1.tietuku.com/0c4b9726253b6268.png "简洁强大的JavaWeb框架")](http://bladejava.com)
-
-[English](https://github.com/biezhi/blade/blob/master/README.md)
 
 [![@biezhi on weibo](https://img.shields.io/badge/weibo-%40biezhi-red.svg)](http://weibo.com/u/5238733773)
 [![Hex.pm](https://img.shields.io/hexpm/l/plug.svg)](http://www.apache.org/licenses/LICENSE-2.0.html)
 [![Build Status](https://api.travis-ci.org/biezhi/blade.svg?branch=master)](https://travis-ci.org/biezhi/blade)
-[![Circle CI](https://circleci.com/gh/biezhi/blade/tree/master.svg?style=svg)](https://circleci.com/gh/biezhi/blade/tree/master)
 [![release](https://img.shields.io/maven-central/v/com.bladejava/blade-core.svg)](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.bladejava%22)
+
+[English](https://github.com/biezhi/blade/blob/master/README.md)
+
+## Blade是什么?
 
 **blade** 是一个简洁强大的web框架，它内置了`IOC`管理，拦截器配置，`REST API`开发等众多主流web特性，集成了模板引擎，缓存插件，数据库操作，邮件发送等常用功能，简洁的源码值得你阅读和学习。如果你喜欢，欢迎[Star and Fork](https://github.com/biezhi/blade) ！
 
-## Blade特性
-
-* 简洁的MVC
-* RESTful
-* 多种路由配置方式
-* 微内核IOC容器
-* 实用工具类
-* 编码/JSON/配置文件
-* 模板引擎支持
-* 支持JDK1.6+
-* 插件扩展机制
-* 缓存支持
-* 不到100K的源码
+- __简洁的MVC__
+使用java语言完成mvc更加简洁
+- __RESTful__
+提供Restful风格的路由接口
+- __多种路由配置方式__
+更多方式进行路由的配置，函数式路由，注解路由，反射方式路由
+- __编码/JSON/配置文件__
+blade提供多种配置方式，包括JSON、Properties文件，硬编码
+- __插件扩展机制__
+blade支持你使用第三方的组件进行扩展，更方便的积木式开发
+- __模板引擎支持__
+支持主流模板引擎接入，目前已经有beetl、jetbrick、velocity引擎
+- __支持JDK1.6+__
+支持jdk1.6或者更高版本
+- __不到100K的源码__
+目前blade框架的源代码不到100kb，学习简单，上手快速，代码简洁
 
 ## 快速入门
 第一步、用maven构建一个webapp，加入blade的依赖，推荐获取[最新版本](LAST_VERSION.md)
