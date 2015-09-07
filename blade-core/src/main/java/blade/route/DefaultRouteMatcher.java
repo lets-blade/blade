@@ -16,15 +16,12 @@
 package blade.route;
 
 import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 
 import blade.Blade;
 import blade.kit.CollectionKit;
-import blade.kit.MimeParse;
 import blade.kit.StringKit;
 import blade.kit.log.Logger;
 
@@ -72,7 +69,7 @@ public class DefaultRouteMatcher {
         // 优先匹配原则
         giveMatch(uri, routeEntries);
         
-        RouteMatcher entry = findTargetWithGivenAcceptType(routeEntries, acceptType);
+        RouteMatcher entry =  routeEntries.size() > 0 ? routeEntries.get(0) : null;
         
         return entry != null ? new RouteMatcher(entry.router, entry.target, entry.execMethod, entry.httpMethod, entry.path, uri, acceptType) : null;
     }
@@ -105,16 +102,7 @@ public class DefaultRouteMatcher {
         List<RouteMatcher> routeEntries = DEFAULT_ROUTE_MATCHER.findInterceptor(httpMethod, uri);
 
         for (RouteMatcher routeEntry : routeEntries) {
-            if (acceptType != null) {
-            	
-                String bestMatch = MimeParse.bestMatch(Arrays.asList(routeEntry.acceptType), acceptType);
-
-                if (routeWithGivenAcceptType(bestMatch)) {
-                	matchSet.add(routeEntry);
-                }
-            } else {
-            	matchSet.add(routeEntry);
-            }
+        	matchSet.add(routeEntry);
         }
 
         return matchSet;
@@ -171,7 +159,6 @@ public class DefaultRouteMatcher {
         entry.httpMethod = method;
         entry.path = url;
         entry.requestURI = url;
-        entry.acceptType = acceptType;
         
         if(Blade.debug()){
         	LOGGER.debug("Add Route：" + entry);
@@ -197,7 +184,6 @@ public class DefaultRouteMatcher {
         entry.httpMethod = method;
         entry.path = url;
         entry.requestURI = url;
-        entry.acceptType = acceptType;
         
         if(Blade.debug()){
         	LOGGER.debug("Add Interceptor：" + entry);
@@ -221,7 +207,6 @@ public class DefaultRouteMatcher {
         entry.httpMethod = method;
         entry.path = url;
         entry.requestURI = url;
-        entry.acceptType = acceptType;
         
         if(Blade.debug()){
         	LOGGER.debug("Add Route：" + entry);
@@ -245,7 +230,6 @@ public class DefaultRouteMatcher {
         entry.httpMethod = method;
         entry.path = url;
         entry.requestURI = url;
-        entry.acceptType = acceptType;
         
         if(Blade.debug()){
         	LOGGER.debug("Add Interceptor：" + entry);
@@ -255,22 +239,6 @@ public class DefaultRouteMatcher {
         interceptors.add(entry);
     }
     
-    private Map<String, RouteMatcher> getAcceptedMimeTypes(List<RouteMatcher> routes) {
-        Map<String, RouteMatcher> acceptedTypes = CollectionKit.newHashMap();
-
-        for (RouteMatcher routeEntry : routes) {
-            if (!acceptedTypes.containsKey(routeEntry.acceptType)) {
-                acceptedTypes.put(routeEntry.acceptType, routeEntry);
-            }
-        }
-
-        return acceptedTypes;
-    }
-
-    private boolean routeWithGivenAcceptType(String bestMatch) {
-        return !MimeParse.NO_MIME_TYPE.equals(bestMatch);
-    }
-
     /**
      * 查找所有匹配HttpMethod和path的路由
      * 
@@ -307,31 +275,6 @@ public class DefaultRouteMatcher {
         return matchSet;
     }
     
-    /**
-     * 查找符合请求头的路由
-     * @param routeMatches
-     * @param acceptType
-     * @return
-     */
-    private RouteMatcher findTargetWithGivenAcceptType(List<RouteMatcher> routeMatches, String acceptType) {
-        if (acceptType != null && routeMatches.size() > 0) {
-            Map<String, RouteMatcher> acceptedMimeTypes = getAcceptedMimeTypes(routeMatches);
-            String bestMatch = MimeParse.bestMatch(acceptedMimeTypes.keySet(), acceptType);
-
-            if (routeWithGivenAcceptType(bestMatch)) {
-                return acceptedMimeTypes.get(bestMatch);
-            } else {
-                return null;
-            }
-        } else {
-            if (routeMatches.size() > 0) {
-                return routeMatches.get(0);
-            }
-        }
-
-        return null;
-    }
-
     private boolean removeRoute(HttpMethod httpMethod, String path) {
         List<RouteMatcher> forRemoval = CollectionKit.newArrayList();
 

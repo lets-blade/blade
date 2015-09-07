@@ -76,54 +76,15 @@ public class App extends Bootstrap{
 				return "get";
 			}
 		});
-	}
-	
-}
-```
-	
-#### Functional router
-```java
-public class SayHi {
-	
-	public String hello(Request request, Response response){
-		System.out.println("come hello~");
-		request.attribute("name", "rose baby");
-		return "hi";
-	}
-}
-```
-
-#### Annotations router
-```java
-@Path("/")
-public class Hello {
-	
-	@Route("hello")
-	public String hello() {
-		System.out.println("hello");
-		return "hello.jsp";
-	}
 		
-	@Route(value = "post", method = HttpMethod.POST)
-	public void post(Request request) {
-		String name = request.query("name");
-		System.out.println("name = " + name);
-	}
-	
-	@Route("users/:name")
-	public ModelAndView users(Request request, Response response) {
-		System.out.println("users");
-		String name = request.pathParam(":name");
-		
-		ModelAndView modelAndView = new ModelAndView("users");
-		modelAndView.add("name", name);
-		return modelAndView;
-	}
-
-	@Route("index")
-	public String index(Request request) {
-		request.attribute("name", "jack");
-		return "index.jsp";
+		// multiple routing
+		Blade.get("/", "/index").run(new Router() {
+			@Override
+			public String handler(Request request, Response response) {
+				System.out.println("come index!!");
+				return "index";
+			}
+		});
 	}
 	
 }

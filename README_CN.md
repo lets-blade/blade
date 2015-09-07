@@ -63,7 +63,7 @@ public class App extends Bootstrap{
 	@Override
 	public void init() {
 		// 注册函数式路由
-		Blade.regRoute("/hello", SayHi.class, "hello");
+		Blade.register("/hello", SayHi.class, "hello");
 		
 		// 匿名路由，java8方式更简化
 		Blade.get("/get", new Router() {
@@ -74,55 +74,16 @@ public class App extends Bootstrap{
 				return "get";
 			}
 		});
-	}
-}
-```
-	
-#### 函数式路由
-```java
-public class SayHi {
-	
-	public String hello(Request request, Response response){
-		System.out.println("进入hello~");
-		request.attribute("name", "rose baby");
-		return "hi";
-	}
-}
-```
-
-#### 注解路由
-```java
-@Path("/")
-public class Hello {
-	
-	@Route("hello")
-	public String hello() {
-		System.out.println("hello");
-		return "hello.jsp";
-	}
 		
-	@Route(value = "post", method = HttpMethod.POST)
-	public void post(Request request) {
-		String name = request.query("name");
-		System.out.println("name = " + name);
+		// 多个路由
+		Blade.get("/", "/index").run(new Router() {
+			@Override
+			public String handler(Request request, Response response) {
+				System.out.println("进入index!!");
+				return "index";
+			}
+		});
 	}
-	
-	@Route("users/:name")
-	public ModelAndView users(Request request, Response response) {
-		System.out.println("users");
-		String name = request.pathParam(":name");
-		
-		ModelAndView modelAndView = new ModelAndView("users");
-		modelAndView.add("name", name);
-		return modelAndView;
-	}
-
-	@Route("index")
-	public String index(Request request) {
-		request.attribute("name", "jack");
-		return "index.jsp";
-	}
-	
 }
 ```
 	

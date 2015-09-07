@@ -31,6 +31,7 @@ import blade.route.HttpMethod;
 import blade.route.RouteBase;
 import blade.route.RouteMatcherBuilder;
 import blade.route.Router;
+import blade.route.RouterExecutor;
 
 /**
  * Blade Core Class
@@ -40,7 +41,7 @@ import blade.route.Router;
  */
 public final class Blade {
 	
-	public static final String VERSION = "1.2.9-beta";
+	public static final String VERSION = "1.2.9";
 	/**
      * 框架是否已经初始化
      */
@@ -294,7 +295,7 @@ public final class Blade {
 	 * @param clazz			路由处理类
 	 * @param methodName	路由处理方法名称
 	 */
-	public static synchronized void regRoute(String path, Class<?> clazz, String methodName){
+	public static synchronized void register(String path, Class<?> clazz, String methodName){
 		RouteMatcherBuilder.buildFunctional(path, clazz, methodName, null);
 	}
 	
@@ -305,7 +306,7 @@ public final class Blade {
 	 * @param methodName	路由处理方法名称
 	 * @param httpMethod	请求类型,GET/POST
 	 */
-	public static synchronized void regRoute(String path, Class<?> clazz, String methodName, HttpMethod httpMethod){
+	public static synchronized void register(String path, Class<?> clazz, String methodName, HttpMethod httpMethod){
 		RouteMatcherBuilder.buildFunctional(path, clazz, methodName, httpMethod);
 	}
 	
@@ -314,8 +315,19 @@ public final class Blade {
 	 * @param path
 	 * @param routeHandler
 	 */
-	public static synchronized void get(String path, Router routeHandler){
-		RouteMatcherBuilder.buildHandler(path, routeHandler, HttpMethod.GET);
+	public static synchronized void get(String path, Router router){
+		RouteMatcherBuilder.buildHandler(path, router, HttpMethod.GET);
+	}
+	
+	/**
+	 * get请求，多个路由
+	 * @param paths
+	 */
+	public static synchronized RouterExecutor get(String... paths){
+		if(null != paths && paths.length > 0){
+			return new RouterExecutor(paths, HttpMethod.GET);
+		}
+		return null;
 	}
 	
 	/**
@@ -323,8 +335,19 @@ public final class Blade {
 	 * @param path
 	 * @param routeHandler
 	 */
-	public static synchronized void post(String path, Router routeHandler){
-		RouteMatcherBuilder.buildHandler(path, routeHandler, HttpMethod.POST);
+	public static synchronized void post(String path, Router router){
+		RouteMatcherBuilder.buildHandler(path, router, HttpMethod.POST);
+	}
+	
+	/**
+	 * post请求，多个路由
+	 * @param paths
+	 */
+	public static synchronized RouterExecutor post(String... paths){
+		if(null != paths && paths.length > 0){
+			return new RouterExecutor(paths, HttpMethod.POST);
+		}
+		return null;
 	}
 	
 	/**
@@ -332,17 +355,38 @@ public final class Blade {
 	 * @param path
 	 * @param routeHandler
 	 */
-	public static synchronized void delete(String path, Router routeHandler){
-		RouteMatcherBuilder.buildHandler(path, routeHandler, HttpMethod.DELETE);
+	public static synchronized void delete(String path, Router router){
+		RouteMatcherBuilder.buildHandler(path, router, HttpMethod.DELETE);
+	}
+	
+	/**
+	 * delete请求，多个路由
+	 * @param paths
+	 */
+	public static synchronized RouterExecutor delete(String... paths){
+		if(null != paths && paths.length > 0){
+			return new RouterExecutor(paths, HttpMethod.DELETE);
+		}
+		return null;
 	}
 	
 	/**
 	 * put请求
-	 * @param path
-	 * @param routeHandler
+	 * @param paths
 	 */
-	public static synchronized void put(String path, Router routeHandler){
-		RouteMatcherBuilder.buildHandler(path, routeHandler, HttpMethod.PUT);
+	public static synchronized void put(String path, Router router){
+		RouteMatcherBuilder.buildHandler(path, router, HttpMethod.PUT);
+	}
+	
+	/**
+	 * put请求，多个路由
+	 * @param paths
+	 */
+	public static synchronized RouterExecutor put(String... paths){
+		if(null != paths && paths.length > 0){
+			return new RouterExecutor(paths, HttpMethod.PUT);
+		}
+		return null;
 	}
 	
 	/**
@@ -350,8 +394,19 @@ public final class Blade {
 	 * @param path
 	 * @param routeHandler
 	 */
-	public static synchronized void patch(String path, Router routeHandler){
-		RouteMatcherBuilder.buildHandler(path, routeHandler, HttpMethod.PATCH);
+	public static synchronized void patch(String path, Router router){
+		RouteMatcherBuilder.buildHandler(path, router, HttpMethod.PATCH);
+	}
+
+	/**
+	 * patch请求，多个路由
+	 * @param paths
+	 */
+	public static synchronized RouterExecutor patch(String... paths){
+		if(null != paths && paths.length > 0){
+			return new RouterExecutor(paths, HttpMethod.PATCH);
+		}
+		return null;
 	}
 	
 	/**
@@ -359,8 +414,19 @@ public final class Blade {
 	 * @param path
 	 * @param routeHandler
 	 */
-	public static synchronized void head(String path, Router routeHandler){
-		RouteMatcherBuilder.buildHandler(path, routeHandler, HttpMethod.HEAD);
+	public static synchronized void head(String path, Router router){
+		RouteMatcherBuilder.buildHandler(path, router, HttpMethod.HEAD);
+	}
+	
+	/**
+	 * head请求，多个路由
+	 * @param paths
+	 */
+	public static synchronized RouterExecutor head(String... paths){
+		if(null != paths && paths.length > 0){
+			return new RouterExecutor(paths, HttpMethod.HEAD);
+		}
+		return null;
 	}
 	
 	/**
@@ -368,8 +434,19 @@ public final class Blade {
 	 * @param path
 	 * @param routeHandler
 	 */
-	public static synchronized void trace(String path, Router routeHandler){
-		RouteMatcherBuilder.buildHandler(path, routeHandler, HttpMethod.TRACE);
+	public static synchronized void trace(String path, Router router){
+		RouteMatcherBuilder.buildHandler(path, router, HttpMethod.TRACE);
+	}
+	
+	/**
+	 * trace请求，多个路由
+	 * @param paths
+	 */
+	public static synchronized RouterExecutor trace(String... paths){
+		if(null != paths && paths.length > 0){
+			return new RouterExecutor(paths, HttpMethod.TRACE);
+		}
+		return null;
 	}
 	
 	/**
@@ -377,8 +454,19 @@ public final class Blade {
 	 * @param path
 	 * @param routeHandler
 	 */
-	public static synchronized void options(String path, Router routeHandler){
-		RouteMatcherBuilder.buildHandler(path, routeHandler, HttpMethod.OPTIONS);
+	public static synchronized void options(String path, Router router){
+		RouteMatcherBuilder.buildHandler(path, router, HttpMethod.OPTIONS);
+	}
+	
+	/**
+	 * options请求，多个路由
+	 * @param paths
+	 */
+	public static synchronized RouterExecutor options(String... paths){
+		if(null != paths && paths.length > 0){
+			return new RouterExecutor(paths, HttpMethod.OPTIONS);
+		}
+		return null;
 	}
 	
 	/**
@@ -386,8 +474,19 @@ public final class Blade {
 	 * @param path
 	 * @param routeHandler
 	 */
-	public static synchronized void connect(String path, Router routeHandler){
-		RouteMatcherBuilder.buildHandler(path, routeHandler, HttpMethod.CONNECT);
+	public static synchronized void connect(String path, Router router){
+		RouteMatcherBuilder.buildHandler(path, router, HttpMethod.CONNECT);
+	}
+	
+	/**
+	 * connect请求，多个路由
+	 * @param paths
+	 */
+	public static synchronized RouterExecutor connect(String... paths){
+		if(null != paths && paths.length > 0){
+			return new RouterExecutor(paths, HttpMethod.CONNECT);
+		}
+		return null;
 	}
 	
 	/**
@@ -395,8 +494,19 @@ public final class Blade {
 	 * @param path
 	 * @param routeHandler
 	 */
-	public static synchronized void all(String path, Router routeHandler){
-		RouteMatcherBuilder.buildHandler(path, routeHandler, HttpMethod.ALL);
+	public static synchronized void all(String path, Router router){
+		RouteMatcherBuilder.buildHandler(path, router, HttpMethod.ALL);
+	}
+	
+	/**
+	 * all请求，多个路由
+	 * @param paths
+	 */
+	public static synchronized RouterExecutor all(String... paths){
+		if(null != paths && paths.length > 0){
+			return new RouterExecutor(paths, HttpMethod.ALL);
+		}
+		return null;
 	}
 	
 	/**

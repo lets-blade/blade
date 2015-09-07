@@ -1225,7 +1225,7 @@ public class Model<T extends Serializable> {
      * 
      * @return	返回主键
      */
-    @SuppressWarnings({ "unchecked", "resource" })
+    @SuppressWarnings({ "unchecked"})
 	public <V> V executeAndCommit(Class<V> returnType) {
     	V key = null;
     	Query query = null;
@@ -1293,7 +1293,10 @@ public class Model<T extends Serializable> {
 			e.printStackTrace();
 		} finally{
 			if(null != query){
-				query.close();
+				Connection connection = query.getConnection();
+				if(null != connection){
+					connection.close();
+				}
 			}
 		}
     	return null;
@@ -1447,6 +1450,9 @@ public class Model<T extends Serializable> {
 			LOGGER.debug("execute sql：" + query.toString());
     		LOGGER.debug("execute parameter：" + condition.params.values() + condition.equalsParams.values());
     		
+    		if(null != conn){
+    			conn.close();
+    		}
     		return query;
 		}
 		return null;
