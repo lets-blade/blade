@@ -61,7 +61,7 @@ public class RouteMatcher {
     public RouteMatcher() {
     }
     
-    public RouteMatcher(Router router, Class<?> target, Method execMethod, HttpMethod httpMethod, String path, String requestUri, String acceptType) {
+    public RouteMatcher(Router router, Class<?> target, Method execMethod, HttpMethod httpMethod, String path, String requestUri) {
         this.router = router;
         this.target = target;
         this.execMethod = execMethod;

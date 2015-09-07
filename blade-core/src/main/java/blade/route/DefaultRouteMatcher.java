@@ -22,7 +22,6 @@ import java.util.List;
 
 import blade.Blade;
 import blade.kit.CollectionKit;
-import blade.kit.StringKit;
 import blade.kit.log.Logger;
 
 /**
@@ -60,18 +59,18 @@ public class DefaultRouteMatcher {
      * @param acceptType	请求的acceptType
      * @return				返回一个路由匹配对象
      */
-    public RouteMatcher findRouteMatcher(HttpMethod httpMethod, String uri, String acceptType) {
+    public RouteMatcher findRoute(HttpMethod httpMethod, String uri) {
     	
     	uri = (uri.length() > 1 && uri.endsWith("/")) ? uri.substring(0, uri.length() - 1) : uri;
     	
-        List<RouteMatcher> routeEntries = DEFAULT_ROUTE_MATCHER.findRouteMatcher(httpMethod, uri);
+        List<RouteMatcher> routeEntries = this.findRouteMatcher(httpMethod, uri);
         
         // 优先匹配原则
         giveMatch(uri, routeEntries);
         
         RouteMatcher entry =  routeEntries.size() > 0 ? routeEntries.get(0) : null;
         
-        return entry != null ? new RouteMatcher(entry.router, entry.target, entry.execMethod, entry.httpMethod, entry.path, uri, acceptType) : null;
+        return entry != null ? new RouteMatcher(entry.router, entry.target, entry.execMethod, entry.httpMethod, entry.path, uri) : null;
     }
     
     private void giveMatch(final String uri, List<RouteMatcher> routeEntries) {
@@ -94,12 +93,12 @@ public class DefaultRouteMatcher {
      * @param acceptType	请求的acceptType
      * @return				返回一个路由匹配对象集合
      */
-    public List<RouteMatcher> findInterceptor(HttpMethod httpMethod, String uri, String acceptType) {
+    public List<RouteMatcher> findInterceptor(HttpMethod httpMethod, String uri) {
     	if(uri.length() > 1){
     		uri = uri.endsWith("/") ? uri.substring(0, uri.length() - 1) : uri;
     	}
         List<RouteMatcher> matchSet = CollectionKit.newArrayList();
-        List<RouteMatcher> routeEntries = DEFAULT_ROUTE_MATCHER.findInterceptor(httpMethod, uri);
+        List<RouteMatcher> routeEntries = this.searchInterceptor(httpMethod, uri);
 
         for (RouteMatcher routeEntry : routeEntries) {
         	matchSet.add(routeEntry);
@@ -113,34 +112,6 @@ public class DefaultRouteMatcher {
      */
     public void clearRoutes() {
         routes.clear();
-    }
-    
-    /**
-     * 移除一个路由
-     * 
-     * @param path			移除路由的路径
-     * @param httpMethod	移除路由的方法
-     * @return				true:移除成功，false:移除失败
-     */	
-    public boolean removeRoute(String path, String httpMethod) {
-        if (StringKit.isEmpty(path)) {
-            throw new IllegalArgumentException("path cannot be null or blank");
-        }
-
-        if (StringKit.isEmpty(httpMethod)) {
-            throw new IllegalArgumentException("httpMethod cannot be null or blank");
-        }
-        
-        HttpMethod method = HttpMethod.valueOf(httpMethod);
-
-        return removeRoute(method, path);
-    }
-    
-    public boolean removeRoute(String path) {
-        if (StringKit.isEmpty(path)) {
-            throw new IllegalArgumentException("path cannot be null or blank");
-        }
-        return removeRoute((HttpMethod)null, path);
     }
     
     /**
@@ -265,7 +236,7 @@ public class DefaultRouteMatcher {
      * @param path				路由路径
      * @return					返回匹配的所有路由集合
      */
-    private List<RouteMatcher> findInterceptor(HttpMethod httpMethod, String path) {
+    private List<RouteMatcher> searchInterceptor(HttpMethod httpMethod, String path) {
         List<RouteMatcher> matchSet = CollectionKit.newArrayList();
         for (RouteMatcher entry : interceptors) {
             if (entry.matches(httpMethod, path)) {
@@ -275,27 +246,5 @@ public class DefaultRouteMatcher {
         return matchSet;
     }
     
-    private boolean removeRoute(HttpMethod httpMethod, String path) {
-        List<RouteMatcher> forRemoval = CollectionKit.newArrayList();
-
-        for (RouteMatcher routeEntry : routes) {
-            HttpMethod httpMethodToMatch = httpMethod;
-
-            if (httpMethod == null) {
-                // Use the routeEntry's HTTP method if none was given, so that only path is used to match.
-                httpMethodToMatch = routeEntry.httpMethod;
-            }
-
-            if (routeEntry.matches(httpMethodToMatch, path)) {
-            	
-            	if(Blade.debug()){
-            		LOGGER.debug("Removing path {}", path, httpMethod == null ? "" : " with HTTP method " + httpMethod);
-                }
-            	
-                forRemoval.add(routeEntry);
-            }
-        }
-
-        return routes.removeAll(forRemoval);
-    }
+    
 }
