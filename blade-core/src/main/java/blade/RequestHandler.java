@@ -66,24 +66,11 @@ public class RequestHandler {
     /**
      * 路由处理器，查找请求过来的URL
      */
-    private static DefaultRouteMatcher defaultRouteMatcher = DefaultRouteMatcher.instance();
+    private static final DefaultRouteMatcher defaultRouteMatcher = DefaultRouteMatcher.instance();
     
-	private RequestHandler(){}
-	
-	public static RequestHandler single() {
-        return RequestHandlerHolder.single;
-    }
-	
-	/**
-	 * 单例的RequestHandler
-	 * 
-	 * @author biezhi
-	 * @since 1.0
-	 *
-	 */
-	private static class RequestHandlerHolder {
-        private static final RequestHandler single = new RequestHandler();
-    }
+	public RequestHandler(){
+		
+	}
 	
 	/**
 	 * handler执行方法

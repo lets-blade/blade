@@ -115,7 +115,7 @@ public class BladeFilter implements Filter {
         /**
          * 是否被RequestHandler执行
          */
-        boolean isHandler = RequestHandler.single().handler(httpRequest, httpResponse);
+        boolean isHandler = new RequestHandler().handler(httpRequest, httpResponse);
         if(!isHandler){
         	chain.doFilter(httpRequest, httpResponse);
         }
