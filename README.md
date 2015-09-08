@@ -9,69 +9,33 @@
 
 ## What Is Blade?
 
-**blade** Is a concise and powerful web development framework, it is built into the `IOC` administration, the interceptor configuration, `REST API` development and so on many mainstream web features, integrate the template engine, a cache plug-in, database operations, commonly used functions such as email, concise source deserves your reading. If you like it, can be [Star and Fork](https://github.com/biezhi/blade), thanks!
+**blade** Is a concise and powerful web development framework. If you like it, can be [Star and Fork](https://github.com/biezhi/blade), thanks!
 
-- __Simple MVC__
+- __Simple MVC__  
+Use Java language to complete the MVC more concise.
 
-use Java language to complete the MVC more concise
+- __Restful__  
+Provide a Restful style routing interface.
 
-- __Restful__
+- __Multiple routing configuration__  
+Routing configuration in the form of more functional routing, annotations routing, routing reflection way.
 
-provide a Restful style routing interface
+- __Coding/JSON/configuration file__  
+Blade offers a variety of configurations, including JSON, the Properties file, hard coding.
 
-- __Multiple routing configuration__
+- __Plug-in extension mechanism__  
+Blade extensions support you use third party components, modular development of more convenient.
 
-routing configuration in the form of more functional routing, annotations routing, routing reflection way
+- __Template engine Plugin__  
+Support access to mainstream template engine, there are beetl, jetbrick, velocity engine.
 
-- __Coding/JSON/configuration file__
+- __Support JDK1.6 +__  
+Support jdk1.6 or higher version.
 
-blade offers a variety of configurations, including JSON, the Properties file, hard coding
+- __The source code of less than 100kb__  
+The source code of the blade framework is less than 100 KB, learn easy, get started quickly, the code is simple.
 
-- __Plug-in extension mechanism__
-
-blade extensions support you use third party components, modular development of more convenient
-
-- __Template engine Plugin__
-
-support access to mainstream template engine, there are beetl, jetbrick, velocity engine
-
-- __Support JDK1.6 +__
-
-Support jdk1.6 or higher version
-
-- __The source code of less than 100kb__
-
-the source code of the blade framework is less than 100 KB, learn easy, get started quickly, the code is simple
-
-## Quick start
-First. Use maven to build a webapp, join dependency on the blade,Recommended for the [latest version](LAST_VERSION.md)
-
-```xml
-<dependency>
-	<groupId>com.bladejava</groupId>
-	<artifactId>blade-core</artifactId>
-	<version>1.2.9-beta</version>
-</dependency>
-```
-	
-Second. Configuration in the `web.xml` Blade core filter initialization and set your class
-	
-```xml
-<filter>
-    <filter-name>BladeFilter</filter-name>
-    <filter-class>blade.BladeFilter</filter-class>
-    <init-param>
-        <param-name>bootstrapClass</param-name>
-        <param-value>blade.hello.App</param-value>
-    </init-param>
-</filter>
-<filter-mapping>
-    <filter-name>BladeFilter</filter-name>
-    <url-pattern>/*</url-pattern>
-</filter-mapping>
-```
-
-Third. Write App.java and routing file, here is an example
+## Example
 
 ```java
 public class App extends Bootstrap{
@@ -80,7 +44,7 @@ public class App extends Bootstrap{
 	@Override
 	public void init() {
 		// register router
-		Blade.regRoute("/hello", SayHi.class, "hello");
+		Blade.regsiter("/hello", SayHi.class, "hello");
 		
 		// anonymous router，java8 so simple
 		Blade.get("/get", new Router() {
@@ -92,13 +56,10 @@ public class App extends Bootstrap{
 			}
 		});
 		
-		// multiple routing
-		Blade.get("/", "/index").run(new Router() {
-			@Override
-			public String handler(Request request, Response response) {
-				System.out.println("come index!!");
-				return "index";
-			}
+		// multiple routing, java8 syntax
+		Blade.get("/", "/index").run(request, response) -> {
+			System.out.println("come index!!");
+			return "index";
 		});
 	}
 	
@@ -116,13 +77,13 @@ OK, all this may seem simple, refer to the guidelines for use more ready-made ex
 
 	1. Improve the document
 	2. Add configurable log
-	3. To optimize the database query, connection pool
-	4. Complete the Java China BBS
+	3. Complete the Java China BBS
+	4. Maintain and optimize the code
 	
 ## Update
 
 [update log](https://github.com/biezhi/blade/blob/master/UPDATE_LOG.md)
-			
+
 ## licenses
 
 Blade Framework based on the [Apache2 License](http://www.apache.org/licenses/LICENSE-2.0.html)
