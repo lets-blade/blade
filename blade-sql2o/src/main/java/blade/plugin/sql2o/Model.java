@@ -1079,15 +1079,14 @@ public class Model<T extends Serializable> {
     		
     		sqlEnd += " limit :page, :pageSize";
     		
-    		condition.eq("page", page - 1);
-    		condition.eq("pageSize", pageSize);
-    		
     		Connection conn = null;
 			try {
 				// 设置query
 				conn = sql2o.open();
 				Query query = conn.createQuery(sqlEnd);
 				query = parseParams(query);
+				query.addParameter("page", page - 1);
+				query.addParameter("pageSize", pageSize);
 				
 				LOGGER.debug("execute sql：" + query.toString());
 				condition.printLog();
@@ -1170,14 +1169,16 @@ public class Model<T extends Serializable> {
     		
     		sqlEnd += " limit :page, :pageSize";
     		
-    		condition.eq("page", page - 1);
-    		condition.eq("pageSize", pageSize);
+//    		condition.eq("page", page - 1);
+//    		condition.eq("pageSize", pageSize);
     		Connection conn = null;
 			try {
 				// 设置query
 				conn = sql2o.open();
 				Query query = conn.createQuery(sqlEnd);
 				query = parseParams(query);
+				query.addParameter("page", page - 1);
+				query.addParameter("pageSize", pageSize);
 				
 				LOGGER.debug("execute sql：" + query.toString());
 				condition.printLog();
