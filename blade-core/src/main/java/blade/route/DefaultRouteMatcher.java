@@ -129,7 +129,6 @@ public class DefaultRouteMatcher {
         entry.execMethod = execMethod;
         entry.httpMethod = method;
         entry.path = url;
-        entry.requestURI = url;
         
         if(Blade.debug()){
         	LOGGER.debug("Add Route：" + entry);
@@ -154,7 +153,6 @@ public class DefaultRouteMatcher {
         entry.execMethod = execMethod;
         entry.httpMethod = method;
         entry.path = url;
-        entry.requestURI = url;
         
         if(Blade.debug()){
         	LOGGER.debug("Add Interceptor：" + entry);
@@ -177,7 +175,6 @@ public class DefaultRouteMatcher {
         entry.router = router;
         entry.httpMethod = method;
         entry.path = url;
-        entry.requestURI = url;
         
         if(Blade.debug()){
         	LOGGER.debug("Add Route：" + entry);
@@ -200,7 +197,6 @@ public class DefaultRouteMatcher {
         entry.router = router;
         entry.httpMethod = method;
         entry.path = url;
-        entry.requestURI = url;
         
         if(Blade.debug()){
         	LOGGER.debug("Add Interceptor：" + entry);

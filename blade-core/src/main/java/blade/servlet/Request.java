@@ -87,10 +87,10 @@ public class Request {
      */
     public void initRequest(RouteMatcher match) {
     	
-        List<String> requestList = PathKit.convertRouteToList(match.getRequestURI());
+        List<String> requestList = PathKit.convertRouteToList(match.getPath());
         List<String> pathList = PathKit.convertRouteToList(match.getPath());
         
-        this.pathParams = getPathParams(requestList, pathList);
+        this.pathParams = getPathParams(requestList);
         this.splat = getSplat(requestList, pathList);
         
     }
@@ -523,7 +523,24 @@ public class Request {
         return servletRequest.getProtocol();
     }
     
-    protected static Map<String, String> getPathParams(List<String> request, List<String> matched) {
+    protected static Map<String, String> getPathParams(List<String> request) {
+    	
+        Map<String, String> params = CollectionKit.newHashMap();
+
+        for (int i = 0; (i < request.size()); i++) {
+            String matchedPart = request.get(i);
+            if (PathKit.isParam(matchedPart)) {
+                LOGGER.debug("matchedPart: "
+                                  + matchedPart
+                                  + " = "
+                                  + request.get(i));
+                params.put(matchedPart.toLowerCase(), request.get(i));
+            }
+        }
+        return Collections.unmodifiableMap(params);
+    }
+
+    /*protected static Map<String, String> getPathParams(List<String> request, List<String> matched) {
     	
         Map<String, String> params = CollectionKit.newHashMap();
 
@@ -538,7 +555,34 @@ public class Request {
             }
         }
         return Collections.unmodifiableMap(params);
-    }
+    }*/
+
+    /*protected static List<String> getSplat(List<String> request, List<String> matched) {
+    	
+        int nbrOfRequestParts = request.size();
+        int nbrOfMatchedParts = matched.size();
+
+        boolean sameLength = (nbrOfRequestParts == nbrOfMatchedParts);
+
+        List<String> splat = CollectionKit.newArrayList();
+
+        for (int i = 0; (i < nbrOfRequestParts) && (i < nbrOfMatchedParts); i++) {
+            String matchedPart = matched.get(i);
+
+            if (PathKit.isSplat(matchedPart)) {
+
+                StringBuilder splatParam = new StringBuilder(request.get(i));
+                if (!sameLength && (i == (nbrOfMatchedParts - 1))) {
+                    for (int j = i + 1; j < nbrOfRequestParts; j++) {
+                        splatParam.append("/");
+                        splatParam.append(request.get(j));
+                    }
+                }
+                splat.add(splatParam.toString());
+            }
+        }
+        return Collections.unmodifiableList(splat);
+    }*/
 
     protected static List<String> getSplat(List<String> request, List<String> matched) {
     	

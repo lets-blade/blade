@@ -53,11 +53,6 @@ public class RouteMatcher {
      */
     String path;
     
-    /**
-     * 请求URI
-     */
-    String requestURI;
-    
     public RouteMatcher() {
     }
     
@@ -67,7 +62,6 @@ public class RouteMatcher {
         this.execMethod = execMethod;
         this.httpMethod = httpMethod;
         this.path = path;
-        this.requestURI = requestUri;
     }
     
     public HttpMethod getHttpMethod() {
@@ -82,10 +76,6 @@ public class RouteMatcher {
 		return path;
 	}
     
-	public String getRequestURI() {
-        return requestURI;
-    }
-	
     public Class<?> getTarget() {
 		return target;
 	}
@@ -197,7 +187,6 @@ public class RouteMatcher {
 		result = prime * result + ((execMethod == null) ? 0 : execMethod.hashCode());
 		result = prime * result + ((httpMethod == null) ? 0 : httpMethod.hashCode());
 		result = prime * result + ((path == null) ? 0 : path.hashCode());
-		result = prime * result + ((requestURI == null) ? 0 : requestURI.hashCode());
 		result = prime * result + ((router == null) ? 0 : router.hashCode());
 		result = prime * result + ((target == null) ? 0 : target.hashCode());
 		return result;
@@ -223,11 +212,6 @@ public class RouteMatcher {
 			if (other.path != null)
 				return false;
 		} else if (!path.equals(other.path))
-			return false;
-		if (requestURI == null) {
-			if (other.requestURI != null)
-				return false;
-		} else if (!requestURI.equals(other.requestURI))
 			return false;
 		if (router == null) {
 			if (other.router != null)

@@ -1237,8 +1237,7 @@ public class Model<T extends Serializable> {
 				
 				if(isCache()){
 					LOGGER.debug("更新缓存：" + model.getName() + " -> count,list");
-					sql2oCache.hdel(CACHE_KEY_COUNT);
-					sql2oCache.hdel(CACHE_KEY_LIST);
+					cleanAll();
 				}
 				
 				if(null == query){
@@ -1259,8 +1258,7 @@ public class Model<T extends Serializable> {
 				
 				if(isCache()){
 					LOGGER.debug("更新缓存：" + model.getName() + " -> detail,list");
-					sql2oCache.hdel(CACHE_KEY_DETAIL);
-					sql2oCache.hdel(CACHE_KEY_LIST);
+					cleanAll();
 				}
 				
 				if(null == query){
@@ -1276,9 +1274,7 @@ public class Model<T extends Serializable> {
 				
 				if(isCache()){
 					LOGGER.debug("更新缓存：" + model.getName() + " -> count,list,detail");
-					sql2oCache.hdel(CACHE_KEY_COUNT);
-					sql2oCache.hdel(CACHE_KEY_LIST);
-					sql2oCache.hdel(CACHE_KEY_DETAIL);
+					cleanAll();
 				}
 				if(null == query){
 					LOGGER.error("query is null");
@@ -1451,9 +1447,6 @@ public class Model<T extends Serializable> {
 			LOGGER.debug("execute sql：" + query.toString());
     		LOGGER.debug("execute parameter：" + condition.params.values() + condition.equalsParams.values());
     		
-    		if(null != conn){
-    			conn.close();
-    		}
     		return query;
 		}
 		return null;
