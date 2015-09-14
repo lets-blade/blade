@@ -21,6 +21,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import blade.servlet.Request;
 import blade.servlet.Response;
+import blade.servlet.Session;
+import blade.wrapper.RequestWrapper;
+import blade.wrapper.ResponseWrapper;
 
 /**
  * 全局的WeContext
@@ -50,13 +53,13 @@ public final class BladeWebContext {
     	return BLADE_WEB_CONTEXT.get();
     }
     
-    static void setContext(ServletContext servletContext, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Request request, Response response) {
+    static void setContext(ServletContext servletContext, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, RequestWrapper request, ResponseWrapper response) {
     	BladeWebContext bladeWebContext = new BladeWebContext();
     	bladeWebContext.context = servletContext;
     	bladeWebContext.httpServletRequest = httpServletRequest;
     	bladeWebContext.httpServletResponse = httpServletResponse;
-    	bladeWebContext.request = request;
-    	bladeWebContext.response = response;
+    	bladeWebContext.request = request.getDelegate();
+    	bladeWebContext.response = response.getDelegate();
     	BLADE_WEB_CONTEXT.set(bladeWebContext);
     }
     
@@ -73,6 +76,10 @@ public final class BladeWebContext {
     
     public static Response response() {
         return BladeWebContext.me().response;
+    }
+    
+    public static Session session() {
+        return request().session();
     }
     
 	public static ServletContext servletContext() {
