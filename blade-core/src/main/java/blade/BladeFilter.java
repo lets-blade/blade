@@ -44,7 +44,7 @@ public class BladeFilter implements Filter {
 	/**
 	 * blade全局初始化类
 	 */
-    private static final String APPLCATION_CLASS = "applicationClass";
+    private static final String BOOSTRAP_CLASS = "bootstrapClass";
     
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -55,9 +55,7 @@ public class BladeFilter implements Filter {
 				
 				Blade.webRoot(filterConfig.getServletContext().getRealPath("/"));
 				
-				BladeWebContext.servletContext(filterConfig.getServletContext());
-				
-				final Bootstrap bootstrap = getBootstrap(filterConfig.getInitParameter(APPLCATION_CLASS));
+				final Bootstrap bootstrap = getBootstrap(filterConfig.getInitParameter(BOOSTRAP_CLASS));
 				bootstrap.init();
 			    Blade.app(bootstrap);
 			    
@@ -66,7 +64,7 @@ public class BladeFilter implements Filter {
 			    
 			    IocApplication.init();
 			    
-			    bootstrap.contextInitialized(BladeWebContext.servletContext());
+			    bootstrap.contextInitialized();
 			    
 			    Blade.init();
 			    

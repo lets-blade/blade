@@ -197,7 +197,7 @@ public class RequestHandler {
         }
 		
 		// 初始化context
-		BladeWebContext.init(requestWrapper, responseWrapper);
+		BladeWebContext.setContext(httpRequest.getServletContext(), httpRequest, responseWrapper.servletResponse(), requestWrapper, responseWrapper);
 					
 		if(null != router){
 			

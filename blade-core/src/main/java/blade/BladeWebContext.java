@@ -21,9 +21,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import blade.servlet.Request;
 import blade.servlet.Response;
-import blade.servlet.Session;
-import blade.wrapper.RequestWrapper;
-import blade.wrapper.ResponseWrapper;
 
 /**
  * 全局的WeContext
@@ -36,109 +33,78 @@ public final class BladeWebContext {
 	/**
 	 * 当前线程的Request对象
 	 */
-    private static ThreadLocal<RequestWrapper> currentRequest = new ThreadLocal<RequestWrapper>();
-    
-    /**
-     * 当前线程的Response对象
-     */
-    private static ThreadLocal<ResponseWrapper> currentResponse = new ThreadLocal<ResponseWrapper>();
+    private static final ThreadLocal<BladeWebContext> BLADE_WEB_CONTEXT = new ThreadLocal<BladeWebContext>();
     
     /**
      * ServletContext对象，在应用初始化时创建
      */
-    private static ServletContext servletContext;
+    private ServletContext context; 
+    private HttpServletRequest httpServletRequest;
+    private HttpServletResponse httpServletResponse;
+    private Request request;
+    private Response response;
     
     private BladeWebContext(){}
     
-    /**
-     * @return 返回当前线程的Request对象
-     */
-    public static Request request() {
-        return requestWrapper().getDelegate();
+    public static BladeWebContext me(){
+    	return BLADE_WEB_CONTEXT.get();
     }
     
-    /**
-     * @return 返回当前线程的RequestWrapper对象
-     */
-    public static RequestWrapper requestWrapper() {
-        return currentRequest.get();
-    }
-    
-    /**
-     * @return 返回当前线程的HttpServletRequest对象
-     */
-    public static HttpServletRequest servletRequest() {
-        return request().servletRequest();
-    }
-
-    /**
-     * @return 返回当前线程的Response对象
-     */
-    public static Response response() {
-        return responseWrapper().getDelegate();
-    }
-    
-    /**
-     * @return 返回当前线程的RequestWrapper对象
-     */
-    public static ResponseWrapper responseWrapper() {
-        return currentResponse.get();
-    }
-    
-    
-    /**
-     * @return 返回当前线程的HttpServletResponse对象
-     */
-    public static HttpServletResponse servletResponse() {
-        return response().servletResponse();
-    }
-
-    /**
-     * @return 返回当前线程的Session对象
-     */
-    public static Session session() {
-        return request().session();
-    }
-
-    /**
-     * 设置ServletContext
-     * 
-     * @param servletContext	ServletContext对象
-     */
-    public static void servletContext(ServletContext servletContext) {
-		BladeWebContext.servletContext = servletContext;
-	}
-    
-    /**
-     * @return 返回当前线程的ServletContext对象
-     */
-    public static ServletContext servletContext() {
-    	return servletContext;
-    }
-    
-    /**
-     * 设置context对象到ActionContext中
-     * 
-     * @param requestWrapper 		RequestWrapper对象
-     * @param responseWrapper 		ResponseWrapper对象
-     */
-    public static void init(RequestWrapper requestWrapper, ResponseWrapper responseWrapper) {
-    	remove();
-    	currentRequest.set(requestWrapper);
-    	currentResponse.set(responseWrapper);
+    static void setContext(ServletContext servletContext, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Request request, Response response) {
+    	BladeWebContext bladeWebContext = new BladeWebContext();
+    	bladeWebContext.context = servletContext;
+    	bladeWebContext.httpServletRequest = httpServletRequest;
+    	bladeWebContext.httpServletResponse = httpServletResponse;
+    	bladeWebContext.request = request;
+    	bladeWebContext.response = response;
+    	BLADE_WEB_CONTEXT.set(bladeWebContext);
     }
     
     /**
      * 移除当前线程的Request、Response对象
      */
     public static void remove(){
-    	currentRequest.remove();
-    	currentResponse.remove();
+    	BLADE_WEB_CONTEXT.remove();
     }
+    
+    public static Request request() {
+        return BladeWebContext.me().request;
+    }
+    
+    public static Response response() {
+        return BladeWebContext.me().response;
+    }
+    
+	public static ServletContext servletContext() {
+		return BladeWebContext.me().context;
+	}
+	
+	public static HttpServletResponse servletResponse() {
+		return BladeWebContext.me().httpServletResponse;
+	}
+	
+	public static HttpServletRequest servletRequest() {
+		return BladeWebContext.me().httpServletRequest;
+	}
 
-    public static void destroy(){
-    	remove();
-    	currentRequest = null;
-    	currentResponse = null;
-    }
+	public ServletContext getContext() {
+		return context;
+	}
+
+	public HttpServletRequest getHttpServletRequest() {
+		return httpServletRequest;
+	}
+
+	public HttpServletResponse getHttpServletResponse() {
+		return httpServletResponse;
+	}
+
+	public Request getRequest() {
+		return request;
+	}
+
+	public Response getResponse() {
+		return response;
+	}
+	
 }

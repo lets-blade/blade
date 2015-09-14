@@ -15,8 +15,6 @@
  */
 package blade;
 
-import javax.servlet.ServletContext;
-
 /**
  * Blade全局初始化类，可以在应用启动的时候做一些操作
  * 
@@ -30,7 +28,7 @@ public abstract class Bootstrap {
 	 */
 	public abstract void init();
 	
-	public void contextInitialized(ServletContext servletContext){
+	public void contextInitialized(){
 		//
 	}
 }
