@@ -49,6 +49,11 @@ public class RouteMatcher {
     HttpMethod httpMethod;
     
     /**
+     * 请求URI
+     */
+    String requestURI;
+    
+    /**
      * 路由path
      */
     String path;
@@ -62,6 +67,7 @@ public class RouteMatcher {
         this.execMethod = execMethod;
         this.httpMethod = httpMethod;
         this.path = path;
+        this.requestURI = requestUri;
     }
     
     public HttpMethod getHttpMethod() {
@@ -230,5 +236,9 @@ public class RouteMatcher {
     public String toString() {
         return httpMethod.name() + ":" + path;
     }
+
+	public String getRequestURI() {
+		return requestURI;
+	}
 	
 }

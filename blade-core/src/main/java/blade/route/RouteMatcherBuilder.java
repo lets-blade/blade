@@ -147,7 +147,7 @@ public final class RouteMatcherBuilder {
      */
     public static void buildHandler(String path, Router router, HttpMethod httpMethod){
     	if(StringKit.isNotBlank(path) && null != router){
-    		defaultRouteMatcher.addRoute(router, path, httpMethod, "*/*");
+    		defaultRouteMatcher.addRoute(router, path, httpMethod);
     	} else {
 			 throw new BladeException("an unqualified configuration");
 		}
@@ -158,7 +158,7 @@ public final class RouteMatcherBuilder {
      */
     public static void buildInterceptor(String path, Router router, HttpMethod httpMethod){
     	if(StringKit.isNotBlank(path) && null != router){
-    		defaultRouteMatcher.addInterceptor(router, path, httpMethod, "*/*");
+    		defaultRouteMatcher.addInterceptor(router, path, httpMethod);
     	} else {
 			 throw new BladeException("an unqualified configuration");
 		}
@@ -366,7 +366,6 @@ public final class RouteMatcherBuilder {
      * @param execMethod	路由执行方法
      * @param path			路由url
      * @param method		路由http方法
-     * @param acceptType	路由acceptType
      */
     private static void buildRoute(Class<?> target, Method execMethod, String path, HttpMethod method){
     	defaultRouteMatcher.addRoute(target, execMethod, path, method);
@@ -379,7 +378,6 @@ public final class RouteMatcherBuilder {
      * @param target		路由目标执行的class
      * @param execMethod	路由执行方法
      * @param method		路由http方法
-     * @param acceptType	路由acceptType
      */
     private static void buildInterceptor(String path, Class<?> target, Method execMethod, HttpMethod method){
     	defaultRouteMatcher.addInterceptor(target, execMethod, path, method);

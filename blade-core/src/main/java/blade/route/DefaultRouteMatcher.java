@@ -56,7 +56,6 @@ public class DefaultRouteMatcher {
      * 
      * @param httpMethod	http请求方法，GET/POST
      * @param uri			请求路径
-     * @param acceptType	请求的acceptType
      * @return				返回一个路由匹配对象
      */
     public RouteMatcher findRoute(HttpMethod httpMethod, String uri) {
@@ -90,7 +89,6 @@ public class DefaultRouteMatcher {
      * 
      * @param httpMethod	http请求方法，GET/POST
      * @param path			请求路径
-     * @param acceptType	请求的acceptType
      * @return				返回一个路由匹配对象集合
      */
     public List<RouteMatcher> findInterceptor(HttpMethod httpMethod, String uri) {
@@ -121,7 +119,6 @@ public class DefaultRouteMatcher {
      * @param execMethod	路由执行方法
      * @param url			路由url
      * @param method		路由http方法
-     * @param acceptType	路由acceptType
      */
     public void addRoute(Class<?> target, Method execMethod, String url, HttpMethod method) {
     	RouteMatcher entry = new RouteMatcher();
@@ -145,7 +142,6 @@ public class DefaultRouteMatcher {
      * @param execMethod	路由执行方法
      * @param url			路由url
      * @param method		路由http方法
-     * @param acceptType	路由acceptType
      */
     public void addInterceptor(Class<?> target, Method execMethod, String url, HttpMethod method) {
     	RouteMatcher entry = new RouteMatcher();
@@ -168,9 +164,8 @@ public class DefaultRouteMatcher {
      * @param router		执行的匿名类
      * @param url			路由url
      * @param method		路由http方法
-     * @param acceptType	路由acceptType
      */
-    public void addRoute(Router router, String url, HttpMethod method, String acceptType) {
+    public void addRoute(Router router, String url, HttpMethod method) {
     	RouteMatcher entry = new RouteMatcher();
         entry.router = router;
         entry.httpMethod = method;
@@ -190,9 +185,8 @@ public class DefaultRouteMatcher {
      * @param router		执行的匿名类
      * @param url			路由url
      * @param method		路由http方法
-     * @param acceptType	路由acceptType
      */
-    public void addInterceptor(Router router, String url, HttpMethod method, String acceptType) {
+    public void addInterceptor(Router router, String url, HttpMethod method) {
     	RouteMatcher entry = new RouteMatcher();
         entry.router = router;
         entry.httpMethod = method;
