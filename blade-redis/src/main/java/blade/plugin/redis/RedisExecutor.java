@@ -31,11 +31,11 @@ public class RedisExecutor {
     // 数据源
     private static ShardedJedisPool shardedJedisPool;
     
-    private static RedisPoolConfig redisPoolConfig = RedisPlugin.INSTANCE.redisPoolConfig();
+    private static RedisPoolConfig redisPoolConfig = RedisPlugin.me().redisPoolConfig();
     
-    static{
+    static void init(){
     	// 根据配置文件,创建shared池实例
-        shardedJedisPool = new ShardedJedisPool(redisPoolConfig, RedisPlugin.INSTANCE.shards());
+        shardedJedisPool = new ShardedJedisPool(redisPoolConfig, RedisPlugin.me().shards());
     }
     
     /**
@@ -64,7 +64,8 @@ public class RedisExecutor {
          * 
          * @return 执行结果
          */
-        public T getResult() {
+        @SuppressWarnings("deprecation")
+		public T getResult() {
             T result = null;
             try {
                 result = execute();

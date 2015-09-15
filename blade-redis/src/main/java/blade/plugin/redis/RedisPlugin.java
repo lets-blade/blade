@@ -24,6 +24,10 @@ public enum RedisPlugin implements Plugin {
 		shards = new ArrayList<JedisShardInfo>();
 	}
 	
+	public static RedisPlugin me(){
+		return INSTANCE;
+	}
+	
 	/**
 	 * redis连接池配置
 	 */
@@ -40,26 +44,39 @@ public enum RedisPlugin implements Plugin {
 	
 	public RedisPlugin host(String host, int port) {
 		shards.add(new JedisShardInfo(host, port));
-		return INSTANCE;
+		return this;
+	}
+	
+	public RedisPlugin host(String host, int port, String auth) {
+		JedisShardInfo jedisShardInfo = new JedisShardInfo(host, port);
+		jedisShardInfo.setPassword(auth);
+		shards.add(jedisShardInfo);
+		return this;
 	}
 	
 	public RedisPlugin host(JedisShardInfo jedisShardInfo) {
 		shards.add(jedisShardInfo);
-		return INSTANCE;
+		return this;
 	}
 	
 	public RedisPlugin host(String host) {
 		shards.add(new JedisShardInfo(host));
-		return INSTANCE;
+		return this;
 	}
 	
 	public List<JedisShardInfo> shards() {
-		return INSTANCE.shards;
+		return this.shards;
 	}
 	
 	@Override
 	public void run() {
-		LOGGER.info("redis插件配置成功...");
+		RedisExecutor.init();
+		LOGGER.info("redis plugin config success!");
+	}
+
+	@Override
+	public void destroy() {
+		shards.clear();
 	}
 
 }
