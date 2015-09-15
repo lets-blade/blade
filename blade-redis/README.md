@@ -6,7 +6,7 @@
 
 ```java
 // 配置
-RedisPlugin redisPlugin = RedisPlugin.INSTANCE;
+RedisPlugin redisPlugin = RedisPlugin.me();
 redisPlugin.host("127.0.0.1", 6379);
 redisPlugin.run();
 ```
