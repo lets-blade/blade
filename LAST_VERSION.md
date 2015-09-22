@@ -32,7 +32,7 @@
 <dependency>
     <groupId>com.bladejava</groupId>
     <artifactId>blade-core</artifactId>
-    <version>1.2.9</version>
+    <version>1.3.0-alpha</version>
 </dependency>
 ```
 ## [blade-sql2o](http://search.maven.org/#search%7Cga%7C1%7Cblade-sql2o)

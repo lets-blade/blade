@@ -20,6 +20,7 @@ import java.io.IOException;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -46,6 +47,9 @@ public class BladeFilter implements Filter {
 	 */
     private static final String BOOSTRAP_CLASS = "bootstrapClass";
     
+    static ServletContext servletContext;
+    
+    
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
     	
@@ -63,6 +67,8 @@ public class BladeFilter implements Filter {
 			    RouteMatcherBuilder.building();
 			    
 			    IocApplication.init();
+			    
+			    servletContext = filterConfig.getServletContext();
 			    
 			    bootstrap.contextInitialized();
 			    

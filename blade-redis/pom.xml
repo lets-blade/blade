@@ -11,7 +11,7 @@
 	
 	<artifactId>blade-redis</artifactId>
 	<packaging>jar</packaging>
-	<version>1.2.1</version>
+	<version>1.2.2</version>
 	<name>blade-redis</name>
 	<url>https://github.com/biezhi/blade/blade-redis</url>
 
@@ -25,7 +25,7 @@
 		<dependency>
 			<groupId>redis.clients</groupId>
 			<artifactId>jedis</artifactId>
-			<version>2.7.2</version>
+			<version>2.7.3</version>
 		</dependency>
 	</dependencies>
 </project>
