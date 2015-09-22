@@ -90,7 +90,7 @@ Blade Framework based on the [Apache2 License](http://www.apache.org/licenses/LI
 
 ## Contact
 
-OSC Blog:[http://my.oschina.net/biezhi](http://my.oschina.net/biezhi)
+Blog:[https://biezhi.me](https://biezhi.me)
 
 Mail: biezhi.me#gmail.com
 

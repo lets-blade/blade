@@ -89,7 +89,7 @@ Blade框架基于 [Apache2 License](http://www.apache.org/licenses/LICENSE-2.0.h
 
 ## 联系我
 
-OSC Blog:[http://my.oschina.net/biezhi](http://my.oschina.net/biezhi)
+Blog:[https://biezhi.me](https://biezhi.me)
 
 Mail: biezhi.me#gmail.com
 
