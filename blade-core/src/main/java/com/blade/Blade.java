@@ -20,7 +20,7 @@ import java.io.InputStream;
 import java.util.Map;
 
 import com.blade.ioc.Container;
-import com.blade.ioc.DefaultContainer;
+import com.blade.ioc.impl.DefaultContainer;
 import com.blade.plugin.Plugin;
 import com.blade.render.Render;
 import com.blade.render.RenderFactory;

@@ -19,8 +19,8 @@ import java.util.List;
 import java.util.Set;
 
 import com.blade.ioc.Container;
-import com.blade.ioc.DefaultContainer;
 import com.blade.ioc.Scope;
+import com.blade.ioc.impl.DefaultContainer;
 import com.blade.plugin.Plugin;
 import com.blade.route.RouteBase;
 

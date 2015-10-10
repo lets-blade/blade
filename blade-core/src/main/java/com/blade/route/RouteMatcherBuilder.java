@@ -25,7 +25,7 @@ import com.blade.annotation.Interceptor;
 import com.blade.annotation.Path;
 import com.blade.annotation.Route;
 import com.blade.ioc.Container;
-import com.blade.ioc.DefaultContainer;
+import com.blade.ioc.impl.DefaultContainer;
 import com.blade.route.impl.DefaultRouteMatcher;
 
 import blade.exception.BladeException;

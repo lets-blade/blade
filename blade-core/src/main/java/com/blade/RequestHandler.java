@@ -22,8 +22,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.blade.ioc.Container;
-import com.blade.ioc.DefaultContainer;
 import com.blade.ioc.Scope;
+import com.blade.ioc.impl.DefaultContainer;
 import com.blade.render.ModelAndView;
 import com.blade.route.HttpMethod;
 import com.blade.route.RouteHandler;

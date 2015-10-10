@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.blade.ioc;
+package com.blade.ioc.impl;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -28,6 +28,8 @@ import com.blade.Blade;
 import com.blade.annotation.Component;
 import com.blade.annotation.Inject;
 import com.blade.annotation.Path;
+import com.blade.ioc.Container;
+import com.blade.ioc.Scope;
 
 import java.util.Set;
 

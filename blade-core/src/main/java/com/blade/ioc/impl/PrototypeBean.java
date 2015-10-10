@@ -13,7 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.blade.ioc;
+package com.blade.ioc.impl;
+
+import com.blade.ioc.Scope;
 
 /**
  * 原生bean对象

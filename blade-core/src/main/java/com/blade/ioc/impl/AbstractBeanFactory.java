@@ -13,12 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.blade.ioc;
+package com.blade.ioc.impl;
 
 import java.lang.annotation.Annotation;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+
+import com.blade.ioc.Container;
 
 import blade.kit.log.Logger;
 
