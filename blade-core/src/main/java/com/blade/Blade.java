@@ -17,16 +17,28 @@ package com.blade;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.EnumSet;
 import java.util.Map;
+
+import javax.servlet.DispatcherType;
+
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.servlet.ServletContextHandler;
 
 import com.blade.ioc.Container;
 import com.blade.ioc.impl.DefaultContainer;
 import com.blade.plugin.Plugin;
 import com.blade.render.Render;
 import com.blade.render.RenderFactory;
+import com.blade.route.HttpMethod;
+import com.blade.route.RouteBase;
+import com.blade.route.RouteHandler;
+import com.blade.route.RouteMatcherBuilder;
+import com.blade.route.RouterExecutor;
 
 import blade.kit.IOKit;
 import blade.kit.PropertyKit;
+import blade.kit.ReflectKit;
 import blade.kit.json.JSONKit;
 
 /**
@@ -49,7 +61,7 @@ public class Blade {
     /**
      * blade全局初始化对象，在web.xml中配置，必须
      */
-    Bootstrap bootstrap;
+    private Bootstrap bootstrap;
     
     /**
 	 * 全局配置对象
@@ -191,6 +203,277 @@ public class Blade {
     	}
     }
     
+    /**
+	 * 加载一个Route
+	 * @param route
+	 */
+	public void load(Class<? extends RouteBase> route){
+		IocApplication.addRouteClass(route);
+	}
+    
+	/**
+	 * 注册一个函数式的路由</br>
+	 * <p>
+	 * 方法上指定请求类型，如：post:signin
+	 * </p>
+	 * @param path			路由url	
+	 * @param clazz			路由处理类
+	 * @param methodName	路由处理方法名称
+	 */
+	public void register(String path, Class<?> clazz, String methodName){
+		RouteMatcherBuilder.buildFunctional(path, clazz, methodName, null);
+	}
+	
+	/**
+	 * 注册一个函数式的路由
+	 * @param path			路由url	
+	 * @param clazz			路由处理类
+	 * @param methodName	路由处理方法名称
+	 * @param httpMethod	请求类型,GET/POST
+	 */
+	public void register(String path, Class<?> clazz, String methodName, HttpMethod httpMethod){
+		RouteMatcherBuilder.buildFunctional(path, clazz, methodName, httpMethod);
+	}
+	
+	/**
+	 * get请求
+	 * @param path
+	 * @param routeHandler
+	 */
+	public void get(String path, RouteHandler router){
+		RouteMatcherBuilder.buildHandler(path, router, HttpMethod.GET);
+	}
+	
+	/**
+	 * get请求，多个路由
+	 * @param paths
+	 */
+	public RouterExecutor get(String... paths){
+		if(null != paths && paths.length > 0){
+			return new RouterExecutor(paths, HttpMethod.GET);
+		}
+		return null;
+	}
+	
+	/**
+	 * post请求
+	 * @param path
+	 * @param routeHandler
+	 */
+	public void post(String path, RouteHandler router){
+		RouteMatcherBuilder.buildHandler(path, router, HttpMethod.POST);
+	}
+	
+	/**
+	 * post请求，多个路由
+	 * @param paths
+	 */
+	public RouterExecutor post(String... paths){
+		if(null != paths && paths.length > 0){
+			return new RouterExecutor(paths, HttpMethod.POST);
+		}
+		return null;
+	}
+	
+	/**
+	 * delete请求
+	 * @param path
+	 * @param routeHandler
+	 */
+	public void delete(String path, RouteHandler router){
+		RouteMatcherBuilder.buildHandler(path, router, HttpMethod.DELETE);
+	}
+	
+	/**
+	 * delete请求，多个路由
+	 * @param paths
+	 */
+	public RouterExecutor delete(String... paths){
+		if(null != paths && paths.length > 0){
+			return new RouterExecutor(paths, HttpMethod.DELETE);
+		}
+		return null;
+	}
+	
+	/**
+	 * put请求
+	 * @param paths
+	 */
+	public void put(String path, RouteHandler router){
+		RouteMatcherBuilder.buildHandler(path, router, HttpMethod.PUT);
+	}
+	
+	/**
+	 * put请求，多个路由
+	 * @param paths
+	 */
+	public RouterExecutor put(String... paths){
+		if(null != paths && paths.length > 0){
+			return new RouterExecutor(paths, HttpMethod.PUT);
+		}
+		return null;
+	}
+	
+	/**
+	 * patch请求
+	 * @param path
+	 * @param routeHandler
+	 */
+	public void patch(String path, RouteHandler router){
+		RouteMatcherBuilder.buildHandler(path, router, HttpMethod.PATCH);
+	}
+
+	/**
+	 * patch请求，多个路由
+	 * @param paths
+	 */
+	public RouterExecutor patch(String... paths){
+		if(null != paths && paths.length > 0){
+			return new RouterExecutor(paths, HttpMethod.PATCH);
+		}
+		return null;
+	}
+	
+	/**
+	 * head请求
+	 * @param path
+	 * @param routeHandler
+	 */
+	public void head(String path, RouteHandler router){
+		RouteMatcherBuilder.buildHandler(path, router, HttpMethod.HEAD);
+	}
+	
+	/**
+	 * head请求，多个路由
+	 * @param paths
+	 */
+	public RouterExecutor head(String... paths){
+		if(null != paths && paths.length > 0){
+			return new RouterExecutor(paths, HttpMethod.HEAD);
+		}
+		return null;
+	}
+	
+	/**
+	 * trace请求
+	 * @param path
+	 * @param routeHandler
+	 */
+	public void trace(String path, RouteHandler router){
+		RouteMatcherBuilder.buildHandler(path, router, HttpMethod.TRACE);
+	}
+	
+	/**
+	 * trace请求，多个路由
+	 * @param paths
+	 */
+	public RouterExecutor trace(String... paths){
+		if(null != paths && paths.length > 0){
+			return new RouterExecutor(paths, HttpMethod.TRACE);
+		}
+		return null;
+	}
+	
+	/**
+	 * options请求
+	 * @param path
+	 * @param routeHandler
+	 */
+	public void options(String path, RouteHandler router){
+		RouteMatcherBuilder.buildHandler(path, router, HttpMethod.OPTIONS);
+	}
+	
+	/**
+	 * options请求，多个路由
+	 * @param paths
+	 */
+	public RouterExecutor options(String... paths){
+		if(null != paths && paths.length > 0){
+			return new RouterExecutor(paths, HttpMethod.OPTIONS);
+		}
+		return null;
+	}
+	
+	/**
+	 * connect请求
+	 * @param path
+	 * @param routeHandler
+	 */
+	public void connect(String path, RouteHandler router){
+		RouteMatcherBuilder.buildHandler(path, router, HttpMethod.CONNECT);
+	}
+	
+	/**
+	 * connect请求，多个路由
+	 * @param paths
+	 */
+	public RouterExecutor connect(String... paths){
+		if(null != paths && paths.length > 0){
+			return new RouterExecutor(paths, HttpMethod.CONNECT);
+		}
+		return null;
+	}
+	
+	/**
+	 * 任意请求
+	 * @param path
+	 * @param routeHandler
+	 */
+	public void all(String path, RouteHandler router){
+		RouteMatcherBuilder.buildHandler(path, router, HttpMethod.ALL);
+	}
+	
+	/**
+	 * all请求，多个路由
+	 * @param paths
+	 */
+	public RouterExecutor all(String... paths){
+		if(null != paths && paths.length > 0){
+			return new RouterExecutor(paths, HttpMethod.ALL);
+		}
+		return null;
+	}
+	
+	/**
+	 * 拦截器before请求
+	 * @param path
+	 * @param routeHandler
+	 */
+	public void before(String path, RouteHandler routeHandler){
+		RouteMatcherBuilder.buildInterceptor(path, routeHandler, HttpMethod.BEFORE);
+	}
+
+	/**
+	 * before请求，多个路由
+	 * @param paths
+	 */
+	public RouterExecutor before(String... paths){
+		if(null != paths && paths.length > 0){
+			return new RouterExecutor(paths, HttpMethod.BEFORE);
+		}
+		return null;
+	}
+	
+	/**
+	 * 拦截器after请求
+	 * @param path
+	 * @param routeHandler
+	 */
+	public void after(String path, RouteHandler routeHandler){
+		RouteMatcherBuilder.buildInterceptor(path, routeHandler, HttpMethod.AFTER);
+	}
+	
+	/**
+	 * after请求，多个路由
+	 * @param paths
+	 */
+	public RouterExecutor after(String... paths){
+		if(null != paths && paths.length > 0){
+			return new RouterExecutor(paths, HttpMethod.AFTER);
+		}
+		return null;
+	}
+	
 	/**
 	 * 设置渲染引擎，默认是JSP引擎
 	 * 
@@ -242,13 +525,23 @@ public class Blade {
 		config.setStaticFolders(folders);
 	}
 	
+	
     /**
      * 动态设置全局初始化类
      * 
-     * @param bladeApplication 	全局初始化bladeApplication
+     * @param bootstrap 	全局初始化bladeApplication
      */
     public <T> void app(Bootstrap bootstrap){
     	this.bootstrap = bootstrap;
+    }
+    
+    /**
+     * 动态设置全局初始化类
+     * 
+     * @param bootstrap 	全局初始化bladeApplication
+     */
+    public <T> void app(Class<? extends Bootstrap> bootstrap){
+    	this.bootstrap = (Bootstrap) ReflectKit.newInstance(bootstrap);
     }
     
     /**
@@ -291,8 +584,19 @@ public class Blade {
 		return this;
 	}
 	
-	public void start() {
+	public void start() throws Exception {
 		
+		Server server = new Server(DEFAULT_PORT);
+		
+	    ServletContextHandler context = new ServletContextHandler(/*ServletContextHandler.SESSIONS*/);
+	    context.setContextPath("/");
+	    context.setResourceBase(System.getProperty("java.io.tmpdir"));
+	    context.addFilter(CoreFilter.class, "/*", EnumSet.of(DispatcherType.REQUEST));
+        server.setHandler(context);
+	    
+	    server.start();
+	    server.join();
+	    
 	}
 	
 	public Config config(){

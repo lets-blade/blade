@@ -3,13 +3,8 @@ package com.blade.route;
 import com.blade.IocApplication;
 
 public class Router {
-
-	/**
-	 * 加载一个Route
-	 * @param route
-	 */
-	@Deprecated
-	public static synchronized void load(Class<? extends RouteBase> route){
+	
+	public void load(Class<? extends RouteBase> route){
 		IocApplication.addRouteClass(route);
 	}
 	
@@ -22,7 +17,7 @@ public class Router {
 	 * @param clazz			路由处理类
 	 * @param methodName	路由处理方法名称
 	 */
-	public static synchronized void register(String path, Class<?> clazz, String methodName){
+	public void register(String path, Class<?> clazz, String methodName){
 		RouteMatcherBuilder.buildFunctional(path, clazz, methodName, null);
 	}
 	
@@ -42,7 +37,7 @@ public class Router {
 	 * @param path
 	 * @param routeHandler
 	 */
-	public static synchronized void get(String path, RouteHandler router){
+	public void get(String path, RouteHandler router){
 		RouteMatcherBuilder.buildHandler(path, router, HttpMethod.GET);
 	}
 	

@@ -62,7 +62,11 @@ public class CoreFilter implements Filter {
 				
 				blade.webRoot(filterConfig.getServletContext().getRealPath("/"));
 				
-				final Bootstrap bootstrap = getBootstrap(filterConfig.getInitParameter(BOOSTRAP_CLASS));
+				Bootstrap bootstrap = blade.bootstrap();
+				if(null == bootstrap){
+					bootstrap = getBootstrap(filterConfig.getInitParameter(BOOSTRAP_CLASS));
+				}
+				
 				bootstrap.init();
 				blade.app(bootstrap);
 			    
