@@ -1,3 +1,86 @@
+
+[![](https://i.imgur.com/8I289mA.png)](http://bladejava.com)
+
+[![@biezhi on weibo](https://img.shields.io/badge/weibo-%40biezhi-red.svg)](http://weibo.com/u/5238733773)
+[![Hex.pm](https://img.shields.io/hexpm/l/plug.svg)](http://www.apache.org/licenses/LICENSE-2.0.html)
+[![Build Status](https://api.travis-ci.org/biezhi/blade.svg?branch=master)](https://travis-ci.org/biezhi/blade)
+[![release](https://img.shields.io/maven-central/v/com.bladejava/blade-core.svg)](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.bladejava%22)
+
+[English](https://github.com/biezhi/blade/blob/master/README.md)
+
+# Blade是什么?
+`blade` 是一个轻量级的MVC框架. 它拥有简洁的代码，优雅的设计。
+如果你喜欢,欢迎 [Star and Fork](https://github.com/biezhi/blade), 谢谢!
+
+# 特性
+* [x] 轻量级。代码简洁,结构清晰,更容易开发
+* [x] 模块化(你可以选择使用哪些组件)
+* [x] 插件扩展机制
+* [x] Restful风格的路由接口
+* [x] 多种配置文件支持(当前支持properties、json和硬编码)
+* [x] 内置Jetty服务,模板引擎支持
+* [x] 支持JDK1.6或者更高版本
+
+# 概述
+
+* 简洁的：框架设计简单,容易理解,不依赖于更多第三方库。Blade框架目标让用户在一天内理解并使用。
+
+* Relevance. `blade` doesn't assume anything. We focus on things that matter, this way we are able to ensure easy maintenance and keep the system well-organized, well-planned and sweet.
+
+* Elegance. `blade` uses golang best practises. We are not afraid of heights, it's just that we need a parachute in our backpack. The source code is heavily documented, any functionality should be well explained and well tested.
+
+# Getting started
+To get started, first [include the Blade library](http://bladejava.com) and then create a class with a main method like this:
+```java
+public class App extends Bootstrap {
+	
+	@Override
+	public void init() {}
+	
+	public static void main(String[] args) throws Exception {
+		Blade blade = Blade.me();
+		blade.get("/").run(request, response) -> {
+			response.html("<h1>Hello blade!</h1>");
+			return null;
+		});
+		blade.app(App.class).listen(9001).start();
+	}
+}
+```
+Run it and point your browser to http://localhost:9001. There you go, you've just created your first Blade app!
+
+OK, all this may seem simple, refer to the guidelines for use more ready-made examples for your reference:
+
++ [hello project](https://github.com/bladejava/hello)
++ [api docs](http://bladejava.com/apidocs/)
++ [user guide](https://github.com/biezhi/blade/wiki)
++ [some examples](https://github.com/bladejava)
+
+## Plan
+
+	1. Improve the document
+	2. Add configurable log
+	3. Complete the Java China BBS
+	4. Maintain and optimize the code
+	
+## Update
+
+[update log](https://github.com/biezhi/blade/blob/master/UPDATE_LOG.md)
+
+## licenses
+
+Blade Framework based on the [Apache2 License](http://www.apache.org/licenses/LICENSE-2.0.html)
+
+## Contact
+
+Blog:[https://biezhi.me](https://biezhi.me)
+
+Mail: biezhi.me#gmail.com
+
+QQ Group: [1013565](http://shang.qq.com/wpa/qunwpa?idkey=932642920a5c0ef5f1ae902723c4f168c58ea63f3cef1139e30d68145d3b5b2f)
+
+
+
 [![简洁强大的JavaWeb框架](http://i1.tietuku.com/0c4b9726253b6268.png "简洁强大的JavaWeb框架")](http://bladejava.com)
 
 [![@biezhi on weibo](https://img.shields.io/badge/weibo-%40biezhi-red.svg)](http://weibo.com/u/5238733773)

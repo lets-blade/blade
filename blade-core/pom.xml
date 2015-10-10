@@ -15,6 +15,10 @@
 	<name>blade-core</name>
 	<url>https://github.com/biezhi/blade/blade-core</url>
 	
+	<properties>
+		<jetty.version>9.3.4.v20151007</jetty.version>
+	</properties>
+	
 	<dependencies>
 		<dependency>
 			<groupId>com.bladejava</groupId>
@@ -24,13 +28,21 @@
 		<dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
+            <scope>runtime</scope>
         </dependency>
-        <dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-server</artifactId>
-			<version>8.1.15.v20140411</version>
-			<scope>provided</scope>
-		</dependency>
+        
+		<!-- <dependency>
+	        <groupId>org.eclipse.jetty</groupId>
+	        <artifactId>jetty-servlet</artifactId>
+	        <version>${jetty.version}</version>
+	        <scope>provided</scope>
+	    </dependency> -->
+	    <dependency>
+	        <groupId>org.eclipse.jetty</groupId>
+	        <artifactId>jetty-webapp</artifactId>
+	        <version>${jetty.version}</version>
+	        <scope>provided</scope>
+	    </dependency>
         <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>

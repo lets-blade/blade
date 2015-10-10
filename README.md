@@ -1,4 +1,5 @@
-[![a concise and powerful web development framework](http://i1.tietuku.com/0c4b9726253b6268.png "a concise and powerful web development framework")](http://bladejava.com)
+
+[![](https://i.imgur.com/8I289mA.png)](http://bladejava.com)
 
 [![@biezhi on weibo](https://img.shields.io/badge/weibo-%40biezhi-red.svg)](http://weibo.com/u/5238733773)
 [![Hex.pm](https://img.shields.io/hexpm/l/plug.svg)](http://www.apache.org/licenses/LICENSE-2.0.html)
@@ -7,65 +8,47 @@
 
 [中文](https://github.com/biezhi/blade/blob/master/README_CN.md)
 
-## What Is Blade?
+# What Is Blade?
+`blade` is a lightweight MVC framework. It is based on the principles of simplicity, relevance and elegance. 
+If you like it, can be [Star and Fork](https://github.com/biezhi/blade), thanks!
 
-**blade** Is a concise and powerful web development framework. If you like it, can be [Star and Fork](https://github.com/biezhi/blade), thanks!
+# Features
+* [x] Lightweight. The code is simple and structure is clear
+* [x] Modular (you can choose which components to use)
+* [x] Support plug-in extension mechanism
+* [x] Restful style routing interface
+* [x] Multiple configuration files support (currently properties, json and coding)
+* [x] Eembed jetty server and template engine support
+* [x] Support jdk1.6 or higher version
 
-- __Simple MVC__  
-Use Java language to complete the MVC more concise.
+# Overview
 
-- __Restful__  
-Provide a Restful style routing interface.
+* Simplicity. The design is simple, easy to understand and doesn't introduce many layers between you and the standard library. It is a goal of the project that users should be able to understand the whole framework in a single day.
 
-- __Multiple routing configuration__  
-Routing configuration in the form of more functional routing, annotations routing, routing reflection way.
+* Relevance. `blade` doesn't assume anything. We focus on things that matter, this way we are able to ensure easy maintenance and keep the system well-organized, well-planned and sweet.
 
-- __Coding/JSON/configuration file__  
-Blade offers a variety of configurations, including JSON, the Properties file, hard coding.
+* Elegance. `blade` uses golang best practises. We are not afraid of heights, it's just that we need a parachute in our backpack. The source code is heavily documented, any functionality should be well explained and well tested.
 
-- __Plug-in extension mechanism__  
-Blade extensions support you use third party components, modular development of more convenient.
-
-- __Template engine Plugin__  
-Support access to mainstream template engine, there are beetl, jetbrick, velocity engine.
-
-- __Support JDK1.6 +__  
-Support jdk1.6 or higher version.
-
-- __The source code of less than 100kb__  
-The source code of the blade framework is less than 100 KB, learn easy, get started quickly, the code is simple.
-
-## Example
-
+# Getting started
+To get started, first [include the Blade library](http://bladejava.com) and then create a class with a main method like this:
 ```java
-public class App extends Bootstrap{
-
-	Logger logger = Logger.getLogger(App.class);
-	@Override
-	public void init() {
-		// register router
-		Blade.regsiter("/hello", SayHi.class, "hello");
-		
-		// anonymous router，java8 so simple
-		Blade.get("/get", new Router() {
-			@Override
-			public String handler(Request request, Response response) {
-				System.out.println("come get!!");
-				System.out.println(request.query("name"));
-				return "get";
-			}
-		});
-		
-		// multiple routing, java8 syntax
-		Blade.get("/", "/index").run(request, response) -> {
-			System.out.println("come index!!");
-			return "index";
-		});
-	}
+public class App extends Bootstrap {
 	
+	@Override
+	public void init() {}
+	
+	public static void main(String[] args) throws Exception {
+		Blade blade = Blade.me();
+		blade.get("/").run(request, response) -> {
+			response.html("<h1>Hello blade!</h1>");
+			return null;
+		});
+		blade.app(App.class).listen(9001).start();
+	}
 }
 ```
-	
+Run it and point your browser to http://localhost:9001. There you go, you've just created your first Blade app!
+
 OK, all this may seem simple, refer to the guidelines for use more ready-made examples for your reference:
 
 + [hello project](https://github.com/bladejava/hello)

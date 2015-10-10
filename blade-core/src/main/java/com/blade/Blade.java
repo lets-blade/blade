@@ -66,7 +66,7 @@ public class Blade {
     /**
 	 * 全局配置对象
 	 */
-	protected Config config = new Config();
+	private Config config = new Config();
 	
     /**
      * IOC容器，存储路由到ioc中
@@ -501,7 +501,7 @@ public class Blade {
 	 */
 	public void viewSuffix(final String suffix) {
 		if(null != suffix && suffix.startsWith(".")){
-			config().setViewSuffix(suffix);
+			config.setViewSuffix(suffix);
 		}
 	}
 	
@@ -531,8 +531,9 @@ public class Blade {
      * 
      * @param bootstrap 	全局初始化bladeApplication
      */
-    public <T> void app(Bootstrap bootstrap){
+    public <T> Blade app(Bootstrap bootstrap){
     	this.bootstrap = bootstrap;
+    	return this;
     }
     
     /**
@@ -540,8 +541,9 @@ public class Blade {
      * 
      * @param bootstrap 	全局初始化bladeApplication
      */
-    public <T> void app(Class<? extends Bootstrap> bootstrap){
+    public <T> Blade app(Class<? extends Bootstrap> bootstrap){
     	this.bootstrap = (Bootstrap) ReflectKit.newInstance(bootstrap);
+    	return this;
     }
     
     /**
@@ -550,7 +552,7 @@ public class Blade {
      * @param view404	404视图页面
      */
     public void view404(final String view404){
-    	config().setView404(view404);
+    	config.setView404(view404);
     }
     
     /**
@@ -588,12 +590,12 @@ public class Blade {
 		
 		Server server = new Server(DEFAULT_PORT);
 		
-	    ServletContextHandler context = new ServletContextHandler(/*ServletContextHandler.SESSIONS*/);
+	    ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
 	    context.setContextPath("/");
 	    context.setResourceBase(System.getProperty("java.io.tmpdir"));
 	    context.addFilter(CoreFilter.class, "/*", EnumSet.of(DispatcherType.REQUEST));
         server.setHandler(context);
-	    
+		
 	    server.start();
 	    server.join();
 	    
