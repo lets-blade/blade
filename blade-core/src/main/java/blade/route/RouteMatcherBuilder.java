@@ -32,6 +32,7 @@ import blade.kit.StringKit;
 import blade.kit.log.Logger;
 import blade.kit.resource.ClassPathClassReader;
 import blade.kit.resource.ClassReader;
+import blade.route.impl.DefaultRouteMatcher;
 
 /**
  * 路由构造器
@@ -145,7 +146,7 @@ public final class RouteMatcherBuilder {
     /**
      * Handler路由构建
      */
-    public static void buildHandler(String path, Router router, HttpMethod httpMethod){
+    public static void buildHandler(String path, RouteHandler router, HttpMethod httpMethod){
     	if(StringKit.isNotBlank(path) && null != router){
     		defaultRouteMatcher.addRoute(router, path, httpMethod);
     	} else {
@@ -156,7 +157,7 @@ public final class RouteMatcherBuilder {
     /**
      * 函数式构建拦截器
      */
-    public static void buildInterceptor(String path, Router router, HttpMethod httpMethod){
+    public static void buildInterceptor(String path, RouteHandler router, HttpMethod httpMethod){
     	if(StringKit.isNotBlank(path) && null != router){
     		defaultRouteMatcher.addInterceptor(router, path, httpMethod);
     	} else {

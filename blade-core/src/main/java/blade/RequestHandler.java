@@ -29,10 +29,10 @@ import blade.kit.PathKit;
 import blade.kit.ReflectKit;
 import blade.kit.log.Logger;
 import blade.render.ModelAndView;
-import blade.route.DefaultRouteMatcher;
 import blade.route.HttpMethod;
 import blade.route.RouteMatcher;
-import blade.route.Router;
+import blade.route.impl.DefaultRouteMatcher;
+import blade.route.RouteHandler;
 import blade.servlet.Request;
 import blade.servlet.Response;
 import blade.wrapper.RequestResponseBuilder;
@@ -187,7 +187,7 @@ public class RequestHandler {
 	 */
 	private Object realHandler(HttpServletRequest httpRequest, RequestWrapper requestWrapper, ResponseWrapper responseWrapper, RouteMatcher match){
 		Object result = null;
-		Router router = match.getRouter();
+		RouteHandler router = match.getRouterHandler();
 		
 		if (requestWrapper.getDelegate() == null) {
             Request request = RequestResponseBuilder.build(match, httpRequest);

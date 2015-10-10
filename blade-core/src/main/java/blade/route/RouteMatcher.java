@@ -31,38 +31,38 @@ public class RouteMatcher {
 	/**
 	 * 目标运行类实例
 	 */
-	Class<?> target;
+	private Class<?> target;
 	
 	/**
 	 * 执行的类实例
 	 */
-	Router router;
+	private RouteHandler routerHandler;
 	
 	/**
 	 * 要运行的方法对象
 	 */
-	Method execMethod;
+	private Method execMethod;
 	
 	/**
 	 * http请求方法
 	 */
-    HttpMethod httpMethod;
+	private HttpMethod httpMethod;
     
     /**
      * 请求URI
      */
-    String requestURI;
+	private String requestURI;
     
     /**
      * 路由path
      */
-    String path;
+	private String path;
     
     public RouteMatcher() {
     }
     
-    public RouteMatcher(Router router, Class<?> target, Method execMethod, HttpMethod httpMethod, String path, String requestUri) {
-        this.router = router;
+    public RouteMatcher(RouteHandler routerHandler, Class<?> target, Method execMethod, HttpMethod httpMethod, String path, String requestUri) {
+        this.routerHandler = routerHandler;
         this.target = target;
         this.execMethod = execMethod;
         this.httpMethod = httpMethod;
@@ -86,18 +86,18 @@ public class RouteMatcher {
 		return target;
 	}
     
-    public Router getRouter() {
-		return router;
+    public RouteHandler getRouterHandler() {
+		return routerHandler;
 	}
-    
-    /**
+
+	/**
      * 根据http方法和path进行匹配
      * 
      * @param httpMethod		http方法，GET/POST
      * @param path				匹配的路径
      * @return					true:匹配成功,false:匹配失败
      */
-	boolean matches(HttpMethod httpMethod, String path) {
+	public boolean matches(HttpMethod httpMethod, String path) {
 		
     	// 如果是拦截器的全部匹配模式则跳过，返回true
         if ((httpMethod == HttpMethod.BEFORE || httpMethod == HttpMethod.AFTER)
@@ -193,7 +193,7 @@ public class RouteMatcher {
 		result = prime * result + ((execMethod == null) ? 0 : execMethod.hashCode());
 		result = prime * result + ((httpMethod == null) ? 0 : httpMethod.hashCode());
 		result = prime * result + ((path == null) ? 0 : path.hashCode());
-		result = prime * result + ((router == null) ? 0 : router.hashCode());
+		result = prime * result + ((routerHandler == null) ? 0 : routerHandler.hashCode());
 		result = prime * result + ((target == null) ? 0 : target.hashCode());
 		return result;
 	}
@@ -219,10 +219,10 @@ public class RouteMatcher {
 				return false;
 		} else if (!path.equals(other.path))
 			return false;
-		if (router == null) {
-			if (other.router != null)
+		if (routerHandler == null) {
+			if (other.routerHandler != null)
 				return false;
-		} else if (!router.equals(other.router))
+		} else if (!routerHandler.equals(other.routerHandler))
 			return false;
 		if (target == null) {
 			if (other.target != null)
@@ -232,6 +232,31 @@ public class RouteMatcher {
 		return true;
 	}
 	
+	
+	public void setTarget(Class<?> target) {
+		this.target = target;
+	}
+
+	public void setRouterHandler(RouteHandler routerHandler) {
+		this.routerHandler = routerHandler;
+	}
+
+	public void setExecMethod(Method execMethod) {
+		this.execMethod = execMethod;
+	}
+
+	public void setHttpMethod(HttpMethod httpMethod) {
+		this.httpMethod = httpMethod;
+	}
+
+	public void setRequestURI(String requestURI) {
+		this.requestURI = requestURI;
+	}
+
+	public void setPath(String path) {
+		this.path = path;
+	}
+
 	@Override
     public String toString() {
         return httpMethod.name() + ":" + path;

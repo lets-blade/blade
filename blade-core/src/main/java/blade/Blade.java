@@ -30,7 +30,7 @@ import blade.render.RenderFactory;
 import blade.route.HttpMethod;
 import blade.route.RouteBase;
 import blade.route.RouteMatcherBuilder;
-import blade.route.Router;
+import blade.route.RouteHandler;
 import blade.route.RouterExecutor;
 
 /**
@@ -315,7 +315,7 @@ public final class Blade {
 	 * @param path
 	 * @param routeHandler
 	 */
-	public static synchronized void get(String path, Router router){
+	public static synchronized void get(String path, RouteHandler router){
 		RouteMatcherBuilder.buildHandler(path, router, HttpMethod.GET);
 	}
 	
@@ -335,7 +335,7 @@ public final class Blade {
 	 * @param path
 	 * @param routeHandler
 	 */
-	public static synchronized void post(String path, Router router){
+	public static synchronized void post(String path, RouteHandler router){
 		RouteMatcherBuilder.buildHandler(path, router, HttpMethod.POST);
 	}
 	
@@ -355,7 +355,7 @@ public final class Blade {
 	 * @param path
 	 * @param routeHandler
 	 */
-	public static synchronized void delete(String path, Router router){
+	public static synchronized void delete(String path, RouteHandler router){
 		RouteMatcherBuilder.buildHandler(path, router, HttpMethod.DELETE);
 	}
 	
@@ -374,7 +374,7 @@ public final class Blade {
 	 * put请求
 	 * @param paths
 	 */
-	public static synchronized void put(String path, Router router){
+	public static synchronized void put(String path, RouteHandler router){
 		RouteMatcherBuilder.buildHandler(path, router, HttpMethod.PUT);
 	}
 	
@@ -394,7 +394,7 @@ public final class Blade {
 	 * @param path
 	 * @param routeHandler
 	 */
-	public static synchronized void patch(String path, Router router){
+	public static synchronized void patch(String path, RouteHandler router){
 		RouteMatcherBuilder.buildHandler(path, router, HttpMethod.PATCH);
 	}
 
@@ -414,7 +414,7 @@ public final class Blade {
 	 * @param path
 	 * @param routeHandler
 	 */
-	public static synchronized void head(String path, Router router){
+	public static synchronized void head(String path, RouteHandler router){
 		RouteMatcherBuilder.buildHandler(path, router, HttpMethod.HEAD);
 	}
 	
@@ -434,7 +434,7 @@ public final class Blade {
 	 * @param path
 	 * @param routeHandler
 	 */
-	public static synchronized void trace(String path, Router router){
+	public static synchronized void trace(String path, RouteHandler router){
 		RouteMatcherBuilder.buildHandler(path, router, HttpMethod.TRACE);
 	}
 	
@@ -454,7 +454,7 @@ public final class Blade {
 	 * @param path
 	 * @param routeHandler
 	 */
-	public static synchronized void options(String path, Router router){
+	public static synchronized void options(String path, RouteHandler router){
 		RouteMatcherBuilder.buildHandler(path, router, HttpMethod.OPTIONS);
 	}
 	
@@ -474,7 +474,7 @@ public final class Blade {
 	 * @param path
 	 * @param routeHandler
 	 */
-	public static synchronized void connect(String path, Router router){
+	public static synchronized void connect(String path, RouteHandler router){
 		RouteMatcherBuilder.buildHandler(path, router, HttpMethod.CONNECT);
 	}
 	
@@ -494,7 +494,7 @@ public final class Blade {
 	 * @param path
 	 * @param routeHandler
 	 */
-	public static synchronized void all(String path, Router router){
+	public static synchronized void all(String path, RouteHandler router){
 		RouteMatcherBuilder.buildHandler(path, router, HttpMethod.ALL);
 	}
 	
@@ -514,7 +514,7 @@ public final class Blade {
 	 * @param path
 	 * @param routeHandler
 	 */
-	public static synchronized void before(String path, Router routeHandler){
+	public static synchronized void before(String path, RouteHandler routeHandler){
 		RouteMatcherBuilder.buildInterceptor(path, routeHandler, HttpMethod.BEFORE);
 	}
 
@@ -534,7 +534,7 @@ public final class Blade {
 	 * @param path
 	 * @param routeHandler
 	 */
-	public static synchronized void after(String path, Router routeHandler){
+	public static synchronized void after(String path, RouteHandler routeHandler){
 		RouteMatcherBuilder.buildInterceptor(path, routeHandler, HttpMethod.AFTER);
 	}
 	

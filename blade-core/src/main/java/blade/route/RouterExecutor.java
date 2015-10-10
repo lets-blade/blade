@@ -32,7 +32,7 @@ public class RouterExecutor{
 		this.httpMethod = httpMethod;
 	}
 	
-	public void run(Router router) {
+	public void run(RouteHandler router) {
 		// 拦截器
 		if(this.httpMethod == HttpMethod.BEFORE || this.httpMethod == HttpMethod.AFTER){
 			for(String path : paths){

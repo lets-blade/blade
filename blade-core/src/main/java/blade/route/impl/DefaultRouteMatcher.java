@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package blade.route;
+package blade.route.impl;
 
 import java.lang.reflect.Method;
 import java.util.Collections;
@@ -23,6 +23,9 @@ import java.util.List;
 import blade.Blade;
 import blade.kit.CollectionKit;
 import blade.kit.log.Logger;
+import blade.route.HttpMethod;
+import blade.route.RouteHandler;
+import blade.route.RouteMatcher;
 
 /**
  * 默认的路由匹配器
@@ -69,15 +72,15 @@ public class DefaultRouteMatcher {
         
         RouteMatcher entry =  routeEntries.size() > 0 ? routeEntries.get(0) : null;
         
-        return entry != null ? new RouteMatcher(entry.router, entry.target, entry.execMethod, entry.httpMethod, entry.path, uri) : null;
+        return entry != null ? new RouteMatcher(entry.getRouterHandler(), entry.getTarget(), entry.getExecMethod(), entry.getHttpMethod(), entry.getPath(), uri) : null;
     }
     
     private void giveMatch(final String uri, List<RouteMatcher> routeEntries) {
 		Collections.sort(routeEntries, new Comparator<RouteMatcher>() {
 		    @Override
 		    public int compare(RouteMatcher o1, RouteMatcher o2) {
-				if(o2.path.equals(uri)){
-					return o2.path.indexOf(uri);
+				if(o2.getPath().equals(uri)){
+					return o2.getPath().indexOf(uri);
 				}
 				return -1;
 			}
@@ -120,19 +123,19 @@ public class DefaultRouteMatcher {
      * @param url			路由url
      * @param method		路由http方法
      */
-    public void addRoute(Class<?> target, Method execMethod, String url, HttpMethod method) {
-    	RouteMatcher entry = new RouteMatcher();
-        entry.target = target;
-        entry.execMethod = execMethod;
-        entry.httpMethod = method;
-        entry.path = url;
+    public void addRoute(Class<?> target, Method execMethod, String url, HttpMethod httpMethod) {
+    	RouteMatcher routeMatcher = new RouteMatcher();
+    	routeMatcher.setTarget(target);
+    	routeMatcher.setExecMethod(execMethod);
+    	routeMatcher.setHttpMethod(httpMethod);
+    	routeMatcher.setPath(url);
         
         if(Blade.debug()){
-        	LOGGER.debug("Add Route：" + entry);
+        	LOGGER.debug("Add Route：" + routeMatcher);
         }
         
         // 添加到路由集合
-        routes.add(entry);
+        routes.add(routeMatcher);
     }
     
     /**
@@ -143,19 +146,19 @@ public class DefaultRouteMatcher {
      * @param url			路由url
      * @param method		路由http方法
      */
-    public void addInterceptor(Class<?> target, Method execMethod, String url, HttpMethod method) {
-    	RouteMatcher entry = new RouteMatcher();
-        entry.target = target;
-        entry.execMethod = execMethod;
-        entry.httpMethod = method;
-        entry.path = url;
+    public void addInterceptor(Class<?> target, Method execMethod, String url, HttpMethod httpMethod) {
+        RouteMatcher routeMatcher = new RouteMatcher();
+    	routeMatcher.setTarget(target);
+    	routeMatcher.setExecMethod(execMethod);
+    	routeMatcher.setHttpMethod(httpMethod);
+    	routeMatcher.setPath(url);
         
         if(Blade.debug()){
-        	LOGGER.debug("Add Interceptor：" + entry);
+        	LOGGER.debug("Add Interceptor：" + routeMatcher);
         }
         
         // 添加到路由集合
-        interceptors.add(entry);
+        interceptors.add(routeMatcher);
     }
     
     /**
@@ -165,18 +168,19 @@ public class DefaultRouteMatcher {
      * @param url			路由url
      * @param method		路由http方法
      */
-    public void addRoute(Router router, String url, HttpMethod method) {
-    	RouteMatcher entry = new RouteMatcher();
-        entry.router = router;
-        entry.httpMethod = method;
-        entry.path = url;
+    public void addRoute(RouteHandler routerHandler, String url, HttpMethod httpMethod) {
+        
+        RouteMatcher routeMatcher = new RouteMatcher();
+    	routeMatcher.setRouterHandler(routerHandler);
+    	routeMatcher.setHttpMethod(httpMethod);
+    	routeMatcher.setPath(url);
         
         if(Blade.debug()){
-        	LOGGER.debug("Add Route：" + entry);
+        	LOGGER.debug("Add Route：" + routeMatcher);
         }
         
         // 添加到路由集合
-        routes.add(entry);
+        routes.add(routeMatcher);
     }
     
     /**
@@ -186,18 +190,19 @@ public class DefaultRouteMatcher {
      * @param url			路由url
      * @param method		路由http方法
      */
-    public void addInterceptor(Router router, String url, HttpMethod method) {
-    	RouteMatcher entry = new RouteMatcher();
-        entry.router = router;
-        entry.httpMethod = method;
-        entry.path = url;
+    public void addInterceptor(RouteHandler routerHandler, String url, HttpMethod httpMethod) {
+        
+        RouteMatcher routeMatcher = new RouteMatcher();
+    	routeMatcher.setRouterHandler(routerHandler);
+    	routeMatcher.setHttpMethod(httpMethod);
+    	routeMatcher.setPath(url);
         
         if(Blade.debug()){
-        	LOGGER.debug("Add Interceptor：" + entry);
+        	LOGGER.debug("Add Interceptor：" + routeMatcher);
         }
         
         // 添加到路由集合
-        interceptors.add(entry);
+        interceptors.add(routeMatcher);
     }
     
     /**
