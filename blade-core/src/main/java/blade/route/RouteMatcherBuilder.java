@@ -292,7 +292,7 @@ public final class RouteMatcherBuilder {
 				
 				buildInterceptor(path, interceptor, method, HttpMethod.AFTER);
 				
-				String[] paths = before.values();
+				String[] paths = after.values();
 				if(null != paths && paths.length > 0){
 					for(String value : paths){
 						String pathV = getRoutePath(value, "", suffix);

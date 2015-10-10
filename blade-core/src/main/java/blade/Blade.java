@@ -55,7 +55,7 @@ public final class Blade {
     /**
 	 * 全局配置对象
 	 */
-	protected final static BladeConfig BLADE_CONFIG = new BladeConfig();
+	protected final static Config CONFIG = new Config();
 	
     /**
      * IOC容器，存储路由到ioc中
@@ -134,7 +134,7 @@ public final class Blade {
 	 * @param configMap		存放配置的map
 	 */
 	private static void configuration(Map<String, String> configMap){
-		new BladeConfigurator(Blade.BLADE_CONFIG, configMap).run();
+		new Configurator(CONFIG, configMap).run();
 	}
 	
 	/**
@@ -145,7 +145,7 @@ public final class Blade {
      */
     public static synchronized void routes(String...packages){
     	if(null != packages && packages.length >0){
-    		BLADE_CONFIG.setRoutePackages(packages);
+    		CONFIG.setRoutePackages(packages);
     	}
     }
     
@@ -157,7 +157,7 @@ public final class Blade {
      */
     public static synchronized void defaultRoute(String basePackage){
     	if(null != basePackage){
-    		BLADE_CONFIG.setBasePackage(basePackage);
+    		CONFIG.setBasePackage(basePackage);
     	}
     }
     
@@ -168,7 +168,7 @@ public final class Blade {
      */
 	public static synchronized void interceptor(String packageName) {
 		if(null != packageName && packageName.length() >0){
-			BLADE_CONFIG.setInterceptorPackage(packageName);
+			CONFIG.setInterceptorPackage(packageName);
     	}
 	}
 	
@@ -179,7 +179,7 @@ public final class Blade {
      */
     public static synchronized void ioc(String...packages){
     	if(null != packages && packages.length >0){
-    		BLADE_CONFIG.setIocPackages(packages);
+    		CONFIG.setIocPackages(packages);
     	}
     }
     
@@ -199,7 +199,7 @@ public final class Blade {
 	 */
 	public static synchronized void viewPrefix(final String prefix) {
 		if(null != prefix && prefix.startsWith("/")){
-			BLADE_CONFIG.setViewPrefix(prefix);
+			CONFIG.setViewPrefix(prefix);
 		}
 	}
 	
@@ -210,7 +210,7 @@ public final class Blade {
 	 */
 	public static synchronized void viewSuffix(final String suffix) {
 		if(null != suffix && suffix.startsWith(".")){
-			BLADE_CONFIG.setViewSuffix(suffix);
+			CONFIG.setViewSuffix(suffix);
 		}
 	}
 	
@@ -231,7 +231,7 @@ public final class Blade {
 	 * @param folders
 	 */
 	public static synchronized void staticFolder(final String ... folders) {
-		BLADE_CONFIG.setStaticFolders(folders);
+		CONFIG.setStaticFolders(folders);
 	}
 	
     /**
@@ -249,7 +249,7 @@ public final class Blade {
      * @param view404	404视图页面
      */
     public static synchronized void view404(final String view404){
-    	BLADE_CONFIG.setView404(view404);
+    	CONFIG.setView404(view404);
     }
     
     /**
@@ -258,7 +258,7 @@ public final class Blade {
      * @param view500	500视图页面
      */
     public static synchronized void view500(final String view500){
-    	BLADE_CONFIG.setView500(view500);
+    	CONFIG.setView500(view500);
     }
 
     /**
@@ -267,7 +267,7 @@ public final class Blade {
      * @param webRoot	web根目录物理路径
      */
     public static synchronized void webRoot(final String webRoot){
-    	BLADE_CONFIG.setWebRoot(webRoot);
+    	CONFIG.setWebRoot(webRoot);
     }
     
     /**
@@ -275,7 +275,7 @@ public final class Blade {
 	 * @param isdebug	true:是，默认true；false:否
 	 */
 	public static synchronized void debug(boolean isdebug){
-		BLADE_CONFIG.setDebug(isdebug);
+		CONFIG.setDebug(isdebug);
 	}
 	
 	/**
@@ -549,36 +549,36 @@ public final class Blade {
 		return null;
 	}
 	
-	public final static BladeConfig config(){
-    	return BLADE_CONFIG;
+	public final static Config config(){
+    	return CONFIG;
     }
 	
     /**
      * @return	返回Blade要扫描的基础包
      */
     public static String basePackage(){
-    	return BLADE_CONFIG.getBasePackage();
+    	return CONFIG.getBasePackage();
     }
     
 	/**
      * @return	返回路由包数组
      */
     public static String[] routes(){
-    	return BLADE_CONFIG.getRoutePackages();
+    	return CONFIG.getRoutePackages();
     }
     
     /**
      * @return	返回IOC所有包
      */
     public static String[] iocs(){
-    	return BLADE_CONFIG.getIocPackages();
+    	return CONFIG.getIocPackages();
     }
     
     /**
      * @return	返回拦截器包数组，只有一个元素 这里统一用String[]
      */
     public static String interceptor(){
-    	return BLADE_CONFIG.getInterceptorPackage();
+    	return CONFIG.getInterceptorPackage();
     }
     
     
@@ -586,56 +586,56 @@ public final class Blade {
      * @return	返回视图存放路径
      */
     public static String viewPrefix(){
-    	return BLADE_CONFIG.getViewPrefix();
+    	return CONFIG.getViewPrefix();
     }
     
     /**
      * @return	返回系统默认字符编码
      */
     public static String encoding(){
-    	return BLADE_CONFIG.getEncoding();
+    	return CONFIG.getEncoding();
     }
     
     /**
      * @return	返回balde启动端口
      */
     public static String viewSuffix(){
-    	return BLADE_CONFIG.getViewSuffix();
+    	return CONFIG.getViewSuffix();
     }
     
     /**
      * @return	返回404视图
      */
     public static String view404(){
-    	return BLADE_CONFIG.getView404();
+    	return CONFIG.getView404();
     }
     
     /**
      * @return	返回500视图
      */
     public static String view500(){
-    	return BLADE_CONFIG.getView500();
+    	return CONFIG.getView500();
     }
     
     /**
      * @return	返回webroot路径
      */
     public static String webRoot(){
-    	return BLADE_CONFIG.getWebRoot();
+    	return CONFIG.getWebRoot();
     }
     
     /**
 	 * @return	返回系统是否以debug方式运行
 	 */
 	public static boolean debug(){
-		return BLADE_CONFIG.isDebug();
+		return CONFIG.isDebug();
 	}
 	
 	/**
 	 * @return	返回静态资源目录
 	 */
 	public static String[] staticFolder(){
-		return BLADE_CONFIG.getStaticFolders();
+		return CONFIG.getStaticFolders();
 	}
 	
 	/**

@@ -38,9 +38,9 @@ import blade.route.RouteMatcherBuilder;
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since	1.0
  */
-public class BladeFilter implements Filter {
+public class CoreFilter implements Filter {
 	
-	private static final Logger LOGGER = Logger.getLogger(BladeFilter.class);
+	private static final Logger LOGGER = Logger.getLogger(CoreFilter.class);
 	
 	/**
 	 * blade全局初始化类

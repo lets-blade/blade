@@ -28,7 +28,7 @@ import blade.kit.CollectionKit;
  * @since 1.0
  *
  */
-public class BladeConfig {
+public class Config {
 
 	// 存放所有变量
 	private Map<String, String> configMap = CollectionKit.newHashMap();
@@ -57,7 +57,7 @@ public class BladeConfig {
 	// 是否是DEBUG模式
 	private boolean isDebug = true;
 
-	public BladeConfig() {
+	public Config() {
 	}
 	
 	public Map<String, String> getConfigMap() {

@@ -25,15 +25,15 @@ import blade.kit.StringKit;
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since	1.0
  */
-public class BladeConfigurator {
+public class Configurator {
 
 	// 配置文件对象
-	private BladeConfig bladeConfig;
+	private Config bladeConfig;
 	
 	// 配置map
 	private Map<String, String> configMap;
 	
-	public BladeConfigurator(BladeConfig bladeConfig,
+	public Configurator(Config bladeConfig,
 			Map<String, String> configMap) {
 		this.bladeConfig = bladeConfig;
 		this.configMap = configMap;
