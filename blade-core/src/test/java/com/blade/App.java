@@ -10,6 +10,7 @@ public class App extends Bootstrap {
 	public void init() {}
 	
 	public static void main(String[] args) throws Exception {
+		
 		Blade blade = Blade.me();
 		blade.get("/").run(new RouteHandler() {
 			@Override

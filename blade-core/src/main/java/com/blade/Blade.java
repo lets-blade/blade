@@ -23,7 +23,7 @@ import java.util.Map;
 import javax.servlet.DispatcherType;
 
 import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.webapp.WebAppContext;
 
 import com.blade.ioc.Container;
 import com.blade.ioc.impl.DefaultContainer;
@@ -608,11 +608,19 @@ public class Blade {
 			
 		Server server = new Server(DEFAULT_PORT);
 		
-	    ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
+	    /*ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
 	    context.setContextPath(contextPath);
 	    context.setResourceBase(System.getProperty("java.io.tmpdir"));
 	    context.addFilter(CoreFilter.class, "/*", EnumSet.of(DispatcherType.REQUEST));
-        server.setHandler(context);
+        server.setHandler(context);*/
+		
+		WebAppContext webAppContext = new WebAppContext();
+		webAppContext.setContextPath(contextPath);
+		webAppContext.setDescriptor("src/main/webapp/WEB-INF/web.xml");
+		webAppContext.setResourceBase("src/main/webapp/");
+		webAppContext.setParentLoaderPriority(true);
+		webAppContext.addFilter(BladeFilter.class, "/*", EnumSet.of(DispatcherType.REQUEST));
+		server.setHandler(webAppContext);
 		
 	    server.start();
 	    

@@ -39,9 +39,9 @@ import blade.kit.log.Logger;
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since	1.0
  */
-public class CoreFilter implements Filter {
+public class BladeFilter implements Filter {
 	
-	private static final Logger LOGGER = Logger.getLogger(CoreFilter.class);
+	private static final Logger LOGGER = Logger.getLogger(BladeFilter.class);
 	
 	/**
 	 * blade全局初始化类

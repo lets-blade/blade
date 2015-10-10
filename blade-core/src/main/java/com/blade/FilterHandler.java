@@ -200,7 +200,7 @@ public class FilterHandler {
         }
 		
 		// 初始化context
-		BladeWebContext.setContext(CoreFilter.servletContext, httpRequest, responseWrapper.servletResponse(), requestWrapper, responseWrapper);
+		BladeWebContext.setContext(BladeFilter.servletContext, httpRequest, responseWrapper.servletResponse(), requestWrapper, responseWrapper);
 					
 		if(null != router){
 			
