@@ -40,6 +40,7 @@ import blade.kit.IOKit;
 import blade.kit.PropertyKit;
 import blade.kit.ReflectKit;
 import blade.kit.json.JSONKit;
+import blade.kit.log.Logger;
 
 /**
  * Blade Core Class
@@ -52,6 +53,8 @@ public class Blade {
 	public static final String VERSION = "1.4.0-alpha";
 	
 	private static final Blade ME = new Blade();
+	
+	private static final Logger LOGGER = Logger.getLogger(Blade.class);
 	
 	/**
      * 框架是否已经初始化
@@ -207,8 +210,9 @@ public class Blade {
 	 * 加载一个Route
 	 * @param route
 	 */
-	public void load(Class<? extends RouteBase> route){
+	public Blade load(Class<? extends RouteBase> route){
 		IocApplication.addRouteClass(route);
+		return this;
 	}
     
 	/**
@@ -220,8 +224,9 @@ public class Blade {
 	 * @param clazz			路由处理类
 	 * @param methodName	路由处理方法名称
 	 */
-	public void register(String path, Class<?> clazz, String methodName){
-		RouteMatcherBuilder.buildFunctional(path, clazz, methodName, null);
+	public Blade addRoute(String path, Class<?> clazz, String method){
+		RouteMatcherBuilder.buildFunctional(path, clazz, method, null);
+		return this;
 	}
 	
 	/**
@@ -231,8 +236,9 @@ public class Blade {
 	 * @param methodName	路由处理方法名称
 	 * @param httpMethod	请求类型,GET/POST
 	 */
-	public void register(String path, Class<?> clazz, String methodName, HttpMethod httpMethod){
-		RouteMatcherBuilder.buildFunctional(path, clazz, methodName, httpMethod);
+	public Blade addRoute(String path, Class<?> clazz, String method, HttpMethod httpMethod){
+		RouteMatcherBuilder.buildFunctional(path, clazz, method, httpMethod);
+		return this;
 	}
 	
 	/**
@@ -240,8 +246,9 @@ public class Blade {
 	 * @param path
 	 * @param routeHandler
 	 */
-	public void get(String path, RouteHandler router){
+	public Blade get(String path, RouteHandler router){
 		RouteMatcherBuilder.buildHandler(path, router, HttpMethod.GET);
+		return this;
 	}
 	
 	/**
@@ -260,8 +267,9 @@ public class Blade {
 	 * @param path
 	 * @param routeHandler
 	 */
-	public void post(String path, RouteHandler router){
+	public Blade post(String path, RouteHandler router){
 		RouteMatcherBuilder.buildHandler(path, router, HttpMethod.POST);
+		return this;
 	}
 	
 	/**
@@ -280,8 +288,9 @@ public class Blade {
 	 * @param path
 	 * @param routeHandler
 	 */
-	public void delete(String path, RouteHandler router){
+	public Blade delete(String path, RouteHandler router){
 		RouteMatcherBuilder.buildHandler(path, router, HttpMethod.DELETE);
+		return this;
 	}
 	
 	/**
@@ -299,8 +308,9 @@ public class Blade {
 	 * put请求
 	 * @param paths
 	 */
-	public void put(String path, RouteHandler router){
+	public Blade put(String path, RouteHandler router){
 		RouteMatcherBuilder.buildHandler(path, router, HttpMethod.PUT);
+		return this;
 	}
 	
 	/**
@@ -319,8 +329,9 @@ public class Blade {
 	 * @param path
 	 * @param routeHandler
 	 */
-	public void patch(String path, RouteHandler router){
+	public Blade patch(String path, RouteHandler router){
 		RouteMatcherBuilder.buildHandler(path, router, HttpMethod.PATCH);
+		return this;
 	}
 
 	/**
@@ -339,8 +350,9 @@ public class Blade {
 	 * @param path
 	 * @param routeHandler
 	 */
-	public void head(String path, RouteHandler router){
+	public Blade head(String path, RouteHandler router){
 		RouteMatcherBuilder.buildHandler(path, router, HttpMethod.HEAD);
+		return this;
 	}
 	
 	/**
@@ -359,8 +371,9 @@ public class Blade {
 	 * @param path
 	 * @param routeHandler
 	 */
-	public void trace(String path, RouteHandler router){
+	public Blade trace(String path, RouteHandler router){
 		RouteMatcherBuilder.buildHandler(path, router, HttpMethod.TRACE);
+		return this;
 	}
 	
 	/**
@@ -379,8 +392,9 @@ public class Blade {
 	 * @param path
 	 * @param routeHandler
 	 */
-	public void options(String path, RouteHandler router){
+	public Blade options(String path, RouteHandler router){
 		RouteMatcherBuilder.buildHandler(path, router, HttpMethod.OPTIONS);
+		return this;
 	}
 	
 	/**
@@ -399,8 +413,9 @@ public class Blade {
 	 * @param path
 	 * @param routeHandler
 	 */
-	public void connect(String path, RouteHandler router){
+	public Blade connect(String path, RouteHandler router){
 		RouteMatcherBuilder.buildHandler(path, router, HttpMethod.CONNECT);
+		return this;
 	}
 	
 	/**
@@ -419,8 +434,9 @@ public class Blade {
 	 * @param path
 	 * @param routeHandler
 	 */
-	public void all(String path, RouteHandler router){
+	public Blade all(String path, RouteHandler router){
 		RouteMatcherBuilder.buildHandler(path, router, HttpMethod.ALL);
+		return this;
 	}
 	
 	/**
@@ -439,8 +455,9 @@ public class Blade {
 	 * @param path
 	 * @param routeHandler
 	 */
-	public void before(String path, RouteHandler routeHandler){
+	public Blade before(String path, RouteHandler routeHandler){
 		RouteMatcherBuilder.buildInterceptor(path, routeHandler, HttpMethod.BEFORE);
+		return this;
 	}
 
 	/**
@@ -459,8 +476,9 @@ public class Blade {
 	 * @param path
 	 * @param routeHandler
 	 */
-	public void after(String path, RouteHandler routeHandler){
+	public Blade after(String path, RouteHandler routeHandler){
 		RouteMatcherBuilder.buildInterceptor(path, routeHandler, HttpMethod.AFTER);
+		return this;
 	}
 	
 	/**
@@ -586,19 +604,26 @@ public class Blade {
 		return this;
 	}
 	
-	public void start() throws Exception {
-		
+	public void start(String contextPath) throws Exception {
+			
 		Server server = new Server(DEFAULT_PORT);
 		
 	    ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
-	    context.setContextPath("/");
+	    context.setContextPath(contextPath);
 	    context.setResourceBase(System.getProperty("java.io.tmpdir"));
 	    context.addFilter(CoreFilter.class, "/*", EnumSet.of(DispatcherType.REQUEST));
         server.setHandler(context);
 		
 	    server.start();
+	    
+	    LOGGER.info("Blade Server Listen on http://127.0.0.1:" + DEFAULT_PORT);
+	    
 	    server.join();
 	    
+	}
+	
+	public void start() throws Exception {
+		this.start("/");
 	}
 	
 	public Config config(){
@@ -710,5 +735,4 @@ public class Blade {
 		}
 		return (T) object;
 	}
-	
 }

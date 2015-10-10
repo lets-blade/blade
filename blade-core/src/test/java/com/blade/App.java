@@ -19,6 +19,8 @@ public class App extends Bootstrap {
 			}
 		});
 		
+		blade.addRoute("/hello", Index.class, "hello");
+		
 		blade.app(App.class).listen(9001).start();
 		
 	}
