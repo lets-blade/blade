@@ -50,30 +50,32 @@ public class CoreFilter implements Filter {
     
     static ServletContext servletContext;
     
+    private Blade blade;
     
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
     	
     	// 防止重复初始化
     	try {
-			if(!Blade.IS_INIT){
+    		blade = Blade.me();
+			if(!blade.isInit){
 				
-				Blade.webRoot(filterConfig.getServletContext().getRealPath("/"));
+				blade.webRoot(filterConfig.getServletContext().getRealPath("/"));
 				
 				final Bootstrap bootstrap = getBootstrap(filterConfig.getInitParameter(BOOSTRAP_CLASS));
 				bootstrap.init();
-			    Blade.app(bootstrap);
+				blade.app(bootstrap);
 			    
 			    // 构建路由
-			    RouteMatcherBuilder.building();
+			    RouteMatcherBuilder.building(blade);
 			    
-			    IocApplication.init();
+			    IocApplication.init(blade);
 			    
 			    servletContext = filterConfig.getServletContext();
 			    
 			    bootstrap.contextInitialized();
 			    
-			    Blade.init();
+			    blade.setInit(true);
 			    
 			    LOGGER.info("blade init complete!");
 			}
@@ -114,13 +116,13 @@ public class CoreFilter implements Filter {
     	HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
         
-        httpRequest.setCharacterEncoding(Blade.encoding());
-        httpResponse.setCharacterEncoding(Blade.encoding());
+        httpRequest.setCharacterEncoding(blade.encoding());
+        httpResponse.setCharacterEncoding(blade.encoding());
         
         /**
          * 是否被RequestHandler执行
          */
-        boolean isHandler = new RequestHandler().handler(httpRequest, httpResponse);
+        boolean isHandler = new FilterHandler(blade).handler(httpRequest, httpResponse);
         if(!isHandler){
         	chain.doFilter(httpRequest, httpResponse);
         }

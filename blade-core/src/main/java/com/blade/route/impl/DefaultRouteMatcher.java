@@ -20,7 +20,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import com.blade.Blade;
 import com.blade.route.HttpMethod;
 import com.blade.route.RouteHandler;
 import com.blade.route.RouteMatcher;
@@ -131,9 +130,7 @@ public class DefaultRouteMatcher {
     	routeMatcher.setHttpMethod(httpMethod);
     	routeMatcher.setPath(url);
         
-        if(Blade.debug()){
-        	LOGGER.debug("Add Route：" + routeMatcher);
-        }
+    	LOGGER.debug("Add Route：" + routeMatcher);
         
         // 添加到路由集合
         routes.add(routeMatcher);
@@ -154,9 +151,7 @@ public class DefaultRouteMatcher {
     	routeMatcher.setHttpMethod(httpMethod);
     	routeMatcher.setPath(url);
         
-        if(Blade.debug()){
-        	LOGGER.debug("Add Interceptor：" + routeMatcher);
-        }
+    	LOGGER.debug("Add Interceptor：" + routeMatcher);
         
         // 添加到路由集合
         interceptors.add(routeMatcher);
@@ -176,9 +171,7 @@ public class DefaultRouteMatcher {
     	routeMatcher.setHttpMethod(httpMethod);
     	routeMatcher.setPath(url);
         
-        if(Blade.debug()){
-        	LOGGER.debug("Add Route：" + routeMatcher);
-        }
+    	LOGGER.debug("Add Route：" + routeMatcher);
         
         // 添加到路由集合
         routes.add(routeMatcher);
@@ -198,9 +191,7 @@ public class DefaultRouteMatcher {
     	routeMatcher.setHttpMethod(httpMethod);
     	routeMatcher.setPath(url);
         
-        if(Blade.debug()){
-        	LOGGER.debug("Add Interceptor：" + routeMatcher);
-        }
+    	LOGGER.debug("Add Interceptor：" + routeMatcher);
         
         // 添加到路由集合
         interceptors.add(routeMatcher);

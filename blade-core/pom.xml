@@ -14,7 +14,7 @@
 	<version>${blade.version}</version>
 	<name>blade-core</name>
 	<url>https://github.com/biezhi/blade/blade-core</url>
-		
+	
 	<dependencies>
 		<dependency>
 			<groupId>com.bladejava</groupId>
@@ -24,6 +24,24 @@
 		<dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
+        </dependency>
+        <dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-server</artifactId>
+			<version>8.1.15.v20140411</version>
+			<scope>provided</scope>
+		</dependency>
+        <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+            <version>6.9.6</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+            <version>2.0.2-beta</version>
+            <scope>test</scope>
         </dependency>
 	</dependencies>
 </project>

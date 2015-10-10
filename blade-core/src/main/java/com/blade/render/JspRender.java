@@ -23,7 +23,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.blade.Blade;
 import com.blade.BladeWebContext;
 
 import blade.kit.log.Logger;
@@ -50,8 +49,8 @@ public final class JspRender extends Render {
 			HttpServletResponse servletResponse = BladeWebContext.servletResponse();
 			
 			// 设置编码
-			servletRequest.setCharacterEncoding(Blade.encoding());
-			servletResponse.setCharacterEncoding(Blade.encoding());
+			servletRequest.setCharacterEncoding(blade.encoding());
+			servletResponse.setCharacterEncoding(blade.encoding());
 			
 			// 构造jsp地址
 			String realPath = disposeView(view);

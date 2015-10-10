@@ -23,15 +23,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
-import com.blade.Blade;
 import com.blade.annotation.Component;
 import com.blade.annotation.Inject;
 import com.blade.annotation.Path;
 import com.blade.ioc.Container;
 import com.blade.ioc.Scope;
-
-import java.util.Set;
 
 import blade.exception.BladeException;
 import blade.kit.CloneKit;
@@ -174,11 +172,7 @@ public class DefaultContainer implements Container {
 		    if(null != clazz.getDeclaredAnnotations()){
 		    	putAnnotationMap(clazz, object);
 		    }
-		    
-		    if(Blade.debug()){
-		    	LOGGER.info("register object：" + name + "=" + object);
-		    }
-		    
+		    LOGGER.info("register object：" + name + "=" + object);
 		}
 		return object;
 	}
@@ -307,9 +301,7 @@ public class DefaultContainer implements Container {
 	public Object registBean(Object object) {
 		String name = object.getClass().getName();
 		put(name, object);
-		if(Blade.debug()){
-	    	LOGGER.info("register object：" + name + "=" + object);
-	    }
+	    LOGGER.info("register object：" + name + "=" + object);
 		return object;
 	}
 

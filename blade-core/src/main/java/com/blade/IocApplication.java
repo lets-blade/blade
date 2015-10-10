@@ -60,15 +60,15 @@ public final class IocApplication {
 	 */
 	static final List<Class<? extends RouteBase>> ROUTE_CLASS_LIST = CollectionKit.newArrayList();
 	
-	public static void init(){
+	public static void init(Blade blade){
 		
 		// 初始化全局配置类
 		if(null == container.getBean(Bootstrap.class, Scope.SINGLE)){
-			container.registBean(Blade.bootstrap());
+			container.registBean(blade.bootstrap);
 		}
 		
 		// 初始化ioc容器
-		initIOC();
+		initIOC(blade.iocs());
 		
 		// 初始化注入
 		try {
@@ -92,8 +92,7 @@ public final class IocApplication {
 	 * 要配置符合ioc的注解的类才会被加载
 	 * 
 	 */
-	private static void initIOC() {
-		String[] iocPackages = Blade.iocs();
+	private static void initIOC(String[] iocPackages) {
 		if(null != iocPackages && iocPackages.length > 0){
 			for(String packageName : iocPackages){
 				registerBean(packageName);

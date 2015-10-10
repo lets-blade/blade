@@ -75,9 +75,9 @@ public final class RouteMatcherBuilder {
      * 
      * @return	返回构建路由后的构造器
      */
-    public static synchronized void building() {
+    public static synchronized void building(Blade blade) {
     	
-        String basePackage = Blade.basePackage();
+        String basePackage = blade.basePackage();
         
         if(StringKit.isNotBlank(basePackage)){
         	
@@ -95,13 +95,13 @@ public final class RouteMatcherBuilder {
         } else {
         	
         	// 路由
-	    	String[] routePackages = Blade.routes();
+	    	String[] routePackages = blade.routes();
 	    	if(null != routePackages && routePackages.length > 0){
 	    		buildRoute(routePackages);
 	    	}
 	    	
 			// 拦截器
-	    	String interceptorPackage = Blade.interceptor();
+	    	String interceptorPackage = blade.interceptor();
 	    	if(StringKit.isNotBlank(interceptorPackage)){
 	    		buildInterceptor(interceptorPackage);
 	    	}

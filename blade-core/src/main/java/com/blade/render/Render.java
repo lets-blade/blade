@@ -38,6 +38,8 @@ public abstract class Render {
 	
 	private static final Logger LOGGER = Logger.getLogger(Render.class);
 	
+	Blade blade = Blade.me();
+	
 	static final String VIEW_NOTFOUND = "<html><head><title>404 Not Found</title></head><body bgcolor=\"white\"><center><h1>[ %s ] Not Found</h1></center><hr><center>blade "
 			+ Blade.VERSION +"</center></body></html>";
 	
@@ -53,7 +55,7 @@ public abstract class Render {
 	 */
 	public void render404(Response response, String viewName){
         try {
-        	String view404 = Blade.view404();
+        	String view404 = blade.view404();
         	if(null != view404){
         		ModelAndView modelAndView = new ModelAndView(view404);
         		modelAndView.add("viewName", viewName);
@@ -82,7 +84,7 @@ public abstract class Render {
 	public void render500(String bodyContent){
 	    try {
 	    	
-	    	String view500 = Blade.view500();
+	    	String view500 = blade.view500();
         	if(null != view500){
         		ModelAndView modelAndView = new ModelAndView(view500);
         		modelAndView.add("body", bodyContent);
@@ -236,10 +238,10 @@ public abstract class Render {
 	 */
 	String disposeView(String view){
 		if(null != view){
-			view = Blade.viewPrefix() + view;
+			view = blade.viewPrefix() + view;
 			view = view.replaceAll("[/]+", "/");
-			if(!view.endsWith(Blade.viewSuffix())){
-				view = view + Blade.viewSuffix();
+			if(!view.endsWith(blade.viewSuffix())){
+				view = view + blade.viewSuffix();
 			}
 		}
 		return view;

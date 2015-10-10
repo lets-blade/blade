@@ -49,9 +49,11 @@ import blade.kit.log.Logger;
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since	1.0
  */
-public class RequestHandler {
+public class FilterHandler {
 	
-	private static final Logger LOGGER = Logger.getLogger(RequestHandler.class);
+	private static final Logger LOGGER = Logger.getLogger(FilterHandler.class);
+	
+	private Blade blade;
 	
     /**
      * 服务器500错误时返回的HTML
@@ -70,8 +72,8 @@ public class RequestHandler {
      */
     private static final DefaultRouteMatcher DEFAULT_ROUTE_MATCHER = DefaultRouteMatcher.instance();
     
-	public RequestHandler(){
-		
+	public FilterHandler(Blade blade){
+		this.blade = blade;
 	}
 	
 	/**
@@ -90,13 +92,13 @@ public class RequestHandler {
         String uri = PathKit.getRelativePath(httpRequest);
         
         // 如果是静态资源则交给filter处理
-        if(null != Blade.staticFolder() && Blade.staticFolder().length > 0){
+        if(null != blade.staticFolder() && blade.staticFolder().length > 0){
         	if(!filterStaticFolder(uri)){
         		return false;
         	}
         }
         
-        if(Blade.debug()){
+        if(blade.debug()){
         	LOGGER.debug("Request : " + method + "\t" + uri);
         }
         
@@ -307,9 +309,9 @@ public class RequestHandler {
 	 * @return
 	 */
 	private boolean filterStaticFolder(String uri){
-		int len = Blade.staticFolder().length;
+		int len = blade.staticFolder().length;
     	for(int i=0; i<len; i++){
-    		if(uri.startsWith(Blade.staticFolder()[i])){
+    		if(uri.startsWith(blade.staticFolder()[i])){
     			return false;
     		}
     	}
