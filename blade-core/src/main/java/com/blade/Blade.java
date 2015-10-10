@@ -703,7 +703,7 @@ public class Blade {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public <T extends Plugin> T plugin(Class<T> pluginClazz){
+	public <T> T plugin(Class<? extends Plugin> pluginClazz){
 		Object object = IocApplication.getPlugin(pluginClazz);
 		if(null == object){
 			object = IocApplication.registerPlugin(pluginClazz);

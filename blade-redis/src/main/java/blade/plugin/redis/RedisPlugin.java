@@ -3,9 +3,10 @@ package blade.plugin.redis;
 import java.util.ArrayList;
 import java.util.List;
 
-import redis.clients.jedis.JedisShardInfo;
+import com.blade.plugin.Plugin;
+
 import blade.kit.log.Logger;
-import blade.plugin.Plugin;
+import redis.clients.jedis.JedisShardInfo;
 
 /**
  * redis插件

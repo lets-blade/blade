@@ -38,7 +38,7 @@ public abstract class Render {
 	
 	private static final Logger LOGGER = Logger.getLogger(Render.class);
 	
-	Blade blade = Blade.me();
+	protected Blade blade = Blade.me();
 	
 	static final String VIEW_NOTFOUND = "<html><head><title>404 Not Found</title></head><body bgcolor=\"white\"><center><h1>[ %s ] Not Found</h1></center><hr><center>blade "
 			+ Blade.VERSION +"</center></body></html>";
@@ -236,7 +236,7 @@ public abstract class Render {
 	 * @param view	视图名称
 	 * @return		返回取出多余"/"的全路径
 	 */
-	String disposeView(String view){
+	protected String disposeView(String view){
 		if(null != view){
 			view = blade.viewPrefix() + view;
 			view = view.replaceAll("[/]+", "/");

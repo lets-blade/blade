@@ -11,7 +11,8 @@ import org.sql2o.Connection;
 import org.sql2o.Query;
 import org.sql2o.Sql2o;
 
-import blade.Blade;
+import com.blade.Blade;
+
 import blade.kit.EncrypKit;
 import blade.kit.StringKit;
 import blade.kit.log.Logger;
@@ -41,7 +42,7 @@ public class Model<T extends Serializable> {
      */
     private Sql2o sql2o = DataSourceManager.me().getSql2o();
     
-    private static final Sql2oPlugin SQL2O_PLUGIN = Blade.plugin(Sql2oPlugin.class);
+    private static final Sql2oPlugin SQL2O_PLUGIN = Blade.me().plugin(Sql2oPlugin.class);
     
     /**
      * 当前class实例

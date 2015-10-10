@@ -7,12 +7,13 @@ import java.util.Properties;
 
 import javax.sql.DataSource;
 
-import blade.Blade;
+import com.blade.Blade;
+import com.blade.plugin.Plugin;
+
 import blade.cache.CacheException;
 import blade.kit.PropertyKit;
 import blade.kit.StringKit;
 import blade.kit.log.Logger;
-import blade.plugin.Plugin;
 import blade.plugin.sql2o.cache.Sql2oCache;
 import blade.plugin.sql2o.cache.Sql2oCacheFactory;
 import blade.plugin.sql2o.ds.DataSourceManager;
@@ -89,7 +90,7 @@ public class Sql2oPlugin implements Plugin {
 	 * @param dataSource 数据源对象
 	 */
 	public Sql2oPlugin config(DataSource dataSource){
-		String opencache = Blade.config().get("blade.db.opencache");
+		String opencache = Blade.me().config().get("blade.db.opencache");
 		if(StringKit.isNotBlank(opencache)){
 			isOpenCache = Boolean.valueOf(opencache);
 		}
