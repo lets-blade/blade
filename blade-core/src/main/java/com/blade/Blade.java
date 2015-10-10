@@ -619,7 +619,7 @@ public class Blade {
 		webAppContext.setDescriptor("src/main/webapp/WEB-INF/web.xml");
 		webAppContext.setResourceBase("src/main/webapp/");
 		webAppContext.setParentLoaderPriority(true);
-		webAppContext.addFilter(BladeFilter.class, "/*", EnumSet.of(DispatcherType.REQUEST));
+		webAppContext.addFilter(CoreFilter.class, "/*", EnumSet.of(DispatcherType.REQUEST));
 		server.setHandler(webAppContext);
 		
 	    server.start();
