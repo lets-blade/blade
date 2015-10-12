@@ -17,13 +17,7 @@ package com.blade;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.EnumSet;
 import java.util.Map;
-
-import javax.servlet.DispatcherType;
-
-import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.webapp.WebAppContext;
 
 import com.blade.ioc.Container;
 import com.blade.ioc.impl.DefaultContainer;
@@ -35,12 +29,12 @@ import com.blade.route.RouteBase;
 import com.blade.route.RouteHandler;
 import com.blade.route.RouteMatcherBuilder;
 import com.blade.route.RouterExecutor;
+import com.blade.server.BladeServer;
 
 import blade.kit.IOKit;
 import blade.kit.PropertyKit;
 import blade.kit.ReflectKit;
 import blade.kit.json.JSONKit;
-import blade.kit.log.Logger;
 
 /**
  * Blade Core Class
@@ -53,8 +47,6 @@ public class Blade {
 	public static final String VERSION = "1.4.0-alpha";
 	
 	private static final Blade ME = new Blade();
-	
-	private static final Logger LOGGER = Logger.getLogger(Blade.class);
 	
 	/**
      * 框架是否已经初始化
@@ -166,10 +158,11 @@ public class Blade {
      * 
      * @param packages 	路由包路径
      */
-    public void routes(String...packages){
+    public Blade routes(String...packages){
     	if(null != packages && packages.length >0){
     		config.setRoutePackages(packages);
     	}
+    	return this;
     }
     
     /**
@@ -178,10 +171,11 @@ public class Blade {
      * 
      * @param basePackage 	默认包路径
      */
-    public void defaultRoute(String basePackage){
+    public Blade defaultRoute(String basePackage){
     	if(null != basePackage){
     		config.setBasePackage(basePackage);
     	}
+    	return this;
     }
     
     /**
@@ -189,10 +183,11 @@ public class Blade {
      * 
      * @param packageName 拦截器所在的包
      */
-	public void interceptor(String packageName) {
+	public Blade interceptor(String packageName) {
 		if(null != packageName && packageName.length() >0){
 			config.setInterceptorPackage(packageName);
     	}
+		return this;
 	}
 	
 	/**
@@ -200,10 +195,11 @@ public class Blade {
      * 
      * @param packages 	所有需要做注入的包，可传入多个
      */
-    public void ioc(String...packages){
+    public Blade ioc(String...packages){
     	if(null != packages && packages.length >0){
     		config.setIocPackages(packages);
     	}
+    	return this;
     }
     
     /**
@@ -497,8 +493,9 @@ public class Blade {
 	 * 
 	 * @param render 	渲染引擎对象
 	 */
-	public void viewEngin(Render render) {
+	public Blade viewEngin(Render render) {
 		RenderFactory.init(render);
+		return this;
 	}
 	
 	/**
@@ -506,10 +503,11 @@ public class Blade {
 	 * 
 	 * @param prefix 	视图路径，如：/WEB-INF/views
 	 */
-	public void viewPrefix(final String prefix) {
+	public Blade viewPrefix(final String prefix) {
 		if(null != prefix && prefix.startsWith("/")){
 			config.setViewPrefix(prefix);
 		}
+		return this;
 	}
 	
 	/**
@@ -517,10 +515,11 @@ public class Blade {
 	 * 
 	 * @param viewExt	视图后缀，如：.html	 .vm
 	 */
-	public void viewSuffix(final String suffix) {
+	public Blade viewSuffix(final String suffix) {
 		if(null != suffix && suffix.startsWith(".")){
 			config.setViewSuffix(suffix);
 		}
+		return this;
 	}
 	
 	/**
@@ -529,9 +528,10 @@ public class Blade {
 	 * @param viewPath	视图路径，如：/WEB-INF/views
 	 * @param viewExt	视图后缀，如：.html	 .vm
 	 */
-	public void view(final String viewPath, final String viewExt) {
+	public Blade view(final String viewPath, final String viewExt) {
 		viewPrefix(viewPath);
 		viewSuffix(viewExt);
+		return this;
 	}
 	
 	/**
@@ -539,8 +539,9 @@ public class Blade {
 	 * 
 	 * @param folders
 	 */
-	public void staticFolder(final String ... folders) {
+	public Blade staticFolder(final String ... folders) {
 		config.setStaticFolders(folders);
+		return this;
 	}
 	
 	
@@ -569,8 +570,9 @@ public class Blade {
      * 
      * @param view404	404视图页面
      */
-    public void view404(final String view404){
+    public Blade view404(final String view404){
     	config.setView404(view404);
+    	return this;
     }
     
     /**
@@ -578,8 +580,9 @@ public class Blade {
      * 
      * @param view500	500视图页面
      */
-    public void view500(final String view500){
+    public Blade view500(final String view500){
     	config.setView500(view500);
+    	return this;
     }
 
     /**
@@ -587,16 +590,18 @@ public class Blade {
      * 
      * @param webRoot	web根目录物理路径
      */
-    public void webRoot(final String webRoot){
+    public Blade webRoot(final String webRoot){
     	config.setWebRoot(webRoot);
+    	return this;
     }
     
     /**
 	 * 设置系统是否以debug方式运行
 	 * @param isdebug	true:是，默认true；false:否
 	 */
-	public void debug(boolean isdebug){
+	public Blade debug(boolean isdebug){
 		config.setDebug(isdebug);
+		return this;
 	}
 	
 	public Blade listen(int port){
@@ -605,29 +610,8 @@ public class Blade {
 	}
 	
 	public void start(String contextPath) throws Exception {
-			
-		Server server = new Server(DEFAULT_PORT);
-		
-	    /*ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
-	    context.setContextPath(contextPath);
-	    context.setResourceBase(System.getProperty("java.io.tmpdir"));
-	    context.addFilter(CoreFilter.class, "/*", EnumSet.of(DispatcherType.REQUEST));
-        server.setHandler(context);*/
-		
-		WebAppContext webAppContext = new WebAppContext();
-		webAppContext.setContextPath(contextPath);
-		webAppContext.setDescriptor("src/main/webapp/WEB-INF/web.xml");
-		webAppContext.setResourceBase("src/main/webapp/");
-		webAppContext.setParentLoaderPriority(true);
-		webAppContext.addFilter(CoreFilter.class, "/*", EnumSet.of(DispatcherType.REQUEST));
-		server.setHandler(webAppContext);
-		
-	    server.start();
-	    
-	    LOGGER.info("Blade Server Listen on http://127.0.0.1:" + DEFAULT_PORT);
-	    
-	    server.join();
-	    
+		BladeServer bladeServer = new BladeServer(DEFAULT_PORT);
+		bladeServer.run(contextPath);	    
 	}
 	
 	public void start() throws Exception {
