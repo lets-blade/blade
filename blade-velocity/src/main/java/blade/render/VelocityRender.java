@@ -16,13 +16,15 @@ import org.apache.velocity.exception.MethodInvocationException;
 import org.apache.velocity.exception.ParseErrorException;
 import org.apache.velocity.exception.ResourceNotFoundException;
 
-import blade.Blade;
-import blade.BladeWebContext;
+import com.blade.BladeWebContext;
+import com.blade.render.ModelAndView;
+import com.blade.render.Render;
+import com.blade.servlet.Request;
+import com.blade.servlet.Response;
+import com.blade.servlet.Session;
+
 import blade.exception.BladeException;
 import blade.kit.log.Logger;
-import blade.servlet.Request;
-import blade.servlet.Response;
-import blade.servlet.Session;
 
 /**
  * Velocity渲染引擎
@@ -41,10 +43,10 @@ public class VelocityRender extends Render {
 	public VelocityRender() {
 		Properties properties = new Properties();
 		
-		properties.setProperty(Velocity.FILE_RESOURCE_LOADER_PATH, Blade.webRoot());
-		properties.setProperty(Velocity.ENCODING_DEFAULT, Blade.encoding());
-		properties.setProperty(Velocity.INPUT_ENCODING, Blade.encoding());
-		properties.setProperty(Velocity.OUTPUT_ENCODING, Blade.encoding());
+		properties.setProperty(Velocity.FILE_RESOURCE_LOADER_PATH, blade.webRoot());
+		properties.setProperty(Velocity.ENCODING_DEFAULT, blade.encoding());
+		properties.setProperty(Velocity.INPUT_ENCODING, blade.encoding());
+		properties.setProperty(Velocity.OUTPUT_ENCODING, blade.encoding());
         velocityEngine = new VelocityEngine(properties);
 	}
 	
@@ -63,7 +65,7 @@ public class VelocityRender extends Render {
 		
 		// 默认查询路径
 		if(!properties.contains(Velocity.FILE_RESOURCE_LOADER_PATH)){
-			properties.put(Velocity.FILE_RESOURCE_LOADER_PATH, Blade.webRoot());
+			properties.put(Velocity.FILE_RESOURCE_LOADER_PATH, blade.webRoot());
 		}
         velocityEngine = new VelocityEngine(properties);
 	}

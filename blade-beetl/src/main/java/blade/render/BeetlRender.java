@@ -10,13 +10,15 @@ import org.beetl.core.Template;
 import org.beetl.core.exception.BeetlException;
 import org.beetl.core.resource.WebAppResourceLoader;
 
-import blade.Blade;
-import blade.BladeWebContext;
+import com.blade.BladeWebContext;
+import com.blade.render.ModelAndView;
+import com.blade.render.Render;
+import com.blade.servlet.Request;
+import com.blade.servlet.Response;
+import com.blade.servlet.Session;
+
 import blade.exception.BladeException;
 import blade.kit.log.Logger;
-import blade.servlet.Request;
-import blade.servlet.Response;
-import blade.servlet.Session;
 
 /**
  * Beetl渲染引擎
@@ -34,7 +36,7 @@ public class BeetlRender extends Render {
 	 */
 	public BeetlRender() {
 		try {
-			String root = Blade.webRoot() + Blade.viewPrefix();
+			String root = blade.webRoot() + blade.viewPrefix();
 			WebAppResourceLoader resourceLoader = new WebAppResourceLoader();
 			resourceLoader.setAutoCheck(true);
 			resourceLoader.setRoot(root);
@@ -47,7 +49,7 @@ public class BeetlRender extends Render {
 	
 	public BeetlRender(Configuration configuration) {
 		try {
-			String root = Blade.webRoot() + Blade.viewPrefix();
+			String root = blade.webRoot() + blade.viewPrefix();
 			WebAppResourceLoader resourceLoader = new WebAppResourceLoader();
 			resourceLoader.setAutoCheck(true);
 			resourceLoader.setRoot(root);
@@ -155,11 +157,12 @@ public class BeetlRender extends Render {
 	 * @param view	视图名称
 	 * @return		返回取出多余"/"的全路径
 	 */
-	String disposeView(String view){
+	@Override
+	protected String disposeView(String view){
 		if(null != view){
 			view = view.replaceAll("[/]+", "/");
-			if(!view.endsWith(Blade.viewSuffix())){
-				view = view + Blade.viewSuffix();
+			if(!view.endsWith(blade.viewSuffix())){
+				view = view + blade.viewSuffix();
 			}
 		}
 		return view;

@@ -6,16 +6,18 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
+import com.blade.BladeWebContext;
+import com.blade.render.ModelAndView;
+import com.blade.render.Render;
+import com.blade.servlet.Request;
+import com.blade.servlet.Response;
+import com.blade.servlet.Session;
+
+import blade.exception.BladeException;
+import blade.kit.log.Logger;
 import jetbrick.io.resource.ResourceNotFoundException;
 import jetbrick.template.JetEngine;
 import jetbrick.template.JetTemplate;
-import blade.Blade;
-import blade.BladeWebContext;
-import blade.exception.BladeException;
-import blade.kit.log.Logger;
-import blade.servlet.Request;
-import blade.servlet.Response;
-import blade.servlet.Session;
 
 /**
  * Velocity渲染引擎
@@ -35,8 +37,8 @@ public class JetbrickRender extends Render {
 	 */
 	public JetbrickRender() {
 		config = new Properties();
-		config.put("jetx.input.encoding", Blade.encoding());
-		config.put("jetx.output.encoding", Blade.encoding());
+		config.put("jetx.input.encoding", blade.encoding());
+		config.put("jetx.output.encoding", blade.encoding());
 		config.put("jetx.template.suffix", ".html");
 		config.put("jetx.template.loaders", "jetbrick.template.loader.FileSystemResourceLoader");
 		
@@ -108,9 +110,9 @@ public class JetbrickRender extends Render {
 			Request request = BladeWebContext.request();
 			Session session = BladeWebContext.session();
 			
-			view = Blade.webRoot() + disposeView(view);
+			String realView = blade.webRoot() + disposeView(view);
 			
-			JetTemplate template = jetEngine.getTemplate(view);
+			JetTemplate template = jetEngine.getTemplate(realView);
 			
 			Map<String, Object> context = new HashMap<String, Object>();
 			
@@ -130,7 +132,7 @@ public class JetbrickRender extends Render {
 			
 			template.render(context, response.outputStream());
 		} catch (ResourceNotFoundException e) {
-			render404(response, view);
+			render404(response, disposeView(view));
 		} catch (IOException e) {
 			LOGGER.error(e);
 		}
@@ -154,7 +156,7 @@ public class JetbrickRender extends Render {
 				throw new BladeException("modelAndView is null");
 			}
 			
-			String view = Blade.webRoot() + disposeView(modelAndView.getView());
+			String view = blade.webRoot() + disposeView(modelAndView.getView());
 			
 			JetTemplate template = jetEngine.getTemplate(view);
 			
