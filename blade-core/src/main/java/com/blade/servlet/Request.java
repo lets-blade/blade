@@ -98,7 +98,7 @@ public class Request {
     /**
      * @return	返回URL路径上的所有参数
      */
-    public Map<String, String> pathParams() {
+    public Map<String, String> params() {
         return Collections.unmodifiableMap(this.pathParams);
     }
 
@@ -107,7 +107,7 @@ public class Request {
      * @param param		参数名称
      * @return			返回URL上对应的String参数值
      */
-    public String pathParam(String param) {
+    public String param(String param) {
         if (param == null) {
             return null;
         }
@@ -124,8 +124,8 @@ public class Request {
      * @param param		参数名称
      * @return			返回URL上对应的Integer参数值
      */
-    public Integer pathParamToInt(String param) {
-        String value = pathParam(param);
+    public Integer paramToInt(String param) {
+        String value = param(param);
         if(null != value){
         	return Integer.valueOf(value);
         }
@@ -133,12 +133,12 @@ public class Request {
     }
     
     /**
-     * 返回long类型的path param
+     * 返回long类型的参数值
      * @param param		参数名称
      * @return			返回URL上对应的Long参数值
      */
-    public Long pathParamToLong(String param) {
-        String value = pathParam(param);
+    public Long paramToLong(String param) {
+        String value = param(param);
         if(null != value){
         	return Long.valueOf(value);
         }

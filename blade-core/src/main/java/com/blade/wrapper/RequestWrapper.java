@@ -107,13 +107,23 @@ public final class RequestWrapper extends Request {
     }
 
     @Override
-    public Map<String, String> pathParams() {
-        return delegate.pathParams();
+    public Map<String, String> params() {
+        return delegate.params();
     }
 
     @Override
-    public String pathParam(String param) {
-        return delegate.pathParam(param);
+    public String param(String param) {
+        return delegate.param(param);
+    }
+    
+    @Override
+    public Integer paramToInt(String param) {
+        return delegate.paramToInt(param);
+    }
+    
+    @Override
+    public Long paramToLong(String param) {
+        return delegate.paramToLong(param);
     }
 
     @Override
