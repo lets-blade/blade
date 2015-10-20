@@ -54,6 +54,13 @@ public abstract class Assert {
     public static void notNull(Object object) {
         notNull(object, "[Assertion failed] - this argument is required; it must not be null");
     }
+    
+	public static <T> T checkNotNull(T reference) {
+		if (reference == null) {
+			throw new NullPointerException();
+		}
+		return reference;
+	}
 
     public static void hasLength(String text, String message) {
         if (StringKit.isEmpty(text)) {

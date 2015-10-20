@@ -38,6 +38,7 @@ import com.blade.wrapper.ResponseWrapper;
 import blade.exception.BladeException;
 import blade.kit.PathKit;
 import blade.kit.ReflectKit;
+import blade.kit.base.ThrowableKit;
 import blade.kit.log.Logger;
 
 /**
@@ -159,7 +160,11 @@ public class FilterHandler {
 			response.render404(uri);
 			return true;
 		} catch (BladeException bex) {
-			bex.printStackTrace();
+			
+			String error = ThrowableKit.getStackTraceAsString(bex);
+            LOGGER.error(error);
+            ThrowableKit.propagate(bex);
+			
             httpResponse.setStatus(500);
             // 写入内容到浏览器
             if (!httpResponse.isCommitted()) {
@@ -167,7 +172,10 @@ public class FilterHandler {
                 return true;
             }
         } catch (Exception e) {
-        	e.printStackTrace();
+        	String error = ThrowableKit.getStackTraceAsString(e);
+            LOGGER.error(error);
+            ThrowableKit.propagate(e);
+            
         	httpResponse.setStatus(500);
         	// 写入内容到浏览器
             if (!httpResponse.isCommitted()) {

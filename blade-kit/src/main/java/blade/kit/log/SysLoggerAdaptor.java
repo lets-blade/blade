@@ -68,8 +68,8 @@ public class SysLoggerAdaptor extends Logger {
 		outprint.println(sb.toString());
 		if (t != null) {
 			t.printStackTrace(System.err);
+			System.err.flush();
 		}
-		
 	}
 
 }

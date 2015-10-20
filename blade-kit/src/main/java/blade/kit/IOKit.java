@@ -48,6 +48,8 @@ public final class IOKit {
 
     public static final String LINE_SEPARATOR;
 
+    private static final int EOF = -1;
+    
     static {
         // avoid security issues
         StringWriter buf = new StringWriter(4); // NOSONAR
@@ -264,4 +266,14 @@ public final class IOKit {
 			}
 		}
 	}
+	
+    public static String toString(Reader input) throws IOException {
+        StringBuilder output = new StringBuilder();
+        char[] buffer = new char[DEFAULT_BUFFER_SIZE];
+        int n;
+        while (EOF != (n = input.read(buffer))) {
+            output.append(buffer, 0, n);
+        }
+        return output.toString();
+    }
 }
