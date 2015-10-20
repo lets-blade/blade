@@ -1,5 +1,5 @@
 
-[![](https://i.imgur.com/8I289mA.png)](http://bladejava.com)
+[![](https://dn-biezhi.qbox.me/LOGO_BIG.png)](http://bladejava.com)
 
 [![Build Status](https://api.travis-ci.org/biezhi/blade.svg?branch=master)](https://travis-ci.org/biezhi/blade)
 [![release](https://img.shields.io/maven-central/v/com.bladejava/blade-core.svg)](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.bladejava%22)
@@ -27,7 +27,7 @@ If you like it, can be [Star and Fork](https://github.com/biezhi/blade), thanks!
 * Elegance. `blade` Support the REST style routing interface, provide DSL grammar to write, no invasive interceptors.
 
 ## Getting started
-To get started, first [include the Blade library](http://bladejava.com) and then create a class with a main method like this:
+To get started, first [include the Blade library](http://bladejava.com/docs/intro/getting_start) and then create a class with a main method like this:
 ```java
 public class App extends Bootstrap {
 	

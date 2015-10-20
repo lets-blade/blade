@@ -1,5 +1,5 @@
 
-[![](https://i.imgur.com/8I289mA.png)](http://bladejava.com)
+[![](https://dn-biezhi.qbox.me/LOGO_BIG.png)](http://bladejava.com)
 
 [![Build Status](https://api.travis-ci.org/biezhi/blade.svg?branch=master)](https://travis-ci.org/biezhi/blade)
 [![release](https://img.shields.io/maven-central/v/com.bladejava/blade-core.svg)](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.bladejava%22)
@@ -27,7 +27,7 @@
 * 优雅的：`blade` 支持 REST 风格路由接口, 提供 DSL 语法编写，无侵入式的拦截器。
 
 ## 快速入门
-开始之前,首先 [引入Blade的库文件](http://bladejava.com) ，然后创建一个类继承自 `Bootstrap` ，编写 `Main` 函数：
+开始之前,首先 [引入Blade的库文件](http://bladejava.com/docs/intro/getting_start) ，然后创建一个类继承自 `Bootstrap` ，编写 `Main` 函数：
 ```java
 public class App extends Bootstrap {
 	
