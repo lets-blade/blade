@@ -88,3 +88,12 @@
     <version>1.2.3</version>
 </dependency>
 ```
+
+## [blade-startup](http://search.maven.org/#search%7Cga%7C1%7Cblade-startup)
+```xml
+<dependency>
+    <groupId>com.bladejava</groupId>
+    <artifactId>blade-startup</artifactId>
+    <version>1.0.0</version>
+</dependency>
+```

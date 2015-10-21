@@ -38,7 +38,15 @@ public class JSONObject extends HashMap implements Map, JSONAware, JSONStreamAwa
 	public JSONObject(Map map) {
 		super(map);
 	}
-
+	
+	public boolean put(String key, Object value){
+		return this.put(key, value);
+	}
+	
+	public Object put(Object key, Object value){
+		return this.put(key, value);
+	}
+	
 	public Object get(String key) throws JSONException {
         if (key == null) {
             throw new JSONException("Null key.");

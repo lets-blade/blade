@@ -15,7 +15,6 @@
 		<maven.compiler.target>1.6</maven.compiler.target>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<junit.version>4.11</junit.version>
-		<servlet.version>3.1.0</servlet.version>
 		<blade.version>1.4.0-beta</blade.version>
 	</properties>
 
@@ -28,6 +27,7 @@
 		<module>blade-velocity</module>
 		<module>blade-beetl</module>
 		<module>blade-redis</module>
+    <module>blade-startup</module>
   </modules>
 
 	<dependencyManagement>
@@ -37,12 +37,6 @@
 				<artifactId>junit</artifactId>
 				<version>${junit.version}</version>
 				<scope>test</scope>
-			</dependency>
-			<dependency>
-				<groupId>javax.servlet</groupId>
-				<artifactId>javax.servlet-api</artifactId>
-				<version>${servlet.version}</version>
-				<scope>provided</scope>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
