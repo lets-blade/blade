@@ -1,7 +1,5 @@
 package blade.kit.log;
 
-import java.lang.reflect.Constructor;
-
 /**
  * 日志输出
  *
@@ -10,17 +8,9 @@ import java.lang.reflect.Constructor;
  */
 public abstract class Logger {
 
-	private static Class<? extends Logger> logClass = SysLoggerAdaptor.class;
-	private static Constructor<?> logConstructor;
+	private static LoggerFactory factory;
 	
-	public static final int TRACE = 10;
-	public static final int DEBUG = 20;
-	public static final int INFO = 30;
-	public static final int WARN = 40;
-	public static final int ERROR = 50;
-	public static final int FATAL = 60;
-	
-	private int level = Logger.DEBUG;
+	private int level = Level.DEBUG;
 	
 	/**
 	 * 日志名称
@@ -34,34 +24,22 @@ public abstract class Logger {
 	static{
 		try {
 			Class.forName("org.apache.log4j.Logger");
-			logClass = Log4jLogAdaptor.class;
+			factory = new Log4jLoggerFactory();
 		} catch (Exception e) {
-			logClass = SysLoggerAdaptor.class;
+			factory = new SimpleLoggerFactory();
 		}
 	}
 	
-	public static void setLoggerImpl(Class<? extends Logger> loggerClass){
-		logClass = loggerClass;
+	public static void setLoggerFactory(LoggerFactory loggerFactory){
+		factory = loggerFactory;
 	}
 	
 	public static Logger getLogger(String name) {
-		try {
-
-			if (logConstructor == null) {
-				synchronized (Logger.class) {
-					if (logConstructor == null)
-						logConstructor = logClass.getConstructor(String.class);
-				}
-			}
-			Logger log = (Logger) logConstructor.newInstance(name);
-			return log;
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
+		return factory.getLogger(name);
 	}
 	
 	public static Logger getLogger(Class<?> clazz) {
-		return getLogger(clazz.getName());
+		return factory.getLogger(clazz);
 	}
 	
 	public static Logger getLogger() {
@@ -78,132 +56,132 @@ public abstract class Logger {
 	}
 	
 	public void trace(Object message) {
-		if (level <= TRACE)
-			log(TRACE, message);
+		if (level <= Level.TRACE)
+			log(Level.TRACE, message);
 	}
 
 	public void trace(Object message, Object... args) {
-		if (level <= TRACE)
-			log(TRACE, message, args);
+		if (level <= Level.TRACE)
+			log(Level.TRACE, message, args);
 	}
 
 	public void trace(Object message, Throwable t) {
-		if (level <= TRACE)
-			log(TRACE, message, t);
+		if (level <= Level.TRACE)
+			log(Level.TRACE, message, t);
 	}
 
 	
 	public void trace(Object message, Throwable t, Object... args) {
-		if (level <= TRACE)
-			log(TRACE, message, t, args);
+		if (level <= Level.TRACE)
+			log(Level.TRACE, message, t, args);
 	}
 
 	
 	public void debug(Object message) {
-		if (level <= DEBUG)
-			log(DEBUG, message);
+		if (level <= Level.DEBUG)
+			log(Level.DEBUG, message);
 	}
 
 	
 	public void debug(Object message, Object... args) {
-		if (level <= DEBUG)
-			log(DEBUG, message, args);
+		if (level <= Level.DEBUG)
+			log(Level.DEBUG, message, args);
 	}
 
 	
 	public void debug(Object message, Throwable t) {
-		if (level <= DEBUG)
-			log(DEBUG, message, t);
+		if (level <= Level.DEBUG)
+			log(Level.DEBUG, message, t);
 	}
 
 	
 	public void debug(Object message, Throwable t, Object... args) {
-		if (level <= DEBUG)
-			log(DEBUG, message, t, args);
+		if (level <= Level.DEBUG)
+			log(Level.DEBUG, message, t, args);
 	}
 
 	
 	public void info(Object message) {
-		if (level <= INFO)
-			log(INFO, message);
+		if (level <= Level.INFO)
+			log(Level.INFO, message);
 	}
 
 	
 	public void info(Object message, Object... args) {
-		if (level <= INFO)
-			log(INFO, message, args);
+		if (level <= Level.INFO)
+			log(Level.INFO, message, args);
 	}
 
 	
 	public void info(Object message, Throwable t) {
-		if (level <= INFO)
-			log(INFO, message, t);
+		if (level <= Level.INFO)
+			log(Level.INFO, message, t);
 	}
 
 	
 	public void info(Object message, Throwable t, Object... args) {
-		if (level <= INFO)
-			log(INFO, message, t, args);
+		if (level <= Level.INFO)
+			log(Level.INFO, message, t, args);
 	}
 
 	
 	public void warn(Object message) {
-		if (level <= WARN)
-			log(WARN, message);
+		if (level <= Level.WARN)
+			log(Level.WARN, message);
 	}
 
 	
 	public void warn(Object message, Object... args) {
-		if (level <= WARN)
-			log(WARN, message, args);
+		if (level <= Level.WARN)
+			log(Level.WARN, message, args);
 	}
 
 	
 	public void warn(Object message, Throwable t) {
-		if (level <= WARN)
-			log(WARN, message, t);
+		if (level <= Level.WARN)
+			log(Level.WARN, message, t);
 	}
 
 	
 	public void warn(Object message, Throwable t, Object... args) {
-		if (level <= WARN)
-			log(WARN, message, t, args);
+		if (level <= Level.WARN)
+			log(Level.WARN, message, t, args);
 	}
 
 	
 	public void error(Object message) {
-		if (level <= ERROR)
-			log(ERROR, message);
+		if (level <= Level.ERROR)
+			log(Level.ERROR, message);
 	}
 
 	
 	public void error(Object message, Object... args) {
-		if (level <= ERROR)
-			log(ERROR, message, args);
+		if (level <= Level.ERROR)
+			log(Level.ERROR, message, args);
 	}
 
 	
 	public void error(Object message, Throwable t) {
-		if (level <= ERROR)
-			log(ERROR, message, t);
+		if (level <= Level.ERROR)
+			log(Level.ERROR, message, t);
 	}
 
 	
 	public void error(Object message, Throwable t, Object... args) {
-		if (level <= ERROR)
-			log(ERROR, message, t, args);
+		if (level <= Level.ERROR)
+			log(Level.ERROR, message, t, args);
 	}
 	
 	
 	public void fatal(Object message, Object... args) {
-		if (level <= FATAL)
-			log(FATAL, message, args);
+		if (level <= Level.FATAL)
+			log(Level.FATAL, message, args);
 	}
 	
 	
 	public void fatal(Object message, Throwable t, Object... args) {
-		if (level <= FATAL)
-			log(FATAL, message, t, args);
+		if (level <= Level.FATAL)
+			log(Level.FATAL, message, t, args);
 	}
 	
 	protected String format(Object message, Object... args) {
@@ -218,6 +196,19 @@ public abstract class Logger {
 	}
 
 	public boolean isDebugEnabled() {
-		return level <= DEBUG;
+		return level <= Level.DEBUG;
 	}
+	
+	public boolean isErrorEnabled() {
+		return level <= Level.ERROR;
+	}
+	
+	public boolean isInfoEnabled() {
+		return level <= Level.INFO;
+	}
+	
+	public boolean isWarnEnabled() {
+		return level <= Level.WARN;
+	}
+	
 }
