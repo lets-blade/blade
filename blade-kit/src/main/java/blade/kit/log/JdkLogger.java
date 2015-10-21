@@ -3,7 +3,7 @@ package blade.kit.log;
 import java.util.logging.Level;
 
 /**
- * JDK的日志适配
+ * JDK的日志实现
  *
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since	1.0

@@ -61,7 +61,7 @@ public final class IOKit {
     /**
      * The default buffer size to use.
      */
-    public static final int DEFAULT_BUFFER_SIZE = 1024 * 4;
+    public static final int DEFAULT_BUFFER_SIZE = 0x1000;
 
     private IOKit() {
     }

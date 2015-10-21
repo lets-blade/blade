@@ -64,6 +64,9 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 public abstract class CollectionKit {
 	
+	private static final int DEFAULT_INITIAL_CAPACITY = 16;
+	private static final int DEFAULT_CONCURRENCY_LEVEL = 4;
+	
 	/**
      * new HashMap
      */
@@ -96,7 +99,7 @@ public abstract class CollectionKit {
      * new concurrentHashMap
      */
     public static <K, V> ConcurrentHashMap<K, V> newConcurrentHashMap() {
-        return new ConcurrentHashMap<K, V>();
+        return new ConcurrentHashMap<K, V>(DEFAULT_INITIAL_CAPACITY, 0.75f, DEFAULT_CONCURRENCY_LEVEL);
     }
     
     /**
@@ -105,7 +108,7 @@ public abstract class CollectionKit {
     public static <K, V> ConcurrentHashMap<K, V> newConcurrentHashMap(int size) {
         return new ConcurrentHashMap<K, V>(size);
     }
-
+    
     /**
      * new ArrayList
      */

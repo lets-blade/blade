@@ -4,7 +4,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Priority;
 
 /**
- * Log4j日志适配
+ * Log4j的日志实现
  *
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since	1.0

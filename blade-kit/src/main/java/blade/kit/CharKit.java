@@ -236,9 +236,6 @@ public abstract class CharKit {
         return barr;
     }
 
-    // ---------------------------------------------------------------- raw
-    // arrays
-
     public static byte[] toRawByteArray(char[] carr) {
         if (carr == null) {
             return null;
@@ -275,8 +272,6 @@ public abstract class CharKit {
         return carr;
     }
 
-    // ---------------------------------------------------------------- encoding
-
     public static byte[] toByteArray(char[] carr) throws UnsupportedEncodingException {
         if (carr == null) {
             return null;
@@ -304,8 +299,6 @@ public abstract class CharKit {
         }
         return new String(barr, charset).toCharArray();
     }
-
-    // ---------------------------------------------------------------- find
 
     public static boolean equalsOne(char c, char[] match) {
         if (match == null) {
@@ -367,9 +360,7 @@ public abstract class CharKit {
         }
         return -1;
     }
-
-    // ---------------------------------------------------------------- is
-
+    
     public static boolean isLowercaseLetter(char c) {
         return (c >= 'a') && (c <= 'z');
     }
@@ -413,9 +404,6 @@ public abstract class CharKit {
     public static boolean isChinese(char c) {
         return (c >= 0x4e00 && c <= 0x9fa5);
     }
-
-    // ----------------------------------------------------------------
-    // conversions
 
     public static char toUpperAscii(char c) {
         if (isLowercaseLetter(c)) {
