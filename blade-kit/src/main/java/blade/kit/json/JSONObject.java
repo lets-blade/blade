@@ -39,12 +39,14 @@ public class JSONObject extends HashMap implements Map, JSONAware, JSONStreamAwa
 		super(map);
 	}
 	
-	public boolean put(String key, Object value){
-		return this.put(key, value);
+	public JSONObject put(String key, Object value){
+		this.put(key, value);
+		return this;
 	}
 	
-	public Object put(Object key, Object value){
-		return this.put(key, value);
+	public JSONObject put(Object key, Object value){
+		this.put(key, value);
+		return this;
 	}
 	
 	public Object get(String key) throws JSONException {
