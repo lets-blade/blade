@@ -11,19 +11,21 @@
 
 	<artifactId>blade-jetbrick</artifactId>
 	<packaging>jar</packaging>
-	<version>1.2.5</version>
+	<version>1.2.6</version>
 	<name>blade-jetbrick</name>
 	<url>https://github.com/biezhi/blade/tree/master/blade-jetbrick</url>
 
 	<dependencies>
 		<dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-        </dependency>
-		<dependency>
 			<groupId>com.bladejava</groupId>
 			<artifactId>blade-core</artifactId>
 			<version>${blade.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<version>${servlet.version}</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>

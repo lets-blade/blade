@@ -49,7 +49,7 @@
 <dependency>
     <groupId>com.bladejava</groupId>
     <artifactId>blade-jetbrick</artifactId>
-    <version>1.2.5</version>
+    <version>1.2.6</version>
 </dependency>
 ```
 

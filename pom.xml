@@ -15,6 +15,7 @@
 		<maven.compiler.target>1.6</maven.compiler.target>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<junit.version>4.11</junit.version>
+		<servlet.version>3.0.1</servlet.version>
 		<blade.version>1.4.0-beta</blade.version>
 	</properties>
 
@@ -29,7 +30,7 @@
 		<module>blade-redis</module>
     <module>blade-startup</module>
   </modules>
-
+		
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
@@ -40,7 +41,20 @@
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
-
+	
+	<repositories>
+	 <repository>
+	   <id>oss-snapshots</id>
+	   <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+	   <releases>
+	     <enabled>false</enabled>
+	   </releases>
+	   <snapshots>
+	     <enabled>true</enabled>
+	   </snapshots>
+	 </repository>
+	</repositories>
+	
 	<build>
 		<plugins>
 			<plugin>

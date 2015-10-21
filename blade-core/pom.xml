@@ -16,7 +16,6 @@
 	<url>https://github.com/biezhi/blade/blade-core</url>
 	
 	<properties>
-		<servlet.version>3.0.1</servlet.version>
 		<jetty.version>9.3.4.v20151007</jetty.version>
 	</properties>
 	
