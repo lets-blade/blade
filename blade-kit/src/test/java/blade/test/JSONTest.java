@@ -5,7 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import blade.kit.json.JSONArray;
 import blade.kit.json.JSONKit;
+import blade.kit.json.JSONObject;
 
 public class JSONTest {
 
@@ -31,6 +33,13 @@ public class JSONTest {
         System.out.println(string);
         
         System.out.println(JSONKit.toList(json));
+        
+        
+        JSONObject obj1 = new JSONObject();
+        obj1.put("", "");
+        
+        JSONArray obj2 = new JSONArray();
+        obj2.add("");
 	}
 	
 }

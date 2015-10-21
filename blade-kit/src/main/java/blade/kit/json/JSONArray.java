@@ -40,6 +40,22 @@ public class JSONArray extends ArrayList implements JSONAware, JSONStreamAware {
 		super(c);
 	}
 	
+	public boolean add(Object object){
+		return this.add(object);
+	}
+	
+	public void add(int index, Object object){
+		this.add(index, object);
+	}
+	
+	public boolean addAll(Collection collection){
+		return this.addAll(collection);
+	}
+	
+	public boolean addAll(int index, Collection collection){
+		return this.addAll(index, collection);
+	}
+	
     /**
      * Encode a list into JSON text and write it to out. 
      * If this list is also a JSONStreamAware or a JSONAware, JSONStreamAware and JSONAware specific behaviours will be ignored at this top level.
