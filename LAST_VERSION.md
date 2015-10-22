@@ -40,7 +40,7 @@
 <dependency>
     <groupId>com.bladejava</groupId>
     <artifactId>blade-sql2o</artifactId>
-    <version>1.2.9-beta</version>
+    <version>1.2.9</version>
 </dependency>
 ```
 
