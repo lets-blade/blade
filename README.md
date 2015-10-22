@@ -8,10 +8,12 @@
 [中文](https://github.com/biezhi/blade/blob/master/README_CN.md)
 
 ## What Is Blade?
+
 `blade` is a lightweight MVC framework. It is based on the principles of simplicity and elegance. 
 If you like it, can be [Star and Fork](https://github.com/biezhi/blade), thanks!
 
 ## Features
+
 * [x] Lightweight. The code is simple and structure is clear
 * [x] Modular (you can choose which components to use)
 * [x] Support plug-in extension mechanism
@@ -23,11 +25,12 @@ If you like it, can be [Star and Fork](https://github.com/biezhi/blade), thanks!
 ## Overview
 
 * Simplicity. The design is simple, easy to understand and doesn't introduce many layers between you and the standard library. It is a goal of the project that users should be able to understand the whole framework in a single day.
-
 * Elegance. `blade` Support the REST style routing interface, provide DSL grammar to write, no invasive interceptors.
 
 ## Getting started
+
 To get started, first [include the Blade library](http://bladejava.com/docs/intro/getting_start) and then create a class with a main method like this:
+
 ```java
 public class App extends Bootstrap {
 	
@@ -44,6 +47,7 @@ public class App extends Bootstrap {
 	}
 }
 ```
+
 Run it and point your browser to http://localhost:9001. There you go, you've just created your first Blade app!
 
 OK, all this may seem simple, refer to the guidelines for use more ready-made examples for your reference:
@@ -55,10 +59,10 @@ OK, all this may seem simple, refer to the guidelines for use more ready-made ex
 
 ## Plan
 
-	1. Improve the document
-	2. Add configurable log
-	3. Complete the Java China BBS
-	4. Maintain and optimize the code
+1. Improve the document
+2. Add the routing configuration way
+3. To develop personalized social applications
+4. Maintain and optimize the code
 	
 ## Update
 
@@ -70,8 +74,6 @@ Blade Framework based on the [Apache2 License](http://www.apache.org/licenses/LI
 
 ## Contact
 
-Blog:[https://biezhi.me](https://biezhi.me)
-
-Mail: biezhi.me#gmail.com
-
-QQ Group: [1013565](http://shang.qq.com/wpa/qunwpa?idkey=932642920a5c0ef5f1ae902723c4f168c58ea63f3cef1139e30d68145d3b5b2f)
+- Blog:[https://biezhi.me](https://biezhi.me)
+- Mail: biezhi.me#gmail.com
+- QQ Group: [1013565](http://shang.qq.com/wpa/qunwpa?idkey=932642920a5c0ef5f1ae902723c4f168c58ea63f3cef1139e30d68145d3b5b2f)
