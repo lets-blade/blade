@@ -104,18 +104,13 @@ public class Sql2oPlugin implements Plugin {
 	}
 	
 	/**
-	 * 设置数据库配置
-	 * 
-	 * @param url
+	 * 数据库配置
 	 * @param driver
+	 * @param url
 	 * @param user
 	 * @param pass
+	 * @return
 	 */
-	public Sql2oPlugin config(String url, String user, String pass){
-		
-		return config(null, url, user, pass);
-	}
-	
 	public Sql2oPlugin config(String driver, String url, String user, String pass){
 		if(null == dbConfig){
 			dbConfig = new DBConfig();
@@ -137,9 +132,10 @@ public class Sql2oPlugin implements Plugin {
 	
 	@Override
 	public void run() {
-		DataSourceManager.me().run();
-		DataSource dataSource = DataSourceManager.me().getDataSource();
-		if(null == dataSource){
+		DataSourceManager dm = DataSourceManager.me();
+		dm.run();
+		DataSource dataSource = dm.getDataSource();
+		if(null == dataSource && null == dm.getSql2o()){
 			LOGGER.error("blade sql2o config fail!");
 		} else {
 			LOGGER.debug("blade sql2o config success!");
