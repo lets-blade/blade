@@ -10,9 +10,9 @@ import javax.sql.DataSource;
 import com.blade.Blade;
 import com.blade.plugin.Plugin;
 
-import blade.cache.CacheException;
 import blade.kit.PropertyKit;
 import blade.kit.StringKit;
+import blade.kit.base.ThrowableKit;
 import blade.kit.log.Logger;
 import blade.plugin.sql2o.cache.Sql2oCache;
 import blade.plugin.sql2o.cache.Sql2oCacheFactory;
@@ -137,6 +137,7 @@ public class Sql2oPlugin implements Plugin {
 		DataSource dataSource = dm.getDataSource();
 		if(null == dataSource && null == dm.getSql2o()){
 			LOGGER.error("blade sql2o config fail!");
+			System.exit(0);
 		} else {
 			LOGGER.debug("blade sql2o config success!");
 		}
@@ -158,10 +159,8 @@ public class Sql2oPlugin implements Plugin {
 				Sql2oCache sql2oCache = Sql2oCacheFactory.getSql2oCache();
 				sql2oCache.destroy();
 			}
-		} catch (CacheException e) {
-			e.printStackTrace();
 		} catch (Exception e) {
-			e.printStackTrace();
+			LOGGER.error(ThrowableKit.getStackTraceAsString(e));
 		}
 		
 	}
