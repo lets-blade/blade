@@ -20,11 +20,13 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.blade.Blade;
 import com.blade.route.HttpMethod;
 import com.blade.route.RouteMatcher;
 import com.blade.servlet.QueryParamsMap;
 import com.blade.servlet.Request;
 import com.blade.servlet.Session;
+import com.blade.verify.HTMLFilter;
 
 /**
  * Request增强
@@ -114,7 +116,12 @@ public final class RequestWrapper extends Request {
 
     @Override
     public String param(String param) {
-        return delegate.param(param);
+    	String val = delegate.param(param);
+    	// 是否启用xss防范
+    	if(Blade.me().enableXSS()){
+    		return HTMLFilter.htmlSpecialChars(val);
+    	}
+        return val;
     }
     
     @Override
@@ -144,7 +151,12 @@ public final class RequestWrapper extends Request {
 
     @Override
     public String query(String queryParam) {
-        return delegate.query(queryParam);
+    	String val = delegate.query(queryParam);
+    	// 是否启用xss防范
+    	if(Blade.me().enableXSS()){
+    		return HTMLFilter.htmlSpecialChars(val);
+    	}
+        return val;
     }
 
     @Override

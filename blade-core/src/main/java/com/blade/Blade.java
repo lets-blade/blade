@@ -544,6 +544,15 @@ public class Blade {
 		return this;
 	}
 	
+	/**
+	 * 设置是否启用XSS防御
+	 * @param enableXSS
+	 * @return
+	 */
+	public Blade enableXSS(boolean enableXSS){
+		config.setEnableXSS(enableXSS);
+		return this; 
+	}
 	
     /**
      * 动态设置全局初始化类
@@ -712,6 +721,13 @@ public class Blade {
 	 */
 	public Bootstrap bootstrap(){
 		return bootstrap; 
+	}
+	
+	/**
+	 * @return	返回是否启用XSS防御
+	 */
+	public boolean enableXSS(){
+		return config.isEnableXSS(); 
 	}
 	
 	/**
