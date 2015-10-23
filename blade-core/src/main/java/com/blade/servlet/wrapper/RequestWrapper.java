@@ -13,13 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.blade.wrapper;
+package com.blade.servlet.wrapper;
 
 import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.blade.route.HttpMethod;
 import com.blade.route.RouteMatcher;
 import com.blade.servlet.QueryParamsMap;
 import com.blade.servlet.Request;
@@ -32,7 +33,7 @@ import com.blade.servlet.Session;
  * @since	1.0
  */
 public final class RequestWrapper extends Request {
-
+	
     private Request delegate;
     
     public RequestWrapper() {
@@ -240,7 +241,11 @@ public final class RequestWrapper extends Request {
     public String cookie(String name) {
         return delegate.cookie(name);
     }
-
+    
+	public HttpMethod method() {
+		return delegate.method();
+	}
+	
     public Object invoke(){
     	return delegate.invoke();
     }

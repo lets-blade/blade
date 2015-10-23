@@ -31,9 +31,9 @@ import com.blade.route.RouteMatcher;
 import com.blade.route.impl.DefaultRouteMatcher;
 import com.blade.servlet.Request;
 import com.blade.servlet.Response;
-import com.blade.wrapper.RequestResponseBuilder;
-import com.blade.wrapper.RequestWrapper;
-import com.blade.wrapper.ResponseWrapper;
+import com.blade.servlet.wrapper.RequestResponseBuilder;
+import com.blade.servlet.wrapper.RequestWrapper;
+import com.blade.servlet.wrapper.ResponseWrapper;
 
 import blade.exception.BladeException;
 import blade.kit.PathKit;
@@ -110,7 +110,11 @@ public class FilterHandler {
         // 构建一个包装后的response
         Response response = RequestResponseBuilder.build(httpResponse);
         
+        // 初始化context
+     	BladeWebContext.setContext(CoreFilter.servletContext, httpRequest, httpResponse, requestWrapper, responseWrapper);
+     		
         HttpMethod httpMethod = HttpMethod.valueOf(method);
+        
         Object result = null;
         try {
         	responseWrapper.setDelegate(response);
@@ -325,4 +329,5 @@ public class FilterHandler {
     	}
     	return true;
 	}
+	
 }

@@ -619,7 +619,7 @@ public class Blade {
 	}
 	
 	public Config config(){
-    	return config();
+    	return config;
     }
 	
     /**

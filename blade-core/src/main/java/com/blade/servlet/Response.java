@@ -210,7 +210,7 @@ public class Response {
      * 设置cookie
      * @param path			cookie所在域
      * @param name			cookie name
-     * @param value			cookie name
+     * @param value			cookie 值
      * @param maxAge		cookie有效期
      * @param secured		是否SSL
      */

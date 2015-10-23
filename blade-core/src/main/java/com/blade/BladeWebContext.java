@@ -22,8 +22,8 @@ import javax.servlet.http.HttpServletResponse;
 import com.blade.servlet.Request;
 import com.blade.servlet.Response;
 import com.blade.servlet.Session;
-import com.blade.wrapper.RequestWrapper;
-import com.blade.wrapper.ResponseWrapper;
+import com.blade.servlet.wrapper.RequestWrapper;
+import com.blade.servlet.wrapper.ResponseWrapper;
 
 /**
  * 全局的WeContext

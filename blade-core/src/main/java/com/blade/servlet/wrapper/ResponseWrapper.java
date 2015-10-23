@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.blade.wrapper;
+package com.blade.servlet.wrapper;
 
 import javax.servlet.http.HttpServletResponse;
 

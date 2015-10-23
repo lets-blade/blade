@@ -27,6 +27,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import com.blade.route.HttpMethod;
 import com.blade.route.RouteMatcher;
 
 import blade.kit.CollectionKit;
@@ -582,5 +583,13 @@ protected static Map<String, String> getPathParams(List<String> request, List<St
      */
 	public Object invoke(String locaiton) {
 		return "redirect." + locaiton;
+	}
+
+	/**
+	 * 获取http method
+	 * @return
+	 */
+	public HttpMethod method() {
+		return HttpMethod.valueOf(servletRequest.getMethod());
 	}
 }
