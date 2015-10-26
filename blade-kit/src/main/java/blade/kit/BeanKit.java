@@ -23,8 +23,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import blade.kit.json.JSONObject;
-
 /**
  * java对象和map转换
  * @author:rex
@@ -108,28 +106,4 @@ public class BeanKit {
 		return result;
 	}
 	
-	public static <T> T jsonToBean(JSONObject map, Class<T> clazz){
-		T object = null;
-		try {
-			object = clazz.newInstance();
-			BeanInfo beanInfo = Introspector.getBeanInfo(clazz);
-			PropertyDescriptor[] propertyDescriptors = beanInfo.getPropertyDescriptors();
-
-			for (PropertyDescriptor property : propertyDescriptors) {
-				String key = property.getName();
-
-				if (map.containsKey(key)) {
-					Object value = map.get(key);
-					
-					// 得到property对应的setter方法  
-					Method setter = property.getWriteMethod();
-					setter.invoke(object, value);
-				}
-			}
-		} catch (Exception e) {
-			System.out.println("json covert to bean error：" + e);
-		}
-		return object;
-
-	}
 }
