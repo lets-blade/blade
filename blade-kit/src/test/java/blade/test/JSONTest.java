@@ -27,7 +27,7 @@ public class JSONTest {
 
         map.put("abc", "123456");
         map.put("def", "hmm");
-        list.add(map);
+        list.add(map);	
         
         String string = JSONKit.toJSONString(list);
         System.out.println(string);
@@ -36,10 +36,14 @@ public class JSONTest {
         
         
         JSONObject obj1 = new JSONObject();
-        obj1.put("", "");
+        obj1.put("name", "jack");
+        
+        System.out.println(obj1);
         
         JSONArray obj2 = new JSONArray();
-        obj2.add("");
+        obj2.add("123");
+        
+        System.out.println(obj2);
 	}
 	
 }

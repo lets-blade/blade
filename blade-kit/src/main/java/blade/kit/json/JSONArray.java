@@ -41,19 +41,19 @@ public class JSONArray extends ArrayList implements JSONAware, JSONStreamAware {
 	}
 	
 	public boolean add(Object object){
-		return this.add(object);
+		return super.add(object);
 	}
 	
 	public void add(int index, Object object){
-		this.add(index, object);
+		super.add(index, object);
 	}
 	
 	public boolean addAll(Collection collection){
-		return this.addAll(collection);
+		return super.addAll(collection);
 	}
 	
 	public boolean addAll(int index, Collection collection){
-		return this.addAll(index, collection);
+		return super.addAll(index, collection);
 	}
 	
     /**
