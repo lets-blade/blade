@@ -1,6 +1,6 @@
 package com.blade;
 
-import com.blade.verify.HTMLFilter;
+import blade.kit.text.HTMLFilter;
 
 public class XSSTest {
 

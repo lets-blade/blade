@@ -26,7 +26,8 @@ import com.blade.route.RouteMatcher;
 import com.blade.servlet.QueryParamsMap;
 import com.blade.servlet.Request;
 import com.blade.servlet.Session;
-import com.blade.verify.HTMLFilter;
+
+import blade.kit.text.HTMLFilter;
 
 /**
  * Request增强
