@@ -126,7 +126,7 @@ public class CoreFilter implements Filter {
         /**
          * 是否被RequestHandler执行
          */
-        boolean isHandler = new FilterHandler(blade).handler(httpRequest, httpResponse);
+        boolean isHandler = new FilterHandler(blade).handle(httpRequest, httpResponse);
         if(!isHandler){
         	chain.doFilter(httpRequest, httpResponse);
         }

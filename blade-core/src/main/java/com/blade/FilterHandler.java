@@ -84,7 +84,7 @@ public class FilterHandler {
 	 * @param httpResponse	HttpServletResponse响应对象
 	 * @return 是否拦截到请求
 	 */
-	boolean handler(HttpServletRequest httpRequest, HttpServletResponse httpResponse){
+	boolean handle(HttpServletRequest httpRequest, HttpServletResponse httpResponse){
 		
 		// http方法, GET/POST ...
         String method = httpRequest.getMethod();
@@ -216,7 +216,7 @@ public class FilterHandler {
 					
 		if(null != router){
 			
-			result = router.handler(requestWrapper, responseWrapper);
+			result = router.handle(requestWrapper, responseWrapper);
 			
 		} else {
 			Class<?> target = match.getTarget();
