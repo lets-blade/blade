@@ -12,6 +12,7 @@ import blade.kit.json.JSONObject;
 public class JSONTest {
 
 	
+	
 	public static void main(String[] args) {
 		//[{"text": "首页","href": "/"},{"text": "博客","href": "blog"},{"text": "关于","href": "about"},{"text": "联系","href": "contact"}]
 		String json = "[{\"text\": \"博客\",\"href\": \"blog\"}]";
@@ -44,6 +45,10 @@ public class JSONTest {
         obj2.add("123");
         
         System.out.println(obj2);
+        
+        User u = JSONKit.parse("{\"name\":\"jack\",\"age\":20}", User.class);
+//        User u = BeanKit.mapToBean(user, User.class);
+        System.out.println(u);
 	}
 	
 }

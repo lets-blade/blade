@@ -52,7 +52,7 @@ public class JSONObject extends HashMap implements Map, JSONAware, JSONStreamAwa
         if (key == null) {
             throw new JSONException("Null key.");
         }
-        Object object = this.get(key);
+        Object object = super.get(key);
         if (object == null) {
             throw new JSONException("JSONObject[" + quote(key) + "] not found.");
         }

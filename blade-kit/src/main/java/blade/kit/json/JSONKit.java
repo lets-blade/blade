@@ -3,6 +3,7 @@ package blade.kit.json;
 import java.util.List;
 import java.util.Map;
 
+import blade.kit.BeanKit;
 import blade.kit.base.ThrowableKit;
 import blade.kit.json.parse.ParseException;
 import blade.kit.log.Logger;
@@ -52,7 +53,8 @@ public class JSONKit {
 	
 	public static <T> T parse(final String json, Class<T> type) {
 		try {
-			return (T) JSONValue.parse(json);
+			JSONObject obj = (JSONObject) JSONValue.parse(json);
+			return (T) BeanKit.jsonToBean(obj, type);
 		} catch (ParseException e) {
 			String error = ThrowableKit.getStackTraceAsString(e);
             LOGGER.error(error);

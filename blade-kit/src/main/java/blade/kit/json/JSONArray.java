@@ -409,7 +409,7 @@ public class JSONArray extends ArrayList implements JSONAware, JSONStreamAware {
      *             If there is no value for the index.
      */
     public Object get(int index) throws JSONException {
-        Object object = this.get(index);
+        Object object = super.get(index);
         if (object == null) {
             throw new JSONException("JSONArray[" + index + "] not found.");
         }
