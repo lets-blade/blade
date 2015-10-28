@@ -1,4 +1,4 @@
 /**
- * blade插件包
+ * 插件包
  */
 package com.blade.plugin;
