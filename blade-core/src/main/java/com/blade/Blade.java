@@ -82,6 +82,8 @@ public class Blade {
      */
     private Render render = new JspRender();
     
+    private Router router = new Router();
+    
     /**
      * 默认启动端口
      */
@@ -89,7 +91,6 @@ public class Blade {
     
     private int port = DEFAULT_PORT;
     
-    private Router router = new Router();
     
 	private Blade() {
 	}
@@ -109,7 +110,7 @@ public class Blade {
 	public Router router() {
 		return router;
 	}
-
+	
 	/**
 	 * <pre>
 	 * 手动注册一个对象到ioc容器中

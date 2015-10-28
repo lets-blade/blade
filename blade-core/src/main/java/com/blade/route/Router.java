@@ -105,14 +105,6 @@ public class Router {
 		
 	}
 	
-	public void delete(String path, RouteHandler handler) {
-		try {
-			addRoute(HttpMethod.DELETE, path, handler, METHOD_NAME);
-		} catch (NoSuchMethodException e) {
-			throw new RuntimeException(e);
-		}
-	}
-	
 	public void route(String path, RouteHandler handler, HttpMethod httpMethod) {
 		try {
 			addRoute(httpMethod, path, handler, METHOD_NAME);
@@ -166,6 +158,19 @@ public class Router {
 			addRoute(httpMethod, path, controller, method);
 		} catch (NoSuchMethodException e) {
 			e.printStackTrace();
+		} catch (SecurityException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void route(String path, Class<?> clazz, Method method, HttpMethod httpMethod) {
+		try {
+			Object controller = container.getBean(clazz, Scope.SINGLE);
+			if(null == controller){
+				controller = ReflectKit.newInstance(clazz);
+				container.registBean(controller);
+			}
+			addRoute(httpMethod, path, controller, method);
 		} catch (SecurityException e) {
 			e.printStackTrace();
 		}

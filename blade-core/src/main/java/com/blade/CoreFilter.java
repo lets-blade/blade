@@ -27,9 +27,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.blade.context.BladeWebContext;
+import com.blade.route.RouteMatcherBuilder;
 
+import blade.kit.StringKit;
 import blade.kit.TaskKit;
 import blade.kit.log.Logger;
+og.Logger;
 
 /**
  * blade核心过滤器，mvc总线
@@ -49,7 +52,7 @@ public class CoreFilter implements Filter {
     
     private Blade blade;
     
-    private ActionHandler filterHandler;
+    private ActionHandler actionHandler;
     
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -60,25 +63,24 @@ public class CoreFilter implements Filter {
 			if(!blade.isInit){
 				
 				blade.webRoot(filterConfig.getServletContext().getRealPath("/"));
-				
 				Bootstrap bootstrap = blade.bootstrap();
-				if(null == bootstrap){
+				String bootStrapClassName = filterConfig.getInitParameter(BOOSTRAP_CLASS);
+				if(StringKit.isNotBlank(bootStrapClassName)){
 					bootstrap = getBootstrap(filterConfig.getInitParameter(BOOSTRAP_CLASS));
+					bootstrap.init();
+					blade.app(bootstrap);
 				}
 				
-				bootstrap.init();
-				blade.app(bootstrap);
-			    
 			    // 构建路由
-//			    RouteMatcherBuilder.building(blade);
-			    
+				new RouteMatcherBuilder(blade).building();
+				
 			    IocApplication.init(blade);
 			    
 			    bootstrap.contextInitialized();
 			    
 			    blade.setInit(true);
 			    
-			    filterHandler = new ActionHandler(blade);
+			    actionHandler = new ActionHandler(blade);
 			    LOGGER.info("blade init complete!");
 			}
 		} catch (Exception e) {
@@ -124,7 +126,7 @@ public class CoreFilter implements Filter {
         /**
          * 是否被RequestHandler执行
          */
-        boolean isHandler = filterHandler.handle(httpRequest, httpResponse);
+        boolean isHandler = actionHandler.handle(httpRequest, httpResponse);
         if(!isHandler){
         	chain.doFilter(httpRequest, httpResponse);
         }
