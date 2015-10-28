@@ -25,11 +25,16 @@
 			<artifactId>blade-kit</artifactId>
 			<version>1.2.7</version>
 		</dependency>
-		
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+			<version>3.2.10.RELEASE</version>
+			<scope>provided</scope>
+		</dependency>
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
-			<version>${servlet.version}</version>
+			<version>3.0.1</version>
 			<scope>provided</scope>
 		</dependency>
         

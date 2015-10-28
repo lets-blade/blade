@@ -16,6 +16,7 @@
 package com.blade.render;
 
 import java.io.IOException;
+import java.io.Writer;
 import java.util.Map;
 import java.util.Set;
 
@@ -23,7 +24,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.blade.BladeWebContext;
+import com.blade.context.BladeWebContext;
 
 import blade.kit.log.Logger;
 
@@ -33,72 +34,35 @@ import blade.kit.log.Logger;
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since	1.0
  */
-public final class JspRender extends Render {
+public final class JspRender implements Render {
 	
 	private static final Logger LOGGER = Logger.getLogger(JspRender.class);
 	
-	private JspRender() {
-	}
-	
-	/**
-	 * 视图渲染
-	 */
-	public Object render(final String view){
-		try {
-			HttpServletRequest servletRequest = BladeWebContext.servletRequest();
-			HttpServletResponse servletResponse = BladeWebContext.servletResponse();
-			
-			// 设置编码
-			servletRequest.setCharacterEncoding(blade.encoding());
-			servletResponse.setCharacterEncoding(blade.encoding());
-			
-			// 构造jsp地址
-			String realPath = disposeView(view);
-			
-			// 跳转到页面
-			servletRequest.getRequestDispatcher(realPath).forward(servletRequest, servletResponse);
-			
-		} catch (ServletException e) {
-			LOGGER.error(e);
-		} catch (IOException e) {
-			LOGGER.error(e);
-		}
-		return null;
-	}
-	
-	/**
-	 * ModelAndView渲染
-	 */
-	public Object render(ModelAndView modelAndView){
-		try {
-			HttpServletRequest servletRequest = BladeWebContext.servletRequest();
-			HttpServletResponse servletResponse = BladeWebContext.servletResponse();
-			
-			String realPath = disposeView(modelAndView.getView());
-			
-			Map<String, Object> model = modelAndView.getModel();
+	@Override
+	public void render(ModelAndView modelAndView, Writer writer) {
+		HttpServletRequest servletRequest = BladeWebContext.request().raw();
+		HttpServletResponse servletResponse = BladeWebContext.response().raw();
+		
+		Map<String, Object> model = modelAndView.getModel();
 
-			if (null != model && !model.isEmpty()) {
-				Set<String> keys = model.keySet();
-				for (String key : keys) {
-					servletRequest.setAttribute(key, model.get(key));
-				}
+		String viewPath = modelAndView.getView();
+		
+		if (null != model && !model.isEmpty()) {
+			Set<String> keys = model.keySet();
+			for (String key : keys) {
+				servletRequest.setAttribute(key, model.get(key));
 			}
-			servletRequest.getRequestDispatcher(realPath).forward(servletRequest, servletResponse);
+		}
+		try {
+			servletRequest.getRequestDispatcher(viewPath).forward(servletRequest, servletResponse);
 		} catch (ServletException e) {
+			e.printStackTrace();
 			LOGGER.error(e);
 		} catch (IOException e) {
+			e.printStackTrace();
 			LOGGER.error(e);
 		}
-		return null;
+		
 	}
-	
-	public static JspRender single() {
-        return JspRenderHolder.single;
-    }
-    
-    private static class JspRenderHolder {
-        private static final JspRender single = new JspRender();
-    }
     
 }

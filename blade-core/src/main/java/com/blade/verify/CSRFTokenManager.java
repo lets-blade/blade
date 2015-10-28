@@ -1,7 +1,7 @@
 package com.blade.verify;
 
-import com.blade.servlet.Request;
-import com.blade.servlet.Response;
+import com.blade.http.Request;
+import com.blade.http.Response;
 import com.blade.servlet.Session;
 
 import blade.kit.HashidKit;

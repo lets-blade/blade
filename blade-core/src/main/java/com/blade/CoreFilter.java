@@ -20,14 +20,13 @@ import java.io.IOException;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.blade.route.RouteMatcherBuilder;
+import com.blade.context.BladeWebContext;
 
 import blade.kit.TaskKit;
 import blade.kit.log.Logger;
@@ -48,9 +47,9 @@ public class CoreFilter implements Filter {
 	 */
     private static final String BOOSTRAP_CLASS = "bootstrapClass";
     
-    static ServletContext servletContext;
-    
     private Blade blade;
+    
+    private ActionHandler filterHandler;
     
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -71,16 +70,15 @@ public class CoreFilter implements Filter {
 				blade.app(bootstrap);
 			    
 			    // 构建路由
-			    RouteMatcherBuilder.building(blade);
+//			    RouteMatcherBuilder.building(blade);
 			    
 			    IocApplication.init(blade);
-			    
-			    servletContext = filterConfig.getServletContext();
 			    
 			    bootstrap.contextInitialized();
 			    
 			    blade.setInit(true);
 			    
+			    filterHandler = new ActionHandler(blade);
 			    LOGGER.info("blade init complete!");
 			}
 		} catch (Exception e) {
@@ -126,7 +124,7 @@ public class CoreFilter implements Filter {
         /**
          * 是否被RequestHandler执行
          */
-        boolean isHandler = new FilterHandler(blade).handle(httpRequest, httpResponse);
+        boolean isHandler = filterHandler.handle(httpRequest, httpResponse);
         if(!isHandler){
         	chain.doFilter(httpRequest, httpResponse);
         }

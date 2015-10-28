@@ -1,7 +1,7 @@
 package com.blade.route;
 
-import com.blade.servlet.Request;
-import com.blade.servlet.Response;
+import com.blade.http.Request;
+import com.blade.http.Response;
 
 /**
  * 路由执行器
@@ -10,6 +10,6 @@ import com.blade.servlet.Response;
  */
 public interface RouteHandler {
 
-	public Object handle(Request request, Response response);
+	public void handle(Request request, Response response);
 	
 }

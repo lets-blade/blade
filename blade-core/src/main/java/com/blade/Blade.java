@@ -19,17 +19,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 
+import com.blade.http.HttpMethod;
 import com.blade.ioc.Container;
-import com.blade.ioc.impl.DefaultContainer;
+import com.blade.ioc.SampleContainer;
+import com.blade.loader.Config;
+import com.blade.loader.Configurator;
 import com.blade.plugin.Plugin;
+import com.blade.render.JspRender;
 import com.blade.render.Render;
-import com.blade.render.RenderFactory;
-import com.blade.route.HttpMethod;
-import com.blade.route.RouteBase;
 import com.blade.route.RouteHandler;
-import com.blade.route.RouteMatcherBuilder;
-import com.blade.route.RouterExecutor;
-import com.blade.server.BladeServer;
+import com.blade.route.Router;
+import com.blade.server.Server;
 
 import blade.kit.IOKit;
 import blade.kit.PropertyKit;
@@ -44,7 +44,7 @@ import blade.kit.json.JSONKit;
  */
 public class Blade {
 	
-	public static final String VERSION = "1.4.0-beta";
+	public static final String VERSION = "1.4.1-alpha";
 	
 	private static final Blade ME = new Blade();
 	
@@ -56,7 +56,11 @@ public class Blade {
     /**
      * blade全局初始化对象，在web.xml中配置，必须
      */
-    private Bootstrap bootstrap;
+    private Bootstrap bootstrap = new Bootstrap() {
+		@Override
+		public void init() {
+		}
+	};
     
     /**
 	 * 全局配置对象
@@ -66,12 +70,18 @@ public class Blade {
     /**
      * IOC容器，存储路由到ioc中
      */
-    private Container container = DefaultContainer.single();
+    private Container container = SampleContainer.single();
+    
+    private Render render = new JspRender();
     
     /**
      * 默认启动端口
      */
-    public int DEFAULT_PORT = 9000;
+    private static final int DEFAULT_PORT = 9000;
+    
+    private int port = DEFAULT_PORT;
+    
+    private Router router = new Router();
     
 	private Blade() {
 	}
@@ -84,6 +94,14 @@ public class Blade {
 		this.isInit = isInit;
 	}
 	
+	public Server createServer(int port){
+		return new Server(port);
+	}
+	
+	public Router router() {
+		return router;
+	}
+
 	/**
 	 * <pre>
 	 * 手动注册一个对象到ioc容器中
@@ -103,7 +121,7 @@ public class Blade {
 	 * 
 	 * @param confName		配置文件路径
 	 */
-	public void config(String confName){
+	public void appConf(String confName){
 		Map<String, String> configMap = PropertyKit.getPropertyMap(confName);
 		configuration(configMap);
 	}
@@ -116,7 +134,7 @@ public class Blade {
 	 * 
 	 * @param jsonPath		json文件路径
 	 */
-	public void configJsonPath(String jsonPath){
+	public void appJsonPath(String jsonPath){
 		InputStream inputStream = Blade.class.getResourceAsStream(jsonPath);
 		if(null != inputStream){
 			try {
@@ -136,7 +154,7 @@ public class Blade {
 	 * 
 	 * @param json		json配置
 	 */
-	public void configJson(String json){
+	public void appJson(String json){
 		Map<String, String> configMap = JSONKit.toMap(json);
 		configuration(configMap);
 	}
@@ -202,15 +220,11 @@ public class Blade {
     	return this;
     }
     
-    /**
-	 * 加载一个Route
-	 * @param route
-	 */
-	public Blade load(Class<? extends RouteBase> route){
-		IocApplication.addRouteClass(route);
+	public Blade route(String path, Object target, String method){
+		router.route(path, target, method);
 		return this;
 	}
-    
+	
 	/**
 	 * 注册一个函数式的路由</br>
 	 * <p>
@@ -220,8 +234,8 @@ public class Blade {
 	 * @param clazz			路由处理类
 	 * @param methodName	路由处理方法名称
 	 */
-	public Blade addRoute(String path, Class<?> clazz, String method){
-		RouteMatcherBuilder.buildFunctional(path, clazz, method, null);
+	public Blade route(String path, Class<?> clazz, String method){
+		router.route(path, clazz, method);
 		return this;
 	}
 	
@@ -232,218 +246,111 @@ public class Blade {
 	 * @param methodName	路由处理方法名称
 	 * @param httpMethod	请求类型,GET/POST
 	 */
-	public Blade addRoute(String path, Class<?> clazz, String method, HttpMethod httpMethod){
-		RouteMatcherBuilder.buildFunctional(path, clazz, method, httpMethod);
+	public Blade route(String path, Class<?> clazz, String method, HttpMethod httpMethod){
+		router.route(path, clazz, method, httpMethod);
 		return this;
 	}
 	
 	/**
 	 * get请求
 	 * @param path
-	 * @param routeHandler
+	 * @param handler
 	 */
-	public Blade get(String path, RouteHandler router){
-		RouteMatcherBuilder.buildHandler(path, router, HttpMethod.GET);
+	public Blade get(String path, RouteHandler handler){
+		router.route(path, handler, HttpMethod.GET);
 		return this;
 	}
 	
-	/**
-	 * get请求，多个路由
-	 * @param paths
-	 */
-	public RouterExecutor get(String... paths){
-		if(null != paths && paths.length > 0){
-			return new RouterExecutor(paths, HttpMethod.GET);
-		}
-		return null;
-	}
 	
 	/**
 	 * post请求
 	 * @param path
-	 * @param routeHandler
+	 * @param handler
 	 */
-	public Blade post(String path, RouteHandler router){
-		RouteMatcherBuilder.buildHandler(path, router, HttpMethod.POST);
+	public Blade post(String path, RouteHandler handler){
+		router.route(path, handler, HttpMethod.POST);
 		return this;
 	}
 	
-	/**
-	 * post请求，多个路由
-	 * @param paths
-	 */
-	public RouterExecutor post(String... paths){
-		if(null != paths && paths.length > 0){
-			return new RouterExecutor(paths, HttpMethod.POST);
-		}
-		return null;
-	}
 	
 	/**
 	 * delete请求
 	 * @param path
-	 * @param routeHandler
+	 * @param handler
 	 */
-	public Blade delete(String path, RouteHandler router){
-		RouteMatcherBuilder.buildHandler(path, router, HttpMethod.DELETE);
+	public Blade delete(String path, RouteHandler handler){
+		router.route(path, handler, HttpMethod.DELETE);
 		return this;
 	}
 	
-	/**
-	 * delete请求，多个路由
-	 * @param paths
-	 */
-	public RouterExecutor delete(String... paths){
-		if(null != paths && paths.length > 0){
-			return new RouterExecutor(paths, HttpMethod.DELETE);
-		}
-		return null;
-	}
 	
 	/**
 	 * put请求
 	 * @param paths
 	 */
-	public Blade put(String path, RouteHandler router){
-		RouteMatcherBuilder.buildHandler(path, router, HttpMethod.PUT);
+	public Blade put(String path, RouteHandler handler){
+		router.route(path, handler, HttpMethod.PUT);
 		return this;
-	}
-	
-	/**
-	 * put请求，多个路由
-	 * @param paths
-	 */
-	public RouterExecutor put(String... paths){
-		if(null != paths && paths.length > 0){
-			return new RouterExecutor(paths, HttpMethod.PUT);
-		}
-		return null;
 	}
 	
 	/**
 	 * patch请求
 	 * @param path
-	 * @param routeHandler
+	 * @param handler
 	 */
-	public Blade patch(String path, RouteHandler router){
-		RouteMatcherBuilder.buildHandler(path, router, HttpMethod.PATCH);
+	public Blade patch(String path, RouteHandler handler){
+		router.route(path, handler, HttpMethod.PATCH);
 		return this;
 	}
 
 	/**
-	 * patch请求，多个路由
-	 * @param paths
-	 */
-	public RouterExecutor patch(String... paths){
-		if(null != paths && paths.length > 0){
-			return new RouterExecutor(paths, HttpMethod.PATCH);
-		}
-		return null;
-	}
-	
-	/**
 	 * head请求
 	 * @param path
-	 * @param routeHandler
+	 * @param handler
 	 */
-	public Blade head(String path, RouteHandler router){
-		RouteMatcherBuilder.buildHandler(path, router, HttpMethod.HEAD);
+	public Blade head(String path, RouteHandler handler){
+		router.route(path, handler, HttpMethod.HEAD);
 		return this;
-	}
-	
-	/**
-	 * head请求，多个路由
-	 * @param paths
-	 */
-	public RouterExecutor head(String... paths){
-		if(null != paths && paths.length > 0){
-			return new RouterExecutor(paths, HttpMethod.HEAD);
-		}
-		return null;
 	}
 	
 	/**
 	 * trace请求
 	 * @param path
-	 * @param routeHandler
+	 * @param handler
 	 */
-	public Blade trace(String path, RouteHandler router){
-		RouteMatcherBuilder.buildHandler(path, router, HttpMethod.TRACE);
+	public Blade trace(String path, RouteHandler handler){
+		router.route(path, handler, HttpMethod.TRACE);
 		return this;
-	}
-	
-	/**
-	 * trace请求，多个路由
-	 * @param paths
-	 */
-	public RouterExecutor trace(String... paths){
-		if(null != paths && paths.length > 0){
-			return new RouterExecutor(paths, HttpMethod.TRACE);
-		}
-		return null;
 	}
 	
 	/**
 	 * options请求
 	 * @param path
-	 * @param routeHandler
+	 * @param handler
 	 */
-	public Blade options(String path, RouteHandler router){
-		RouteMatcherBuilder.buildHandler(path, router, HttpMethod.OPTIONS);
+	public Blade options(String path, RouteHandler handler){
+		router.route(path, handler, HttpMethod.OPTIONS);
 		return this;
-	}
-	
-	/**
-	 * options请求，多个路由
-	 * @param paths
-	 */
-	public RouterExecutor options(String... paths){
-		if(null != paths && paths.length > 0){
-			return new RouterExecutor(paths, HttpMethod.OPTIONS);
-		}
-		return null;
 	}
 	
 	/**
 	 * connect请求
 	 * @param path
-	 * @param routeHandler
+	 * @param handler
 	 */
-	public Blade connect(String path, RouteHandler router){
-		RouteMatcherBuilder.buildHandler(path, router, HttpMethod.CONNECT);
+	public Blade connect(String path, RouteHandler handler){
+		router.route(path, handler, HttpMethod.CONNECT);
 		return this;
-	}
-	
-	/**
-	 * connect请求，多个路由
-	 * @param paths
-	 */
-	public RouterExecutor connect(String... paths){
-		if(null != paths && paths.length > 0){
-			return new RouterExecutor(paths, HttpMethod.CONNECT);
-		}
-		return null;
 	}
 	
 	/**
 	 * 任意请求
 	 * @param path
-	 * @param routeHandler
+	 * @param handler
 	 */
-	public Blade all(String path, RouteHandler router){
-		RouteMatcherBuilder.buildHandler(path, router, HttpMethod.ALL);
+	public Blade all(String path, RouteHandler handler){
+		router.route(path, handler, HttpMethod.ALL);
 		return this;
-	}
-	
-	/**
-	 * all请求，多个路由
-	 * @param paths
-	 */
-	public RouterExecutor all(String... paths){
-		if(null != paths && paths.length > 0){
-			return new RouterExecutor(paths, HttpMethod.ALL);
-		}
-		return null;
 	}
 	
 	/**
@@ -451,41 +358,19 @@ public class Blade {
 	 * @param path
 	 * @param routeHandler
 	 */
-	public Blade before(String path, RouteHandler routeHandler){
-		RouteMatcherBuilder.buildInterceptor(path, routeHandler, HttpMethod.BEFORE);
+	public Blade before(String path, RouteHandler handler){
+		router.route(path, handler, HttpMethod.BEFORE);
 		return this;
 	}
 
-	/**
-	 * before请求，多个路由
-	 * @param paths
-	 */
-	public RouterExecutor before(String... paths){
-		if(null != paths && paths.length > 0){
-			return new RouterExecutor(paths, HttpMethod.BEFORE);
-		}
-		return null;
-	}
-	
 	/**
 	 * 拦截器after请求
 	 * @param path
 	 * @param routeHandler
 	 */
-	public Blade after(String path, RouteHandler routeHandler){
-		RouteMatcherBuilder.buildInterceptor(path, routeHandler, HttpMethod.AFTER);
+	public Blade after(String path, RouteHandler handler){
+		router.route(path, handler, HttpMethod.AFTER);
 		return this;
-	}
-	
-	/**
-	 * after请求，多个路由
-	 * @param paths
-	 */
-	public RouterExecutor after(String... paths){
-		if(null != paths && paths.length > 0){
-			return new RouterExecutor(paths, HttpMethod.AFTER);
-		}
-		return null;
 	}
 	
 	/**
@@ -494,7 +379,7 @@ public class Blade {
 	 * @param render 	渲染引擎对象
 	 */
 	public Blade viewEngin(Render render) {
-		RenderFactory.init(render);
+		this.render = render;
 		return this;
 	}
 	
@@ -614,17 +499,25 @@ public class Blade {
 	}
 	
 	public Blade listen(int port){
-		DEFAULT_PORT = port;
+		this.port = port;
 		return this;
 	}
 	
-	public void start(String contextPath) throws Exception {
-		BladeServer bladeServer = new BladeServer(DEFAULT_PORT);
-		bladeServer.run(contextPath);	    
+	public void start(String contextPath) {
+		try {
+			Server bladeServer = new Server(this.port);
+			bladeServer.run(contextPath);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}	    
 	}
 	
-	public void start() throws Exception {
+	public void start() {
 		this.start("/");
+	}
+	
+	public void handle(){
+		
 	}
 	
 	public Config config(){
@@ -723,6 +616,10 @@ public class Blade {
 		return bootstrap; 
 	}
 	
+	public Render render() {
+		return render;
+	}
+
 	/**
 	 * @return	返回是否启用XSS防御
 	 */
@@ -742,5 +639,10 @@ public class Blade {
 			object = IocApplication.registerPlugin(pluginClazz);
 		}
 		return (T) object;
+	}
+
+	public Blade routeConf(String conf) {
+		
+		return this;
 	}
 }

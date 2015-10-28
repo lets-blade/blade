@@ -19,13 +19,11 @@ import java.util.List;
 import java.util.Set;
 
 import com.blade.ioc.Container;
+import com.blade.ioc.SampleContainer;
 import com.blade.ioc.Scope;
-import com.blade.ioc.impl.DefaultContainer;
 import com.blade.plugin.Plugin;
-import com.blade.route.RouteBase;
 
 import blade.kit.CollectionKit;
-import blade.kit.ReflectKit;
 import blade.kit.log.Logger;
 import blade.kit.resource.ClassPathClassReader;
 import blade.kit.resource.ClassReader;
@@ -46,7 +44,7 @@ public final class IocApplication {
 	/**
 	 * IOC容器，单例获取默认的容器实现
 	 */
-	static final Container container = DefaultContainer.single();
+	static final Container container = SampleContainer.single();
 	
 	/**
 	 * 类读取对象，加载class
@@ -55,10 +53,6 @@ public final class IocApplication {
 	
 	static final List<Plugin> PLUGINS = CollectionKit.newArrayList();
 	
-	/**
-	 * 存放路由类
-	 */
-	static final List<Class<? extends RouteBase>> ROUTE_CLASS_LIST = CollectionKit.newArrayList();
 	
 	public static void init(Blade blade){
 		
@@ -71,19 +65,7 @@ public final class IocApplication {
 		initIOC(blade.iocs());
 		
 		// 初始化注入
-		try {
-			container.initWired();
-			
-			for(Class<?> clazz : ROUTE_CLASS_LIST){
-				Object object = ReflectKit.newInstance(clazz);
-				if(null != object){
-					container.injection(object);
-					ReflectKit.invokeMehodByName(object, "run");
-				}
-			}
-		} catch (Exception e) {
-			LOGGER.error(e);
-		}
+		container.initWired();
 		
 	}
 	
@@ -112,9 +94,6 @@ public final class IocApplication {
 		return container.getBean(pluginClazz, Scope.SINGLE);
 	}
 	
-	public static void addRouteClass(Class<? extends RouteBase> clazz){
-		ROUTE_CLASS_LIST.add(clazz);
-	}
 	/**
 	 * 注册一个包下的所有对象
 	 * 
