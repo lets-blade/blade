@@ -17,18 +17,23 @@ package com.blade;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.ParseException;
+import java.util.List;
 import java.util.Map;
 
 import com.blade.http.HttpMethod;
 import com.blade.ioc.Container;
 import com.blade.ioc.SampleContainer;
+import com.blade.loader.ClassPathRoutesLoader;
 import com.blade.loader.Config;
 import com.blade.loader.Configurator;
 import com.blade.plugin.Plugin;
 import com.blade.render.JspRender;
 import com.blade.render.Render;
+import com.blade.route.Route;
 import com.blade.route.RouteHandler;
 import com.blade.route.Router;
+import com.blade.route.RoutesException;
 import com.blade.server.Server;
 
 import blade.kit.IOKit;
@@ -72,6 +77,9 @@ public class Blade {
      */
     private Container container = SampleContainer.single();
     
+    /**
+     * 默认JSP渲染
+     */
     private Render render = new JspRender();
     
     /**
@@ -225,6 +233,14 @@ public class Blade {
 		return this;
 	}
 	
+	public Blade addRoute(String path, Object target, String method){
+		return route(path, target, method);
+	}
+	
+	public Blade addRoute(String path, Object target, String method, HttpMethod httpMethod){
+		return route(path, target, method, httpMethod);
+	}
+	
 	/**
 	 * 注册一个函数式的路由</br>
 	 * <p>
@@ -248,6 +264,11 @@ public class Blade {
 	 */
 	public Blade route(String path, Class<?> clazz, String method, HttpMethod httpMethod){
 		router.route(path, clazz, method, httpMethod);
+		return this;
+	}
+	
+	public Blade route(String path, Object target, String method, HttpMethod httpMethod){
+		router.route(path, target, method, httpMethod);
 		return this;
 	}
 	
@@ -641,8 +662,18 @@ public class Blade {
 		return (T) object;
 	}
 
-	public Blade routeConf(String conf) {
-		
+	public Blade routeConf(String basePackage, String conf) {
+		try {
+			InputStream ins = Blade.class.getResourceAsStream("/" + conf);
+			ClassPathRoutesLoader routesLoader = new ClassPathRoutesLoader(ins);
+			routesLoader.setBasePackage(basePackage);
+			List<Route> routes = routesLoader.load();
+			router.addRoutes(routes);
+		} catch (RoutesException e) {
+			e.printStackTrace();
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
 		return this;
 	}
 }

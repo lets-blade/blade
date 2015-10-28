@@ -24,7 +24,6 @@ import com.blade.ioc.Scope;
 import com.blade.plugin.Plugin;
 
 import blade.kit.CollectionKit;
-import blade.kit.log.Logger;
 import blade.kit.resource.ClassPathClassReader;
 import blade.kit.resource.ClassReader;
 
@@ -39,8 +38,6 @@ import blade.kit.resource.ClassReader;
  */
 public final class IocApplication {
 
-	private static final Logger LOGGER = Logger.getLogger(IocApplication.class);
-	
 	/**
 	 * IOC容器，单例获取默认的容器实现
 	 */

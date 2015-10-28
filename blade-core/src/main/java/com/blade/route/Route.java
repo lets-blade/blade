@@ -78,11 +78,6 @@ public class Route {
 		if (getClass() != obj.getClass())
 			return false;
 		Route other = (Route) obj;
-		if (action == null) {
-			if (other.action != null)
-				return false;
-		} else if (!action.equals(other.action))
-			return false;
 		if (httpMethod != other.httpMethod)
 			return false;
 		if (path == null) {
@@ -90,17 +85,12 @@ public class Route {
 				return false;
 		} else if (!path.equals(other.path))
 			return false;
-		if (target == null) {
-			if (other.target != null)
-				return false;
-		} else if (!target.equals(other.target))
-			return false;
 		return true;
 	}
 
 	@Override
 	public String toString() {
-		return "Route [httpMethod=" + httpMethod + ", path=" + path + ", target=" + target + ", action=" + action + "]";
+		return "[ " + httpMethod + " --> " + path + " ]";
 	}
 	
 }

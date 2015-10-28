@@ -162,7 +162,6 @@ public abstract class AbstractFileRoutesLoader implements RoutesLoader {
 
 	private Method getMethod(Object controller, String methodName) throws RoutesException {
 		try {
-			// try to retrieve the method and check if an exception is thrown
 			return controller.getClass().getMethod(methodName, Request.class, Response.class);
 		} catch (Exception e) {
 			throw new RoutesException(e);

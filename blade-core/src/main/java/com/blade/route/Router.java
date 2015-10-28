@@ -59,12 +59,23 @@ public class Router {
 		this.routes.add(route);
 	}
 	
+	public void addRoutes(List<Route> routes) {
+		for(Route route : routes){
+			if(this.routes.contains(route)){
+				LOGGER.warn("\tRoute "+ route +" has exist");
+				continue;
+			}
+			this.routes.add(route);
+			LOGGER.debug("Add Route：" + route);
+		}
+	}
+	
 	public List<Route> getInterceptors() {
 		return interceptors;
 	}
-
-	public void setInterceptors(List<Route> interceptors) {
-		this.interceptors = interceptors;
+	
+	public void addInterceptors(List<Route> interceptors) {
+		this.interceptors.addAll(interceptors);
 	}
 
 	public void addRoute(HttpMethod httpMethod, String path, Object controller, String methodName) throws NoSuchMethodException {
@@ -80,6 +91,10 @@ public class Router {
 		method.setAccessible(true);
 		
 		Route route = new Route(httpMethod, path, controller, method);
+		if(this.routes.contains(route)){
+			LOGGER.warn("\tRoute "+ route +" has exist");
+		}
+		
 		if(httpMethod == HttpMethod.BEFORE || httpMethod == HttpMethod.AFTER){
 			interceptors.add(route);
 			LOGGER.debug("Add Interceptor：" + route);
@@ -156,4 +171,16 @@ public class Router {
 		}
 	}
 	
+	public void route(String path, Object target, String methodName, HttpMethod httpMethod) {
+		try {
+			Class<?> clazz = target.getClass();
+			container.registBean(target);
+			Method method = clazz.getMethod(methodName, Request.class, Response.class);
+			addRoute(httpMethod, path, target, method);
+		} catch (NoSuchMethodException e) {
+			e.printStackTrace();
+		} catch (SecurityException e) {
+			e.printStackTrace();
+		}
+	}
 }
