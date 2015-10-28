@@ -29,19 +29,15 @@
 
 ## 快速入门
 
-开始之前,首先 [引入Blade的库文件](http://bladejava.com/docs/intro/getting_start) ，然后创建一个类继承自 `Bootstrap` ，编写 `Main` 函数：
+开始之前,首先 [引入Blade的库文件](http://bladejava.com/docs/intro/getting_start) ，然后创建一个类 ，编写 `Main` 函数：
 
 ```java
-public class App extends Bootstrap {
-	
-	@Override
-	public void init() {}
-	
-	public static void main(String[] args) throws Exception {
+public class App {
+		
+	public static void main(String[] args) {
 		Blade blade = Blade.me();
-		blade.get("/").run(request, response) -> {
+		blade.get("/", (request, response) -> {
 			response.html("<h1>Hello blade!</h1>");
-			return null;
 		});
 		blade.app(App.class).listen(9001).start();
 	}

@@ -27,7 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.blade.context.BladeWebContext;
-import com.blade.route.RouteMatcherBuilder;
+import com.blade.route.RouteBuilder;
 
 import blade.kit.StringKit;
 import blade.kit.TaskKit;
@@ -71,7 +71,7 @@ public class CoreFilter implements Filter {
 				}
 				
 			    // 构建路由
-				new RouteMatcherBuilder(blade).building();
+				new RouteBuilder(blade).building();
 				
 			    IocApplication.init(blade);
 			    

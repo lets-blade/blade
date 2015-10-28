@@ -90,7 +90,7 @@ public class Route {
 
 	@Override
 	public String toString() {
-		return "[ " + httpMethod + " --> " + path + " ]";
+		return httpMethod + "\t" + path;
 	}
 	
 }

@@ -32,16 +32,12 @@ If you like it, can be [Star and Fork](https://github.com/biezhi/blade), thanks!
 To get started, first [include the Blade library](http://bladejava.com/docs/intro/getting_start) and then create a class with a main method like this:
 
 ```java
-public class App extends Bootstrap {
+public class App {
 	
-	@Override
-	public void init() {}
-	
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) {
 		Blade blade = Blade.me();
-		blade.get("/").run(request, response) -> {
+		blade.get("/", (request, response) -> {
 			response.html("<h1>Hello blade!</h1>");
-			return null;
 		});
 		blade.app(App.class).listen(9001).start();
 	}

@@ -38,7 +38,7 @@ import blade.kit.resource.ClassReader;
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since	1.0
  */
-public class RouteMatcherBuilder {
+public class RouteBuilder {
     
     /**
 	 * 默认路由后缀包，用户扫描路由所在位置，默认为route，用户可自定义
@@ -64,7 +64,7 @@ public class RouteMatcherBuilder {
     
     private Router router;
     
-    public RouteMatcherBuilder(Blade blade) {
+    public RouteBuilder(Blade blade) {
     	this.blade = blade;
     	this.router = blade.router();
     }
