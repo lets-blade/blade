@@ -10,6 +10,7 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 
+import com.blade.Blade;
 import com.blade.context.BladeWebContext;
 import com.blade.http.HttpException;
 import com.blade.http.HttpStatus;
@@ -18,6 +19,8 @@ import com.blade.http.Request;
 import com.blade.http.Response;
 import com.blade.render.ModelAndView;
 import com.blade.render.Render;
+
+import blade.kit.Assert;
 
 /**
  * ServletResponse
@@ -264,7 +267,15 @@ public class ServletResponse implements Response {
 	@Override
 	public Response render(String view) {
 		try {
-			ModelAndView modelAndView = new ModelAndView(view);
+			Assert.notBlank(view, "view not is null");
+			
+			Blade blade = Blade.me();
+			String viewPath = blade.viewPrefix() + view + blade.viewSuffix();
+			if(view.endsWith(blade.viewSuffix())){
+				viewPath = blade.viewPrefix() + view;
+			}
+			viewPath = Path.cleanPath(viewPath);
+			ModelAndView modelAndView = new ModelAndView(viewPath);
 			render.render(modelAndView, response.getWriter());
 			return this;
 		} catch (IOException e) {
@@ -276,6 +287,17 @@ public class ServletResponse implements Response {
 	@Override
 	public Response render(ModelAndView modelAndView) {
 		try {
+			Assert.notNull(modelAndView, "ModelAndView not is null!");
+			Assert.notBlank(modelAndView.getView(), "view not is null");
+			
+			Blade blade = Blade.me();
+			String viewPath = blade.viewPrefix() + modelAndView.getView() + blade.viewSuffix();
+			if(modelAndView.getView().endsWith(blade.viewSuffix())){
+				viewPath = blade.viewPrefix() + modelAndView.getView();
+			}
+			viewPath = Path.cleanPath(viewPath);
+			modelAndView.setView(viewPath);
+			
 			render.render(modelAndView, response.getWriter());
 			return this;
 		} catch (IOException e) {

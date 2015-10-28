@@ -49,8 +49,14 @@ import blade.kit.json.JSONKit;
  */
 public class Blade {
 	
+	/**
+	 * 当前最新版本
+	 */
 	public static final String VERSION = "1.4.1-alpha";
 	
+	/**
+	 * Blade单例
+	 */
 	private static final Blade ME = new Blade();
 	
 	/**
@@ -82,6 +88,9 @@ public class Blade {
      */
     private Render render = new JspRender();
     
+    /**
+     * 路由管理对象
+     */
     private Router router = new Router();
     
     /**
@@ -90,7 +99,6 @@ public class Blade {
     private static final int DEFAULT_PORT = 9000;
     
     private int port = DEFAULT_PORT;
-    
     
 	private Blade() {
 	}
@@ -130,7 +138,7 @@ public class Blade {
 	 * 
 	 * @param confName		配置文件路径
 	 */
-	public void appConf(String confName){
+	public void setAppConf(String confName){
 		Map<String, String> configMap = PropertyKit.getPropertyMap(confName);
 		configuration(configMap);
 	}
@@ -143,7 +151,7 @@ public class Blade {
 	 * 
 	 * @param jsonPath		json文件路径
 	 */
-	public void appJsonPath(String jsonPath){
+	public void setJsonConf(String jsonPath){
 		InputStream inputStream = Blade.class.getResourceAsStream(jsonPath);
 		if(null != inputStream){
 			try {
@@ -163,7 +171,7 @@ public class Blade {
 	 * 
 	 * @param json		json配置
 	 */
-	public void appJson(String json){
+	public void setAppJson(String json){
 		Map<String, String> configMap = JSONKit.toMap(json);
 		configuration(configMap);
 	}
@@ -486,7 +494,7 @@ public class Blade {
      * 
      * @param view404	404视图页面
      */
-    public Blade view404(final String view404){
+    public Blade setView404(final String view404){
     	config.setView404(view404);
     	return this;
     }
@@ -496,7 +504,7 @@ public class Blade {
      * 
      * @param view500	500视图页面
      */
-    public Blade view500(final String view500){
+    public Blade setView500(final String view500){
     	config.setView500(view500);
     	return this;
     }
@@ -520,11 +528,20 @@ public class Blade {
 		return this;
 	}
 	
+	/**
+	 * 设置监听端口
+	 * @param port
+	 * @return
+	 */
 	public Blade listen(int port){
 		this.port = port;
 		return this;
 	}
 	
+	/**
+	 * 设置启动上下文
+	 * @param contextPath
+	 */
 	public void start(String contextPath) {
 		try {
 			Server bladeServer = new Server(this.port);
@@ -534,14 +551,17 @@ public class Blade {
 		}	    
 	}
 	
+	/**
+	 * 启动服务
+	 */
 	public void start() {
 		this.start("/");
 	}
 	
-	public void handle(){
-		
-	}
-	
+	/**
+	 * 返回系统配制
+	 * @return
+	 */
 	public Config config(){
     	return config;
     }

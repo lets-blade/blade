@@ -169,8 +169,6 @@ public class ServletRequest implements Request {
 	
 	@Override
 	public String contextPath() {
-		System.out.println(request);
-		System.out.println(request.getServletContext());
 		return request.getContextPath();
 	}
 	

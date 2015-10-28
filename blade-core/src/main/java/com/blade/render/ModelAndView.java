@@ -86,12 +86,28 @@ public class ModelAndView {
 	public String getView() {
 		return view;
 	}
+	
+	/**
+	 * 设置视图
+	 * @param view
+	 */
+	public void setView(String view) {
+		this.view = view;
+	}
 
 	/**
 	 * @return 获取模型
 	 */
 	public Map<String, Object> getModel() {
 		return model;
+	}
+	
+	/**
+	 * 设置model
+	 * @param model
+	 */
+	public void setModel(Map<String, Object> model) {
+		this.model = model;
 	}
 	
 	@Override

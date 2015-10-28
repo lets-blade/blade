@@ -62,7 +62,6 @@ public class SampleRouteMatcher {
     
     private String parsePath(String path) {
 		path = Path.fixPath(path);
-
 		try {
 			URI uri = new URI(path);
 			return uri.getPath();
@@ -79,6 +78,7 @@ public class SampleRouteMatcher {
                 befores.add(route);
             }
         }
+		giveMatch(path, befores);
 		return befores;
 	}
 	
@@ -90,6 +90,7 @@ public class SampleRouteMatcher {
             	afters.add(route);
             }
         }
+		giveMatch(path, afters);
 		return afters;
 	}
 	

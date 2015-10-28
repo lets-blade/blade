@@ -25,6 +25,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.blade.context.BladeWebContext;
 import com.blade.http.HttpStatus;
+import com.blade.http.Path;
 import com.blade.http.Request;
 import com.blade.http.Response;
 import com.blade.render.ModelAndView;
@@ -36,7 +37,6 @@ import com.blade.servlet.ServletRequest;
 import com.blade.servlet.ServletResponse;
 
 import blade.exception.BladeException;
-import blade.kit.PathKit;
 import blade.kit.ReflectKit;
 import blade.kit.StringKit;
 import blade.kit.base.ThrowableKit;
@@ -64,13 +64,18 @@ public class ActionHandler {
     /**
      * 服务器500错误时返回的HTML
      */
-	
 	private static final String INTERNAL_ERROR = "<html><head><title>500 Internal Error</title></head><body bgcolor=\"white\"><center><h1>500 Internal Error</h1></center><hr><center>blade "
 			+ Blade.VERSION +"</center></body></html>";
     
+	/**
+	 * 服务器404错误HTML
+	 */
 	private static final String VIEW_NOTFOUND = "<html><head><title>404 Not Found</title></head><body bgcolor=\"white\"><center><h1>[ %s ] Not Found</h1></center><hr><center>blade "
 			+ Blade.VERSION +"</center></body></html>";
 	
+	/**
+	 * 全局的ServletContext对象
+	 */
 	private ServletContext context;
 	
 	public ActionHandler(ServletContext context, Blade blade){
@@ -81,11 +86,10 @@ public class ActionHandler {
 	}
 	
 	/**
-	 * handler执行方法
-	 * 
-	 * @param httpRequest	HttpServletRequest请求对象
-	 * @param httpResponse	HttpServletResponse响应对象
-	 * @return 是否拦截到请求
+	 * 处理请求
+	 * @param httpRequest
+	 * @param httpResponse
+	 * @return
 	 */
 	public boolean handle(HttpServletRequest httpRequest, HttpServletResponse httpResponse){
 		
@@ -96,7 +100,7 @@ public class ActionHandler {
             String method = httpRequest.getMethod();
             
             // 请求的uri
-            String uri = PathKit.getRelativePath(httpRequest);
+            String uri = Path.getRelativePath(httpRequest);
             
             // 如果是静态资源则交给filter处理
             if(null != blade.staticFolder() && blade.staticFolder().length > 0){
@@ -109,10 +113,10 @@ public class ActionHandler {
             	LOGGER.debug("Request : " + method + "\t" + uri);
             }
         	
-        	// 创建RequestWrapper And RequestWrapper
+            // 创建请求对象
     		Request request = new ServletRequest(httpRequest);
             
-            // 构建一个包装后的response
+    		// 创建响应对象
             response = new ServletResponse(httpResponse, blade.render());
             
             // 初始化context
@@ -150,7 +154,9 @@ public class ActionHandler {
                 response.html(INTERNAL_ERROR);
                 return true;
             }
+            
         } catch (Exception e) {
+        	
         	String error = ThrowableKit.getStackTraceAsString(e);
             LOGGER.error(error);
             ThrowableKit.propagate(e);
@@ -161,11 +167,18 @@ public class ActionHandler {
                 response.html(INTERNAL_ERROR);
                 return true;
             }
+            
         }
         return false;
         
 	}
 	
+	/**
+	 * 404视图渲染
+	 * @param response
+	 * @param uri
+	 * @throws IOException
+	 */
 	private void render404(Response response, String uri) throws IOException{
 		String view404 = blade.view404();
     	if(StringKit.isNotBlank(view404)){
@@ -178,6 +191,12 @@ public class ActionHandler {
 		}
 	}
 	
+	/**
+	 * 执行拦截器方法
+	 * @param request
+	 * @param response
+	 * @param interceptors
+	 */
 	private void invokeInterceptor(Request request, Response response, List<Route> interceptors) {
 		for(Route route : interceptors){
 			handle(request, response, route);
@@ -185,17 +204,15 @@ public class ActionHandler {
 	}
 
 	/**
-	 * 
 	 * 实际的路由方法执行
-	 * @param httpRequest		http请求对象
-	 * @param requestWrapper	request包装对象
-	 * @param responseWrapper	response包装对象
-	 * @param match				路由匹配对象
-	 * @return	object
+	 * @param request	请求对象
+	 * @param response	响应对象
+	 * @param route		路由对象
 	 */
 	private void handle(Request request, Response response, Route route){
 		Object target = route.getTarget();
-		request.initPathParams(request.path());
+		request.initPathParams(route.getPath());
+		
 		// 初始化context
 		BladeWebContext.setContext(context, request, response);
 		if(target instanceof RouteHandler){
