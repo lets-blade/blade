@@ -44,33 +44,6 @@
 </dependency>
 ```
 
-## [blade-jetbrick](http://search.maven.org/#search%7Cga%7C1%7Cblade-jetbrick)
-```xml
-<dependency>
-    <groupId>com.bladejava</groupId>
-    <artifactId>blade-jetbrick</artifactId>
-    <version>1.2.6</version>
-</dependency>
-```
-
-## [blade-beetl](http://search.maven.org/#search%7Cga%7C1%7Cblade-beetl)
-```xml
-<dependency>
-    <groupId>com.bladejava</groupId>
-    <artifactId>blade-beetl</artifactId>
-    <version>1.2.4</version>
-</dependency>
-```
-
-## [blade-velocity](http://search.maven.org/#search%7Cga%7C1%7Cblade-velocity)
-```xml
-<dependency>
-    <groupId>com.bladejava</groupId>
-    <artifactId>blade-velocity</artifactId>
-    <version>1.2.3</version>
-</dependency>
-```
-
 ## [blade-cache](http://search.maven.org/#search%7Cga%7C1%7Cblade-cache)
 ```xml
 <dependency>
