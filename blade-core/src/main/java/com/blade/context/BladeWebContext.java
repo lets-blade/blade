@@ -47,10 +47,10 @@ public final class BladeWebContext {
     	return BLADE_WEB_CONTEXT.get();
     }
     
-    public static void setContext(Request request, Response response) {
+    public static void setContext(ServletContext context, Request request, Response response) {
     	BladeWebContext bladeWebContext = new BladeWebContext();
+    	bladeWebContext.context = context;
     	bladeWebContext.request = request;
-    	bladeWebContext.context = request.context();
     	bladeWebContext.response = response;
     	BLADE_WEB_CONTEXT.set(bladeWebContext);
     }

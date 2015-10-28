@@ -79,7 +79,7 @@ public class CoreFilter implements Filter {
 			    
 			    blade.setInit(true);
 			    
-			    actionHandler = new ActionHandler(blade);
+			    actionHandler = new ActionHandler(filterConfig.getServletContext(), blade);
 			    LOGGER.info("blade init complete!");
 			}
 		} catch (Exception e) {

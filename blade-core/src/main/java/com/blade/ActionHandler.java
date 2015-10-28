@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.List;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -70,9 +71,12 @@ public class ActionHandler {
 	private static final String VIEW_NOTFOUND = "<html><head><title>404 Not Found</title></head><body bgcolor=\"white\"><center><h1>[ %s ] Not Found</h1></center><hr><center>blade "
 			+ Blade.VERSION +"</center></body></html>";
 	
-	public ActionHandler(Blade blade){
+	private ServletContext context;
+	
+	public ActionHandler(ServletContext context, Blade blade){
 		this.blade = blade;
 		this.router = blade.router();
+		this.context = context;
 		this.sampleRouteMatcher = new SampleRouteMatcher(router);
 	}
 	
@@ -112,7 +116,7 @@ public class ActionHandler {
             response = new ServletResponse(httpResponse, blade.render());
             
             // 初始化context
-         	BladeWebContext.setContext(request, response);
+         	BladeWebContext.setContext(context, request, response);
          	
 			Route route = sampleRouteMatcher.getRoute(method, uri);
 			
@@ -193,7 +197,7 @@ public class ActionHandler {
 		Object target = route.getTarget();
 		request.initPathParams(request.path());
 		// 初始化context
-		BladeWebContext.setContext(request, response);
+		BladeWebContext.setContext(context, request, response);
 		if(target instanceof RouteHandler){
 			RouteHandler routeHandler = (RouteHandler)target;
 			routeHandler.handle(request, response);
