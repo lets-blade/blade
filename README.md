@@ -64,12 +64,26 @@ OK, all this may seem simple, refer to the guidelines for use more ready-made ex
 
 [update log](https://github.com/biezhi/blade/blob/master/UPDATE_LOG.md)
 
-## licenses
-
-Blade Framework based on the [Apache2 License](http://www.apache.org/licenses/LICENSE-2.0.html)
-
 ## Contact
 
 - Blog:[https://biezhi.me](https://biezhi.me)
 - Mail: biezhi.me#gmail.com
 - QQ Group: [1013565](http://shang.qq.com/wpa/qunwpa?idkey=932642920a5c0ef5f1ae902723c4f168c58ea63f3cef1139e30d68145d3b5b2f)
+
+## licenses
+
+```
+Copyright 2015 biezhi
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+```
