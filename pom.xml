@@ -16,7 +16,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<junit.version>4.11</junit.version>
 		<servlet.version>3.0.1</servlet.version>
-		<blade.version>1.4.0</blade.version>
+		<blade.version>1.4.1-alpha</blade.version>
 	</properties>
 
 	<modules>

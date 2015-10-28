@@ -14,6 +14,7 @@ import com.blade.ioc.SampleContainer;
 import com.blade.ioc.Scope;
 
 import blade.kit.ReflectKit;
+import blade.kit.StringKit;
 import blade.kit.log.Logger;
 
 /**
@@ -84,12 +85,7 @@ public class Router {
 	}
 	
 	public void addRoute(HttpMethod httpMethod, String path, Object controller, Method method) {
-		Class<?>[] paramTypes = method.getParameterTypes();
-		if (paramTypes.length != 2 || !paramTypes[0].equals(Request.class) || !paramTypes[1].equals(Response.class)) {
-			throw new RoutesException("Expecting two params of type com.blade.servlet.Request and com.blade.servlet.Response respectively");
-		}
-		method.setAccessible(true);
-		
+//		method.setAccessible(true);
 		Route route = new Route(httpMethod, path, controller, method);
 		if(this.routes.contains(route)){
 			LOGGER.warn("\tRoute "+ route +" has exist");
@@ -132,11 +128,16 @@ public class Router {
 
 	public void route(String path, Class<?> clazz, String methodName) {
 		try {
+			if(methodName.indexOf(":") != -1){
+    			String[] methodArr = StringKit.split(methodName, ":");
+    			methodName = methodArr[1];
+    		}
 			Object controller = container.getBean(clazz, Scope.SINGLE);
 			if(null == controller){
 				controller = ReflectKit.newInstance(clazz);
 				container.registBean(controller);
 			}
+			
 			Method method = clazz.getMethod(methodName, Request.class, Response.class);
 			
 			addRoute(HttpMethod.ALL, path, controller, method);

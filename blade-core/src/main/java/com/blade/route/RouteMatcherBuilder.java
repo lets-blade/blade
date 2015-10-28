@@ -25,11 +25,11 @@ import com.blade.annotation.Interceptor;
 import com.blade.annotation.Path;
 import com.blade.annotation.Route;
 import com.blade.http.HttpMethod;
+import com.blade.http.Request;
+import com.blade.http.Response;
 import com.blade.ioc.Container;
 import com.blade.ioc.SampleContainer;
 
-import blade.exception.BladeException;
-import blade.kit.ReflectKit;
 import blade.kit.StringKit;
 import blade.kit.resource.ClassPathClassReader;
 import blade.kit.resource.ClassReader;
@@ -115,7 +115,7 @@ public class RouteMatcherBuilder {
     	if(StringKit.isNotBlank(path) && null != handler){
     		this.router.route(path, handler, httpMethod);
     	} else {
-			 throw new BladeException("an unqualified configuration");
+			 throw new RoutesException("an unqualified configuration");
 		}
     }
     
@@ -126,7 +126,7 @@ public class RouteMatcherBuilder {
     	if(StringKit.isNotBlank(path) && null != handler){
     		this.router.route(path, handler, httpMethod);
     	} else {
-			 throw new BladeException("an unqualified configuration");
+			 throw new RoutesException("an unqualified configuration");
 		}
     }
     
@@ -147,11 +147,16 @@ public class RouteMatcherBuilder {
     		if(null == target){
     			container.registBean(clazz);
     		}
-    		
-    		Method execMethod = ReflectKit.getMethodByName(clazz, methodName);
-    		this.router.route(path, clazz, execMethod, HttpMethod.BEFORE);
+			try {
+				Method method = clazz.getMethod(methodName, Request.class, Response.class);
+				this.router.route(path, clazz, method, HttpMethod.BEFORE);
+			} catch (NoSuchMethodException e) {
+				throw new RoutesException(e);
+			} catch (SecurityException e) {
+				throw new RoutesException(e);
+			}
     	} else {
-			 throw new BladeException("an unqualified configuration");
+			 throw new RoutesException("an unqualified configuration");
 		}
     }
     

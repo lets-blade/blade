@@ -170,7 +170,6 @@ public class SampleContainer implements Container {
 		    if(null != clazz.getDeclaredAnnotations()){
 		    	putAnnotationMap(clazz, object);
 		    }
-		    LOGGER.info("register object：" + name + "=" + object);
 		}
 		return object;
 	}
@@ -182,7 +181,7 @@ public class SampleContainer implements Container {
      * @param object		要进入IOC容器的bean对象
      */
     private void put(String name, Object object){
-    	if(null == BEAN_CONTAINER.get(name)){
+    	if(!BEAN_CONTAINER.containsValue(object)){
     		BEAN_CONTAINER.put(name, object);
     	}
     }
@@ -299,7 +298,6 @@ public class SampleContainer implements Container {
 	public Object registBean(Object object) {
 		String name = object.getClass().getName();
 		put(name, object);
-	    LOGGER.info("register object：" + name + "=" + object);
 		return object;
 	}
 

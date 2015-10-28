@@ -251,21 +251,6 @@ public class ActionHandler {
 	}
 	
 	/**
-	 * 渲染视图
-	 * 
-	 * @param response
-	 * @param result
-	 * @return
-	 */
-	/*private void render(Response response, Object result){
-		if(result instanceof String){
-			response.render(result.toString());
-		} else if(result instanceof ModelAndView){
-			response.render( (ModelAndView) result );
-		}
-	}*/
-	
-	/**
 	 * 要过滤掉的目录
 	 * @param uri
 	 * @return

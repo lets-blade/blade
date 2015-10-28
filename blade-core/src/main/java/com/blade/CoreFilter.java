@@ -32,7 +32,6 @@ import com.blade.route.RouteMatcherBuilder;
 import blade.kit.StringKit;
 import blade.kit.TaskKit;
 import blade.kit.log.Logger;
-og.Logger;
 
 /**
  * blade核心过滤器，mvc总线
