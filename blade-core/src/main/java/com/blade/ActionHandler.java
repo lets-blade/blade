@@ -190,14 +190,14 @@ public class ActionHandler {
 	 * @return	object
 	 */
 	private void handle(Request request, Response response, Route route){
-		RouteHandler router = (RouteHandler) route.getTarget();
+		Object target = route.getTarget();
 		request.initPathParams(request.path());
 		// 初始化context
 		BladeWebContext.setContext(request, response);
-		if(null != router){
-			router.handle(request, response);
+		if(target instanceof RouteHandler){
+			RouteHandler routeHandler = (RouteHandler)target;
+			routeHandler.handle(request, response);
 		} else {
-			Object target = route.getTarget();
 			// 要执行的路由方法
 			Method actionMethod = route.getAction();
 			// 执行route方法

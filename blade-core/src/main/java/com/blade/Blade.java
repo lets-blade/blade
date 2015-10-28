@@ -556,7 +556,7 @@ public class Blade {
 	/**
      * @return	返回路由包数组
      */
-    public String[] routes(){
+    public String[] routePackages(){
     	return config.getRoutePackages();
     }
     
@@ -570,7 +570,7 @@ public class Blade {
     /**
      * @return	返回拦截器包数组，只有一个元素 这里统一用String[]
      */
-    public String interceptor(){
+    public String interceptorPackage(){
     	return config.getInterceptorPackage();
     }
     

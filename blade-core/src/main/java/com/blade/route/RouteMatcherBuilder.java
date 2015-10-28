@@ -25,8 +25,6 @@ import com.blade.annotation.Interceptor;
 import com.blade.annotation.Path;
 import com.blade.annotation.Route;
 import com.blade.http.HttpMethod;
-import com.blade.http.Request;
-import com.blade.http.Response;
 import com.blade.ioc.Container;
 import com.blade.ioc.SampleContainer;
 
@@ -89,74 +87,20 @@ public class RouteMatcherBuilder {
 			String interceptorPackage = basePackage + "." + PACKAGE_INTERCEPTOR + suffix;
 			
         	buildRoute(routePackage);
-        	
         	buildInterceptor(interceptorPackage);
         	
         } else {
-        	
         	// 路由
-	    	String[] routePackages = blade.routes();
-	    	if(null != routePackages && routePackages.length > 0){
-	    		buildRoute(routePackages);
-	    	}
-	    	
-			// 拦截器
-	    	String interceptorPackage = blade.interceptor();
-	    	if(StringKit.isNotBlank(interceptorPackage)){
-	    		buildInterceptor(interceptorPackage);
-	    	}
-		}
-    }
-    
-    /**
-     * Handler路由构建
-     */
-    public void buildHandler(String path, RouteHandler handler, HttpMethod httpMethod){
-    	if(StringKit.isNotBlank(path) && null != handler){
-    		this.router.route(path, handler, httpMethod);
-    	} else {
-			 throw new RoutesException("an unqualified configuration");
-		}
-    }
-    
-    /**
-     * 函数式构建拦截器
-     */
-    public void buildInterceptor(String path, RouteHandler handler, HttpMethod httpMethod){
-    	if(StringKit.isNotBlank(path) && null != handler){
-    		this.router.route(path, handler, httpMethod);
-    	} else {
-			 throw new RoutesException("an unqualified configuration");
-		}
-    }
-    
-    /**
-     * 函数式拦截器构建
-     */
-    public void buildInterceptor(String path, Class<?> clazz, String methodName){
-    	if(StringKit.isNotBlank(path) && null != clazz && StringKit.isNotBlank(methodName)){
-
-    		// 字符串上写请求   hello
-    		if(methodName.indexOf(":") != -1){
-    			String[] methodArr = StringKit.split(methodName, ":");
-    			methodName = methodArr[1];
-    		}
-    		
-    		// 查找
-    		Object target = container.getBean(clazz, null);
-    		if(null == target){
-    			container.registBean(clazz);
-    		}
-			try {
-				Method method = clazz.getMethod(methodName, Request.class, Response.class);
-				this.router.route(path, clazz, method, HttpMethod.BEFORE);
-			} catch (NoSuchMethodException e) {
-				throw new RoutesException(e);
-			} catch (SecurityException e) {
-				throw new RoutesException(e);
-			}
-    	} else {
-			 throw new RoutesException("an unqualified configuration");
+        	String[] routePackages = blade.routePackages();
+        	if(null != routePackages && routePackages.length > 0){
+        		buildRoute(routePackages);
+        	}
+        	
+    		// 拦截器
+        	String interceptorPackage = blade.interceptorPackage();
+        	if(StringKit.isNotBlank(interceptorPackage)){
+        		buildInterceptor(interceptorPackage);
+        	}
 		}
     }
     
@@ -338,7 +282,7 @@ public class RouteMatcherBuilder {
      * @param method		路由http方法
      */
     private void buildRoute(Class<?> clazz, Method execMethod, String path, HttpMethod method){
-    	this.router.route(path, clazz, execMethod, HttpMethod.BEFORE);
+    	this.router.route(path, clazz, execMethod, method);
     }
     
     /**

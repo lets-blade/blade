@@ -14,7 +14,6 @@ import com.blade.ioc.SampleContainer;
 import com.blade.ioc.Scope;
 
 import blade.kit.ReflectKit;
-import blade.kit.StringKit;
 import blade.kit.log.Logger;
 
 /**
@@ -128,8 +127,10 @@ public class Router {
 
 	public void route(String path, Class<?> clazz, String methodName) {
 		try {
+			HttpMethod httpMethod = HttpMethod.ALL;
 			if(methodName.indexOf(":") != -1){
-    			String[] methodArr = StringKit.split(methodName, ":");
+    			String[] methodArr = methodName.split(":");
+    			httpMethod = HttpMethod.valueOf(methodArr[0].toUpperCase());
     			methodName = methodArr[1];
     		}
 			Object controller = container.getBean(clazz, Scope.SINGLE);
@@ -140,7 +141,7 @@ public class Router {
 			
 			Method method = clazz.getMethod(methodName, Request.class, Response.class);
 			
-			addRoute(HttpMethod.ALL, path, controller, method);
+			addRoute(httpMethod, path, controller, method);
 		} catch (NoSuchMethodException e) {
 			e.printStackTrace();
 		} catch (SecurityException e) {

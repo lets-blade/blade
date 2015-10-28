@@ -30,8 +30,11 @@ public class SampleRouteMatcher {
 		String cleanPath = parsePath(path);
 		List<Route> matchRoutes = new ArrayList<Route>();
 		for (Route route : this.routes) {
-			if (matchesPath(route.getPath(), cleanPath) && route.getHttpMethod().toString().equalsIgnoreCase(httpMethod)) {
-				matchRoutes.add(route);
+			if (matchesPath(route.getPath(), cleanPath)) {
+				if (route.getHttpMethod() == HttpMethod.ALL
+						|| HttpMethod.valueOf(httpMethod) == route.getHttpMethod()) {
+					matchRoutes.add(route);
+				}
 			}
 		}
 		// 优先匹配原则
