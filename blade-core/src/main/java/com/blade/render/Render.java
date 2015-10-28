@@ -8,7 +8,7 @@ import java.io.Writer;
  *
  */
 public interface Render {
-
-	public void render(ModelAndView modelAndView, Writer writer);
+	
+	public void render(ModelAndView modelAndView, Writer writer) throws RenderException;
 	
 }

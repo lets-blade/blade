@@ -1,21 +1,19 @@
 package blade.render;
 
 import java.io.IOException;
-import java.util.HashMap;
+import java.io.Writer;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-import com.blade.BladeWebContext;
+import com.blade.Blade;
+import com.blade.context.BladeWebContext;
+import com.blade.http.Request;
 import com.blade.render.ModelAndView;
 import com.blade.render.Render;
-import com.blade.servlet.Request;
-import com.blade.servlet.Response;
 import com.blade.servlet.Session;
 
-import blade.exception.BladeException;
 import blade.kit.log.Logger;
-import jetbrick.io.resource.ResourceNotFoundException;
 import jetbrick.template.JetEngine;
 import jetbrick.template.JetTemplate;
 
@@ -24,7 +22,7 @@ import jetbrick.template.JetTemplate;
  * @author biezhi
  *
  */
-public class JetbrickRender extends Render {
+public class JetbrickRender implements Render {
     
 	private static final Logger LOGGER = Logger.getLogger(JetbrickRender.class);
 			
@@ -32,16 +30,17 @@ public class JetbrickRender extends Render {
     
 	private Properties config;
 	
+	private Blade blade;
 	/**
 	 * 默认构造函数
 	 */
 	public JetbrickRender() {
+		blade = Blade.me();
 		config = new Properties();
 		config.put("jetx.input.encoding", blade.encoding());
 		config.put("jetx.output.encoding", blade.encoding());
 		config.put("jetx.template.suffix", ".html");
 		config.put("jetx.template.loaders", "jetbrick.template.loader.FileSystemResourceLoader");
-		
 		jetEngine = JetEngine.create(config);
 	}
 	
@@ -99,91 +98,36 @@ public class JetbrickRender extends Render {
 		this.jetEngine = jetEngine;
 	}
 	
-	/**
-	 * 渲染视图
-	 */
+
 	@Override
-	public Object render(String view) {
+	public void render(ModelAndView modelAndView, Writer writer) {
+		Request request = BladeWebContext.request();
+		Session session = request.session();
 		
-		Response response = BladeWebContext.response();
-		try {
-			Request request = BladeWebContext.request();
-			Session session = BladeWebContext.session();
-			
-			String realView = blade.webRoot() + disposeView(view);
-			
-			JetTemplate template = jetEngine.getTemplate(realView);
-			
-			Map<String, Object> context = new HashMap<String, Object>();
-			
-			Set<String> attrs = request.attributes();
-			if(null != attrs && attrs.size() > 0){
-				for(String attr : attrs){
-					context.put(attr, request.attribute(attr));
-				}
+		JetTemplate template = jetEngine.getTemplate(modelAndView.getView());
+		
+		Map<String, Object> context = modelAndView.getModel();
+		
+		Set<String> attrs = request.attributes();
+		if(null != attrs && attrs.size() > 0){
+			for(String attr : attrs){
+				context.put(attr, request.attribute(attr));
 			}
-			
-			Set<String> session_attrs = session.attributes();
-			if(null != session_attrs && session_attrs.size() > 0){
-				for(String attr : session_attrs){
-					context.put(attr, session.attribute(attr));
-				}
-			}
-			
-			template.render(context, response.outputStream());
-		} catch (ResourceNotFoundException e) {
-			render404(response, disposeView(view));
-		} catch (IOException e) {
-			LOGGER.error(e);
 		}
-		return null;
-	}
-
-
-	/**
-	 * 渲染视图
-	 */
-	@Override
-	public Object render(ModelAndView modelAndView) {
 		
-		Response response = BladeWebContext.response();
+		Set<String> session_attrs = session.attributes();
+		if(null != session_attrs && session_attrs.size() > 0){
+			for(String attr : session_attrs){
+				context.put(attr, session.attribute(attr));
+			}
+		}
 		
 		try {
-			Request request = BladeWebContext.request();
-			Session session = BladeWebContext.session();
-			
-			if(null == modelAndView){
-				throw new BladeException("modelAndView is null");
-			}
-			
-			String view = blade.webRoot() + disposeView(modelAndView.getView());
-			
-			JetTemplate template = jetEngine.getTemplate(view);
-			
-			Map<String, Object> context = modelAndView.getModel();
-			
-			Set<String> attrs = request.attributes();
-			if(null != attrs && attrs.size() > 0){
-				for(String attr : attrs){
-					context.put(attr, request.attribute(attr));
-				}
-			}
-			
-			Set<String> session_attrs = session.attributes();
-			if(null != session_attrs && session_attrs.size() > 0){
-				for(String attr : session_attrs){
-					context.put(attr, session.attribute(attr));
-				}
-			}
-			
-			template.render(context, response.outputStream());
-			
-		} catch (ResourceNotFoundException e) {
-			render404(response, modelAndView.getView());
-		} catch (IOException e) {
+			template.render(context, writer);
+		} catch (Exception e) {
+			e.printStackTrace();
 			LOGGER.error(e);
 		}
-		return null;
 	}
 	
 }
