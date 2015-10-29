@@ -4,18 +4,27 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 
-public class FileSystemRoutesLoader extends AbstractFileRoutesLoader {
+/**
+ * 
+ * <p>
+ * 基于文件系统实现的路由加载器
+ * </p>
+ *
+ * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
+ * @since	1.0
+ */
+public class FileSystemRouteLoader extends AbstractFileRouteLoader {
 
 	private File file;
 
-	public FileSystemRoutesLoader() {
+	public FileSystemRouteLoader() {
 	}
 
-	public FileSystemRoutesLoader(String filePath) {
+	public FileSystemRouteLoader(String filePath) {
 		this(new File(filePath));
 	}
 
-	public FileSystemRoutesLoader(File file) {
+	public FileSystemRouteLoader(File file) {
 		this.file = file;
 	}
 

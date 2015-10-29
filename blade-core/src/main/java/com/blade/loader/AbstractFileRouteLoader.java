@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.Reader;
 import java.lang.reflect.Method;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -17,51 +16,65 @@ import com.blade.http.Response;
 import com.blade.route.Route;
 import com.blade.route.RoutesException;
 
-public abstract class AbstractFileRoutesLoader implements RoutesLoader {
+import blade.kit.IOKit;
+
+/**
+ * <p>
+ * 抽象加载器实现
+ * </p>
+ *
+ * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
+ * @since	1.0
+ */
+public abstract class AbstractFileRouteLoader implements RouteLoader {
 
 	private ControllerLoader controllerLoader = new ClassPathControllerLoader();
 
+	protected abstract InputStream getInputStream() throws Exception;
+	
 	@Override
 	public List<Route> load() throws ParseException, RoutesException {
 		InputStream inputStream = null;
 		try {
 			inputStream = getInputStream();
 		} catch (Exception e) {
-			throw new RoutesException("Problem loading the routes.config file: " + e.getMessage(), e);
+			throw new RoutesException("Loading the route config file error: " + e.getMessage(), e);
 		}
-
 		try {
 			return load(inputStream);
 		} catch (IOException e) {
-			throw new RoutesException("Problem loading the routes.config file: " + e.getMessage(), e);
+			throw new RoutesException("Loading the route config file error: " + e.getMessage(), e);
 		}
 	}
 
+	/**
+	 * 加载路由
+	 * 
+	 * @param inputStream		路由文件流
+	 * @return					返回路由列表
+	 * @throws ParseException	解析异常
+	 * @throws IOException		IO异常
+	 */
 	private List<Route> load(InputStream inputStream) throws ParseException, IOException {
-		int line = 0; // reset line positioning
-		List<Route> routes = new ArrayList<Route>(); // this is what we will fill and return
-
+		int line = 0;
+		List<Route> routes = new ArrayList<Route>();
 		BufferedReader in = null;
 		try {
 			in = new BufferedReader(new InputStreamReader(inputStream));
-
 			String input;
 			while ( (input = in.readLine()) != null ) {
 				line++;
 
 				input = input.trim();
 
-				// only parse line if it is not empty and not a comment
 				if (!input.equals("") && !input.startsWith("#")) {
 					Route route = parse(input, line);
 					routes.add(route);
 				}
 			}
-
 		} finally {
-			closeResource(in);
+			IOKit.closeQuietly(in);
 		}
-
 		return routes;
 	}
 
@@ -71,16 +84,16 @@ public abstract class AbstractFileRoutesLoader implements RoutesLoader {
 			throw new ParseException("Unrecognized format", line);
 		}
 
-		// retrieve and validate the three arguments
+		// 验证HTTP请求方
 		String httpMethod = validateHttpMethod( st.nextToken().trim(), line );
+		
 		String path = validatePath( st.nextToken().trim(), line );
 		String controllerAndMethod = validateControllerAndMethod( st.nextToken().trim(), line );
 
-		// retrieve controller name
 		int hashPos = controllerAndMethod.indexOf('#');
 		String controllerName = controllerAndMethod.substring(0, hashPos);
 
-		// retrieve controller method
+		// 获取控制器方法
 		String controllerMethod = controllerAndMethod.substring(hashPos + 1);
 
 		return buildRoute(httpMethod, path, controllerName, controllerMethod);
@@ -91,10 +104,8 @@ public abstract class AbstractFileRoutesLoader implements RoutesLoader {
 				!httpMethod.equalsIgnoreCase("POST") &&
 				!httpMethod.equalsIgnoreCase("PUT") &&
 				!httpMethod.equalsIgnoreCase("DELETE")) {
-
 			throw new ParseException("Unrecognized HTTP method: " + httpMethod, line);
 		}
-
 		return httpMethod;
 	}
 
@@ -102,7 +113,7 @@ public abstract class AbstractFileRoutesLoader implements RoutesLoader {
 		if (!path.startsWith("/")) {
 			throw new ParseException("Path must start with '/'", line);
 		}
-
+		
 		boolean openedKey = false;
 		for (int i=0; i < path.length(); i++) {
 
@@ -144,6 +155,14 @@ public abstract class AbstractFileRoutesLoader implements RoutesLoader {
 		return true;
 	}
 
+	/**
+	 * 验证控制器方法
+	 * 
+	 * @param beanAndMethod		控制器和方法，使用#隔开
+	 * @param line				所在行数
+	 * @return					返回验证后的字符串，异常则抛出
+	 * @throws ParseException
+	 */
 	private String validateControllerAndMethod(String beanAndMethod, int line) throws ParseException {
 		int hashPos = beanAndMethod.indexOf('#');
 		if (hashPos == -1) {
@@ -153,6 +172,16 @@ public abstract class AbstractFileRoutesLoader implements RoutesLoader {
 		return beanAndMethod;
 	}
 
+	/**
+	 * 构建一个路由对象
+	 * 
+	 * @param httpMethod		请求方法
+	 * @param path				路由路径
+	 * @param controllerName	控制器名称
+	 * @param methodName		执行的方法名称
+	 * @return					返回路由对象
+	 * @throws RoutesException
+	 */
 	private Route buildRoute(String httpMethod, String path, String controllerName, String methodName) throws RoutesException {
 		Object controller = controllerLoader.load(controllerName);
 		Method method = getMethod(controller, methodName);
@@ -168,17 +197,6 @@ public abstract class AbstractFileRoutesLoader implements RoutesLoader {
 		}
 	}
 
-	private void closeResource(Reader reader) {
-		if (reader != null) {
-			try {
-				reader.close();
-			} catch (Exception e) {
-			}
-		}
-	}
-
-	protected abstract InputStream getInputStream() throws Exception;
-	
 	public void setBasePackage(String basePackage) {
 		this.controllerLoader = new ClassPathControllerLoader(basePackage);
 	}

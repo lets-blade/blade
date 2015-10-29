@@ -1,13 +1,27 @@
 package com.blade.loader;
 
+import com.blade.ioc.Container;
+import com.blade.ioc.SampleContainer;
+import com.blade.ioc.Scope;
 import com.blade.route.RoutesException;
 
+/**
+ * 
+ * <p>
+ * ClassPath控制器加载器
+ * </p>
+ *
+ * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
+ * @since	1.0
+ */
 public class ClassPathControllerLoader implements ControllerLoader {
 
 	private String basePackage;
 
 	private ClassLoader classLoader = ClassPathControllerLoader.class.getClassLoader();
 
+	private Container container = SampleContainer.single();
+	
 	public ClassPathControllerLoader() {
 		this("");
 	}
@@ -27,9 +41,15 @@ public class ClassPathControllerLoader implements ControllerLoader {
 		String className = basePackage + controllerName;
 
 		try {
-			// load the controller class and instantiate it
+			// 加载控制器实例
 			Class<?> controllerClass = classLoader.loadClass(className);
-			return controllerClass.newInstance();
+			
+			Object controller = container.getBean(controllerClass, Scope.SINGLE);
+			if(null == controller){
+				controller = controllerClass.newInstance();
+				container.registBean(controller);
+			}
+			return controller;
 		} catch (Exception e) {
 			throw new RoutesException(e);
 		}

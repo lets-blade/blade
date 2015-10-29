@@ -4,24 +4,33 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 
-public class ClassPathRoutesLoader extends AbstractFileRoutesLoader {
+/**
+ * 
+ * <p>
+ * 基于ClassPath实现的路由加载器
+ * </p>
+ *
+ * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
+ * @since	1.0
+ */
+public class ClassPathRouteLoader extends AbstractFileRouteLoader {
 
 	private File file;
 
 	private InputStream inputStream;
 	
-	public ClassPathRoutesLoader() {
+	public ClassPathRouteLoader() {
 	}
 
-	public ClassPathRoutesLoader(String filePath) {
+	public ClassPathRouteLoader(String filePath) {
 		this(new File(filePath));
 	}
 
-	public ClassPathRoutesLoader(File file) {
+	public ClassPathRouteLoader(File file) {
 		this.file = file;
 	}
 	
-	public ClassPathRoutesLoader(InputStream inputStream) {
+	public ClassPathRouteLoader(InputStream inputStream) {
 		this.inputStream = inputStream;
 	}
 	
