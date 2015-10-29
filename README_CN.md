@@ -39,7 +39,7 @@ public class App {
 		blade.get("/", (request, response) -> {
 			response.html("<h1>Hello blade!</h1>");
 		});
-		blade.app(App.class).listen(9001).start();
+		blade.listen(9001).start();
 	}
 }
 ```
