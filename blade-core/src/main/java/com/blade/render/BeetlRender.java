@@ -1,3 +1,18 @@
+/**
+ * Copyright (c) 2015, biezhi 王爵 (biezhi.me@gmail.com)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * 	http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.blade.render;
 
 import java.io.IOException;
@@ -19,17 +34,28 @@ import com.blade.servlet.Session;
 import blade.kit.log.Logger;
 
 /**
+ * 
+ * <p>
  * Beetl渲染引擎
- * @author biezhi
+ * </p>
  *
+ * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
+ * @since	1.0
  */
 public class BeetlRender implements Render {
     
 	private static final Logger LOGGER = Logger.getLogger(BeetlRender.class);
 	
+	/**
+	 * Beetl获取模板对象
+	 */
 	private GroupTemplate groupTemplate = null;
 	
+	/**
+	 * Blade对象
+	 */
 	private Blade blade;
+	
 	/**
 	 * 默认构造函数
 	 */

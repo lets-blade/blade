@@ -1,3 +1,18 @@
+/**
+ * Copyright (c) 2015, biezhi 王爵 (biezhi.me@gmail.com)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * 	http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.blade.render;
 
 import java.io.IOException;
@@ -18,9 +33,13 @@ import jetbrick.template.JetEngine;
 import jetbrick.template.JetTemplate;
 
 /**
+ * 
+ * <p>
  * Velocity渲染引擎
- * @author biezhi
+ * </p>
  *
+ * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
+ * @since	1.0
  */
 public class JetbrickRender implements Render {
     
@@ -62,6 +81,7 @@ public class JetbrickRender implements Render {
 	
 	/**
 	 * 添加一个配置
+	 * 
 	 * @param key	配置键
 	 * @param value	配置值
 	 */
@@ -74,6 +94,7 @@ public class JetbrickRender implements Render {
 	
 	/**
 	 * 根据配置文件构造一个JetEngine引擎
+	 * 
 	 * @param configLocation
 	 * @throws IOException 
 	 */
@@ -84,6 +105,7 @@ public class JetbrickRender implements Render {
 	
 	/**
 	 * 根据构造一个JetEngine引擎
+	 * 
 	 * @param config	Properties配置
 	 */
 	public JetbrickRender(Properties config) {
@@ -94,6 +116,7 @@ public class JetbrickRender implements Render {
 	
 	/**
 	 * 手动构造JetEngine引擎
+	 * 
 	 * @param jetEngine	jetEngine引擎
 	 */
 	public JetbrickRender(JetEngine jetEngine) {

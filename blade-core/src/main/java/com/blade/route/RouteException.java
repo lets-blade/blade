@@ -13,34 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.blade.servlet.multipart;
+package com.blade.route;
 
 /**
  * 
  * <p>
- * Multipart异常类
+ * 路由异常类
  * </p>
  *
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since	1.0
  */
-public class MultipartException extends Exception {
+public class RouteException extends RuntimeException {
 
 	private static final long serialVersionUID = 1L;
 
-	public MultipartException() {
-	}
-
-	public MultipartException(String message) {
+	public RouteException(String message) {
 		super(message);
 	}
 
-	public MultipartException(Throwable cause) {
-		super(cause);
+	public RouteException(String message, Throwable cause) {
+		super(message, cause);
 	}
 
-	public MultipartException(String message, Throwable cause) {
-		super(message, cause);
+	public RouteException(Throwable cause) {
+		super(cause);
 	}
 
 }

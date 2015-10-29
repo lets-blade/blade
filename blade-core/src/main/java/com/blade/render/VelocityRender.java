@@ -1,3 +1,18 @@
+/**
+ * Copyright (c) 2015, biezhi 王爵 (biezhi.me@gmail.com)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * 	http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.blade.render;
 
 import java.io.File;
@@ -21,9 +36,13 @@ import com.blade.servlet.Session;
 import blade.kit.log.Logger;
 
 /**
+ * 
+ * <p>
  * Velocity渲染引擎
- * @author biezhi
+ * </p>
  *
+ * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
+ * @since	1.0
  */
 public class VelocityRender implements Render {
     
@@ -48,6 +67,7 @@ public class VelocityRender implements Render {
 	
 	/**
 	 * 根据配置文件构造一个Velocity引擎
+	 * 
 	 * @param propertiesFile
 	 * @throws IOException 
 	 */
@@ -69,6 +89,7 @@ public class VelocityRender implements Render {
 	
 	/**
 	 * 根据构造一个Velocity引擎
+	 * 
 	 * @param properties
 	 */
 	public VelocityRender(Properties properties) {
@@ -78,7 +99,8 @@ public class VelocityRender implements Render {
 	
 	/**
 	 * 手动构造Velocity引擎
-	 * @param velocityEngine_
+	 * 
+	 * @param velocityEngine
 	 */
 	public VelocityRender(VelocityEngine velocityEngine) {
 		blade = Blade.me();

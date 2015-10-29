@@ -33,7 +33,7 @@ import com.blade.render.Render;
 import com.blade.route.Route;
 import com.blade.route.RouteHandler;
 import com.blade.route.Router;
-import com.blade.route.RoutesException;
+import com.blade.route.RouteException;
 import com.blade.server.Server;
 
 import blade.kit.IOKit;
@@ -742,7 +742,7 @@ public class Blade {
 			routesLoader.setBasePackage(basePackage);
 			List<Route> routes = routesLoader.load();
 			router.addRoutes(routes);
-		} catch (RoutesException e) {
+		} catch (RouteException e) {
 			e.printStackTrace();
 		} catch (ParseException e) {
 			e.printStackTrace();

@@ -33,7 +33,10 @@ import blade.kit.resource.ClassPathClassReader;
 import blade.kit.resource.ClassReader;
 
 /**
+ * 
+ * <p>
  * 路由构造器
+ * </p>
  *
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since	1.0
@@ -110,8 +113,10 @@ public class RouteBuilder {
      * @param interceptorPackages	要添加的拦截器包
      */
     private void buildInterceptor(String... interceptorPackages){
+    	
     	// 扫描所有的Interceptor
 		Set<Class<?>> classes = null;
+		
     	// 拦截器
 		for(String packageName : interceptorPackages){
 			

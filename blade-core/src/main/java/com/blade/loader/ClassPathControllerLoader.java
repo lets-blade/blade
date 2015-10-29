@@ -3,7 +3,7 @@ package com.blade.loader;
 import com.blade.ioc.Container;
 import com.blade.ioc.SampleContainer;
 import com.blade.ioc.Scope;
-import com.blade.route.RoutesException;
+import com.blade.route.RouteException;
 
 /**
  * 
@@ -37,7 +37,7 @@ public class ClassPathControllerLoader implements ControllerLoader {
 	}
 
 	@Override
-	public Object load(String controllerName) throws RoutesException {
+	public Object load(String controllerName) throws RouteException {
 		String className = basePackage + controllerName;
 
 		try {
@@ -51,7 +51,7 @@ public class ClassPathControllerLoader implements ControllerLoader {
 			}
 			return controller;
 		} catch (Exception e) {
-			throw new RoutesException(e);
+			throw new RouteException(e);
 		}
 	}
 

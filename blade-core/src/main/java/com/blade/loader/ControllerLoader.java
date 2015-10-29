@@ -1,6 +1,6 @@
 package com.blade.loader;
 
-import com.blade.route.RoutesException;
+import com.blade.route.RouteException;
 
 /**
  * 
@@ -13,6 +13,6 @@ import com.blade.route.RoutesException;
  */
 public interface ControllerLoader {
 	
-	Object load(String controllerName) throws RoutesException;
+	Object load(String controllerName) throws RouteException;
 	
 }

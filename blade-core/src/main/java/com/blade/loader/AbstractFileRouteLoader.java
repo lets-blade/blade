@@ -14,7 +14,7 @@ import com.blade.http.HttpMethod;
 import com.blade.http.Request;
 import com.blade.http.Response;
 import com.blade.route.Route;
-import com.blade.route.RoutesException;
+import com.blade.route.RouteException;
 
 import blade.kit.IOKit;
 
@@ -33,17 +33,17 @@ public abstract class AbstractFileRouteLoader implements RouteLoader {
 	protected abstract InputStream getInputStream() throws Exception;
 	
 	@Override
-	public List<Route> load() throws ParseException, RoutesException {
+	public List<Route> load() throws ParseException, RouteException {
 		InputStream inputStream = null;
 		try {
 			inputStream = getInputStream();
 		} catch (Exception e) {
-			throw new RoutesException("Loading the route config file error: " + e.getMessage(), e);
+			throw new RouteException("Loading the route config file error: " + e.getMessage(), e);
 		}
 		try {
 			return load(inputStream);
 		} catch (IOException e) {
-			throw new RoutesException("Loading the route config file error: " + e.getMessage(), e);
+			throw new RouteException("Loading the route config file error: " + e.getMessage(), e);
 		}
 	}
 
@@ -180,20 +180,20 @@ public abstract class AbstractFileRouteLoader implements RouteLoader {
 	 * @param controllerName	控制器名称
 	 * @param methodName		执行的方法名称
 	 * @return					返回路由对象
-	 * @throws RoutesException
+	 * @throws RouteException
 	 */
-	private Route buildRoute(String httpMethod, String path, String controllerName, String methodName) throws RoutesException {
+	private Route buildRoute(String httpMethod, String path, String controllerName, String methodName) throws RouteException {
 		Object controller = controllerLoader.load(controllerName);
 		Method method = getMethod(controller, methodName);
 
 		return new Route(HttpMethod.valueOf(httpMethod.toUpperCase()), path, controller, method);
 	}
 
-	private Method getMethod(Object controller, String methodName) throws RoutesException {
+	private Method getMethod(Object controller, String methodName) throws RouteException {
 		try {
 			return controller.getClass().getMethod(methodName, Request.class, Response.class);
 		} catch (Exception e) {
-			throw new RoutesException(e);
+			throw new RouteException(e);
 		}
 	}
 

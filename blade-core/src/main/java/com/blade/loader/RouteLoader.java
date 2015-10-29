@@ -4,7 +4,7 @@ import java.text.ParseException;
 import java.util.List;
 
 import com.blade.route.Route;
-import com.blade.route.RoutesException;
+import com.blade.route.RouteException;
 
 /**
  * 
@@ -17,6 +17,6 @@ import com.blade.route.RoutesException;
  */
 public interface RouteLoader {
 
-	List<Route> load() throws ParseException, RoutesException;
+	List<Route> load() throws ParseException, RouteException;
 
 }
