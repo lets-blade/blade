@@ -4,4 +4,4 @@ jdk:
   - oraclejdk7
   - openjdk6
 script:
-	mvn install -Dmaven.test.skip=false -fae
+	mvn compile -DskipTests=true
