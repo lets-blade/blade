@@ -118,7 +118,7 @@ public interface Request {
 	
 	void attribute(String name, Object value);
 	
-	Object attribute(String name);
+	<T> T attribute(String name);
 	
 	Set<String> attributes();
 	

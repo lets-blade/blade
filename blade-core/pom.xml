@@ -11,7 +11,7 @@
 
 	<artifactId>blade-core</artifactId>
 	<packaging>jar</packaging>
-	<version>${blade.version}</version>
+	<version>1.4.1-alpha</version>
 	<name>blade-core</name>
 	<url>https://github.com/biezhi/blade/blade-core</url>
 
@@ -20,6 +20,8 @@
 		<jetbrick.version>2.0.12</jetbrick.version>
 		<beetl.version>2.2.3</beetl.version>
 		<velocity.version>1.7</velocity.version>
+		<httpclient.version>4.3.5</httpclient.version>
+		<slf4j.version>1.7.7</slf4j.version>
 	</properties>
 
 	<dependencies>
@@ -31,7 +33,7 @@
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
-			<version>${servlet.version}</version>
+			<version>3.1.0</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -63,6 +65,36 @@
 			<artifactId>jetty-webapp</artifactId>
 			<version>${jetty.version}</version>
 			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.testng</groupId>
+			<artifactId>testng</artifactId>
+			<version>6.8.8</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-all</artifactId>
+			<version>1.9.5</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+			<version>${httpclient.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>fluent-hc</artifactId>
+			<version>${httpclient.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>${slf4j.version}</version>
+			<scope>test</scope>
 		</dependency>
 
 	</dependencies>

@@ -294,6 +294,7 @@ public class ServletResponse implements Response {
 			}
 			viewPath = Path.cleanPath(viewPath);
 			ModelAndView modelAndView = new ModelAndView(viewPath);
+			
 			render.render(modelAndView, response.getWriter());
 			return this;
 		} catch (IOException e) {

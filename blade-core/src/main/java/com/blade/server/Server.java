@@ -40,22 +40,38 @@ public class Server {
 	
 	private int port = 9000;
 	
+	private org.eclipse.jetty.server.Server server;
+	
+	private ServletContextHandler context;
+	
 	public Server(int port) {
 		this.port = port;
 	}
 	
-	public void run(String contextPath) throws Exception{
+	public void setPort(int port){
+		this.port = port;
+	}
+	
+	public void start(String contextPath) throws Exception{
 		
-		org.eclipse.jetty.server.Server server = new org.eclipse.jetty.server.Server(port);
+		server = new org.eclipse.jetty.server.Server(this.port);
 		
-	    ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
+	    context = new ServletContextHandler(ServletContextHandler.SESSIONS);
 	    context.setContextPath(contextPath);
 	    context.setResourceBase(System.getProperty("java.io.tmpdir"));
 	    context.addFilter(CoreFilter.class, "/*", EnumSet.of(DispatcherType.REQUEST));
-        server.setHandler(context);
-        
+	    
+        server.setHandler(this.context);
 	    server.start();
-	    LOGGER.info("Blade Server Listen on 0.0.0.0:" + port);
-	    server.join();
+	    LOGGER.info("Blade Server Listen on 0.0.0.0:" + this.port);
+	}
+	
+	public void join() throws InterruptedException {
+		server.join();
+	}
+	
+	public void stop() throws Exception{
+		context.stop();
+		server.stop();
 	}
 }

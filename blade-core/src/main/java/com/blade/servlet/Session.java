@@ -34,7 +34,7 @@ public class Session {
 
     private HttpSession session;
 
-    Session(HttpSession session) {
+    public Session(HttpSession session) {
         if (session == null) {
             throw new IllegalArgumentException("session cannot be null");
         }

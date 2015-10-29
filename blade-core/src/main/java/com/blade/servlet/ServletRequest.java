@@ -319,7 +319,7 @@ public class ServletRequest implements Request {
 	
 	@Override
 	public HttpMethod httpMethod() {
-		return HttpMethod.valueOf(request.getMethod());
+		return HttpMethod.valueOf(request.getMethod().toUpperCase());
 	}
 
 	@Override
@@ -351,9 +351,14 @@ public class ServletRequest implements Request {
 		request.setAttribute(name, value);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public Object attribute(String name) {
-		return request.getAttribute(name);
+	public <T> T attribute(String name) {
+		Object object = request.getAttribute(name);
+		if(null != object){
+			return (T) object;
+		}
+		return null;
 	}
 
 	@Override
@@ -405,8 +410,14 @@ public class ServletRequest implements Request {
 		Cookie cookie = new Cookie(servletCookie.getName(), servletCookie.getValue());
 		cookie.setMaxAge(servletCookie.getMaxAge());
 		cookie.setHttpOnly(servletCookie.isHttpOnly());
-		cookie.setPath(servletCookie.getPath());
-		cookie.setDomain(servletCookie.getDomain());
+		String path = servletCookie.getPath();
+		if(null != path){
+			cookie.setPath(path);
+		}
+		String domain = servletCookie.getDomain();
+		if(null != domain){
+			cookie.setDomain(domain);
+		}
 		cookie.setSecure(servletCookie.getSecure());
 		return cookie;
 	}

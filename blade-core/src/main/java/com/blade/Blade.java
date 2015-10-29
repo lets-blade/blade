@@ -103,6 +103,11 @@ public class Blade {
      */
     private int port = DEFAULT_PORT;
     
+    /**
+     * jetty服务
+     */
+    private Server bladeServer;
+    
 	private Blade() {
 	}
 	
@@ -590,8 +595,8 @@ public class Blade {
 	 */
 	public void start(String contextPath) {
 		try {
-			Server bladeServer = new Server(this.port);
-			bladeServer.run(contextPath);
+			bladeServer = new Server(this.port);
+			bladeServer.start(contextPath);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}	    
@@ -602,6 +607,26 @@ public class Blade {
 	 */
 	public void start() {
 		this.start("/");
+	}
+	
+	/**
+	 * 停止jetty服务
+	 */
+	public void stop() {
+		try {
+			bladeServer.stop();
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
+	/**
+	 * join in server
+	 * @throws InterruptedException 
+	 * @throws Exception 
+	 */
+	public void join() throws InterruptedException {
+		bladeServer.join();
 	}
 	
 	/**

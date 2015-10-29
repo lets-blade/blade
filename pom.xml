@@ -14,7 +14,6 @@
 		<maven.compiler.source>1.6</maven.compiler.source>
 		<maven.compiler.target>1.6</maven.compiler.target>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<junit.version>4.11</junit.version>
 		<servlet.version>3.0.1</servlet.version>
 		<blade.version>1.4.1-alpha</blade.version>
 	</properties>
@@ -28,17 +27,6 @@
     	<module>blade-startup</module>
   	</modules>
 		
-	<dependencyManagement>
-		<dependencies>
-			<dependency>
-				<groupId>junit</groupId>
-				<artifactId>junit</artifactId>
-				<version>${junit.version}</version>
-				<scope>test</scope>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
-	
 	<repositories>
 	 <repository>
 	   <id>oss-snapshots</id>
@@ -67,7 +55,7 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>2.5</version>
 				<configuration>
-					<skip>true</skip>
+					<skip>false</skip>
 				</configuration>
 			</plugin>
 		</plugins>
