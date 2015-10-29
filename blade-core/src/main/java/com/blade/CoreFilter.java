@@ -49,8 +49,14 @@ public class CoreFilter implements Filter {
 	 */
     private static final String BOOSTRAP_CLASS = "bootstrapClass";
     
+    /**
+     * Blade单例对象
+     */
     private Blade blade;
     
+    /**
+     * 执行所有请求的处理器
+     */
     private ActionHandler actionHandler;
     
     @Override
@@ -73,6 +79,7 @@ public class CoreFilter implements Filter {
 			    // 构建路由
 				new RouteBuilder(blade).building();
 				
+				// 初始化IOC
 			    IocApplication.init(blade);
 			    
 			    bootstrap.contextInitialized();
@@ -80,6 +87,7 @@ public class CoreFilter implements Filter {
 			    blade.setInit(true);
 			    
 			    actionHandler = new ActionHandler(filterConfig.getServletContext(), blade);
+			    
 			    LOGGER.info("blade init complete!");
 			}
 		} catch (Exception e) {

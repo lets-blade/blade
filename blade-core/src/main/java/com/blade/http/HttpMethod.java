@@ -16,7 +16,9 @@
 package com.blade.http;
 
 /**
+ * <p>
  * HTTP请求方法
+ * </p>
  *
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since	1.0

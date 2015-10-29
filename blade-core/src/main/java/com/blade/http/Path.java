@@ -25,7 +25,10 @@ import blade.kit.CollectionKit;
 import blade.kit.StringKit;
 
 /**
- * PATH处理
+ * 
+ * <p>
+ * 路径、URL处理
+ * </p>
  *
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since	1.0

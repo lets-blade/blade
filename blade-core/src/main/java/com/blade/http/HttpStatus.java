@@ -16,7 +16,10 @@
 package com.blade.http;
 
 /**
+ * 
+ * <p>
  * HTTP状态码
+ * </p>
  *
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since	1.0

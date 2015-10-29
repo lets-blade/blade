@@ -15,7 +15,6 @@
  */
 package com.blade;
 
-import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.List;
 
@@ -55,10 +54,19 @@ public class ActionHandler {
 	
 	private static final Logger LOGGER = Logger.getLogger(ActionHandler.class);
 	
+	/**
+	 * blade对象
+	 */
 	private Blade blade;
 	
+	/**
+	 * 路由管理器
+	 */
 	private Router router;
 	
+	/**
+	 * 路由匹配器
+	 */
 	private SampleRouteMatcher sampleRouteMatcher;
 	
     /**
@@ -87,9 +95,10 @@ public class ActionHandler {
 	
 	/**
 	 * 处理请求
-	 * @param httpRequest
-	 * @param httpResponse
-	 * @return
+	 * 
+	 * @param httpRequest	HttpServletRequest对象
+	 * @param httpResponse	HttpServletResponse对象
+	 * @return				返回true，处理完毕；返回false，由filter继续处理
 	 */
 	public boolean handle(HttpServletRequest httpRequest, HttpServletResponse httpResponse){
 		
@@ -175,11 +184,11 @@ public class ActionHandler {
 	
 	/**
 	 * 404视图渲染
-	 * @param response
-	 * @param uri
-	 * @throws IOException
+	 * 
+	 * @param response		响应对象
+	 * @param uri			404的URI
 	 */
-	private void render404(Response response, String uri) throws IOException{
+	private void render404(Response response, String uri) {
 		String view404 = blade.view404();
     	if(StringKit.isNotBlank(view404)){
     		ModelAndView modelAndView = new ModelAndView(view404);
@@ -192,10 +201,11 @@ public class ActionHandler {
 	}
 	
 	/**
-	 * 执行拦截器方法
-	 * @param request
-	 * @param response
-	 * @param interceptors
+	 * 执行拦截器的方法
+	 * 
+	 * @param request		请求对象
+	 * @param response		响应对象
+	 * @param interceptors	要执行的拦截器列表
 	 */
 	private void invokeInterceptor(Request request, Response response, List<Route> interceptors) {
 		for(Route route : interceptors){
@@ -205,6 +215,7 @@ public class ActionHandler {
 
 	/**
 	 * 实际的路由方法执行
+	 * 
 	 * @param request	请求对象
 	 * @param response	响应对象
 	 * @param route		路由对象
@@ -254,6 +265,7 @@ public class ActionHandler {
 	
 	/**
 	 * 执行路由方法
+	 * 
 	 * @param object		方法的实例，即该方法所在类的对象
 	 * @param method		要执行的method
 	 * @param request		Request对象，作为参数注入
@@ -273,8 +285,9 @@ public class ActionHandler {
 	
 	/**
 	 * 要过滤掉的目录
-	 * @param uri
-	 * @return
+	 * 
+	 * @param uri	URI表示当前路径，在静态目录中进行过滤
+	 * @return		返回false，过滤成功；返回true，不过滤
 	 */
 	private boolean filterStaticFolder(String uri){
 		int len = blade.staticFolder().length;

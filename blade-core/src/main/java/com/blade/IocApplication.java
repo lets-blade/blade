@@ -45,16 +45,23 @@ public final class IocApplication {
 	/**
 	 * IOC容器，单例获取默认的容器实现
 	 */
-	static final Container container = SampleContainer.single();
+	private static final Container container = SampleContainer.single();
 	
 	/**
 	 * 类读取对象，加载class
 	 */
-	static final ClassReader classReader = new ClassPathClassReader();
+	private static final ClassReader classReader = new ClassPathClassReader();
 	
-	static final List<Plugin> PLUGINS = CollectionKit.newArrayList();
+	/**
+	 * 插件列表
+	 */
+	private static final List<Plugin> PLUGINS = CollectionKit.newArrayList();
 	
-	
+	/**
+	 * 初始化IOC
+	 * 
+	 * @param blade	Blade实例
+	 */
 	public static void init(Blade blade){
 		
 		// 初始化全局配置类

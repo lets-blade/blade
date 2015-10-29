@@ -38,7 +38,15 @@ public final class BladeWebContext {
      * ServletContext对象，在应用初始化时创建
      */
     private ServletContext context; 
+    
+    /**
+     * Request对象
+     */
     private Request request;
+    
+    /**
+     * Response对象
+     */
     private Response response;
     
     private BladeWebContext(){}

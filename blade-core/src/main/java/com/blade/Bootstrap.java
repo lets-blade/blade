@@ -28,6 +28,9 @@ public abstract class Bootstrap {
 	 */
 	public abstract void init();
 	
+	/**
+	 * 初始化配置后执行
+	 */
 	public void contextInitialized(){
 		//
 	}
