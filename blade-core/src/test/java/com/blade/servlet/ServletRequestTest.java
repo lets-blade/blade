@@ -248,7 +248,7 @@ public class ServletRequestTest {
     }
 
     @Test
-    public void shoudlRetrieveHeader() throws Exception {
+    public void testRetrieveHeader() throws Exception {
         HttpServletRequest servletRequest = mockServletRequest();
         when(servletRequest.getHeader("Authorization")).thenReturn("Basic ...");
 
@@ -299,12 +299,7 @@ public class ServletRequestTest {
         }
     }
 
-    public static void main(String... args) throws IOException {
-        //Warning 
-        //Be carefull if shouldRetrieveSingleFile or shouldRetrieveMultipleFiles fail is probably because
-        //your system change the line endings in the associated txt files.HTTP Multipart use CRLF as line ending
-        //while Unix like systems use only LF.
-        //If that is the problem runnign this main will fix it ;)
+    public static void main(String[] args) throws IOException {
         fixMultipartLineSeparators("single-file");
         fixMultipartLineSeparators("multiple-files");
     }
