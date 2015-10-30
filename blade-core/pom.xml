@@ -11,7 +11,7 @@
 
 	<artifactId>blade-core</artifactId>
 	<packaging>jar</packaging>
-	<version>1.4.1-alpha</version>
+	<version>${blade.version}</version>
 	<name>blade-core</name>
 	<url>https://github.com/biezhi/blade/blade-core</url>
 
@@ -28,7 +28,7 @@
 		<dependency>
 			<groupId>com.bladejava</groupId>
 			<artifactId>blade-kit</artifactId>
-			<version>1.2.7</version>
+			<version>1.2.8-alpha</version>
 		</dependency>
 		<dependency>
 			<groupId>javax.servlet</groupId>

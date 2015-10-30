@@ -2,7 +2,8 @@
 [![](https://dn-biezhi.qbox.me/LOGO_BIG.png)](http://bladejava.com)
 
 [![Build Status](https://api.travis-ci.org/biezhi/blade.svg?branch=master)](https://travis-ci.org/biezhi/blade)
-[![release](https://img.shields.io/maven-central/v/com.bladejava/blade-core.svg)](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.bladejava%22)
+[![maven-central](https://maven-badges.herokuapp.com/maven-central/com.bladejava/blade-core/badge.svg)](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.bladejava%22)
+[![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
 [![@biezhi on weibo](https://img.shields.io/badge/weibo-%40biezhi-red.svg)](http://weibo.com/u/5238733773)
 
 [中文](https://github.com/biezhi/blade/blob/master/README_CN.md)
