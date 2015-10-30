@@ -1123,8 +1123,7 @@ public abstract class CollectionKit {
     /**
      * 创建ConcurrentSkipListSet实例
      * 
-     * @param <K>
-     * @param <V>
+     * @param <E>	泛型	
      * @return ConcurrentSkipListSet实例
      */
     public static <E> ConcurrentSkipListSet<E> createConcurrentSkipListSet() {
@@ -1134,8 +1133,7 @@ public abstract class CollectionKit {
     /**
      * 创建ConcurrentSkipListSet实例
      * 
-     * @param <K>
-     * @param <V>
+     * @param <E>	泛型
      * @param collection 集合 @see Collection
      * @return ConcurrentSkipListSet实例
      */
@@ -1150,8 +1148,7 @@ public abstract class CollectionKit {
     /**
      * 创建ConcurrentSkipListSet实例
      * 
-     * @param <K>
-     * @param <V>
+     * @param <E>	泛型
      * @param comparator 比较器 @see Comparator
      * @return ConcurrentSkipListSet实例
      */
@@ -1166,8 +1163,7 @@ public abstract class CollectionKit {
     /**
      * 创建ConcurrentSkipListSet实例
      * 
-     * @param <K>
-     * @param <V>
+     * @param <E>	泛型
      * @param set 可排序的散列 @see SortedSet
      * @return ConcurrentSkipListSet实例
      */
@@ -1182,7 +1178,7 @@ public abstract class CollectionKit {
     /**
      * 创建ConcurrentLinkedQueue实例
      * 
-     * @param <E>
+     * @param <E>	泛型
      * @return ConcurrentLinkedQueue实例
      */
     public static <E> Queue<E> createConcurrentLinkedQueue() {
@@ -1192,7 +1188,7 @@ public abstract class CollectionKit {
     /**
      * 创建ConcurrentLinkedQueue实例
      * 
-     * @param <E>
+     * @param <E>	泛型
      * @param collection 集合 @see Collection
      * @return ConcurrentLinkedQueue实例
      */
@@ -1207,7 +1203,7 @@ public abstract class CollectionKit {
     /**
      * 创建CopyOnWriteArrayList实例
      * 
-     * @param <E>
+     * @param <E>	泛型
      * @return CopyOnWriteArrayList实例
      */
     public static <E> CopyOnWriteArrayList<E> createCopyOnWriteArrayList() {
@@ -1217,7 +1213,7 @@ public abstract class CollectionKit {
     /**
      * 创建CopyOnWriteArrayList实例
      * 
-     * @param <E>
+     * @param <E>	泛型
      * @param collection 集合 @see Collection
      * 
      * @return CopyOnWriteArrayList实例
@@ -1233,7 +1229,7 @@ public abstract class CollectionKit {
     /**
      * 创建CopyOnWriteArrayList实例
      * 
-     * @param <E>
+     * @param <E>	泛型
      * @param toCopyIn 创建一个保存给定数组的副本的数组
      * 
      * @return CopyOnWriteArrayList实例
@@ -1249,7 +1245,7 @@ public abstract class CollectionKit {
     /**
      * 创建CopyOnWriteArraySet实例
      * 
-     * @param <E>
+     * @param <E>	泛型
      * @return CopyOnWriteArraySet实例
      */
     public static <E> CopyOnWriteArraySet<E> createCopyOnWriteArraySet() {
@@ -1259,7 +1255,7 @@ public abstract class CollectionKit {
     /**
      * 创建CopyOnWriteArraySet实例
      * 
-     * @param <E>
+     * @param <E>	泛型
      * @param collection 集合 @see Collection
      * 
      * @return CopyOnWriteArraySet实例

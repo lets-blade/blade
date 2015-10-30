@@ -24,7 +24,10 @@ import java.util.Date;
 import java.util.List;
 
 /**
+ * 
+ * <p>
  * 日期处理类
+ * </p>
  *
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since	1.0
@@ -35,31 +38,37 @@ public class DateKit {
 	 * 日
 	 */
 	public final static int INTERVAL_DAY = 1;
+	
 	/**
 	 * 周
 	 */
 	public final static int INTERVAL_WEEK = 2;
+	
 	/**
 	 * 月
 	 */
 	public final static int INTERVAL_MONTH = 3;
+	
 	/**
 	 * 年
 	 */
 	public final static int INTERVAL_YEAR = 4;
+	
 	/**
 	 * 小时
 	 */
 	public final static int INTERVAL_HOUR = 5;
+	
 	/**
 	 * 分钟
 	 */
 	public final static int INTERVAL_MINUTE = 6;
+	
 	/**
 	 * 秒
 	 */
 	public final static int INTERVAL_SECOND = 7;
-
+	
 	/**
 	 * date = 1901-01-01
 	 */
@@ -68,9 +77,8 @@ public class DateKit {
 	/**
 	 * 测试是否是当天
 	 * 
-	 * @param date
-	 *            - 某一日期
-	 * @return true-今天, false-不是
+	 * @param date	某一日期
+	 * @return true	今天, false-不是
 	 */
 	@SuppressWarnings("deprecation")
 	public static boolean isToday(Date date) {

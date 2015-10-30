@@ -20,8 +20,8 @@ import java.net.Socket;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.fluent.Request;
-import org.testng.Assert;
-import org.testng.annotations.Test;
+import org.junit.Assert;
+import org.junit.Test;
 
 public class BladeTestCase {
 
