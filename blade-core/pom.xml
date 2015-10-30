@@ -16,7 +16,7 @@
 	<url>https://github.com/biezhi/blade/blade-core</url>
 
 	<properties>
-		<jetty.version>9.3.4.v20151007</jetty.version>
+		<jetty.version>8.1.15.v20140411</jetty.version>
 		<jetbrick.version>2.0.12</jetbrick.version>
 		<beetl.version>2.2.3</beetl.version>
 		<velocity.version>1.7</velocity.version>
