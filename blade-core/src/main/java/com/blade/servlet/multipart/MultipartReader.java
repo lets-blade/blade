@@ -42,7 +42,7 @@ import java.io.UnsupportedEncodingException;
  *   header-part := 1*header CRLF<br>
  *   header := header-name ":" header-value<br>
  *   header-name := &lt;printable ascii characters except ":"&gt;<br>
- *   header-value := &lt;any ascii characters except CR & LF&gt;<br>
+ *   header-value := &lt;any ascii characters except CR &amp; LF&gt;<br>
  *   body-data := &lt;arbitrary data&gt;<br>
  * </code>
  *

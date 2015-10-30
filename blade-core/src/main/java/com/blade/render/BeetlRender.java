@@ -73,6 +73,11 @@ public class BeetlRender implements Render {
 		}
 	}
 	
+	public BeetlRender(GroupTemplate groupTemplate) {
+		blade = Blade.me();
+		this.groupTemplate = groupTemplate;
+	}
+	
 	public BeetlRender(Configuration configuration) {
 		try {
 			blade = Blade.me();

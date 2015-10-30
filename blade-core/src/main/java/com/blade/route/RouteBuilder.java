@@ -74,8 +74,6 @@ public class RouteBuilder {
     
     /**
      * 开始构建路由
-     * 
-     * @return	返回构建路由后的构造器
      */
     public void building() {
         String basePackage = blade.basePackage();

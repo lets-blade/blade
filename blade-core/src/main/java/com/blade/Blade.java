@@ -215,6 +215,7 @@ public class Blade {
      * 可传入多个包，所有的路由类都在该包下
      * 
      * @param packages 	路由包路径
+     * @return				返回Blade单例实例
      */
     public Blade routes(String...packages){
     	if(null != packages && packages.length >0){
@@ -228,6 +229,7 @@ public class Blade {
      * 如上规则，会超找com.bladejava.route、com.bladejava.interceptor下的路由和拦截器
      * 
      * @param basePackage 	默认包路径
+     * @return				返回Blade单例实例
      */
     public Blade defaultRoute(String basePackage){
     	if(null != basePackage){
@@ -240,6 +242,7 @@ public class Blade {
      * 设置拦截器所在的包路径，如：com.bladejava.interceptor
      * 
      * @param packageName 拦截器所在的包
+     * @return				返回Blade单例实例
      */
 	public Blade interceptor(String packageName) {
 		if(null != packageName && packageName.length() >0){
@@ -252,6 +255,7 @@ public class Blade {
      * 设置依赖注入包，如：com.bladejava.service
      * 
      * @param packages 	所有需要做注入的包，可传入多个
+     * @return				返回Blade单例实例
      */
     public Blade ioc(String...packages){
     	if(null != packages && packages.length >0){
@@ -292,7 +296,7 @@ public class Blade {
      * @param path		路由路径
      * @param target	路由执行的目标对象
      * @param method	路由执行的方法名称（同时指定HttpMethod的方式是：post:saveUser，如不指定则为HttpMethod.ALL）
-     * @param httpMethod
+     * @param httpMethod HTTP请求方法
      * @return			返回Blade单例实例
      */
 	@Deprecated
@@ -306,7 +310,7 @@ public class Blade {
      * @param path		路由路径
      * @param target	路由执行的目标对象
      * @param method	路由执行的方法名称（同时指定HttpMethod的方式是：post:saveUser，如不指定则为HttpMethod.ALL）
-     * @param httpMethod
+     * @param httpMethod HTTP方法
      * @return			返回Blade单例实例
      */
 	public Blade route(String path, Object target, String method, HttpMethod httpMethod){
@@ -333,7 +337,7 @@ public class Blade {
 	 * 
 	 * @param path			路由url	
 	 * @param clazz			路由处理类
-	 * @param methodName	路由处理方法名称
+	 * @param method		路由处理方法名称
 	 * @param httpMethod	请求类型,GET/POST
 	 * @return Blade		返回Blade单例实例
 	 */
@@ -465,7 +469,7 @@ public class Blade {
 	/**
 	 * 设置视图默认后缀名，默认为.jsp
 	 * 
-	 * @param viewExt	视图后缀，如：.html	 .vm
+	 * @param suffix	视图后缀，如：.html	 .vm
 	 * @return			返回Blade单例实例
 	 */
 	public Blade viewSuffix(final String suffix) {
@@ -510,13 +514,13 @@ public class Blade {
 		return this; 
 	}
 	
-    /**
+	/**
      * 动态设置全局初始化类
      * 
      * @param bootstrap 	全局初始化bladeApplication
      * @return				返回Blade单例实例
      */
-    public <T> Blade app(Bootstrap bootstrap){
+    public Blade app(Bootstrap bootstrap){
     	this.bootstrap = bootstrap;
     	return this;
     }
@@ -527,7 +531,7 @@ public class Blade {
      * @param bootstrap 	全局初始化bladeApplication
      * @return				返回Blade单例实例
      */
-    public <T> Blade app(Class<? extends Bootstrap> bootstrap){
+    public Blade app(Class<? extends Bootstrap> bootstrap){
     	this.bootstrap = (Bootstrap) ReflectKit.newInstance(bootstrap);
     	return this;
     }
@@ -591,7 +595,6 @@ public class Blade {
 	 * 设置jetty启动上下文
 	 * 
 	 * @param contextPath	设置上下文contextPath，默认/
-	 * @return				返回Blade单例实例
 	 */
 	public void start(String contextPath) {
 		try {
@@ -622,8 +625,8 @@ public class Blade {
 	
 	/**
 	 * join in server
-	 * @throws InterruptedException 
-	 * @throws Exception 
+	 * 
+	 * @throws InterruptedException join异常 
 	 */
 	public void join() throws InterruptedException {
 		bladeServer.join();
@@ -741,8 +744,10 @@ public class Blade {
 	
 	/**
 	 * 返回插件对象
+	 * 
 	 * @param pluginClazz	插件class
-	 * @return
+	 * @param <T>			泛型
+	 * @return				返回插件对象
 	 */
 	@SuppressWarnings("unchecked")
 	public <T> T plugin(Class<? extends Plugin> pluginClazz){

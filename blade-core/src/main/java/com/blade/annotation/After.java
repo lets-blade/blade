@@ -24,7 +24,7 @@ import java.lang.annotation.Target;
  * 拦截器后置事件注解，写在方法上  
  * 如：
  * <pre>
- *  @After("")
+ *  {@link After}
  *	public void after(Request request){...}
  * </pre>
  * 
@@ -36,19 +36,17 @@ import java.lang.annotation.Target;
 public @interface After {
 	
 	/**
-	 * 后置事件要拦截的URL
+	 * @return	后置事件要拦截的URL
 	 */
 	String value() default "";
 	
 	/**
-	 * 路由后缀
-	 * @return String 
+	 * @return	路由后缀
 	 */
 	String suffix() default "";
 	
 	/**
-	 * 多个前置拦截
-	 * @return
+	 * @return	多个前置拦截
 	 */
 	String[] values() default {};
 }

@@ -21,8 +21,11 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * 可以被注入的bean注解
  * 
+ * <p>
+ * 可以被注入的bean注解
+ * </p>
+ *
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since	1.0
  */

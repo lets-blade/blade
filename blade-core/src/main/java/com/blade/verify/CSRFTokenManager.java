@@ -50,9 +50,10 @@ public class CSRFTokenManager {
 	
 	/**
 	 * 创建一个token
-	 * @param request
-	 * @param response
-	 * @return
+	 * 
+	 * @param request		请求对象
+	 * @param response		响应对象
+	 * @return				返回token令牌
 	 */
     public static String createToken(Request request, Response response) {
         String token = null;
@@ -78,9 +79,10 @@ public class CSRFTokenManager {
     
     /**
      * 根据表单参数验证
-     * @param request
-     * @param response
-     * @return
+     * 
+     * @param request		请求对象
+     * @param response		响应对象
+     * @return				返回是否验证成功
      */
     public static boolean verifyAsForm(Request request, Response response) {
 		// 从 session 中得到 csrftoken 属性
@@ -101,9 +103,10 @@ public class CSRFTokenManager {
     
     /**
      * 根据头信息验证
-     * @param request
-     * @param response
-     * @return
+     * 
+     * @param request		请求对象
+     * @param response		响应对象
+     * @return				返回是否验证成功
      */
     public static boolean verifyAsHeader(Request request, Response response) {
 		// 从 session 中得到 csrftoken 属性
@@ -124,9 +127,10 @@ public class CSRFTokenManager {
     
     /**
      * 根据cookie验证
-     * @param request
-     * @param response
-     * @return
+     * 
+     * @param request		请求对象
+     * @param response		响应对象
+     * @return				返回是否验证成功
      */
     public static boolean verifyAsCookie(Request request, Response response) {
 		// 从 session 中得到 csrftoken 属性
@@ -141,7 +145,6 @@ public class CSRFTokenManager {
 				return true;
 			}
 		}
-		
 		return false;
 	}
     

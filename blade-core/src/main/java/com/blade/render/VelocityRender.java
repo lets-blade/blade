@@ -68,8 +68,8 @@ public class VelocityRender implements Render {
 	/**
 	 * 根据配置文件构造一个Velocity引擎
 	 * 
-	 * @param propertiesFile
-	 * @throws IOException 
+	 * @param propertiesFile	properties文件路径
+	 * @throws IOException 		抛出IO异常
 	 */
 	public VelocityRender(String propertiesFile) throws IOException {
 		blade = Blade.me();
@@ -90,7 +90,7 @@ public class VelocityRender implements Render {
 	/**
 	 * 根据构造一个Velocity引擎
 	 * 
-	 * @param properties
+	 * @param properties	Properties配置文件
 	 */
 	public VelocityRender(Properties properties) {
 		blade = Blade.me();
@@ -100,7 +100,7 @@ public class VelocityRender implements Render {
 	/**
 	 * 手动构造Velocity引擎
 	 * 
-	 * @param velocityEngine
+	 * @param velocityEngine	velocity引擎对象
 	 */
 	public VelocityRender(VelocityEngine velocityEngine) {
 		blade = Blade.me();

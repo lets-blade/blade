@@ -95,8 +95,8 @@ public class JetbrickRender implements Render {
 	/**
 	 * 根据配置文件构造一个JetEngine引擎
 	 * 
-	 * @param configLocation
-	 * @throws IOException 
+	 * @param configLocation	配置文件路径
+	 * @throws IOException 		抛出IO异常
 	 */
 	public JetbrickRender(String configLocation) throws IOException {
 		this.blade = Blade.me();

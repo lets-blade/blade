@@ -21,8 +21,11 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * 自动注入接口
  * 
+ * <p>
+ * 自动注入
+ * </p>
+ *
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since	1.0
  */
@@ -31,8 +34,7 @@ import java.lang.annotation.Target;
 public @interface Inject {
 	
 	/**
-	 * 要注入的类类型
-	 * @return class
+	 * @return	要注入的类类型
 	 */
     Class<?> value() default Class.class;
 

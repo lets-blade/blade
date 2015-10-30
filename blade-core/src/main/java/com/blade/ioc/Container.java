@@ -34,6 +34,7 @@ public interface Container {
 	 * 
 	 * @param name		bean名称，可以是类名
 	 * @param scope		对象作用域，单例或者每次都创建
+	 * @param <T> 		泛型
 	 * @return			一个bean对象
 	 */
 	<T> T getBean(String name, Scope scope);
@@ -43,6 +44,7 @@ public interface Container {
      * 
      * @param type		class类型
      * @param scope		对象作用域，单例或者每次都创建
+     * @param <T> 		泛型
      * @return			一个bean对象
      */
     <T> T getBean(Class<T> type, Scope scope);
@@ -53,6 +55,7 @@ public interface Container {
     Set<String> getBeanNames();
     
     /**
+     * @param <T> 		泛型
      * @return 返回所有bean的集合
      */
     <T> Collection<T> getBeans();
@@ -69,6 +72,7 @@ public interface Container {
      * 根据注解获取ioc容器中匹配的bean对象集合
      * 
      * @param annotation	annotation class类型
+     * @param <T> 			泛型
      * @return				返回符合annotation class类型的所有bean
      */
     <T> List<T> getBeansByAnnotation(Class<? extends Annotation> annotation);
@@ -147,8 +151,8 @@ public interface Container {
     void initWired();
     
     /**
-     * 注入一个类
-     * @param object
+     * 注入一个object
+     * @param object	要注入的object
      */
     void injection(Object object);
     

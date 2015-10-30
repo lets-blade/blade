@@ -21,8 +21,11 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * 路由类注解，标识一个类是否是路由
  * 
+ * <p>
+ * 路由类注解，标识一个类是否是路由
+ * </p>
+ *
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since	1.0
  */
@@ -32,14 +35,12 @@ import java.lang.annotation.Target;
 public @interface Path{
 
 	/**
-	 * 命名空间
-	 * @return String 
+	 * @return	命名空间
 	 */
 	String value() default "/";
 	
 	/**
-	 * 路由后缀
-	 * @return String 
+	 * @return	路由后缀
 	 */
 	String suffix() default "";
 	

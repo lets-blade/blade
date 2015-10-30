@@ -92,7 +92,7 @@ public class ModelAndView {
 	
 	/**
 	 * 设置视图
-	 * @param view
+	 * @param view	视图文件名称
 	 */
 	public void setView(String view) {
 		this.view = view;
@@ -107,7 +107,8 @@ public class ModelAndView {
 	
 	/**
 	 * 设置model
-	 * @param model
+	 * 
+	 * @param model	存放数据的map
 	 */
 	public void setModel(Map<String, Object> model) {
 		this.model = model;
