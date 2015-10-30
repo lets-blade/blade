@@ -82,7 +82,7 @@ public class CoreFilter implements Filter {
 				// 初始化IOC
 			    IocApplication.init(blade);
 			    
-			    bootstrap.contextInitialized();
+			    bootstrap.contextInitialized(blade);
 			    
 			    blade.setInit(true);
 			    

@@ -154,27 +154,39 @@ public class Blade {
 	}
 	
 	/**
-	 * <pre>
 	 * Properties配置文件方式
 	 * 文件的路径基于classpath
-	 * </pre>
 	 * 
 	 * @param confName		配置文件路径
+	 * @return				返回Blade单例实例
 	 */
-	public void setAppConf(String confName){
+	public Blade config(String confName){
 		Map<String, String> configMap = PropertyKit.getPropertyMap(confName);
 		configuration(configMap);
+		return this;
 	}
 	
 	/**
-	 * <pre>
+	 * Properties配置文件方式
+	 * 文件的路径基于classpath
+	 * 
+	 * @param confName		配置文件路径
+	 * @return				返回Blade单例实例
+	 */
+	public Blade setAppConf(String confName){
+		Map<String, String> configMap = PropertyKit.getPropertyMap(confName);
+		configuration(configMap);
+		return this;
+	}
+	
+	/**
 	 * JSON文件的配置
 	 * 文件的路径基于classpath
-	 * </pre>
 	 * 
 	 * @param jsonPath		json文件路径
+	 * @return				返回Blade单例实例
 	 */
-	public void setJsonConf(String jsonPath){
+	public Blade setJsonConf(String jsonPath){
 		InputStream inputStream = Blade.class.getResourceAsStream(jsonPath);
 		if(null != inputStream){
 			try {
@@ -185,6 +197,7 @@ public class Blade {
 				e.printStackTrace();
 			}
 		}
+		return this;
 	}
 	
 	/**
@@ -193,10 +206,12 @@ public class Blade {
 	 * </pre>
 	 * 
 	 * @param json		json配置
+	 * @return				返回Blade单例实例
 	 */
-	public void setAppJson(String json){
+	public Blade setAppJson(String json){
 		Map<String, String> configMap = JSONKit.toMap(json);
 		configuration(configMap);
+		return this;
 	}
 	
 	/**

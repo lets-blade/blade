@@ -31,7 +31,7 @@ public abstract class Bootstrap {
 	/**
 	 * 初始化配置后执行
 	 */
-	public void contextInitialized(){
+	public void contextInitialized(Blade blade){
 		//
 	}
 }
