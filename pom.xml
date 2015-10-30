@@ -65,28 +65,6 @@
 					<encoding>UTF-8</encoding>
 				</configuration>
 			</plugin>
-			<!-- cobertura -->
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>cobertura-maven-plugin</artifactId>
-				<version>2.7</version>
-				<configuration>
-					<format>xml</format>
-					<maxmem>256m</maxmem>
-					<!-- aggregated reports for multi-module projects -->
-					<aggregate>true</aggregate>
-				</configuration>
-			</plugin>
-
-			<!-- coveralls -->
-			<plugin>
-				<groupId>org.eluder.coveralls</groupId>
-				<artifactId>coveralls-maven-plugin</artifactId>
-				<version>3.2.0</version>
-				<configuration>
-					<repoToken>8lXc2riIWKCpWIzRBxTitoZN667hYNdT3</repoToken>
-				</configuration>
-			</plugin>
 		</plugins>
 	</build>
 
