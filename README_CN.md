@@ -30,7 +30,19 @@
 
 ## 快速入门
 
-开始之前,首先 [引入Blade的库文件](http://bladejava.com/docs/intro/getting_start) ，然后创建一个类 ，编写 `Main` 函数：
+开始之前,首先 [引入Blade的库文件](http://bladejava.com/docs/intro/getting_start) ：
+
+`Maven` 配置：
+
+```sh
+<dependency>
+	<groupId>com.bladejava</groupId>
+	<artifactId>blade-core</artifactId>
+	<version>最终版本</version>
+</dependency>
+```
+
+编写 `Main`函数：
 
 ```java
 public class App {
@@ -53,6 +65,7 @@ OK，这一切看起来多么的简单，查阅使用指南更多现成的例子
 + [API文档](http://bladejava.com/apidocs/)
 + [使用指南](https://github.com/biezhi/blade/wiki)
 + [相关案例](https://github.com/bladejava)
++ [版本查询](LAST_VERSION.md)
 
 ### 计划
 

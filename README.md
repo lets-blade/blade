@@ -30,7 +30,19 @@ If you like it, can be [Star and Fork](https://github.com/biezhi/blade), thanks!
 
 ## Getting started
 
-To get started, first [include the Blade library](http://bladejava.com/docs/intro/getting_start) and then create a class with a main method like this:
+To get started, first [include the Blade library](http://bladejava.com/docs/intro/getting_start) :
+
+`Maven` config：
+
+```sh
+<dependency>
+	<groupId>com.bladejava</groupId>
+	<artifactId>blade-core</artifactId>
+	<version>last_version</version>
+</dependency>
+```
+
+create `Main` method like this：
 
 ```java
 public class App {
@@ -53,6 +65,7 @@ OK, all this may seem simple, refer to the guidelines for use more ready-made ex
 + [API DOCS](http://bladejava.com/apidocs/)
 + [USE GUIDE](https://github.com/biezhi/blade/wiki)
 + [EXAMPLES](https://github.com/bladejava)
++ [VERSION](LAST_VERSION.md)
 
 ## Plan
 
