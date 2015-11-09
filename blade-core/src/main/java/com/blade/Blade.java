@@ -52,12 +52,7 @@ public class Blade {
 	/**
 	 * 当前最新版本
 	 */
-	public static final String VERSION = "1.4.1-alpha";
-	
-	/**
-	 * Blade单例
-	 */
-	private static final Blade ME = new Blade();
+	public static final String VERSION = "1.4.1";
 	
 	/**
      * 框架是否已经初始化
@@ -111,11 +106,15 @@ public class Blade {
 	private Blade() {
 	}
 	
+	private static class BladeHolder {
+		private static Blade ME = new Blade();
+	}
+	
 	/**
 	 * @return	单例方式返回Blade对象
 	 */
 	public static Blade me(){
-		return ME;
+		return BladeHolder.ME;
 	}
 	
 	/**
