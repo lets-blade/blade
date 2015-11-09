@@ -67,7 +67,7 @@ public abstract class AbstractFileRouteLoader implements RouteLoader {
 
 				input = input.trim();
 
-				if (!input.equals("") && !input.startsWith("#")) {
+				if (!input.equals("") && !input.startsWith(".")) {
 					Route route = parse(input, line);
 					routes.add(route);
 				}
@@ -90,7 +90,7 @@ public abstract class AbstractFileRouteLoader implements RouteLoader {
 		String path = validatePath( st.nextToken().trim(), line );
 		String controllerAndMethod = validateControllerAndMethod( st.nextToken().trim(), line );
 
-		int hashPos = controllerAndMethod.indexOf('#');
+		int hashPos = controllerAndMethod.indexOf(".");
 		String controllerName = controllerAndMethod.substring(0, hashPos);
 
 		// 获取控制器方法
@@ -136,7 +136,7 @@ public abstract class AbstractFileRouteLoader implements RouteLoader {
 	}
 	
 	private boolean isValidCharForPath(char c, boolean openedKey) {
-		char[] invalidChars = { '?', '#', ' ' };
+		char[] invalidChars = { '?', '.', ' ' };
 		for (char invalidChar : invalidChars) {
 			if (c == invalidChar) {
 				return false;
@@ -158,13 +158,13 @@ public abstract class AbstractFileRouteLoader implements RouteLoader {
 	/**
 	 * 验证控制器方法
 	 * 
-	 * @param beanAndMethod		控制器和方法，使用#隔开
+	 * @param beanAndMethod		控制器和方法，使用.隔开
 	 * @param line				所在行数
 	 * @return					返回验证后的字符串，异常则抛出
 	 * @throws ParseException
 	 */
 	private String validateControllerAndMethod(String beanAndMethod, int line) throws ParseException {
-		int hashPos = beanAndMethod.indexOf('#');
+		int hashPos = beanAndMethod.indexOf(".");
 		if (hashPos == -1) {
 			throw new ParseException("Unrecognized format for '" + beanAndMethod + "'", line);
 		}
