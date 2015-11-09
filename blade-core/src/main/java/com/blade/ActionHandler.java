@@ -31,7 +31,7 @@ import com.blade.render.ModelAndView;
 import com.blade.route.Route;
 import com.blade.route.RouteHandler;
 import com.blade.route.Router;
-import com.blade.route.SampleRouteMatcher;
+import com.blade.route.RouteMatcher;
 import com.blade.servlet.ServletRequest;
 import com.blade.servlet.ServletResponse;
 
@@ -67,7 +67,7 @@ public class ActionHandler {
 	/**
 	 * 路由匹配器
 	 */
-	private SampleRouteMatcher sampleRouteMatcher;
+	private RouteMatcher routeMatcher;
 	
     /**
      * 服务器500错误时返回的HTML
@@ -90,7 +90,7 @@ public class ActionHandler {
 		this.blade = blade;
 		this.router = blade.router();
 		this.context = context;
-		this.sampleRouteMatcher = new SampleRouteMatcher(router);
+		this.routeMatcher = new RouteMatcher(router);
 	}
 	
 	/**
@@ -131,19 +131,19 @@ public class ActionHandler {
             // 初始化context
          	BladeWebContext.setContext(context, request, response);
          	
-			Route route = sampleRouteMatcher.getRoute(method, uri);
+			Route route = routeMatcher.getRoute(method, uri);
 			
 			// 如果找到
 			if (route != null) {
 				// 执行before拦截
-				List<Route> befores = sampleRouteMatcher.getBefore(uri);
+				List<Route> befores = routeMatcher.getBefore(uri);
 				invokeInterceptor(request, response, befores);
 				
 				// 实际执行方法
 				handle(request, response, route);
 				
 				// 执行after拦截
-				List<Route> afters = sampleRouteMatcher.getAfter(uri);
+				List<Route> afters = routeMatcher.getAfter(uri);
 				invokeInterceptor(request, response, afters);
 				return true;
 			}
