@@ -11,7 +11,7 @@
 	<artifactId>blade-sample</artifactId>
 	<version>1.0.0</version>
 	<packaging>war</packaging>
-	<name>blade-sample Maven Webapp</name>
+	<name>blade-sample</name>
 	<url>http://maven.apache.org</url>
 	
 	<properties>
