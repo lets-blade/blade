@@ -69,10 +69,10 @@ OK, all this may seem simple, refer to the guidelines for use more ready-made ex
 
 ## Plan
 
-1. Improve the document
-2. Add the routing configuration way
-3. To develop personalized social applications
-4. Maintain and optimize the code
+- 1. The development of social application platform
+- 2. Add the test code
+- 3. Optimize the code base
+- 4. Optimization of concurrent ability
 	
 ## Update
 
