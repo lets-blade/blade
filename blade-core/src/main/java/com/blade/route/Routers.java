@@ -20,16 +20,15 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import blade.kit.ReflectKit;
+import blade.kit.log.Logger;
+
 import com.blade.http.HttpMethod;
 import com.blade.http.HttpStatus;
 import com.blade.http.Request;
 import com.blade.http.Response;
 import com.blade.ioc.Container;
-import com.blade.ioc.SampleContainer;
 import com.blade.ioc.Scope;
-
-import blade.kit.ReflectKit;
-import blade.kit.log.Logger;
 
 /**
  * 
@@ -44,13 +43,17 @@ public class Routers {
 	
 	private Logger LOGGER = Logger.getLogger(Routers.class);
 	
-	private final static Container container = SampleContainer.single();
+	private Container container = null;
 	
 	private List<Route> routes = new CopyOnWriteArrayList<Route>();
 	
 	private List<Route> interceptors = new CopyOnWriteArrayList<Route>();
 	
 	private static final String METHOD_NAME = "handle";
+	
+	public Routers(Container container) {
+		this.container = container;
+	}
 	
 	public void handle(Request request, Response response, Route route) throws Exception {
 		request.setRoute(route);

@@ -80,10 +80,9 @@ public class CoreFilter implements Filter {
 				new RouteBuilder(blade).building();
 				
 				// 初始化IOC
-			    IocApplication.init(blade);
-			    
+				blade.iocInit();
+				
 			    bootstrap.contextInitialized(blade);
-			    
 			    blade.setInit(true);
 			    
 			    actionHandler = new ActionHandler(filterConfig.getServletContext(), blade);
@@ -143,7 +142,7 @@ public class CoreFilter implements Filter {
     public void destroy() {
     	LOGGER.info("blade destroy!");
     	BladeWebContext.remove();
-    	IocApplication.destroy();
+    	blade.iocApplication().destroy();
     	TaskKit.depose();
     }
 

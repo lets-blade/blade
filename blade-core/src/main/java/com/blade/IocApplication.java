@@ -15,19 +15,18 @@
  */
 package com.blade;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-import com.blade.ioc.Container;
-import com.blade.ioc.SampleContainer;
-import com.blade.ioc.Scope;
-import com.blade.plugin.Plugin;
-
-import blade.kit.CollectionKit;
 import blade.kit.log.Logger;
 import blade.kit.resource.ClassPathClassReader;
 import blade.kit.resource.ClassReader;
+
+import com.blade.ioc.Container;
+import com.blade.ioc.Scope;
+import com.blade.plugin.Plugin;
 
 /**
  * IOC容器初始化类
@@ -38,31 +37,37 @@ import blade.kit.resource.ClassReader;
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since	1.0
  */
-public final class IocApplication {
+public class IocApplication {
 
 	private static final Logger LOGGER = Logger.getLogger(IocApplication.class);
 	
 	/**
 	 * IOC容器，单例获取默认的容器实现
 	 */
-	private static final Container container = SampleContainer.single();
+	private Container container = null;
 	
 	/**
 	 * 类读取对象，加载class
 	 */
-	private static final ClassReader classReader = new ClassPathClassReader();
+	private ClassReader classReader = null;
 	
 	/**
 	 * 插件列表
 	 */
-	private static final List<Plugin> PLUGINS = CollectionKit.newArrayList();
+	private List<Plugin> plugins = null;
+	
+	public IocApplication() {
+		this.classReader = new ClassPathClassReader();
+		this.plugins = new ArrayList<Plugin>();
+	}
 	
 	/**
 	 * 初始化IOC
 	 * 
 	 * @param blade	Blade实例
 	 */
-	public static void init(Blade blade){
+	public void init(Blade blade){
+		this.container = blade.container();
 		
 		// 初始化全局配置类
 		if(null == container.getBean(Bootstrap.class, Scope.SINGLE)){
@@ -87,7 +92,7 @@ public final class IocApplication {
 	 * 要配置符合ioc的注解的类才会被加载
 	 * 
 	 */
-	private static void initIOC(String[] iocPackages) {
+	private void initIOC(String[] iocPackages) {
 		if(null != iocPackages && iocPackages.length > 0){
 			for(String packageName : iocPackages){
 				registerBean(packageName);
@@ -96,14 +101,14 @@ public final class IocApplication {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static <T extends Plugin> T registerPlugin(Class<T> plugin){
+	public <T extends Plugin> T registerPlugin(Class<T> plugin){
 		Object object = container.registBean(plugin);
 		T t = (T) object;
-		PLUGINS.add(t);
+		plugins.add(t);
 		return t;
 	}
 
-	public static <T extends Plugin> T getPlugin(Class<T> plugin){
+	public <T extends Plugin> T getPlugin(Class<T> plugin){
 		return container.getBean(plugin, Scope.SINGLE);
 	}
 	
@@ -112,7 +117,7 @@ public final class IocApplication {
 	 * 
 	 * @param packageName 包名称
 	 */
-	private static void registerBean(String packageName) {
+	private void registerBean(String packageName) {
 		
 		// 是否递归扫描
 		boolean recursive = false; 
@@ -134,10 +139,10 @@ public final class IocApplication {
 	/**
 	 * 销毁
 	 */
-	public static void destroy() {
+	public void destroy() {
 		// 清空ioc容器
 		container.removeAll();
-		for(Plugin plugin : PLUGINS){
+		for(Plugin plugin : plugins){
 			plugin.destroy();
 		}
 	}

@@ -18,6 +18,10 @@ package com.blade.route;
 import java.lang.reflect.Method;
 import java.util.Set;
 
+import blade.kit.StringKit;
+import blade.kit.resource.ClassPathClassReader;
+import blade.kit.resource.ClassReader;
+
 import com.blade.Blade;
 import com.blade.annotation.After;
 import com.blade.annotation.Before;
@@ -26,11 +30,6 @@ import com.blade.annotation.Path;
 import com.blade.annotation.Route;
 import com.blade.http.HttpMethod;
 import com.blade.ioc.Container;
-import com.blade.ioc.SampleContainer;
-
-import blade.kit.StringKit;
-import blade.kit.resource.ClassPathClassReader;
-import blade.kit.resource.ClassReader;
 
 /**
  * 
@@ -46,12 +45,12 @@ public class RouteBuilder {
     /**
 	 * 默认路由后缀包，用户扫描路由所在位置，默认为route，用户可自定义
 	 */
-    private String PACKAGE_ROUTE = "route";
+    private String pkgRoute = "route";
 	
 	/**
 	 * 默认拦截器后缀包，用户扫描拦截器所在位置，默认为interceptor，用户可自定义
 	 */
-    private String PACKAGE_INTERCEPTOR = "interceptor";
+    private String pkgInterceptor = "interceptor";
 	
     /**
      * 类读取器,用于在指定规则中扫描类
@@ -61,7 +60,7 @@ public class RouteBuilder {
     /**
      * IOC容器，存储路由到ioc中
      */
-    private Container container = SampleContainer.single();
+    private Container container = null;
     
     private Blade blade;
     
@@ -70,6 +69,7 @@ public class RouteBuilder {
     public RouteBuilder(Blade blade) {
     	this.blade = blade;
     	this.router = blade.router();
+    	this.container = blade.container();
     }
     
     /**
@@ -84,8 +84,8 @@ public class RouteBuilder {
         	String suffix = basePackage.endsWith(".*") ? ".*" : "";
         	basePackage = basePackage.endsWith(".*") ? basePackage.substring(0, basePackage.length() - 2) : basePackage;
         	
-			String routePackage = basePackage + "." + PACKAGE_ROUTE + suffix;
-			String interceptorPackage = basePackage + "." + PACKAGE_INTERCEPTOR + suffix;
+			String routePackage = basePackage + "." + pkgRoute + suffix;
+			String interceptorPackage = basePackage + "." + pkgInterceptor + suffix;
 			
         	buildRoute(routePackage);
         	buildInterceptor(interceptorPackage);

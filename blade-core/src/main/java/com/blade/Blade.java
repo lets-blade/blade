@@ -39,6 +39,7 @@ import com.blade.server.Server;
 import blade.kit.IOKit;
 import blade.kit.PropertyKit;
 import blade.kit.ReflectKit;
+import blade.kit.StringKit;
 import blade.kit.json.JSONKit;
 
 /**
@@ -68,6 +69,11 @@ public class Blade {
 		}
 	};
     
+	/**
+	 * ioc全局对象
+	 */
+	private IocApplication iocApplication = new IocApplication();
+	
     /**
 	 * 全局配置对象
 	 */
@@ -86,7 +92,7 @@ public class Blade {
     /**
      * 路由管理对象
      */
-    private Routers router = new Routers();
+    private Routers router = new Routers(container);
     
     /**
      * 默认启动端口
@@ -293,33 +299,6 @@ public class Blade {
      * @param path		路由路径
      * @param target	路由执行的目标对象
      * @param method	路由执行的方法名称（同时指定HttpMethod的方式是：post:saveUser，如不指定则为HttpMethod.ALL）
-     * @return			返回Blade单例实例
-     */
-	@Deprecated
-	public Blade addRoute(String path, Object target, String method){
-		return route(path, target, method);
-	}
-	
-	/**
-     * 添加一个路由
-     * 
-     * @param path		路由路径
-     * @param target	路由执行的目标对象
-     * @param method	路由执行的方法名称（同时指定HttpMethod的方式是：post:saveUser，如不指定则为HttpMethod.ALL）
-     * @param httpMethod HTTP请求方法
-     * @return			返回Blade单例实例
-     */
-	@Deprecated
-	public Blade addRoute(String path, Object target, String method, HttpMethod httpMethod){
-		return route(path, target, method, httpMethod);
-	}
-	
-	/**
-     * 添加一个路由
-     * 
-     * @param path		路由路径
-     * @param target	路由执行的目标对象
-     * @param method	路由执行的方法名称（同时指定HttpMethod的方式是：post:saveUser，如不指定则为HttpMethod.ALL）
      * @param httpMethod HTTP方法
      * @return			返回Blade单例实例
      */
@@ -464,13 +443,13 @@ public class Blade {
 	}
 	
 	/**
-	 * 设置默认视图前缀，默认为WEB_ROOT/WEB-INF目录
+	 * 设置默认视图前缀，默认为WEBROOT/WEB-INF/目录
 	 * 
-	 * @param prefix 	视图路径，如：/WEB-INF/views
+	 * @param prefix 	视图路径，如：/WEB-INF/views/
 	 * @return			返回Blade单例实例
 	 */
 	public Blade viewPrefix(final String prefix) {
-		if(null != prefix && prefix.startsWith("/")){
+		if(StringKit.isNotBlank(prefix) && prefix.startsWith("/")){
 			config.setViewPrefix(prefix);
 		}
 		return this;
@@ -483,7 +462,7 @@ public class Blade {
 	 * @return			返回Blade单例实例
 	 */
 	public Blade viewSuffix(final String suffix) {
-		if(null != suffix && suffix.startsWith(".")){
+		if(StringKit.isNotBlank(suffix) && suffix.startsWith(".")){
 			config.setViewSuffix(suffix);
 		}
 		return this;
@@ -525,7 +504,7 @@ public class Blade {
 	}
 	
 	/**
-     * 动态设置全局初始化类
+     * 动态设置全局初始化类, 内嵌式Jetty启动用
      * 
      * @param bootstrap 	全局初始化bladeApplication
      * @return				返回Blade单例实例
@@ -761,15 +740,15 @@ public class Blade {
 	 */
 	@SuppressWarnings("unchecked")
 	public <T> T plugin(Class<? extends Plugin> plugin){
-		Object object = IocApplication.getPlugin(plugin);
+		Object object = iocApplication.getPlugin(plugin);
 		if(null == object){
-			object = IocApplication.registerPlugin(plugin);
+			object = iocApplication.registerPlugin(plugin);
 		}
 		return (T) object;
 	}
 
 	/**
-	 * 注册一个配置文件的路由
+	 * 注册一个配置文件的路由，如："com.xxx.route","route.conf"
 	 * 
 	 * @param basePackage	控制器包名
 	 * @param conf			配置文件路径，配置文件必须在classpath下
@@ -788,5 +767,13 @@ public class Blade {
 			e.printStackTrace();
 		}
 		return this;
+	}
+	
+	void iocInit(){
+		iocApplication.init(this);
+	}
+	
+	IocApplication iocApplication(){
+		return iocApplication;
 	}
 }

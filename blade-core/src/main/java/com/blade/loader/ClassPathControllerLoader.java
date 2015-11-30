@@ -1,7 +1,7 @@
 package com.blade.loader;
 
+import com.blade.Blade;
 import com.blade.ioc.Container;
-import com.blade.ioc.SampleContainer;
 import com.blade.ioc.Scope;
 import com.blade.route.RouteException;
 
@@ -20,7 +20,7 @@ public class ClassPathControllerLoader implements ControllerLoader {
 
 	private ClassLoader classLoader = ClassPathControllerLoader.class.getClassLoader();
 
-	private Container container = SampleContainer.single();
+	private Container container = Blade.me().container();
 	
 	public ClassPathControllerLoader() {
 		this("");
