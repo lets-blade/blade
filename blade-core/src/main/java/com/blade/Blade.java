@@ -76,7 +76,7 @@ public class Blade {
     /**
      * IOC容器，存储路由到ioc中
      */
-    private Container container = SampleContainer.single();
+    private Container container = new SampleContainer();
     
     /**
      * 默认JSP渲染
@@ -142,14 +142,10 @@ public class Blade {
 	}
 	
 	/**
-	 * <pre>
-	 * 手动注册一个对象到ioc容器中
-	 * </pre>
-	 * 
-	 * @param object		要注册的object
+	 * @return		返回Blade IOC容器
 	 */
-	public void regObject(Object object){
-		container.registBean(object);
+	public Container container(){
+		return container;
 	}
 	
 	/**
