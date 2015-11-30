@@ -30,7 +30,7 @@ import com.blade.http.Response;
 import com.blade.render.ModelAndView;
 import com.blade.route.Route;
 import com.blade.route.RouteHandler;
-import com.blade.route.Router;
+import com.blade.route.Routers;
 import com.blade.route.RouteMatcher;
 import com.blade.servlet.ServletRequest;
 import com.blade.servlet.ServletResponse;
@@ -62,7 +62,7 @@ public class ActionHandler {
 	/**
 	 * 路由管理器
 	 */
-	private Router router;
+	private Routers router;
 	
 	/**
 	 * 路由匹配器

@@ -96,15 +96,15 @@ public final class IocApplication {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static <T extends Plugin> T registerPlugin(Class<T> pluginClazz){
-		Object object = container.registBean(pluginClazz);
-		T plugin = (T) object;
-		PLUGINS.add(plugin);
-		return plugin;
+	public static <T extends Plugin> T registerPlugin(Class<T> plugin){
+		Object object = container.registBean(plugin);
+		T t = (T) object;
+		PLUGINS.add(t);
+		return t;
 	}
 
-	public static <T extends Plugin> T getPlugin(Class<T> pluginClazz){
-		return container.getBean(pluginClazz, Scope.SINGLE);
+	public static <T extends Plugin> T getPlugin(Class<T> plugin){
+		return container.getBean(plugin, Scope.SINGLE);
 	}
 	
 	/**

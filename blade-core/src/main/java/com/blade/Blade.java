@@ -32,7 +32,7 @@ import com.blade.render.JspRender;
 import com.blade.render.Render;
 import com.blade.route.Route;
 import com.blade.route.RouteHandler;
-import com.blade.route.Router;
+import com.blade.route.Routers;
 import com.blade.route.RouteException;
 import com.blade.server.Server;
 
@@ -86,7 +86,7 @@ public class Blade {
     /**
      * 路由管理对象
      */
-    private Router router = new Router();
+    private Routers router = new Routers();
     
     /**
      * 默认启动端口
@@ -137,7 +137,7 @@ public class Blade {
 	/**
 	 * @return		返回路由管理对象
 	 */
-	public Router router() {
+	public Routers router() {
 		return router;
 	}
 	
@@ -764,10 +764,10 @@ public class Blade {
 	 * @return				返回插件对象
 	 */
 	@SuppressWarnings("unchecked")
-	public <T> T plugin(Class<? extends Plugin> pluginClazz){
-		Object object = IocApplication.getPlugin(pluginClazz);
+	public <T> T plugin(Class<? extends Plugin> plugin){
+		Object object = IocApplication.getPlugin(plugin);
 		if(null == object){
-			object = IocApplication.registerPlugin(pluginClazz);
+			object = IocApplication.registerPlugin(plugin);
 		}
 		return (T) object;
 	}

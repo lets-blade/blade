@@ -43,7 +43,7 @@ public class RouteMatcher {
     
     private List<Route> interceptors;
     
-    public RouteMatcher(Router router) {
+    public RouteMatcher(Routers router) {
     	this.routes = router.getRoutes();
     	this.interceptors = router.getInterceptors();
     }

@@ -40,9 +40,9 @@ import blade.kit.log.Logger;
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since	1.0
  */
-public class Router {
+public class Routers {
 	
-	private Logger LOGGER = Logger.getLogger(Router.class);
+	private Logger LOGGER = Logger.getLogger(Routers.class);
 	
 	private final static Container container = SampleContainer.single();
 	

@@ -65,7 +65,7 @@ public class RouteBuilder {
     
     private Blade blade;
     
-    private Router router;
+    private Routers router;
     
     public RouteBuilder(Blade blade) {
     	this.blade = blade;

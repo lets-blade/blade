@@ -15,6 +15,7 @@
  */
 package com.blade.plugin;
 
+
 /**
  * 插件顶层接口
  *
