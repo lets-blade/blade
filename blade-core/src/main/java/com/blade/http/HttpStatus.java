@@ -45,5 +45,5 @@ public final class HttpStatus {
 	public static final int NOT_IMPLEMENTED = 501;
 	public static final int OVERLOADED = 502;
 	public static final int GATEWAY_TIMEOUT = 503;
-
+	
 }
