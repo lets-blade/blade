@@ -25,15 +25,16 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import com.blade.annotation.Component;
-import com.blade.annotation.Inject;
-import com.blade.annotation.Path;
-
 import blade.exception.BladeException;
 import blade.kit.CloneKit;
 import blade.kit.CollectionKit;
 import blade.kit.ReflectKit;
+import blade.kit.StringKit;
 import blade.kit.log.Logger;
+
+import com.blade.annotation.Component;
+import com.blade.annotation.Inject;
+import com.blade.annotation.Path;
 
 /**
  * 默认的IOC容器实现
@@ -47,26 +48,42 @@ public class SampleContainer implements Container {
     private static final Logger LOGGER = Logger.getLogger(SampleContainer.class);
 
     /**
-     * 保存所有bean对象
+     * 保存所有bean对象 如：com.xxxx.User @Userx7asc
      */
-    private static final Map<String, Object> BEAN_CONTAINER = CollectionKit.newConcurrentHashMap();
+    private Map<String, Object> beans = CollectionKit.newConcurrentHashMap();
+    
+    /**
+     * 存储所有的对象名和对于的类名关系
+     */
+    private Map<String, String> beanKeys = CollectionKit.newConcurrentHashMap();
     
     /**
      * 保存所有注解的class
      */
-    private static final Map<Class<? extends Annotation>, List<Object>> ANNOTATION_CONTAINER = CollectionKit.newConcurrentHashMap();
+    private Map<Class<? extends Annotation>, List<Object>> annotaionBeans = CollectionKit.newConcurrentHashMap();
+    
     
     public SampleContainer() {
     }
     
     public Map<String, Object> getBeanMap() {
-        return BEAN_CONTAINER;
+        return beans;
     }
     
 	@Override
     public <T> T getBean(String name, Scope scope) {
-    	Object obj = BEAN_CONTAINER.get(name);
-    	if(null != scope && scope == Scope.PROTOTYPE){
+		
+		String className = beanKeys.get(name);
+		if(StringKit.isBlank(className)){
+			if(null == beans.get(name)){
+				return null;
+			} else {
+				className = name;
+			}
+		}
+		
+    	Object obj = beans.get(className);
+    	if(null != scope && null != Scope.SINGLE){
     		try {
 				return (T) CloneKit.deepClone(obj);
 			} catch (Exception e) {
@@ -78,60 +95,45 @@ public class SampleContainer implements Container {
 
     @Override
     public <T> T getBean(Class<T> type, Scope scope) {
-        Set<String> keys = BEAN_CONTAINER.keySet();
-        for(String key : keys){
-        	Object obj = BEAN_CONTAINER.get(key);
-            if (type.isAssignableFrom(obj.getClass())) {
-            	if(null != scope && scope == Scope.PROTOTYPE){
-            		try {
-						return (T) CloneKit.deepClone(obj);
-					} catch (Exception e) {
-						LOGGER.error("克隆对象失败," + e.getMessage());
-					}
-            	} else {
-            		return (T) obj;
-				}
-            }
-        }
-        return null;
+    	return this.getBean(type.getCanonicalName(), scope);
     }
 
     @Override
     public Set<String> getBeanNames() {
-        return BEAN_CONTAINER.keySet();
+        return beanKeys.keySet();
     }
     
     @Override
     public Collection<Object> getBeans() {
-        return BEAN_CONTAINER.values();
+        return beans.values();
     }
 
     @Override
-    public boolean hasBean(Class<?> clz) {
-        if (null != this.getBean(clz, Scope.SINGLE)) {
-            return true;
-        }
-        return false;
+    public boolean hasBean(Class<?> clazz) {
+    	String className = clazz.getCanonicalName();
+    	return beanKeys.containsValue(className);
     }
 
     @Override
     public boolean hasBean(String name) {
-        if (null != this.getBean(name, Scope.SINGLE)) {
-            return true;
-        }
-        return false;
+		return null != beanKeys.get(name);
     }
     
     @Override
 	public boolean removeBean(String name) {
-    	Object object = BEAN_CONTAINER.remove(name);
-		return (null != object);
+    	String className = beanKeys.get(name);
+    	if(StringKit.isNotBlank(className)){
+    		beanKeys.remove(name);
+    		beans.remove(className);
+    		return true;
+    	}
+    	return false;
 	}
 
 	@Override
 	public boolean removeBean(Class<?> clazz) {
-		Object object = BEAN_CONTAINER.remove(clazz.getName());
-		return (null != object);
+		beans.remove(clazz.getCanonicalName());
+		return true;
 	}
 
     /**
@@ -144,39 +146,50 @@ public class SampleContainer implements Container {
     public Object registBean(Class<?> clazz) {
     	
         String name = clazz.getCanonicalName();
-        
         Object object = null;
         
 		//非抽象类、接口
-		if (!Modifier.isAbstract(clazz.getModifiers()) && !clazz.isInterface()) {
-			
-		    object = ReflectKit.newInstance(clazz);
-		    
-		    put(name, object);
-		    //实现的接口对应存储
-		    if(clazz.getInterfaces().length > 0){
-		    	put(clazz.getInterfaces()[0].getCanonicalName(), object);
-		    }
-		    
-		    //带有annotation
-		    if(null != clazz.getDeclaredAnnotations()){
-		    	putAnnotationMap(clazz, object);
-		    }
+		if (isNormalClass(clazz)) {
+			object = ReflectKit.newInstance(clazz);
+			return registBean(name, object);
 		}
 		return object;
 	}
     
-    /**
-     * bean容器存储
-     * 
-     * @param name			要进入IOC容器的bean名称
-     * @param object		要进入IOC容器的bean对象
-     */
-    private void put(String name, Object object){
-    	if(!BEAN_CONTAINER.containsValue(object)){
-    		BEAN_CONTAINER.put(name, object);
-    	}
-    }
+    @Override
+	public Object registBean(String name, Object value) {
+    	Class<?> clazz = value.getClass();
+		//非抽象类、接口
+		if (isNormalClass(clazz)) {
+			
+			// 如果容器已经存在该名称对于的对象，直接返回
+			String className = beanKeys.get(name);
+			if (StringKit.isNotBlank(className)) {
+				return beans.get(className);
+			}
+			
+			className = clazz.getCanonicalName();
+			beanKeys.put(name, className);
+		    beans.put(name, value);
+		    
+		    //实现的接口对应存储
+		    if(clazz.getInterfaces().length > 0){
+		    	beans.put(clazz.getInterfaces()[0].getCanonicalName(), value);
+		    }
+		    
+		    //带有annotation
+		    if(null != clazz.getDeclaredAnnotations()){
+		    	putAnnotationMap(clazz, value);
+		    }
+		}
+    	return value;
+	}
+    
+    @Override
+	public Object registBean(Object object) {
+		String className = object.getClass().getCanonicalName();
+		return registBean(className, object);
+	}
     
     /**
      * 给annotationMap添加元素
@@ -189,7 +202,7 @@ public class SampleContainer implements Container {
     	List<Object> listObject = null;
     	for(Annotation annotation : annotations){
     		if(null != annotation){
-    			listObject = ANNOTATION_CONTAINER.get(annotation.annotationType());
+    			listObject = annotaionBeans.get(annotation.annotationType());
     			if(CollectionKit.isEmpty(listObject)){
     				listObject = CollectionKit.newArrayList();
     			}
@@ -206,8 +219,8 @@ public class SampleContainer implements Container {
      * @param listObject	要注入的对象列表
      */
     private void put(Class<? extends Annotation> clazz, List<Object> listObject){
-    	if(null == ANNOTATION_CONTAINER.get(clazz)){
-    		ANNOTATION_CONTAINER.put(clazz, listObject);
+    	if(null == annotaionBeans.get(clazz)){
+    		annotaionBeans.put(clazz, listObject);
     	}
     }
     
@@ -216,7 +229,7 @@ public class SampleContainer implements Container {
      */
     @Override
     public void initWired() throws RuntimeException {
-        Iterator<Entry<String, Object>> it = BEAN_CONTAINER.entrySet().iterator();
+        Iterator<Entry<String, Object>> it = beans.entrySet().iterator();
         while (it.hasNext()) {
 			Map.Entry<String, Object> entry = (Map.Entry<String, Object>) it.next();
 			Object object = entry.getValue();
@@ -258,6 +271,18 @@ public class SampleContainer implements Container {
         }
         return false;
     }
+    
+    /**
+     * 是否是一个非接口和抽象类的Class
+     * @param clazz
+     * @return
+     */
+    private boolean isNormalClass(Class<?> clazz){
+    	if(!Modifier.isAbstract(clazz.getModifiers()) && !clazz.isInterface()){
+    		return true;
+    	}
+    	return false;
+    }
 
 	@Override
 	public List<Class<?>> getClassesByAnnotation(Class<? extends Annotation> annotation) {
@@ -274,7 +299,7 @@ public class SampleContainer implements Container {
 
 	@Override
 	public <T> List<T> getBeansByAnnotation(Class<? extends Annotation> annotation) {
-		return (List<T>) ANNOTATION_CONTAINER.get(annotation);
+		return (List<T>) annotaionBeans.get(annotation);
 	}
 	
 	@Override
@@ -287,16 +312,9 @@ public class SampleContainer implements Container {
 	}
 
 	@Override
-	public Object registBean(Object object) {
-		String name = object.getClass().getName();
-		put(name, object);
-		return object;
-	}
-
-	@Override
 	public boolean removeAll() {
-		BEAN_CONTAINER.clear();
-		ANNOTATION_CONTAINER.clear();
+		beans.clear();
+		annotaionBeans.clear();
 		return true;
 	}
 

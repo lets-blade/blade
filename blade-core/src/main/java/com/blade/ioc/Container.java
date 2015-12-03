@@ -131,6 +131,13 @@ public interface Container {
     Object registBean(Class<?> clazz);
     
     /**
+     * 注册一个代名称的Bean
+     * @param clazz
+     * @return
+     */
+    Object registBean(String name, Object value);
+    
+    /**
      * 注册一个对象到bean容器中
      * 
      * @param object		要注册的object
