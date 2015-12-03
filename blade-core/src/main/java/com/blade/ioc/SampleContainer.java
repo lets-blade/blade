@@ -122,18 +122,18 @@ public class SampleContainer implements Container {
     @Override
 	public boolean removeBean(String name) {
     	String className = beanKeys.get(name);
-    	if(StringKit.isNotBlank(className)){
+    	if(StringKit.isBlank(className)){
+    		className = name;
+    	} else {
     		beanKeys.remove(name);
-    		beans.remove(className);
-    		return true;
-    	}
-    	return false;
+		}
+		beans.remove(className);
+		return true;
 	}
 
 	@Override
 	public boolean removeBean(Class<?> clazz) {
-		beans.remove(clazz.getCanonicalName());
-		return true;
+		return this.removeBean(clazz.getCanonicalName());
 	}
 
     /**
@@ -170,11 +170,17 @@ public class SampleContainer implements Container {
 			
 			className = clazz.getCanonicalName();
 			beanKeys.put(name, className);
-		    beans.put(name, value);
+			if(null == beans.get(className)){
+				beans.put(className, value);
+			}
 		    
 		    //实现的接口对应存储
-		    if(clazz.getInterfaces().length > 0){
-		    	beans.put(clazz.getInterfaces()[0].getCanonicalName(), value);
+		    Class<?>[] interfaces = clazz.getInterfaces();
+		    if(interfaces.length > 0){
+		    	for(Class<?> interfaceClazz : interfaces){
+		    		System.out.println(interfaceClazz.getCanonicalName());
+		    		this.registBean(interfaceClazz.getCanonicalName(), value);
+		    	}
 		    }
 		    
 		    //带有annotation
@@ -313,6 +319,7 @@ public class SampleContainer implements Container {
 
 	@Override
 	public boolean removeAll() {
+		beanKeys.clear();
 		beans.clear();
 		annotaionBeans.clear();
 		return true;
@@ -329,25 +336,32 @@ public class SampleContainer implements Container {
 			    if (null != inject ) {
 			    	
 			    	// 要注入的字段
-			        Object injectField = this.getBean(field.getType(), Scope.SINGLE);
-			    	// 指定装配到哪个class
-			    	if(inject.value() != Class.class){
-			    		// 指定装配的类
-			            injectField = this.getBean(inject.value(), Scope.SINGLE);
-			            
-			            if (null == injectField) {
-			            	injectField = recursiveAssembly(inject.value());
-			            }
-			            
-			    	} else {
-			    		if (null == injectField) {
-			            	injectField = recursiveAssembly(field.getType());
-			            }
+			        Object injectField = null;
+			        String name = inject.name();
+			        if(!name.equals("")){
+	        			String className = beanKeys.get(name);
+	        			if(null != className && !className.equals("")){
+	        				injectField = beans.get(className);
+	        			}
+	        			if (null == injectField) {
+				            throw new RuntimeException("Unable to load " + name);
+				        }
+	        		} else {
+	        			if(inject.value() == Class.class){
+	        				injectField = recursiveAssembly(field.getType());
+				        } else {
+				        	// 指定装配的类
+				        	injectField = this.getBean(inject.value(), null);
+				            if (null == injectField) {
+				            	injectField = recursiveAssembly(inject.value());
+				            }
+						}
 					}
-			    	
+			        
 			        if (null == injectField) {
 			            throw new BladeException("Unable to load " + field.getType().getCanonicalName() + "！");
 			        }
+			        
 			        boolean accessible = field.isAccessible();
 			        field.setAccessible(true);
 			        field.set(object, injectField);
@@ -362,5 +376,5 @@ public class SampleContainer implements Container {
         	LOGGER.error(e);
         }
 	}
-
+	
 }

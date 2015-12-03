@@ -34,8 +34,12 @@ import java.lang.annotation.Target;
 public @interface Inject {
 	
 	/**
-	 * @return	要注入的类类型
+	 * @return	要注入的Class的对象
 	 */
     Class<?> value() default Class.class;
 
+    /**
+     * @return	要注入某个名称的对象
+     */
+    String name() default "";
 }
