@@ -178,7 +178,6 @@ public class SampleContainer implements Container {
 		    Class<?>[] interfaces = clazz.getInterfaces();
 		    if(interfaces.length > 0){
 		    	for(Class<?> interfaceClazz : interfaces){
-		    		System.out.println(interfaceClazz.getCanonicalName());
 		    		this.registBean(interfaceClazz.getCanonicalName(), value);
 		    	}
 		    }

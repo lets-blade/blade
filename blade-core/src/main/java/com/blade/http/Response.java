@@ -16,9 +16,9 @@
 package com.blade.http;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Map;
 
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 
@@ -83,7 +83,7 @@ public interface Response {
 	
 	Response xml(String output);
 	
-	ServletOutputStream outputStream() throws IOException;
+	OutputStream outputStream() throws IOException;
 
 	Response render(String view) ;
 

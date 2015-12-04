@@ -16,7 +16,6 @@
 package com.blade;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -80,9 +79,9 @@ public class IocApplication {
 		// 初始化注入
 		container.initWired();
 		
-		Collection<?> beans = container.getBeans();
-		for(Object object : beans){
-			LOGGER.info("Add Object：" + object.getClass() + "=" + object);
+		Set<String> names = container.getBeanNames();
+		for(String name : names){
+			LOGGER.info("Add Object：" + name + "=" + container.getBean(name, null));
 		}
 		
 	}
