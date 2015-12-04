@@ -29,7 +29,7 @@
     	<module>blade-sample</module>
     	<module>blade-aop</module>
     	<module>blade-oauth2</module>
-    <module>blade-patchca</module>
+    	<module>blade-patchca</module>
   </modules>
 
 	<repositories>

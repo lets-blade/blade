@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.Random;
 
 import org.patchca.color.ColorFactory;
@@ -27,12 +26,9 @@ import com.blade.servlet.Session;
 public class PatchcaService {
 	
 	private static final Logger LOGGER = Logger.getLogger(PatchcaService.class);
-	
+
 	private ConfigurableCaptchaService cs = null;
 	private static Random random = new Random();
-	public String CHARS = "23456789abcdefghigkmnpqrstuvwxyzABCDEFGHIGKLMNPQRSTUVWXYZ";
-	public Integer maxLen = 4;
-	public Integer minLen = 4;
 	
 	private PatchcaService() {
 		cs = new ConfigurableCaptchaService();
@@ -53,9 +49,9 @@ public class PatchcaService {
 			}
 		});
 		RandomWordFactory wf = new RandomWordFactory();
-		wf.setCharacters(CHARS);
-		wf.setMaxLength(maxLen);
-		wf.setMinLength(minLen);
+		wf.setCharacters("23456789abcdefghigkmnpqrstuvwxyzABCDEFGHIGKLMNPQRSTUVWXYZ");
+		wf.setMaxLength(4);
+		wf.setMinLength(4);
 		cs.setWordFactory(wf);
 		cs.setFilterFactory(new DiffuseRippleFilterFactory());
 	}
@@ -100,9 +96,19 @@ public class PatchcaService {
 		response.header("Expires", time + "");
     }
 	
-	public String getToken(String imgType, OutputStream outputStream){
+	public String token(String imgType, Response response){
 		try {
-			String token = EncoderHelper.getChallangeAndWriteImage(cs, imgType, outputStream);
+			String token = EncoderHelper.getChallangeAndWriteImage(cs, imgType, response.outputStream());
+			return token;
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public String token(Response response){
+		try {
+			String token = EncoderHelper.getChallangeAndWriteImage(cs, "png", response.outputStream());
 			return token;
 		} catch (IOException e) {
 			e.printStackTrace();
