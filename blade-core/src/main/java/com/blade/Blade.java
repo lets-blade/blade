@@ -744,7 +744,7 @@ public class Blade {
 	/**
 	 * 返回插件对象
 	 * 
-	 * @param pluginClazz	插件class
+	 * @param plugin		插件class
 	 * @param <T>			泛型
 	 * @return				返回插件对象
 	 */
