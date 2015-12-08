@@ -88,7 +88,7 @@ public class Config {
 		return configMap.get(key);
 	}
 	
-	public Integer getToInt(String key){
+	public Integer getAsInt(String key){
 		String val = get(key);
 		if(null != val && PatternKit.isNumber(val)){
 			return Integer.valueOf(val);
@@ -96,7 +96,7 @@ public class Config {
 		return null;
 	}
 	
-	public Long getToLong(String key){
+	public Long getAsLong(String key){
 		String val = get(key);
 		if(null != val && PatternKit.isNumber(val)){
 			return Long.valueOf(val);
@@ -104,7 +104,7 @@ public class Config {
 		return null;
 	}
 	
-	public Boolean getToBoolean(String key){
+	public Boolean getAsBoolean(String key){
 		String val = get(key);
 		if(null != val){
 			return Boolean.valueOf(val);
@@ -112,7 +112,7 @@ public class Config {
 		return null;
 	}
 	
-	public Double getToDouble(String key){
+	public Double getAsDouble(String key){
 		String val = get(key);
 		if(null != val){
 			return Double.valueOf(val);
@@ -120,7 +120,7 @@ public class Config {
 		return null;
 	}
 	
-	public Float getToFloat(String key){
+	public Float getAsFloat(String key){
 		String val = get(key);
 		if(null != val){
 			return Float.valueOf(val);

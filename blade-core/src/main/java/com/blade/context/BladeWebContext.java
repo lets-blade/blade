@@ -71,11 +71,11 @@ public class BladeWebContext {
     }
     
     public static Request request() {
-        return BladeWebContext.me().request;
+        return me().request;
     }
     
     public static Response response() {
-        return BladeWebContext.me().response;
+        return me().response;
     }
     
     public static Session session() {
@@ -83,13 +83,13 @@ public class BladeWebContext {
     }
     
 	public static ServletContext servletContext() {
-		return BladeWebContext.me().context;
+		return me().context;
 	}
 	
 	public ServletContext getContext() {
 		return context;
 	}
-
+	
 	public Request getRequest() {
 		return request;
 	}
