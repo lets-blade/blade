@@ -19,7 +19,7 @@ import javax.servlet.ServletContext;
 
 import com.blade.http.Request;
 import com.blade.http.Response;
-import com.blade.servlet.Session;
+import com.blade.servlet.wrapper.Session;
 
 /**
  * 全局的WeContext

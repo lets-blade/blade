@@ -17,7 +17,7 @@ package com.blade.verify;
 
 import com.blade.http.Request;
 import com.blade.http.Response;
-import com.blade.servlet.Session;
+import com.blade.servlet.wrapper.Session;
 
 import blade.kit.HashidKit;
 import blade.kit.StringKit;

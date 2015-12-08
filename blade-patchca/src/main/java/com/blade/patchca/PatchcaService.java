@@ -18,7 +18,7 @@ import org.patchca.word.WordFactory;
 import blade.kit.log.Logger;
 
 import com.blade.http.Response;
-import com.blade.servlet.Session;
+import com.blade.servlet.wrapper.Session;
 
 /**
  * PatchcaService

@@ -32,8 +32,8 @@ import com.blade.route.Route;
 import com.blade.route.RouteHandler;
 import com.blade.route.Routers;
 import com.blade.route.RouteMatcher;
-import com.blade.servlet.ServletRequest;
-import com.blade.servlet.ServletResponse;
+import com.blade.servlet.wrapper.ServletRequest;
+import com.blade.servlet.wrapper.ServletResponse;
 
 import blade.exception.BladeException;
 import blade.kit.ReflectKit;

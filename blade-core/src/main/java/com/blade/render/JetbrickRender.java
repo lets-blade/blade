@@ -26,7 +26,7 @@ import com.blade.context.BladeWebContext;
 import com.blade.http.Request;
 import com.blade.render.ModelAndView;
 import com.blade.render.Render;
-import com.blade.servlet.Session;
+import com.blade.servlet.wrapper.Session;
 
 import blade.kit.log.Logger;
 import jetbrick.template.JetEngine;
