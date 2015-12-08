@@ -177,7 +177,7 @@ public class RouteBuilder {
     		return;
     	}
     	
-    	container.registBean(interceptor);
+    	container.registerBean(interceptor);
     	
     	for (Method method : methods) {
 			
@@ -232,7 +232,7 @@ public class RouteBuilder {
     		return;
     	}
     	
-    	container.registBean(router);
+    	container.registerBean(router);
     	
 		final String nameSpace = router.getAnnotation(Path.class).value();
 		

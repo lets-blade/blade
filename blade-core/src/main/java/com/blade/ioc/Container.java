@@ -128,14 +128,15 @@ public interface Container {
      * @param clazz			要注册的class类型
      * @return				返回注册后的bean对象
      */
-    Object registBean(Class<?> clazz);
+    Object registerBean(Class<?> clazz);
     
     /**
      * 注册一个代名称的Bean
-     * @param clazz
-     * @return
+     * @param name	bean名称
+     * @param value	bean对象
+     * @return		返回注册的Bean
      */
-    Object registBean(String name, Object value);
+    Object registerBean(String name, Object value);
     
     /**
      * 注册一个对象到bean容器中
@@ -143,14 +144,14 @@ public interface Container {
      * @param object		要注册的object
      * @return				返回注册后的Bean实例
      */
-    Object registBean(Object object);
+    Object registerBean(Object object);
     
     /**
      * 注册一个class集合进入ioc容器
      * 
      * @param classes		要注册的class集合
      */
-    void registBean(Set<Class<?>> classes);
+    void registerBean(Set<Class<?>> classes);
 
     /**
      * 初始化IOC

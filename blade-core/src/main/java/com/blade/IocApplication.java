@@ -70,7 +70,7 @@ public class IocApplication {
 		
 		// 初始化全局配置类
 		if(null == container.getBean(Bootstrap.class, Scope.SINGLE)){
-			container.registBean(blade.bootstrap());
+			container.registerBean(blade.bootstrap());
 		}
 		
 		// 初始化ioc容器
@@ -101,7 +101,7 @@ public class IocApplication {
 	
 	@SuppressWarnings("unchecked")
 	public <T extends Plugin> T registerPlugin(Class<T> plugin){
-		Object object = container.registBean(plugin);
+		Object object = container.registerBean(plugin);
 		T t = (T) object;
 		plugins.add(t);
 		return t;
@@ -130,7 +130,7 @@ public class IocApplication {
 		for (Class<?> clazz : classes) {
 			// 注册带有Component和Service注解的类
 			if (container.isRegister(clazz.getAnnotations())) {
-				container.registBean(clazz);
+				container.registerBean(clazz);
 			}
 		}
 	}

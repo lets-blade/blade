@@ -47,7 +47,7 @@ public class ClassPathControllerLoader implements ControllerLoader {
 			Object controller = container.getBean(controllerClass, Scope.SINGLE);
 			if(null == controller){
 				controller = controllerClass.newInstance();
-				container.registBean(controller);
+				container.registerBean(controller);
 			}
 			return controller;
 		} catch (Exception e) {

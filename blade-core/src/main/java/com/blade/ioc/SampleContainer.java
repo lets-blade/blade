@@ -143,7 +143,7 @@ public class SampleContainer implements Container {
      * @return		返回注册后的bean对象
      */
     @Override
-    public Object registBean(Class<?> clazz) {
+    public Object registerBean(Class<?> clazz) {
     	
         String name = clazz.getCanonicalName();
         Object object = null;
@@ -151,13 +151,13 @@ public class SampleContainer implements Container {
 		//非抽象类、接口
 		if (isNormalClass(clazz)) {
 			object = ReflectKit.newInstance(clazz);
-			return registBean(name, object);
+			return registerBean(name, object);
 		}
 		return object;
 	}
     
     @Override
-	public Object registBean(String name, Object value) {
+	public Object registerBean(String name, Object value) {
     	Class<?> clazz = value.getClass();
 		//非抽象类、接口
 		if (isNormalClass(clazz)) {
@@ -178,7 +178,7 @@ public class SampleContainer implements Container {
 		    Class<?>[] interfaces = clazz.getInterfaces();
 		    if(interfaces.length > 0){
 		    	for(Class<?> interfaceClazz : interfaces){
-		    		this.registBean(interfaceClazz.getCanonicalName(), value);
+		    		this.registerBean(interfaceClazz.getCanonicalName(), value);
 		    	}
 		    }
 		    
@@ -191,9 +191,9 @@ public class SampleContainer implements Container {
 	}
     
     @Override
-	public Object registBean(Object object) {
+	public Object registerBean(Object object) {
 		String className = object.getClass().getCanonicalName();
-		return registBean(className, object);
+		return registerBean(className, object);
 	}
     
     /**
@@ -251,7 +251,7 @@ public class SampleContainer implements Container {
     			String implClassName = clazz.getPackage().getName() + ".impl." + clazz.getSimpleName() + "Impl";
     			return ReflectKit.newInstance(implClassName);
     		} else {
-    			field = this.registBean(clazz);
+    			field = this.registerBean(clazz);
 			}
     	}
     	return field;
@@ -308,10 +308,10 @@ public class SampleContainer implements Container {
 	}
 	
 	@Override
-	public void registBean(Set<Class<?>> classes) {
+	public void registerBean(Set<Class<?>> classes) {
 		if(!CollectionKit.isEmpty(classes)){
 			for(Class<?> clazz : classes){
-				this.registBean(clazz);
+				this.registerBean(clazz);
 			}
 		}
 	}

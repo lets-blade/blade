@@ -157,7 +157,7 @@ public class Routers {
 			Object controller = container.getBean(clazz, Scope.SINGLE);
 			if(null == controller){
 				controller = ReflectKit.newInstance(clazz);
-				container.registBean(controller);
+				container.registerBean(controller);
 			}
 			
 			Method method = clazz.getMethod(methodName, Request.class, Response.class);
@@ -175,7 +175,7 @@ public class Routers {
 			Object controller = container.getBean(clazz, Scope.SINGLE);
 			if(null == controller){
 				controller = ReflectKit.newInstance(clazz);
-				container.registBean(controller);
+				container.registerBean(controller);
 			}
 			Method method = clazz.getMethod(methodName, Request.class, Response.class);
 			addRoute(httpMethod, path, controller, method);
@@ -191,7 +191,7 @@ public class Routers {
 			Object controller = container.getBean(clazz, Scope.SINGLE);
 			if(null == controller){
 				controller = ReflectKit.newInstance(clazz);
-				container.registBean(controller);
+				container.registerBean(controller);
 			}
 			addRoute(httpMethod, path, controller, method);
 		} catch (SecurityException e) {
@@ -202,7 +202,7 @@ public class Routers {
 	public void route(String path, Object target, String methodName, HttpMethod httpMethod) {
 		try {
 			Class<?> clazz = target.getClass();
-			container.registBean(target);
+			container.registerBean(target);
 			Method method = clazz.getMethod(methodName, Request.class, Response.class);
 			addRoute(httpMethod, path, target, method);
 		} catch (NoSuchMethodException e) {
