@@ -10,7 +10,7 @@
 
 ## Blade是什么?
 
-`blade` 是一个轻量级的MVC框架. 它拥有简洁的代码，优雅的设计。
+Blade 是一个轻量级的MVC框架. 它拥有简洁的代码，优雅的设计。
 如果你喜欢,欢迎 [Star and Fork](https://github.com/biezhi/blade), 谢谢!
 
 ## 特性

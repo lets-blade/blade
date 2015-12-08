@@ -6,11 +6,11 @@
 [![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg?style=flat-square)](https://www.apache.org/licenses/LICENSE-2.0.html)
 [![@biezhi on weibo](https://img.shields.io/badge/weibo-%40biezhi-red.svg?style=flat-square)](http://weibo.com/u/5238733773)
 
-[中文](https://github.com/biezhi/blade/blob/master/README_CN.md)
+[中文说明](https://github.com/biezhi/blade/blob/master/README_CN.md)
 
 ## What Is Blade?
 
-`blade` is a lightweight MVC framework. It is based on the principles of simplicity and elegance. 
+Blade is a lightweight MVC framework. It is based on the principles of simplicity and elegance. 
 If you like it, can be [Star and Fork](https://github.com/biezhi/blade), thanks!
 
 ## Features
