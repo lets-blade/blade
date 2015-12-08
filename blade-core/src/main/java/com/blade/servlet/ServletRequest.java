@@ -203,7 +203,19 @@ public class ServletRequest implements Request {
 	@Override
 	public String param(String name) {
 		String val = pathParams.get(name);
-		if(blade.enableXSS()){
+		if(null != val && blade.enableXSS()){
+			return HTMLFilter.htmlSpecialChars(val);
+		}
+		return val;
+	}
+	
+	@Override
+	public String param(String name, String defaultValue) {
+		String val = pathParams.get(name);
+		if(null == val){
+			val = defaultValue;
+		}
+		if (null != val && blade.enableXSS()) {
 			return HTMLFilter.htmlSpecialChars(val);
 		}
 		return val;
@@ -228,7 +240,7 @@ public class ServletRequest implements Request {
 	}
 
 	@Override
-	public Boolean paramAsBoolean(String name) {
+	public Boolean paramAsBool(String name) {
 		String value = param(name);
 		if (null != value) {
 			return Boolean.valueOf(value);
@@ -256,11 +268,30 @@ public class ServletRequest implements Request {
 	@Override
 	public String query(String name) {
 		String[] param = request.getParameterValues(name);
+		String val = null;
 		if (param != null) {
-			return join(param);
+			val = join(param);
+		} else {
+			val = multipartParams.get(name);
 		}
-		
-		String val = multipartParams.get(name);
+		if(null != val && blade.enableXSS()){
+			return HTMLFilter.htmlSpecialChars(val);
+		}
+		return val;
+	}
+	
+	@Override
+	public String query(String name, String defaultValue) {
+		String[] param = request.getParameterValues(name);
+		String val = null;
+		if (param != null) {
+			val = join(param);
+		} else {
+			val = multipartParams.get(name);
+		}
+		if(null == val){
+			val = defaultValue;
+		}
 		if(blade.enableXSS()){
 			return HTMLFilter.htmlSpecialChars(val);
 		}
@@ -286,7 +317,7 @@ public class ServletRequest implements Request {
 	}
 
 	@Override
-	public Boolean queryAsBoolean(String name) {
+	public Boolean queryAsBool(String name) {
 		String value = query(name);
 		if (null != value) {
 			return Boolean.valueOf(value);

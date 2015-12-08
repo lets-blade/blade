@@ -155,6 +155,16 @@ public class Blade {
 	}
 	
 	/**
+	 * 设置一个IOC容器
+	 * @param container	ioc容器对象
+	 * @return			返回blade
+	 */
+	public Blade container(Container container){
+		this.container = container;
+		return this;
+	}
+	
+	/**
 	 * Properties配置文件方式
 	 * 文件的路径基于classpath
 	 * 
