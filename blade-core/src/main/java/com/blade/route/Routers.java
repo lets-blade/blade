@@ -15,16 +15,15 @@
  */
 package com.blade.route;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.Map;
 
 import blade.kit.ReflectKit;
 import blade.kit.log.Logger;
 
 import com.blade.http.HttpMethod;
-import com.blade.http.HttpStatus;
 import com.blade.http.Request;
 import com.blade.http.Response;
 import com.blade.ioc.Container;
@@ -45,77 +44,76 @@ public class Routers {
 	
 	private Container container = null;
 	
-	private List<Route> routes = new CopyOnWriteArrayList<Route>();
+	private Map<String, Route> routes = null;
 	
-	private List<Route> interceptors = new CopyOnWriteArrayList<Route>();
+	private Map<String, Route> interceptors = null;
 	
 	private static final String METHOD_NAME = "handle";
 	
 	public Routers(Container container) {
 		this.container = container;
+		this.routes = new HashMap<String, Route>();
+		this.interceptors = new HashMap<String, Route>();
 	}
 	
-	public void handle(Request request, Response response, Route route) throws Exception {
-		request.setRoute(route);
-		response.status(HttpStatus.NOT_FOUND);
-		
-		Object controller = route.getTarget();
-		Method method = route.getAction();
-		try {
-			method.invoke(controller, request, response);
-		} catch (InvocationTargetException e) {
-			throw (Exception) e.getCause();
-		}
-	}
-	
-	public List<Route> getRoutes() {
+	public Map<String, Route> getRoutes() {
 		return routes;
 	}
-
-	public void setRoutes(List<Route> routes) {
-		this.routes = routes;
+	
+	public Map<String, Route> getInterceptors() {
+		return interceptors;
 	}
 	
 	public void addRoute(Route route) {
-		this.routes.add(route);
-	}
-	
-	public void addRoutes(List<Route> routes) {
-		for(Route route : routes){
-			if(this.routes.contains(route)){
-				LOGGER.warn("\tRoute "+ route +" has exist");
-				continue;
+		String path = route.getPath();
+		HttpMethod httpMethod = route.getHttpMethod();
+		String key = path + "#" + httpMethod.toString();
+		
+		// 存在的
+		if (null != this.routes.get(key)) {
+			LOGGER.warn("\tRoute "+ path + " -> " + httpMethod.toString() +" has exist");
+		}
+		
+		if(httpMethod == HttpMethod.BEFORE || httpMethod == HttpMethod.AFTER){
+			if (null != this.interceptors.get(key)) {
+				LOGGER.warn("\tInterceptor "+ path + " -> " + httpMethod.toString() +" has exist");
 			}
-			this.routes.add(route);
+			this.interceptors.put(key, route);
+			LOGGER.debug("Add Interceptor：" + route);
+		} else {
+			this.routes.put(key, route);
 			LOGGER.debug("Add Route：" + route);
 		}
 	}
 	
-	public List<Route> getInterceptors() {
-		return interceptors;
+	public void addRoutes(List<Route> routes) {
+		for(Route route : routes){
+			this.addRoute(route);
+		}
 	}
 	
-	public void addInterceptors(List<Route> interceptors) {
-		this.interceptors.addAll(interceptors);
-	}
-
 	public void addRoute(HttpMethod httpMethod, String path, Object controller, String methodName) throws NoSuchMethodException {
 		Method method = controller.getClass().getMethod(methodName, Request.class, Response.class);
 		addRoute(httpMethod, path, controller, method);
 	}
 	
 	public void addRoute(HttpMethod httpMethod, String path, Object controller, Method method) {
-//		method.setAccessible(true);
-		Route route = new Route(httpMethod, path, controller, method);
-		if(this.routes.contains(route)){
-			LOGGER.warn("\tRoute "+ route +" has exist");
+		
+		String key = path + "#" + httpMethod.toString();
+		// 存在的
+		if (null != this.routes.get(key)) {
+			LOGGER.warn("\tRoute "+ path + " -> " + httpMethod.toString() +" has exist");
 		}
 		
+		Route route = new Route(httpMethod, path, controller, method);
 		if(httpMethod == HttpMethod.BEFORE || httpMethod == HttpMethod.AFTER){
-			interceptors.add(route);
+			if (null != this.interceptors.get(key)) {
+				LOGGER.warn("\tInterceptor "+ path + " -> " + httpMethod.toString() +" has exist");
+			}
+			this.interceptors.put(key, route);
 			LOGGER.debug("Add Interceptor：" + route);
 		} else {
-			routes.add(route);
+			this.routes.put(key, route);
 			LOGGER.debug("Add Route：" + route);
 		}
 		

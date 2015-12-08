@@ -18,9 +18,12 @@ package com.blade.route;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import com.blade.http.HttpMethod;
 import com.blade.http.Path;
@@ -38,14 +41,22 @@ public class RouteMatcher {
 
 //	private static final Logger LOGGER = Logger.getLogger(SampleRouteMatcher.class);
     
-    // 存储所有路由
-    private List<Route> routes;
-    
-    private List<Route> interceptors;
-    
+    // 存储URL和路由关系
+	private Map<String, Route> routes = null;
+	private Map<String, Route> interceptors = null;
+	
+	// 存储Map Key
+	private Set<String> routeKeys = null;
+	private List<Route> interceptorRoutes = new ArrayList<Route>();
+	
     public RouteMatcher(Routers router) {
-    	this.routes = router.getRoutes();
-    	this.interceptors = router.getInterceptors();
+		this.routes = router.getRoutes();
+		this.interceptors = router.getInterceptors();
+		this.routeKeys = routes.keySet();
+		Collection<Route> inters = interceptors.values();
+		if (null != inters && inters.size() > 0) {
+			this.interceptorRoutes.addAll(inters);
+		}
     }
     
     /**
@@ -56,15 +67,28 @@ public class RouteMatcher {
      */
     public Route getRoute(String httpMethod, String path) {
 		String cleanPath = parsePath(path);
+		
+		String routeKey = path + "#" + httpMethod.toLowerCase();
+		Route route = routes.get(routeKey);
+		if(null != route){
+			return route;
+		}
+		route = routes.get(path + "#ALL");
+		if(null != route){
+			return route;
+		}
+		
 		List<Route> matchRoutes = new ArrayList<Route>();
-		for (Route route : this.routes) {
-			if (matchesPath(route.getPath(), cleanPath)) {
-				if (route.getHttpMethod() == HttpMethod.ALL
-						|| HttpMethod.valueOf(httpMethod) == route.getHttpMethod()) {
+		for(String key : routeKeys){
+			String[] keyArr = key.split("#");
+			HttpMethod routeMethod = HttpMethod.valueOf(keyArr[1]);
+			if (matchesPath(keyArr[0], cleanPath)) {
+				if (routeMethod == HttpMethod.ALL || HttpMethod.valueOf(httpMethod) == routeMethod) {
 					matchRoutes.add(route);
 				}
 			}
 		}
+		
 		// 优先匹配原则
         giveMatch(path, matchRoutes);
         
@@ -77,9 +101,10 @@ public class RouteMatcher {
      * @return		返回前置拦截器列表
      */
     public List<Route> getBefore(String path) {
+    	
 		List<Route> befores = new ArrayList<Route>();
 		String cleanPath = parsePath(path);
-		for (Route route : this.interceptors) {
+		for (Route route : interceptorRoutes) {
 			if(matchesPath(route.getPath(), cleanPath) && route.getHttpMethod() == HttpMethod.BEFORE){
 				befores.add(route);
 			}
@@ -96,7 +121,7 @@ public class RouteMatcher {
 	public List<Route> getAfter(String path) {
 		List<Route> afters = new ArrayList<Route>();
 		String cleanPath = parsePath(path);
-		for (Route route : interceptors) {
+		for (Route route : interceptorRoutes) {
 			if(matchesPath(route.getPath(), cleanPath) && route.getHttpMethod() == HttpMethod.AFTER){
 				afters.add(route);
 			}

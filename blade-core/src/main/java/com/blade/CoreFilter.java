@@ -72,7 +72,7 @@ public class CoreFilter implements Filter {
 				String bootStrapClassName = filterConfig.getInitParameter(BOOSTRAP_CLASS);
 				if(StringKit.isNotBlank(bootStrapClassName)){
 					bootstrap = getBootstrap(filterConfig.getInitParameter(BOOSTRAP_CLASS));
-					bootstrap.init();
+					bootstrap.init(blade);
 					blade.app(bootstrap);
 				}
 				

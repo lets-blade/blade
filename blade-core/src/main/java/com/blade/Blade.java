@@ -53,7 +53,7 @@ public class Blade {
 	/**
 	 * 当前最新版本
 	 */
-	public static final String VERSION = "1.4.2-beta";
+	public static final String VERSION = "1.4.2";
 	
 	/**
      * 框架是否已经初始化
@@ -65,7 +65,7 @@ public class Blade {
      */
     private Bootstrap bootstrap = new Bootstrap() {
 		@Override
-		public void init() {
+		public void init(Blade blade) {
 		}
 	};
     
@@ -92,7 +92,7 @@ public class Blade {
     /**
      * 路由管理对象
      */
-    private Routers router = new Routers(container);
+    private Routers routers = new Routers(container);
     
     /**
      * 默认启动端口
@@ -143,8 +143,8 @@ public class Blade {
 	/**
 	 * @return		返回路由管理对象
 	 */
-	public Routers router() {
-		return router;
+	public Routers routers() {
+		return routers;
 	}
 	
 	/**
@@ -299,7 +299,7 @@ public class Blade {
      * @return			返回Blade单例实例
      */
 	public Blade route(String path, Object target, String method){
-		router.route(path, target, method);
+		routers.route(path, target, method);
 		return this;
 	}
 	
@@ -313,7 +313,7 @@ public class Blade {
      * @return			返回Blade单例实例
      */
 	public Blade route(String path, Object target, String method, HttpMethod httpMethod){
-		router.route(path, target, method, httpMethod);
+		routers.route(path, target, method, httpMethod);
 		return this;
 	}
 	
@@ -327,7 +327,7 @@ public class Blade {
 	 * @return Blade		返回Blade单例实例
 	 */
 	public Blade route(String path, Class<?> clazz, String method){
-		router.route(path, clazz, method);
+		routers.route(path, clazz, method);
 		return this;
 	}
 	
@@ -341,7 +341,17 @@ public class Blade {
 	 * @return Blade		返回Blade单例实例
 	 */
 	public Blade route(String path, Class<?> clazz, String method, HttpMethod httpMethod){
-		router.route(path, clazz, method, httpMethod);
+		routers.route(path, clazz, method, httpMethod);
+		return this;
+	}
+	
+	/**
+	 * 添加路由列表
+	 * @param routes		路由列表
+	 * @return				返回Blade单例实例
+	 */
+	public Blade routes(List<Route> routes){
+		routers.addRoutes(routes);
 		return this;
 	}
 	
@@ -353,7 +363,7 @@ public class Blade {
 	 * @return			返回Blade单例实例
 	 */
 	public Blade get(String path, RouteHandler handler){
-		router.route(path, handler, HttpMethod.GET);
+		routers.route(path, handler, HttpMethod.GET);
 		return this;
 	}
 	
@@ -365,7 +375,7 @@ public class Blade {
 	 * @return			返回Blade单例实例
 	 */
 	public Blade post(String path, RouteHandler handler){
-		router.route(path, handler, HttpMethod.POST);
+		routers.route(path, handler, HttpMethod.POST);
 		return this;
 	}
 	
@@ -377,7 +387,7 @@ public class Blade {
 	 * @return			返回Blade单例实例
 	 */
 	public Blade delete(String path, RouteHandler handler){
-		router.route(path, handler, HttpMethod.DELETE);
+		routers.route(path, handler, HttpMethod.DELETE);
 		return this;
 	}
 	
@@ -389,7 +399,7 @@ public class Blade {
 	 * @return			返回Blade单例实例
 	 */
 	public Blade put(String path, RouteHandler handler){
-		router.route(path, handler, HttpMethod.PUT);
+		routers.route(path, handler, HttpMethod.PUT);
 		return this;
 	}
 	
@@ -401,7 +411,7 @@ public class Blade {
 	 * @return			返回Blade单例实例
 	 */
 	public Blade all(String path, RouteHandler handler){
-		router.route(path, handler, HttpMethod.ALL);
+		routers.route(path, handler, HttpMethod.ALL);
 		return this;
 	}
 	
@@ -413,7 +423,7 @@ public class Blade {
 	 * @return			返回Blade单例实例
 	 */
 	public Blade any(String path, RouteHandler handler){
-		router.route(path, handler, HttpMethod.ALL);
+		routers.route(path, handler, HttpMethod.ALL);
 		return this;
 	}
 	
@@ -425,7 +435,7 @@ public class Blade {
 	 * @return			返回Blade单例实例
 	 */
 	public Blade before(String path, RouteHandler handler){
-		router.route(path, handler, HttpMethod.BEFORE);
+		routers.route(path, handler, HttpMethod.BEFORE);
 		return this;
 	}
 
@@ -437,7 +447,7 @@ public class Blade {
 	 * @return			返回Blade单例实例
 	 */
 	public Blade after(String path, RouteHandler handler){
-		router.route(path, handler, HttpMethod.AFTER);
+		routers.route(path, handler, HttpMethod.AFTER);
 		return this;
 	}
 	
@@ -770,7 +780,7 @@ public class Blade {
 			ClassPathRouteLoader routesLoader = new ClassPathRouteLoader(ins);
 			routesLoader.setBasePackage(basePackage);
 			List<Route> routes = routesLoader.load();
-			router.addRoutes(routes);
+			routers.addRoutes(routes);
 		} catch (RouteException e) {
 			e.printStackTrace();
 		} catch (ParseException e) {

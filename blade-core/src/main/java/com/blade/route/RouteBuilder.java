@@ -64,11 +64,11 @@ public class RouteBuilder {
     
     private Blade blade;
     
-    private Routers router;
+    private Routers routers;
     
     public RouteBuilder(Blade blade) {
     	this.blade = blade;
-    	this.router = blade.router();
+    	this.routers = blade.routers();
     	this.container = blade.container();
     }
     
@@ -285,7 +285,7 @@ public class RouteBuilder {
      * @param method		路由http方法
      */
     private void buildRoute(Class<?> clazz, Method execMethod, String path, HttpMethod method){
-    	this.router.route(path, clazz, execMethod, method);
+    	this.routers.route(path, clazz, execMethod, method);
     }
     
     /**
@@ -297,7 +297,7 @@ public class RouteBuilder {
      * @param method		路由http方法
      */
     private void buildInterceptor(String path, Class<?> clazz, Method execMethod, HttpMethod method){
-    	this.router.route(path, clazz, execMethod, method);
+    	this.routers.route(path, clazz, execMethod, method);
     }
     
 }

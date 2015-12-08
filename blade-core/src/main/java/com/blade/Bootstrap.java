@@ -25,11 +25,13 @@ public abstract class Bootstrap {
 	
 	/**
 	 * 初始化方法，在应用启动的时候做一些初始化操作
+	 * @param blade	Blade全局对象
 	 */
-	public abstract void init();
+	public abstract void init(Blade blade);
 	
 	/**
 	 * 初始化配置后执行
+	 * @param blade	Blade全局对象
 	 */
 	public void contextInitialized(Blade blade){
 		//

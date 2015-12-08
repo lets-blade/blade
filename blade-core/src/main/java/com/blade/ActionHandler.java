@@ -88,7 +88,7 @@ public class ActionHandler {
 	
 	public ActionHandler(ServletContext context, Blade blade){
 		this.blade = blade;
-		this.router = blade.router();
+		this.router = blade.routers();
 		this.context = context;
 		this.routeMatcher = new RouteMatcher(router);
 	}
