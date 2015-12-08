@@ -1,6 +1,7 @@
 # blade last version
 
 如果在maven仓库中下载不到最新版本的依赖，请添加maven snapshots仓库
+
 ```xml
 <repositories>
  <repository>
@@ -71,11 +72,11 @@
 </dependency>
 ```
 
-## [blade-sample](http://search.maven.org/#search%7Cga%7C1%7Cblade-sample)
+## [blade-patchca](http://search.maven.org/#search%7Cga%7C1%7Cblade-patchca)
 ```xml
 <dependency>
     <groupId>com.bladejava</groupId>
-    <artifactId>blade-sample</artifactId>
+    <artifactId>blade-patchca</artifactId>
     <version>1.0.0</version>
 </dependency>
 ```

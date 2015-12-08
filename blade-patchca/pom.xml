@@ -11,7 +11,7 @@
 	<artifactId>blade-patchca</artifactId>
 	<version>1.0.0</version>
 	<name>blade-patchca</name>
-	<url>http://maven.apache.org</url>
+	<url>https://github.com/biezhi/blade/tree/master/blade-patchca</url>
 
 	<dependencies>
 		<dependency>
