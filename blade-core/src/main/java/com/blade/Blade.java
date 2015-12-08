@@ -21,6 +21,11 @@ import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
 
+import blade.kit.IOKit;
+import blade.kit.PropertyKit;
+import blade.kit.StringKit;
+import blade.kit.json.JSONKit;
+
 import com.blade.http.HttpMethod;
 import com.blade.ioc.Container;
 import com.blade.ioc.SampleContainer;
@@ -31,16 +36,10 @@ import com.blade.plugin.Plugin;
 import com.blade.render.JspRender;
 import com.blade.render.Render;
 import com.blade.route.Route;
+import com.blade.route.RouteException;
 import com.blade.route.RouteHandler;
 import com.blade.route.Routers;
-import com.blade.route.RouteException;
 import com.blade.server.Server;
-
-import blade.kit.IOKit;
-import blade.kit.PropertyKit;
-import blade.kit.ReflectKit;
-import blade.kit.StringKit;
-import blade.kit.json.JSONKit;
 
 /**
  * Blade Core Class
@@ -541,7 +540,7 @@ public class Blade {
      * @return				返回Blade单例实例
      */
     public Blade app(Class<? extends Bootstrap> bootstrap){
-    	this.bootstrap = (Bootstrap) ReflectKit.newInstance(bootstrap);
+    	this.bootstrap = Aop.create(bootstrap);
     	return this;
     }
     

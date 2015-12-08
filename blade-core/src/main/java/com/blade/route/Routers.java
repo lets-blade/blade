@@ -20,9 +20,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import blade.kit.ReflectKit;
 import blade.kit.log.Logger;
 
+import com.blade.Aop;
 import com.blade.http.HttpMethod;
 import com.blade.http.Request;
 import com.blade.http.Response;
@@ -154,7 +154,7 @@ public class Routers {
     		}
 			Object controller = container.getBean(clazz, Scope.SINGLE);
 			if(null == controller){
-				controller = ReflectKit.newInstance(clazz);
+				controller = Aop.create(clazz);
 				container.registerBean(controller);
 			}
 			
@@ -172,7 +172,7 @@ public class Routers {
 		try {
 			Object controller = container.getBean(clazz, Scope.SINGLE);
 			if(null == controller){
-				controller = ReflectKit.newInstance(clazz);
+				controller = Aop.create(clazz);
 				container.registerBean(controller);
 			}
 			Method method = clazz.getMethod(methodName, Request.class, Response.class);
@@ -188,7 +188,7 @@ public class Routers {
 		try {
 			Object controller = container.getBean(clazz, Scope.SINGLE);
 			if(null == controller){
-				controller = ReflectKit.newInstance(clazz);
+				controller = Aop.create(clazz);
 				container.registerBean(controller);
 			}
 			addRoute(httpMethod, path, controller, method);

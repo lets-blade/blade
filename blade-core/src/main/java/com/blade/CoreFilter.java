@@ -103,13 +103,14 @@ public class CoreFilter implements Filter {
      * @return 							一个全局初始化对象
      * @throws ServletException
      */
-    private Bootstrap getBootstrap(String botstrapClassName) throws ServletException {
+    @SuppressWarnings("unchecked")
+	private Bootstrap getBootstrap(String botstrapClassName) throws ServletException {
     	Bootstrap bootstrapClass = null;
         try {
         	if(null != botstrapClassName){
-            	Class<?> applicationClass = Class.forName(botstrapClassName);
+            	Class<Bootstrap> applicationClass = (Class<Bootstrap>) Class.forName(botstrapClassName);
                 if(null != applicationClass){
-                	bootstrapClass = (Bootstrap) applicationClass.newInstance();
+                	bootstrapClass = Aop.create(applicationClass);
                 }
         	} else {
         		throw new ServletException("bootstrapClass is null !");

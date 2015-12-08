@@ -3,9 +3,9 @@
  */
 package com.blade.oauth2;
 
-import blade.kit.ReflectKit;
 import blade.kit.StringKit;
 
+import com.blade.Aop;
 import com.blade.http.Request;
 import com.blade.oauth2.base.request.OAuthBaseRequest;
 import com.blade.oauth2.base.validator.OAuthValidator;
@@ -41,7 +41,7 @@ public class OAuthRequest extends OAuthBaseRequest {
 		if (clazz == null) {
 			throw OAuthKit.handleOAuthProblemException("Invalid response_type parameter value");
 		}
-		return (OAuthValidator<Request>) ReflectKit.newInstance(clazz);
+		return Aop.create(clazz);
 	}
 
 	public String getResponseType() {

@@ -1,5 +1,6 @@
 package com.blade.loader;
 
+import com.blade.Aop;
 import com.blade.Blade;
 import com.blade.ioc.Container;
 import com.blade.ioc.Scope;
@@ -46,7 +47,7 @@ public class ClassPathControllerLoader implements ControllerLoader {
 			
 			Object controller = container.getBean(controllerClass, Scope.SINGLE);
 			if(null == controller){
-				controller = controllerClass.newInstance();
+				controller = Aop.create(controllerClass);
 				container.registerBean(controller);
 			}
 			return controller;

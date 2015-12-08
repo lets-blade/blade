@@ -4,9 +4,9 @@
 
 package com.blade.oauth2.base.request;
 
-import blade.kit.ReflectKit;
 import blade.kit.StringKit;
 
+import com.blade.Aop;
 import com.blade.http.Request;
 import com.blade.oauth2.OAuth;
 import com.blade.oauth2.base.validator.OAuthValidator;
@@ -33,13 +33,12 @@ public abstract class OAuthTokenBaseRequest extends OAuthBaseRequest {
 			throw OAuthKit
 					.handleOAuthProblemException("Missing grant_type parameter value");
 		}
-		final Class<? extends OAuthValidator<Request>> clazz = validators
-				.get(requestTypeValue);
+		final Class<? extends OAuthValidator<Request>> clazz = validators.get(requestTypeValue);
 		if (clazz == null) {
 			throw OAuthKit
 					.handleOAuthProblemException("Invalid grant_type parameter value");
 		}
-		return (OAuthValidator<Request>) ReflectKit.newInstance(clazz);
+		return Aop.create(clazz);
 	}
 
 	public String getPassword() {

@@ -28,10 +28,10 @@ import java.util.Set;
 import blade.exception.BladeException;
 import blade.kit.CloneKit;
 import blade.kit.CollectionKit;
-import blade.kit.ReflectKit;
 import blade.kit.StringKit;
 import blade.kit.log.Logger;
 
+import com.blade.Aop;
 import com.blade.annotation.Component;
 import com.blade.annotation.Inject;
 import com.blade.annotation.Path;
@@ -150,7 +150,7 @@ public class SampleContainer implements Container {
         
 		//非抽象类、接口
 		if (isNormalClass(clazz)) {
-			object = ReflectKit.newInstance(clazz);
+			object = Aop.create(clazz);
 			return registerBean(name, object);
 		}
 		return object;
@@ -246,13 +246,9 @@ public class SampleContainer implements Container {
     private Object recursiveAssembly(Class<?> clazz){
     	Object field = null;
     	if(null != clazz){
-    		// 是接口或者抽象类
-    		if(clazz.isInterface() || Modifier.isAbstract(clazz.getModifiers())){
-    			String implClassName = clazz.getPackage().getName() + ".impl." + clazz.getSimpleName() + "Impl";
-    			return ReflectKit.newInstance(implClassName);
-    		} else {
+    		if(!clazz.isInterface() && !Modifier.isAbstract(clazz.getModifiers())){
     			field = this.registerBean(clazz);
-			}
+    		}
     	}
     	return field;
     }
