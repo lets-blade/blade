@@ -50,11 +50,6 @@ import com.blade.server.Server;
 public class Blade {
 	
 	/**
-	 * 当前最新版本
-	 */
-	public static final String VERSION = "1.4.3-alpha";
-	
-	/**
      * 框架是否已经初始化
      */
     boolean isInit = false;
@@ -62,11 +57,7 @@ public class Blade {
     /**
      * blade全局初始化对象，在web.xml中配置，必须
      */
-    private Bootstrap bootstrap = new Bootstrap() {
-		@Override
-		public void init(Blade blade) {
-		}
-	};
+    private Bootstrap bootstrap = null;
     
 	/**
 	 * ioc全局对象
@@ -94,14 +85,9 @@ public class Blade {
     private Routers routers = new Routers(container);
     
     /**
-     * 默认启动端口
-     */
-    private static final int DEFAULT_PORT = 9000;
-    
-    /**
      * blade启动端口，jetty服务
      */
-    private int port = DEFAULT_PORT;
+    private int port = Const.DEFAULT_PORT;
     
     /**
      * jetty服务
@@ -540,7 +526,8 @@ public class Blade {
      * @return				返回Blade单例实例
      */
     public Blade app(Class<? extends Bootstrap> bootstrap){
-    	this.bootstrap = Aop.create(bootstrap);
+    	Object object = container.registerBean(bootstrap);
+    	this.bootstrap = (Bootstrap) object;
     	return this;
     }
     
@@ -789,10 +776,10 @@ public class Blade {
 	}
 	
 	void iocInit(){
-		iocApplication.init(this);
+		iocApplication.init(container, iocs(), bootstrap);
 	}
 	
-	IocApplication iocApplication(){
+	public IocApplication iocApplication(){
 		return iocApplication;
 	}
 }

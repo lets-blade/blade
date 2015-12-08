@@ -15,15 +15,11 @@
  */
 package com.blade.server;
 
-import java.util.EnumSet;
-
-import javax.servlet.DispatcherType;
-
 import org.eclipse.jetty.servlet.ServletContextHandler;
 
-import com.blade.CoreFilter;
-
 import blade.kit.log.Logger;
+
+import com.blade.DispatcherServlet;
 
 /**
  * 
@@ -59,10 +55,13 @@ public class Server {
 	    context = new ServletContextHandler(ServletContextHandler.SESSIONS);
 	    context.setContextPath(contextPath);
 	    context.setResourceBase(System.getProperty("java.io.tmpdir"));
-	    context.addFilter(CoreFilter.class, "/*", EnumSet.of(DispatcherType.REQUEST));
+	    context.addServlet(DispatcherServlet.class, "/");
+	    
+//	    context.addFilter(CoreFilter.class, "/*", EnumSet.of(DispatcherType.REQUEST));
 	    
         server.setHandler(this.context);
 	    server.start();
+//	    server.dump(System.err);
 	    LOGGER.info("Blade Server Listen on 0.0.0.0:" + this.port);
 	}
 	

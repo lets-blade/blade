@@ -95,7 +95,7 @@ public class SampleContainer implements Container {
 
     @Override
     public <T> T getBean(Class<T> type, Scope scope) {
-    	return this.getBean(type.getCanonicalName(), scope);
+    	return this.getBean(type.getName(), scope);
     }
 
     @Override
@@ -110,7 +110,7 @@ public class SampleContainer implements Container {
 
     @Override
     public boolean hasBean(Class<?> clazz) {
-    	String className = clazz.getCanonicalName();
+    	String className = clazz.getName();
     	return beanKeys.containsValue(className);
     }
 
@@ -133,7 +133,7 @@ public class SampleContainer implements Container {
 
 	@Override
 	public boolean removeBean(Class<?> clazz) {
-		return this.removeBean(clazz.getCanonicalName());
+		return this.removeBean(clazz.getName());
 	}
 
     /**
@@ -145,7 +145,7 @@ public class SampleContainer implements Container {
     @Override
     public Object registerBean(Class<?> clazz) {
     	
-        String name = clazz.getCanonicalName();
+        String name = clazz.getName();
         Object object = null;
         
 		//非抽象类、接口
@@ -168,7 +168,7 @@ public class SampleContainer implements Container {
 				return beans.get(className);
 			}
 			
-			className = clazz.getCanonicalName();
+			className = clazz.getName();
 			beanKeys.put(name, className);
 			if(null == beans.get(className)){
 				beans.put(className, value);
@@ -178,7 +178,7 @@ public class SampleContainer implements Container {
 		    Class<?>[] interfaces = clazz.getInterfaces();
 		    if(interfaces.length > 0){
 		    	for(Class<?> interfaceClazz : interfaces){
-		    		this.registerBean(interfaceClazz.getCanonicalName(), value);
+		    		this.registerBean(interfaceClazz.getName(), value);
 		    	}
 		    }
 		    
@@ -192,7 +192,7 @@ public class SampleContainer implements Container {
     
     @Override
 	public Object registerBean(Object object) {
-		String className = object.getClass().getCanonicalName();
+		String className = object.getClass().getName();
 		return registerBean(className, object);
 	}
     
@@ -354,7 +354,7 @@ public class SampleContainer implements Container {
 					}
 			        
 			        if (null == injectField) {
-			            throw new BladeException("Unable to load " + field.getType().getCanonicalName() + "！");
+			            throw new BladeException("Unable to load " + field.getType().getName() + "！");
 			        }
 			        
 			        boolean accessible = field.isAccessible();

@@ -65,16 +65,16 @@ public class IocApplication {
 	 * 
 	 * @param blade	Blade实例
 	 */
-	public void init(Blade blade){
-		this.container = blade.container();
+	public void init(Container container, String[] iocs, Bootstrap bootstrap){
+		this.container = container;
 		
 		// 初始化全局配置类
 		if(null == container.getBean(Bootstrap.class, Scope.SINGLE)){
-			container.registerBean(blade.bootstrap());
+			container.registerBean(bootstrap);
 		}
 		
 		// 初始化ioc容器
-		initIOC(blade.iocs());
+		initIOC(iocs);
 		
 		// 初始化注入
 		container.initWired();

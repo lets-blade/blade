@@ -68,7 +68,7 @@ public class RouteMatcher {
     public Route getRoute(String httpMethod, String path) {
 		String cleanPath = parsePath(path);
 		
-		String routeKey = path + "#" + httpMethod.toLowerCase();
+		String routeKey = path + "#" + httpMethod.toUpperCase();
 		Route route = routes.get(routeKey);
 		if(null != route){
 			return route;
