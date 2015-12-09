@@ -20,7 +20,6 @@ import org.eclipse.jetty.servlet.ServletHolder;
 
 import blade.kit.log.Logger;
 
-import com.blade.web.AppContextListener;
 import com.blade.web.DispatcherServlet;
 
 /**
@@ -64,7 +63,6 @@ public class Server {
 	    context = new ServletContextHandler(ServletContextHandler.SESSIONS);
 	    context.setContextPath(contextPath);
 	    context.setResourceBase(System.getProperty("java.io.tmpdir"));
-	    context.addEventListener(new AppContextListener());
 	    
 	    ServletHolder servletHolder = new ServletHolder(DispatcherServlet.class);
 	    servletHolder.setAsyncSupported(async);

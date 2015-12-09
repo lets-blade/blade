@@ -16,7 +16,6 @@
 package com.blade.web;
 
 import java.io.IOException;
-import java.util.concurrent.ThreadPoolExecutor;
 
 import javax.servlet.AsyncContext;
 import javax.servlet.ServletConfig;
@@ -32,7 +31,6 @@ import blade.kit.log.Logger;
 import com.blade.Aop;
 import com.blade.Blade;
 import com.blade.Bootstrap;
-import com.blade.Const;
 import com.blade.route.RouteBuilder;
 import com.blade.route.RouteMatcher;
 
@@ -88,7 +86,6 @@ public class DispatcherServlet extends HttpServlet {
 			
 			// 初始化IOC
 			blade.iocInit();
-//			blade.iocApplication().init(blade.container(), blade.iocs(), bootstrap);
 			
 		    blade.bootstrap().contextInitialized(blade);
 		    
@@ -112,10 +109,7 @@ public class DispatcherServlet extends HttpServlet {
 			AsyncContext asyncCtx = httpRequest.startAsync();
 			asyncCtx.addListener(new AppAsyncListener());
 			asyncCtx.setTimeout(10000L);
-			
-			ThreadPoolExecutor executor = (ThreadPoolExecutor) servletContext.getAttribute(Const.BLADE_EXECUTOR);
-	        executor.execute(new AsynRequestHandler(servletContext, asyncCtx));
-//			asyncCtx.start(new AsynRequestHandler(blade, servletContext, asyncCtx));
+			asyncCtx.start(new AsynRequestHandler(servletContext, asyncCtx));
 		} else {
 			syncRequestHandler.handle(httpRequest, httpResponse);
 		}
