@@ -19,8 +19,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-
 import blade.kit.CollectionKit;
 import blade.kit.StringKit;
 
@@ -41,10 +39,10 @@ public final class Path {
 	public static final String ALL_PATHS = "/*";
     private static final String SLASH = "/";
     
-    public static String getRelativePath(HttpServletRequest request) {
+    public static String getRelativePath(String path, String contextPath) {
     	
-        String path = request.getRequestURI();
-        String contextPath = request.getContextPath();
+//        String path = request.getRequestURI();
+//        String contextPath = request.getContextPath();
 
         path = path.substring(contextPath.length());
 

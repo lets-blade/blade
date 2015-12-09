@@ -16,10 +16,12 @@
 package com.blade.server;
 
 import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.servlet.ServletHolder;
 
 import blade.kit.log.Logger;
 
-import com.blade.DispatcherServlet;
+import com.blade.web.AppContextListener;
+import com.blade.web.DispatcherServlet;
 
 /**
  * 
@@ -36,18 +38,25 @@ public class Server {
 	
 	private int port = 9000;
 	
+	private boolean async = true;
+	
 	private org.eclipse.jetty.server.Server server;
 	
 	private ServletContextHandler context;
 	
-	public Server(int port) {
+	public Server(int port, boolean async) {
 		this.port = port;
+		this.async = async;
 	}
 	
 	public void setPort(int port){
 		this.port = port;
 	}
 	
+	public void setAsync(boolean async) {
+		this.async = async;
+	}
+
 	public void start(String contextPath) throws Exception{
 		
 		server = new org.eclipse.jetty.server.Server(this.port);
@@ -55,10 +64,12 @@ public class Server {
 	    context = new ServletContextHandler(ServletContextHandler.SESSIONS);
 	    context.setContextPath(contextPath);
 	    context.setResourceBase(System.getProperty("java.io.tmpdir"));
-	    context.addServlet(DispatcherServlet.class, "/");
+	    context.addEventListener(new AppContextListener());
 	    
-//	    context.addFilter(CoreFilter.class, "/*", EnumSet.of(DispatcherType.REQUEST));
+	    ServletHolder servletHolder = new ServletHolder(DispatcherServlet.class);
+	    servletHolder.setAsyncSupported(async);
 	    
+	    context.addServlet(servletHolder, "/");
         server.setHandler(this.context);
 	    server.start();
 //	    server.dump(System.err);

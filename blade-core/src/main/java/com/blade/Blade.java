@@ -52,7 +52,12 @@ public class Blade {
 	/**
      * 框架是否已经初始化
      */
-    boolean isInit = false;
+    private boolean isInit = false;
+    
+    /**
+     * 是否异步调用
+     */
+    private boolean isAsyn = true;
     
     /**
      * blade全局初始化对象，在web.xml中配置，必须
@@ -122,7 +127,7 @@ public class Blade {
 	 * @return			返回Blade封装的Server
 	 */
 	public Server createServer(int port){
-		return new Server(port);
+		return new Server(port, isAsyn);
 	}
 	
 	/**
@@ -587,13 +592,23 @@ public class Blade {
 	}
 	
 	/**
+	 * 是否异步调用
+	 * @param isAsyn	是否异步
+	 * @return			返回Blade单例对象
+	 */
+	public Blade isAsyn(boolean isAsyn){
+		this.isAsyn = isAsyn;
+		return this;
+	}
+	
+	/**
 	 * 设置jetty启动上下文
 	 * 
 	 * @param contextPath	设置上下文contextPath，默认/
 	 */
 	public void start(String contextPath) {
 		try {
-			bladeServer = new Server(this.port);
+			bladeServer = new Server(this.port, this.isAsyn);
 			bladeServer.start(contextPath);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
@@ -775,11 +790,18 @@ public class Blade {
 		return this;
 	}
 	
-	void iocInit(){
-		iocApplication.init(container, iocs(), bootstrap);
-	}
-	
+	/**
+	 * @return	返回IocApplication对象
+	 */
 	public IocApplication iocApplication(){
 		return iocApplication;
 	}
+
+	/**
+	 * @return	返回是否已经初始化
+	 */
+	public boolean isInit() {
+		return isInit;
+	}
+	
 }
