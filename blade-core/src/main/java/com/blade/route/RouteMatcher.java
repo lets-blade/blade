@@ -49,9 +49,9 @@ public class RouteMatcher {
 	private Set<String> routeKeys = null;
 	private List<Route> interceptorRoutes = new ArrayList<Route>();
 	
-    public RouteMatcher(Routers router) {
-		this.routes = router.getRoutes();
-		this.interceptors = router.getInterceptors();
+    public RouteMatcher(Routers routers) {
+		this.routes = routers.getRoutes();
+		this.interceptors = routers.getInterceptors();
 		this.routeKeys = routes.keySet();
 		Collection<Route> inters = interceptors.values();
 		if (null != inters && inters.size() > 0) {

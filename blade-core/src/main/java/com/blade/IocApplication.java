@@ -73,8 +73,12 @@ public class IocApplication {
 			container.registerBean(bootstrap);
 		}
 		
-		// 初始化ioc容器
-		initIOC(iocs);
+		// 初始化ioc容器，加载ioc包的对象 要配置符合ioc的注解的类才会被加载
+		if(null != iocs && iocs.length > 0){
+			for(String packageName : iocs){
+				registerBean(packageName);
+			}
+		}
 		
 		// 初始化注入
 		container.initWired();
@@ -86,22 +90,9 @@ public class IocApplication {
 		
 	}
 	
-	/**
-	 * 初始化IOC容器，加载ioc包的对象
-	 * 要配置符合ioc的注解的类才会被加载
-	 * 
-	 */
-	private void initIOC(String[] iocPackages) {
-		if(null != iocPackages && iocPackages.length > 0){
-			for(String packageName : iocPackages){
-				registerBean(packageName);
-			}
-		}
-	}
-	
 	@SuppressWarnings("unchecked")
 	public <T extends Plugin> T registerPlugin(Class<T> plugin){
-		Object object = container.registerBean(plugin);
+		Object object = container.registerBean(Aop.create(plugin));
 		T t = (T) object;
 		plugins.add(t);
 		return t;
@@ -130,9 +121,13 @@ public class IocApplication {
 		for (Class<?> clazz : classes) {
 			// 注册带有Component和Service注解的类
 			if (container.isRegister(clazz.getAnnotations())) {
-				container.registerBean(clazz);
+				container.registerBean(Aop.create(clazz));
 			}
 		}
+	}
+	
+	public List<Plugin> getPlugins() {
+		return plugins;
 	}
 
 	/**

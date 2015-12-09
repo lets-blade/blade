@@ -19,10 +19,8 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import blade.exception.BladeException;
@@ -31,7 +29,6 @@ import blade.kit.CollectionKit;
 import blade.kit.StringKit;
 import blade.kit.log.Logger;
 
-import com.blade.Aop;
 import com.blade.annotation.Component;
 import com.blade.annotation.Inject;
 import com.blade.annotation.Path;
@@ -136,26 +133,6 @@ public class SampleContainer implements Container {
 		return this.removeBean(clazz.getName());
 	}
 
-    /**
-     * 注册一个bean对象到容器里
-     * 
-     * @param clazz 要注册的class
-     * @return		返回注册后的bean对象
-     */
-    @Override
-    public Object registerBean(Class<?> clazz) {
-    	
-        String name = clazz.getName();
-        Object object = null;
-        
-		//非抽象类、接口
-		if (isNormalClass(clazz)) {
-			object = Aop.create(clazz);
-			return registerBean(name, object);
-		}
-		return object;
-	}
-    
     @Override
 	public Object registerBean(String name, Object value) {
     	Class<?> clazz = value.getClass();
@@ -178,7 +155,8 @@ public class SampleContainer implements Container {
 		    Class<?>[] interfaces = clazz.getInterfaces();
 		    if(interfaces.length > 0){
 		    	for(Class<?> interfaceClazz : interfaces){
-		    		this.registerBean(interfaceClazz.getName(), value);
+		    		String clsName = interfaceClazz.getName();
+		    		this.registerParent(clsName, value);
 		    	}
 		    }
 		    
@@ -188,6 +166,21 @@ public class SampleContainer implements Container {
 		    }
 		}
     	return value;
+	}
+    
+	private void registerParent(String name, Object value) {
+    	Class<?> clazz = value.getClass();
+			
+		// 如果容器已经存在该名称对于的对象，直接返回
+		String className = beanKeys.get(name);
+		if (StringKit.isNotBlank(className)) {
+			return;
+		}
+		className = clazz.getName();
+		beanKeys.put(name, className);
+		if(null == beans.get(className)){
+			beans.put(className, value);
+		}
 	}
     
     @Override
@@ -234,21 +227,20 @@ public class SampleContainer implements Container {
      */
     @Override
     public void initWired() throws RuntimeException {
-        Iterator<Entry<String, Object>> it = beans.entrySet().iterator();
-        while (it.hasNext()) {
-			Map.Entry<String, Object> entry = (Map.Entry<String, Object>) it.next();
-			Object object = entry.getValue();
+    	
+    	Set<String> keys = beans.keySet();
+    	for(String className : keys){
+    		Object object = beans.get(className);
 			injection(object);
-		}
+    	}
     }
     
     // 装配
     private Object recursiveAssembly(Class<?> clazz){
     	Object field = null;
     	if(null != clazz){
-    		if(!clazz.isInterface() && !Modifier.isAbstract(clazz.getModifiers())){
-    			field = this.registerBean(clazz);
-    		}
+    		String className = beanKeys.get(clazz.getName());
+    		field = beans.get(className);
     	}
     	return field;
     }
@@ -304,15 +296,6 @@ public class SampleContainer implements Container {
 	}
 	
 	@Override
-	public void registerBean(Set<Class<?>> classes) {
-		if(!CollectionKit.isEmpty(classes)){
-			for(Class<?> clazz : classes){
-				this.registerBean(clazz);
-			}
-		}
-	}
-
-	@Override
 	public boolean removeAll() {
 		beanKeys.clear();
 		beans.clear();
@@ -329,7 +312,6 @@ public class SampleContainer implements Container {
 				// 需要注入的字段
 			    Inject inject = field.getAnnotation(Inject.class);
 			    if (null != inject ) {
-			    	
 			    	// 要注入的字段
 			        Object injectField = null;
 			        String name = inject.name();

@@ -531,7 +531,7 @@ public class Blade {
      * @return				返回Blade单例实例
      */
     public Blade app(Class<? extends Bootstrap> bootstrap){
-    	Object object = container.registerBean(bootstrap);
+    	Object object = container.registerBean(Aop.create(bootstrap));
     	this.bootstrap = (Bootstrap) object;
     	return this;
     }
@@ -795,6 +795,14 @@ public class Blade {
 	 */
 	public IocApplication iocApplication(){
 		return iocApplication;
+	}
+	
+	/**
+	 * @return	返回IocApplication对象
+	 */
+	public Blade iocInit(){
+		iocApplication.init(container, iocs(), bootstrap);
+		return this;
 	}
 
 	/**

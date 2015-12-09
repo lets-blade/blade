@@ -20,6 +20,7 @@ import com.blade.render.ModelAndView;
 import com.blade.route.Route;
 import com.blade.route.RouteHandler;
 import com.blade.route.RouteMatcher;
+import com.blade.route.Routers;
 import com.blade.web.http.HttpStatus;
 import com.blade.web.http.Path;
 import com.blade.web.http.Request;
@@ -31,7 +32,7 @@ import com.blade.web.http.wrapper.ServletResponse;
  * 同步请求处理器
  * @author biezhi
  */
-public class SyncRequestHandler implements Runnable {
+public class SyncRequestHandler {
 	
 	private static final Logger LOGGER = Logger.getLogger(SyncRequestHandler.class);
 
@@ -39,20 +40,14 @@ public class SyncRequestHandler implements Runnable {
 	
 	private ServletContext servletContext;
 	
-	static RouteMatcher routeMatcher;
+	private RouteMatcher routeMatcher;
 	
-	private HttpServletRequest httpRequest;
-	
-	private HttpServletResponse httpResponse;
-	
-	public SyncRequestHandler(ServletContext servletContext, HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
+	public SyncRequestHandler(ServletContext servletContext, Routers routers) {
 		this.servletContext = servletContext;
-		this.httpRequest = httpRequest;
-		this.httpResponse = httpResponse;
+		this.routeMatcher = new RouteMatcher(routers);
 	}
 	
-	@Override
-	public void run(){
+	public void handle(HttpServletRequest httpRequest, HttpServletResponse httpResponse){
 		
 		Response response = null;
         try {

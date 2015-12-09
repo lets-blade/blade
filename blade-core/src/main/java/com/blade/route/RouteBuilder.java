@@ -22,6 +22,7 @@ import blade.kit.StringKit;
 import blade.kit.resource.ClassPathClassReader;
 import blade.kit.resource.ClassReader;
 
+import com.blade.Aop;
 import com.blade.Blade;
 import com.blade.annotation.After;
 import com.blade.annotation.Before;
@@ -177,7 +178,7 @@ public class RouteBuilder {
     		return;
     	}
     	
-    	container.registerBean(interceptor);
+    	container.registerBean(Aop.create(interceptor));
     	
     	for (Method method : methods) {
 			
@@ -232,7 +233,7 @@ public class RouteBuilder {
     		return;
     	}
     	
-    	container.registerBean(router);
+    	container.registerBean(Aop.create(router));
     	
 		final String nameSpace = router.getAnnotation(Path.class).value();
 		

@@ -123,14 +123,6 @@ public interface Container {
     boolean isRegister(Annotation[] annotations);
 
     /**
-     * 注册一个class类型的bean到容器中
-     * 
-     * @param clazz			要注册的class类型
-     * @return				返回注册后的bean对象
-     */
-    Object registerBean(Class<?> clazz);
-    
-    /**
      * 注册一个代名称的Bean
      * @param name	bean名称
      * @param value	bean对象
@@ -146,13 +138,6 @@ public interface Container {
      */
     Object registerBean(Object object);
     
-    /**
-     * 注册一个class集合进入ioc容器
-     * 
-     * @param classes		要注册的class集合
-     */
-    void registerBean(Set<Class<?>> classes);
-
     /**
      * 初始化IOC
      */

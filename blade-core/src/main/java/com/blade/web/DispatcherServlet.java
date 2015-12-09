@@ -54,6 +54,8 @@ public class DispatcherServlet extends HttpServlet {
 	
 	private ServletContext servletContext;
 	
+	private SyncRequestHandler syncRequestHandler;
+	
 	public DispatcherServlet() {
 	}
 	
@@ -85,13 +87,14 @@ public class DispatcherServlet extends HttpServlet {
 			new RouteBuilder(blade).building();
 			
 			// 初始化IOC
-			blade.iocApplication().init(blade.container(), blade.iocs(), bootstrap);
+			blade.iocInit();
+//			blade.iocApplication().init(blade.container(), blade.iocs(), bootstrap);
 			
 		    blade.bootstrap().contextInitialized(blade);
 		    
 		    servletContext = config.getServletContext();
 		    
-		    SyncRequestHandler.routeMatcher = new RouteMatcher(blade.routers());
+		    syncRequestHandler = new SyncRequestHandler(servletContext, blade.routers());
 		    AsynRequestHandler.routeMatcher = new RouteMatcher(blade.routers());
 		    
 		    blade.setInit(true);
@@ -105,7 +108,6 @@ public class DispatcherServlet extends HttpServlet {
 		httpResponse.setCharacterEncoding(blade.encoding());
 		
 		boolean isAsync = httpRequest.isAsyncSupported();
-		System.out.println("isAsync = "+isAsync);
 		if (isAsync) {
 			AsyncContext asyncCtx = httpRequest.startAsync();
 			asyncCtx.addListener(new AppAsyncListener());
@@ -115,7 +117,7 @@ public class DispatcherServlet extends HttpServlet {
 	        executor.execute(new AsynRequestHandler(servletContext, asyncCtx));
 //			asyncCtx.start(new AsynRequestHandler(blade, servletContext, asyncCtx));
 		} else {
-			new SyncRequestHandler(servletContext, httpRequest, httpResponse).run();
+			syncRequestHandler.handle(httpRequest, httpResponse);
 		}
 	}
 	
