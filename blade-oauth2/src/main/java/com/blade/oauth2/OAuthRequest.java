@@ -6,7 +6,6 @@ package com.blade.oauth2;
 import blade.kit.StringKit;
 
 import com.blade.Aop;
-import com.blade.http.Request;
 import com.blade.oauth2.base.request.OAuthBaseRequest;
 import com.blade.oauth2.base.validator.OAuthValidator;
 import com.blade.oauth2.exception.OAuthProblemException;
@@ -14,6 +13,7 @@ import com.blade.oauth2.kit.OAuthKit;
 import com.blade.oauth2.message.types.ResponseType;
 import com.blade.oauth2.validator.AuthorizationValidator;
 import com.blade.oauth2.validator.ImplicitCodeValidator;
+import com.blade.web.http.Request;
 
 /**
  * 

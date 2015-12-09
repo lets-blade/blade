@@ -5,11 +5,11 @@ import java.util.Map;
 
 import blade.kit.StringKit;
 
-import com.blade.http.HttpStatus;
-import com.blade.http.Request;
 import com.blade.oauth2.exception.OAuthProblemException;
 import com.blade.oauth2.message.OAuthMessage;
 import com.blade.oauth2.parameters.JSONBodyParametersApplier;
+import com.blade.web.http.HttpStatus;
+import com.blade.web.http.Request;
 
 /**
  * 

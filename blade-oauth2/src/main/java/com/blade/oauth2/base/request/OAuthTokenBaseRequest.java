@@ -7,11 +7,11 @@ package com.blade.oauth2.base.request;
 import blade.kit.StringKit;
 
 import com.blade.Aop;
-import com.blade.http.Request;
 import com.blade.oauth2.OAuth;
 import com.blade.oauth2.base.validator.OAuthValidator;
 import com.blade.oauth2.exception.OAuthProblemException;
 import com.blade.oauth2.kit.OAuthKit;
+import com.blade.web.http.Request;
 
 /**
  * Abstract OAuth Token request class

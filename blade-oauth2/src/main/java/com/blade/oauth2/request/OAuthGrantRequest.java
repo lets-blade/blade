@@ -4,7 +4,6 @@
 
 package com.blade.oauth2.request;
 
-import com.blade.http.Request;
 import com.blade.oauth2.base.request.OAuthTokenBaseRequest;
 import com.blade.oauth2.base.validator.OAuthValidator;
 import com.blade.oauth2.exception.OAuthProblemException;
@@ -13,6 +12,7 @@ import com.blade.oauth2.validator.AuthorizationCodeValidator;
 import com.blade.oauth2.validator.ClientCredentialValidator;
 import com.blade.oauth2.validator.PasswordCredentialValidator;
 import com.blade.oauth2.validator.RefreshTokenValidator;
+import com.blade.web.http.Request;
 
 
 /**

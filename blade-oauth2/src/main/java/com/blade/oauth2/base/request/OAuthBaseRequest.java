@@ -8,11 +8,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import com.blade.http.Request;
 import com.blade.oauth2.OAuth;
 import com.blade.oauth2.base.validator.OAuthValidator;
 import com.blade.oauth2.exception.OAuthProblemException;
 import com.blade.oauth2.kit.OAuthKit;
+import com.blade.web.http.Request;
 
 /**
  * The Abstract OAuth request for the Authorization server.

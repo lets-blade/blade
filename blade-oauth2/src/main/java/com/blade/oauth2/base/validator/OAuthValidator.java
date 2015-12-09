@@ -2,8 +2,8 @@
  */
 package com.blade.oauth2.base.validator;
 
-import com.blade.http.Request;
 import com.blade.oauth2.exception.OAuthProblemException;
+import com.blade.web.http.Request;
 
 /**
  * 

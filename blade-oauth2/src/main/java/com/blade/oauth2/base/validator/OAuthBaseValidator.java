@@ -12,10 +12,10 @@ import java.util.Set;
 
 import blade.kit.StringKit;
 
-import com.blade.http.Request;
 import com.blade.oauth2.OAuth;
 import com.blade.oauth2.exception.OAuthProblemException;
 import com.blade.oauth2.kit.OAuthKit;
+import com.blade.web.http.Request;
 
 /**
  * 

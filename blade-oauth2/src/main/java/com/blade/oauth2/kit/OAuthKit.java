@@ -24,10 +24,10 @@ import java.util.regex.Pattern;
 import blade.kit.Base64;
 import blade.kit.StringKit;
 
-import com.blade.http.Request;
 import com.blade.oauth2.OAuth;
 import com.blade.oauth2.OAuthError;
 import com.blade.oauth2.exception.OAuthProblemException;
+import com.blade.web.http.Request;
 
 /**
  * Common OAuth Utils class.

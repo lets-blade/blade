@@ -5,12 +5,11 @@
 package com.blade.oauth2.response;
 
 
-import com.blade.http.HttpStatus;
-import com.blade.http.Request;
 import com.blade.oauth2.OAuth;
 import com.blade.oauth2.OAuthResponse;
-import com.blade.oauth2.OAuthResponse.OAuthResponseBuilder;
 import com.blade.oauth2.message.types.TokenType;
+import com.blade.web.http.HttpStatus;
+import com.blade.web.http.Request;
 
 /**
  * 

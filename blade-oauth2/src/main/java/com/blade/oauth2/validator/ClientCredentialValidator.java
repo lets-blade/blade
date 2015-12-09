@@ -32,9 +32,9 @@
  */
 package com.blade.oauth2.validator;
 
-import com.blade.http.Request;
 import com.blade.oauth2.OAuth;
 import com.blade.oauth2.base.validator.OAuthBaseValidator;
+import com.blade.web.http.Request;
 
 /**
  * Client Credentials Grant
