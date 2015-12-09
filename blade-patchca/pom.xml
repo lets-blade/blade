@@ -9,7 +9,7 @@
 		<version>1.0</version>
 	</parent>
 	<artifactId>blade-patchca</artifactId>
-	<version>1.0.0</version>
+	<version>1.0.1</version>
 	<name>blade-patchca</name>
 	<url>https://github.com/biezhi/blade/tree/master/blade-patchca</url>
 

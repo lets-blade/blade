@@ -77,7 +77,7 @@
 <dependency>
     <groupId>com.bladejava</groupId>
     <artifactId>blade-patchca</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
 </dependency>
 ```
 
