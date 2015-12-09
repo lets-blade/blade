@@ -26,7 +26,6 @@ import blade.kit.PropertyKit;
 import blade.kit.StringKit;
 import blade.kit.json.JSONKit;
 
-import com.blade.http.HttpMethod;
 import com.blade.ioc.Container;
 import com.blade.ioc.SampleContainer;
 import com.blade.loader.ClassPathRouteLoader;
@@ -40,6 +39,7 @@ import com.blade.route.RouteException;
 import com.blade.route.RouteHandler;
 import com.blade.route.Routers;
 import com.blade.server.Server;
+import com.blade.web.http.HttpMethod;
 
 /**
  * Blade Core Class

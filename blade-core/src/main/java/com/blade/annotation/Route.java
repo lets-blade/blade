@@ -20,7 +20,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import com.blade.http.HttpMethod;
+import com.blade.web.http.HttpMethod;
 
 /**
  * 方法上定义的路由注解

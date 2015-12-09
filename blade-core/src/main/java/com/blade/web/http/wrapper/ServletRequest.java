@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.blade.servlet.wrapper;
+package com.blade.web.http.wrapper;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -37,15 +37,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import com.blade.Blade;
-import com.blade.http.HttpException;
-import com.blade.http.HttpMethod;
-import com.blade.http.Path;
-import com.blade.http.Request;
 import com.blade.route.Route;
-import com.blade.servlet.multipart.FileItem;
-import com.blade.servlet.multipart.Multipart;
-import com.blade.servlet.multipart.MultipartException;
-import com.blade.servlet.multipart.MultipartHandler;
+import com.blade.web.http.HttpException;
+import com.blade.web.http.HttpMethod;
+import com.blade.web.http.Path;
+import com.blade.web.http.Request;
+import com.blade.web.multipart.FileItem;
+import com.blade.web.multipart.Multipart;
+import com.blade.web.multipart.MultipartException;
+import com.blade.web.multipart.MultipartHandler;
 
 import blade.kit.IOKit;
 import blade.kit.text.HTMLFilter;

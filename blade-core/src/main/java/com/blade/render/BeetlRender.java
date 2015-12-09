@@ -28,8 +28,8 @@ import org.beetl.core.resource.WebAppResourceLoader;
 
 import com.blade.Blade;
 import com.blade.context.BladeWebContext;
-import com.blade.http.Request;
-import com.blade.servlet.wrapper.Session;
+import com.blade.web.http.Request;
+import com.blade.web.http.wrapper.Session;
 
 import blade.kit.log.Logger;
 

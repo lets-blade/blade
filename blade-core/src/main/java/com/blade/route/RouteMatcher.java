@@ -25,8 +25,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.blade.http.HttpMethod;
-import com.blade.http.Path;
+import com.blade.web.http.HttpMethod;
+import com.blade.web.http.Path;
 
 /**
  * 

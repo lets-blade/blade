@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.blade.http;
+package com.blade.web.http;
 
 import java.io.InputStream;
 import java.util.Map;
@@ -24,8 +24,8 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
 import com.blade.route.Route;
-import com.blade.servlet.multipart.FileItem;
-import com.blade.servlet.wrapper.Session;
+import com.blade.web.http.wrapper.Session;
+import com.blade.web.multipart.FileItem;
 
 /**
  * 

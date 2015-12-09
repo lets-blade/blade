@@ -17,9 +17,9 @@ package com.blade.context;
 
 import javax.servlet.ServletContext;
 
-import com.blade.http.Request;
-import com.blade.http.Response;
-import com.blade.servlet.wrapper.Session;
+import com.blade.web.http.Request;
+import com.blade.web.http.Response;
+import com.blade.web.http.wrapper.Session;
 
 /**
  * 全局的WeContext

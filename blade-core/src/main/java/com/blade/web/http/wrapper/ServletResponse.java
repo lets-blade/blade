@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.blade.servlet.wrapper;
+package com.blade.web.http.wrapper;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -27,13 +27,13 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.blade.Blade;
 import com.blade.context.BladeWebContext;
-import com.blade.http.HttpException;
-import com.blade.http.HttpStatus;
-import com.blade.http.Path;
-import com.blade.http.Request;
-import com.blade.http.Response;
 import com.blade.render.ModelAndView;
 import com.blade.render.Render;
+import com.blade.web.http.HttpException;
+import com.blade.web.http.HttpStatus;
+import com.blade.web.http.Path;
+import com.blade.web.http.Request;
+import com.blade.web.http.Response;
 
 import blade.kit.Assert;
 

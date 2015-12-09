@@ -16,16 +16,16 @@ import blade.kit.log.Logger;
 import com.blade.Blade;
 import com.blade.Const;
 import com.blade.context.BladeWebContext;
-import com.blade.http.HttpStatus;
-import com.blade.http.Path;
-import com.blade.http.Request;
-import com.blade.http.Response;
 import com.blade.render.ModelAndView;
 import com.blade.route.Route;
 import com.blade.route.RouteHandler;
 import com.blade.route.RouteMatcher;
-import com.blade.servlet.wrapper.ServletRequest;
-import com.blade.servlet.wrapper.ServletResponse;
+import com.blade.web.http.HttpStatus;
+import com.blade.web.http.Path;
+import com.blade.web.http.Request;
+import com.blade.web.http.Response;
+import com.blade.web.http.wrapper.ServletRequest;
+import com.blade.web.http.wrapper.ServletResponse;
 
 /**
  * 同步请求处理器

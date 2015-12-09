@@ -28,8 +28,8 @@ import com.blade.annotation.Before;
 import com.blade.annotation.Interceptor;
 import com.blade.annotation.Path;
 import com.blade.annotation.Route;
-import com.blade.http.HttpMethod;
 import com.blade.ioc.Container;
+import com.blade.web.http.HttpMethod;
 
 /**
  * 
