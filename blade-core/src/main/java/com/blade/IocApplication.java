@@ -55,9 +55,10 @@ public class IocApplication {
 	 */
 	private List<Plugin> plugins = null;
 	
-	public IocApplication() {
+	public IocApplication(Container container) {
 		this.classReader = new ClassPathClassReader();
 		this.plugins = new ArrayList<Plugin>();
+		this.container = container;
 	}
 	
 	/**
@@ -65,8 +66,7 @@ public class IocApplication {
 	 * 
 	 * @param blade	Blade实例
 	 */
-	public void init(Container container, String[] iocs, Bootstrap bootstrap){
-		this.container = container;
+	public void init(String[] iocs, Bootstrap bootstrap){
 		
 		// 初始化全局配置类
 		if(null == container.getBean(Bootstrap.class, Scope.SINGLE)){
@@ -99,7 +99,10 @@ public class IocApplication {
 	}
 
 	public <T extends Plugin> T getPlugin(Class<T> plugin){
-		return container.getBean(plugin, Scope.SINGLE);
+		if(null != plugin && null != container){
+			return container.getBean(plugin, null);
+		}
+		return null;
 	}
 	
 	/**

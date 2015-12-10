@@ -64,11 +64,6 @@ public class Blade {
      */
     private Bootstrap bootstrap = null;
     
-	/**
-	 * ioc全局对象
-	 */
-	private IocApplication iocApplication = new IocApplication();
-	
     /**
 	 * 全局配置对象
 	 */
@@ -78,6 +73,11 @@ public class Blade {
      * IOC容器，存储路由到ioc中
      */
     private Container container = new SampleContainer();
+    
+    /**
+	 * ioc全局对象
+	 */
+	private IocApplication iocApplication = new IocApplication(container);
     
     /**
      * 默认JSP渲染
@@ -801,7 +801,7 @@ public class Blade {
 	 * @return	返回IocApplication对象
 	 */
 	public Blade iocInit(){
-		iocApplication.init(container, iocs(), bootstrap);
+		iocApplication.init(iocs(), bootstrap);
 		return this;
 	}
 
