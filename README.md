@@ -59,6 +59,123 @@ public class App {
 
 Run it and point your browser to http://localhost:9001. There you go, you've just created your first Blade app!
 
+## API Example
+
+```java
+public static void main(String[] args) {
+	Blade blade = Blade.me();
+	blade.get("/user/21", getxxx);
+	blade.post("/save", postxxx);
+	blade.delete("/del/21", deletexxx);
+	blade.put("/put", putxxx);
+	blade.listen(9001).start();
+}
+```
+
+## REST URL Parameters
+
+```java
+public static void main(String[] args) {
+	Blade blade = Blade.me();
+	blade.get("/user/:uid", (request, response) -> {
+		Integer uid = request.paramAsInt("uid");
+		response.text("uid : " + uid);
+	});
+	
+	blade.get("/users/:uid/post/:pid", (request, response) -> {
+		Integer uid = request.paramAsInt("uid");
+		Integer pid = request.paramAsInt("pid");
+		String msg = "uid = " + uid + ", pid = " + pid;
+		response.text(msg);
+	});
+	
+	blade.listen(9001).start();
+}
+```
+
+## Form URL Parameters
+
+```java
+public static void main(String[] args) {
+	Blade blade = Blade.me();
+	blade.get("/user", (request, response) -> {
+		Integer uid = request.query("uid");
+		response.text("uid : " + uid);
+	});
+	blade.listen(9001).start();
+}
+```
+
+## Upload File
+
+```java
+public void upload_img(Request request, Response response){
+		
+	JsonObject jsonObject = new JsonObject();
+
+	FileItem[] fileItems = request.files();
+	if(null != fileItems && fileItems.length > 0){
+		
+		FileItem fileItem = fileItems[0];
+		File file = fileItem.getFile();
+
+		String fileRealPath = "your upload file path!";
+		
+		nioTransferCopy(file, fileRealPath);
+	}
+}
+```
+
+## Route Config File
+
+`route.conf`
+
+```sh
+GET		/					IndexRoute.home
+GET		/signin				IndexRoute.show_signin
+POST	/signin				IndexRoute.signin
+GET		/signout			IndexRoute.signout
+POST	/upload_img			UploadRoute.upload_img
+```
+
+## Route Intercept
+
+```java
+public static void main(String[] args) {
+	Blade blade = Blade.me();
+	blade.before("/.*", (request, response) -> {
+		System.out.println("before...");
+	});
+	blade.listen(9001).start();
+}
+```
+
+## DSL DB Operation
+
+```java
+// save
+public boolean save(Integer cid, Integer tid, Integer fuid, Integer tuid) {
+    return model.insert().param("cid", cid)
+    .param("tid", tid)
+    .param("fuid", fuid)
+    .param("tuid", tuid)
+    .param("addtime", new Date())
+    .param("ntype", 0).executeAndCommit() > 0;
+}
+
+// signin
+public User signin(String username, String password) {
+    String pwd = EncrypKit.md5(username + password);
+    return model.select().eq("username", username)
+    .eq("password", pwd).fetchOne();
+}
+
+// search count
+public Long getUserCount(String email){
+    return model.count().eq("email", email).fetchCount();
+}
+```
+
 OK, all this may seem simple, refer to the guidelines for use more ready-made examples for your reference:
 
 + [HELLO](https://github.com/bladejava/hello)

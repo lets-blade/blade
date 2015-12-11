@@ -45,19 +45,133 @@ Blade 是一个轻量级的MVC框架. 它拥有简洁的代码，优雅的设计
 编写 `Main`函数：
 
 ```java
-public class App {
-		
-	public static void main(String[] args) {
-		Blade blade = Blade.me();
-		blade.get("/", (request, response) -> {
-			response.html("<h1>Hello blade!</h1>");
-		});
-		blade.listen(9001).start();
-	}
+public static void main(String[] args) {
+	Blade blade = Blade.me();
+	blade.get("/", (request, response) -> {
+		response.html("<h1>Hello blade!</h1>");
+	});
+	blade.listen(9001).start();
 }
 ```
 
 用浏览器打开 http://localhost:9001 这样就可以看到第一个Blade应用了！
+
+## API示例
+
+```java
+public static void main(String[] args) {
+	Blade blade = Blade.me();
+	blade.get("/user/21", getxxx);
+	blade.post("/save", postxxx);
+	blade.delete("/del/21", deletexxx);
+	blade.put("/put", putxxx);
+	blade.listen(9001).start();
+}
+```
+
+## REST URL参数获取
+
+```java
+public static void main(String[] args) {
+	Blade blade = Blade.me();
+	blade.get("/user/:uid", (request, response) -> {
+		Integer uid = request.paramAsInt("uid");
+		response.text("uid : " + uid);
+	});
+	
+	blade.get("/users/:uid/post/:pid", (request, response) -> {
+		Integer uid = request.paramAsInt("uid");
+		Integer pid = request.paramAsInt("pid");
+		String msg = "uid = " + uid + ", pid = " + pid;
+		response.text(msg);
+	});
+	
+	blade.listen(9001).start();
+}
+```
+
+## Form URL参数获取
+
+```java
+public static void main(String[] args) {
+	Blade blade = Blade.me();
+	blade.get("/user", (request, response) -> {
+		Integer uid = request.query("uid");
+		response.text("uid : " + uid);
+	});
+	blade.listen(9001).start();
+}
+```
+
+## 上传文件
+
+```java
+public void upload_img(Request request, Response response){
+		
+	JsonObject jsonObject = new JsonObject();
+
+	FileItem[] fileItems = request.files();
+	if(null != fileItems && fileItems.length > 0){
+		
+		FileItem fileItem = fileItems[0];
+		File file = fileItem.getFile();
+
+		String fileRealPath = "your upload file path!";
+		
+		nioTransferCopy(file, fileRealPath);
+	}
+}
+```
+
+## 配置文件路由
+
+`route.conf`
+
+```sh
+GET		/					IndexRoute.home
+GET		/signin				IndexRoute.show_signin
+POST	/signin				IndexRoute.signin
+GET		/signout			IndexRoute.signout
+POST	/upload_img			UploadRoute.upload_img
+```
+
+## 路由拦截
+
+```java
+public static void main(String[] args) {
+	Blade blade = Blade.me();
+	blade.before("/.*", (request, response) -> {
+		System.out.println("before...");
+	});
+	blade.listen(9001).start();
+}
+```
+
+## DSL数据库操作
+
+```java
+// 保存操作
+public boolean save(Integer cid, Integer tid, Integer fuid, Integer tuid) {
+    return model.insert().param("cid", cid)
+    .param("tid", tid)
+    .param("fuid", fuid)
+    .param("tuid", tuid)
+    .param("addtime", new Date())
+    .param("ntype", 0).executeAndCommit() > 0;
+}
+
+// 登录操作
+public User signin(String username, String password) {
+    String pwd = EncrypKit.md5(username + password);
+    return model.select().eq("username", username)
+    .eq("password", pwd).fetchOne();
+}
+
+// 查询条数
+public Long getUserCount(String email){
+    return model.count().eq("email", email).fetchCount();
+}
+```
 
 OK，这一切看起来多么的简单，查阅使用指南更多现成的例子供你参考:
 
