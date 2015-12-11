@@ -26,7 +26,7 @@ public interface Const {
 	/**
 	 * 当前最新版本
 	 */
-	String BLADE_VERSION = "1.5.0-alpha";
+	String BLADE_VERSION = "1.5.0-beta";
 	
 	/**
      * 服务器500错误时返回的HTML
