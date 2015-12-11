@@ -86,7 +86,7 @@
 <dependency>
     <groupId>com.bladejava</groupId>
     <artifactId>blade-oauth2</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
 </dependency>
 ```
 
