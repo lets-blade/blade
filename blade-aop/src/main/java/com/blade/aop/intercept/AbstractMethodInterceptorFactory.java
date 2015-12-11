@@ -18,6 +18,8 @@ package com.blade.aop.intercept;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.blade.aop.AbstractMethodInterceptor;
+
 /**
  * 拦截器方法工厂
  * @author biezhi

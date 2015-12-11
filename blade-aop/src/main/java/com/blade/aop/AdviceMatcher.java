@@ -18,8 +18,8 @@ package com.blade.aop;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 
-import com.blade.aop.annotation.After;
-import com.blade.aop.annotation.Before;
+import com.blade.aop.annotation.AfterAdvice;
+import com.blade.aop.annotation.BeforeAdvice;
 import com.blade.aop.exception.AdviceMatcherException;
 import com.blade.aop.intercept.MethodInvocation;
 
@@ -46,17 +46,23 @@ public class AdviceMatcher {
 		// 要执行的方法
 		try {
 			Method adviceMethod = interceptor.getClass().getDeclaredMethod(joinPoint, new Class[] {});
-			if (adviceAnnotationType == Before.class) {
-				Before before = adviceMethod.getAnnotation(Before.class);
+			if (adviceAnnotationType == BeforeAdvice.class) {
+				BeforeAdvice before = adviceMethod.getAnnotation(BeforeAdvice.class);
 				if (before == null)
 					return false;
 				String pointcut = before.expression();
+				if(null == pointcut || pointcut.equals("")){
+					return true;
+				}
 				return beforeOrAfterMatch(pointcut, invocation.getMethod());
-			} else if (adviceAnnotationType == After.class) {
-				After after = adviceMethod.getAnnotation(After.class);
+			} else if (adviceAnnotationType == AfterAdvice.class) {
+				AfterAdvice after = adviceMethod.getAnnotation(AfterAdvice.class);
 				if (after == null)
 					return false;
 				String pointcut = after.expression();
+				if(null == pointcut || pointcut.equals("")){
+					return true;
+				}
 				return beforeOrAfterMatch(pointcut, invocation.getMethod());
 			}
 		} catch (SecurityException e) {

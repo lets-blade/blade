@@ -29,8 +29,7 @@ public abstract class AbstractMethodInterceptor implements MethodInterceptor {
 	 * 执行方法
 	 */
 	public Object invoke(MethodInvocation invocation) throws Throwable {
-		Object result = invocation.proceed();
-		return result;
+		return invocation.proceed();
 	}
 
 	/**

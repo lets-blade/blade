@@ -21,7 +21,7 @@ package com.blade.aop.exception;
  * @since 1.0
  */
 public class AdviceMatcherException extends RuntimeException {
-
+	
 	private static final long serialVersionUID = -5143613620732802399L;
 
 	public AdviceMatcherException() {

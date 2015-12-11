@@ -45,13 +45,11 @@ import net.sf.cglib.proxy.MethodProxy;
 public class DefaultProxy implements MethodInterceptor {
 
 	private Object target;
+	
 	private List<AbstractMethodInterceptor> interceptorChain = new ArrayList<AbstractMethodInterceptor>();
 	
-	public DefaultProxy(Object target, List<AbstractMethodInterceptor> interceptorChain) {
-		this.target = target;
-		if (interceptorChain != null && interceptorChain.size() > 0) {
-			this.interceptorChain.addAll(interceptorChain);
-		}
+	public DefaultProxy() {
+		
 	}
 	
 	public void addInterceptor(AbstractMethodInterceptor abstractMethodInterceptor){
@@ -70,24 +68,10 @@ public class DefaultProxy implements MethodInterceptor {
 		return proxy;
 	}
 	
-	public Object getProxy() {
-		// cglib 中加强器，用来创建动态代理
-		Enhancer enhancer = new Enhancer();
-		// 设置要创建动态代理的类
-		enhancer.setSuperclass(target.getClass());
-		// 设置回调，这里相当于是对于代理类上所有方法的调用，都会调用CallBack，而Callback则需要实行intercept()方法进行拦截
-		enhancer.setCallback(this);
-		Object proxy = enhancer.create();
-		return proxy;
-	}
-	
 	@Override
 	public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
 		DefaultMethodInvocation methodInvocation = new DefaultMethodInvocation(this, method, target, args, interceptorChain);
 		return methodInvocation.proceed();
 	}
 	
-	public Object getTarget() {
-		return target;
-	}
 }

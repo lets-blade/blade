@@ -18,8 +18,8 @@ import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Method;
 import java.util.List;
 
-import com.blade.aop.annotation.After;
-import com.blade.aop.annotation.Before;
+import com.blade.aop.annotation.AfterAdvice;
+import com.blade.aop.annotation.BeforeAdvice;
 import com.blade.aop.intercept.MethodInvocation;
 
 import blade.kit.log.Logger;
@@ -54,7 +54,7 @@ public class DefaultMethodInvocation implements MethodInvocation {
 		Object result = null;
 		if (interceptors.size() > 0 && index < interceptors.size()) {
 			interceptor = interceptors.get(index++);
-			if (new AdviceMatcher(interceptor, this).match(Before.class, "beforeAdvice")) {
+			if (new AdviceMatcher(interceptor, this).match(BeforeAdvice.class, "beforeAdvice")) {
 				interceptor.beforeAdvice(); //     执行前置建议
 			}
 			proceed(); //    执行下一个拦截器
@@ -70,7 +70,7 @@ public class DefaultMethodInvocation implements MethodInvocation {
 		}
 		if (index > 0) {
 			interceptor = interceptors.get(--index);
-			if (new AdviceMatcher(interceptor, this).match(After.class, "afterAdvice")) {
+			if (new AdviceMatcher(interceptor, this).match(AfterAdvice.class, "afterAdvice")) {
 				interceptor.afterAdvice(); //     执行后置建议
 			}
 		}
