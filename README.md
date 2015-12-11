@@ -28,7 +28,7 @@ If you like it, can be [Star and Fork](https://github.com/biezhi/blade), thanks!
 * Simplicity. The design is simple, easy to understand and doesn't introduce many layers between you and the standard library. It is a goal of the project that users should be able to understand the whole framework in a single day.
 * Elegance. `blade` Support the REST style routing interface, provide DSL grammar to write, no invasive interceptors.
 
-## Getting started
+## Get Start
 
 To get started, first [include the Blade library](http://bladejava.com/docs/intro/getting_start) :
 

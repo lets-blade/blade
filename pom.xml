@@ -15,7 +15,7 @@
 		<maven.compiler.target>1.6</maven.compiler.target>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<servlet.version>3.0.1</servlet.version>
-		<blade.version>1.5.0-alpha</blade.version>
+		<blade.version>1.5.0-beta</blade.version>
 		<junit.version>4.12</junit.version>
 	</properties>
 
@@ -27,6 +27,7 @@
 		<module>blade-redis</module>
 		<module>blade-startup</module>
     	<module>blade-aop</module>
+    	<module>blade-tx</module>
     	<module>blade-oauth2</module>
     	<module>blade-patchca</module>
   </modules>

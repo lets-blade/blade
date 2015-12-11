@@ -15,9 +15,9 @@
 	
 	<dependencies>
 		<dependency>
-			<groupId>com.bladejava</groupId>
-			<artifactId>blade-core</artifactId>
-			<version>${blade.version}</version>
+		    <groupId>com.bladejava</groupId>
+		    <artifactId>blade-kit</artifactId>
+		    <version>1.2.8-alpha</version>
 		</dependency>
 		<!-- cglib -->
 		<dependency>
