@@ -15,6 +15,8 @@
  */
 package com.blade;
 
+import com.blade.ioc.AopCreator;
+
 import blade.kit.ReflectKit;
 
 /**
@@ -26,11 +28,28 @@ import blade.kit.ReflectKit;
 @SuppressWarnings("unchecked")
 public final class Aop {
 	
-	private static boolean isAop = false;
+	private static boolean AOP_OPEN = false;
 	
-	public static <T> T create(Class<T> clazz){
-		if(isAop){
-			//...aop
+	static{
+		try {
+			Class.forName("com.blade.aop.AopProxy");
+			AOP_OPEN = true; 
+		} catch (ClassNotFoundException e) {
+			AOP_OPEN = false;
+		}
+	}
+	
+	public static Object create(Class<?> clazz){
+		if(AOP_OPEN){
+			return AopCreator.create(clazz);
+		} else {
+			return ReflectKit.newInstance(clazz);
+		}
+	}
+	
+	public static <T> T createT(Class<T> clazz){
+		if(AOP_OPEN){
+			return AopCreator.create(clazz);
 		} else {
 			Object object = ReflectKit.newInstance(clazz);
 			if(null != object){
@@ -40,20 +59,14 @@ public final class Aop {
 		return null;
 	}
 	
-	public static <T> T create(String className){
+	public static Object create(String className){
 		try {
 			Class<?> clazz = Class.forName(className);
-			if(isAop){
-				//...aop
-			} else {
-				Object object = ReflectKit.newInstance(clazz);
-				if(null != object){
-					return (T) object;
-				}
-			}
+			return create(clazz);
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
 		return null;
 	}
+	
 }

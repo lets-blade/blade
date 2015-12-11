@@ -15,7 +15,6 @@ public class TxPlugin implements Plugin {
 	private TransactionInterceptor transactionInterceptor;
 	
 	public TxPlugin() {
-		
 	}
 	
 	public TxPlugin dataSource(DataSource dataSource){

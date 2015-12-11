@@ -129,7 +129,7 @@ public class DispatcherServlet extends HttpServlet {
         	if(null != botstrapClassName){
             	Class<Bootstrap> applicationClass = (Class<Bootstrap>) Class.forName(botstrapClassName);
                 if(null != applicationClass){
-                	bootstrapClass = Aop.create(applicationClass);
+                	bootstrapClass = Aop.createT(applicationClass);
                 }
         	} else {
         		throw new ServletException("bootstrapClass is null !");
