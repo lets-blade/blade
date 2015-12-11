@@ -38,7 +38,7 @@ public abstract class OAuthTokenBaseRequest extends OAuthBaseRequest {
 			throw OAuthKit
 					.handleOAuthProblemException("Invalid grant_type parameter value");
 		}
-		return Aop.create(clazz);
+		return Aop.createT(clazz);
 	}
 
 	public String getPassword() {

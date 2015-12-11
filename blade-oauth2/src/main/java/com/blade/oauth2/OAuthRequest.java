@@ -41,7 +41,7 @@ public class OAuthRequest extends OAuthBaseRequest {
 		if (clazz == null) {
 			throw OAuthKit.handleOAuthProblemException("Invalid response_type parameter value");
 		}
-		return Aop.create(clazz);
+		return Aop.createT(clazz);
 	}
 
 	public String getResponseType() {
