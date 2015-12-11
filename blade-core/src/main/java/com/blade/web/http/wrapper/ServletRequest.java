@@ -108,11 +108,9 @@ public class ServletRequest implements Request {
 		for (String item : arr) {
 			ret += "," + item;
 		}
-
 		if (ret.length() > 0) {
 			ret = ret.substring(1);
 		}
-
 		return ret;
 	}
 	
@@ -135,13 +133,10 @@ public class ServletRequest implements Request {
 	
 	private List<String> getPathParam(String routePath) {
 		List<String> variables = new ArrayList<String>();
-
 		Matcher matcher = Pattern.compile(Path.VAR_REGEXP).matcher(routePath);
 		while (matcher.find()) {
-			// group(0) always stands for the entire expression and we only want what is inside the {}
 			variables.add(matcher.group(1));
 		}
-
 		return variables;
 	}
 	
@@ -559,6 +554,11 @@ public class ServletRequest implements Request {
 	public void setRoute(Route route) {
 		this.route = route;
 		initPathParams(route.getPath());
+	}
+	
+	@Override
+	public Route route() {
+		return this.route;
 	}
 
 }

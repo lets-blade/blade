@@ -19,7 +19,6 @@ import java.lang.reflect.Method;
 
 import blade.kit.ReflectKit;
 
-import com.blade.route.Route;
 import com.blade.web.http.Request;
 import com.blade.web.http.Response;
 
@@ -40,7 +39,7 @@ public final class RouteArgument {
 	 * @param params		params参数列表
 	 * @return				返回生成后的参数数组
 	 */
-	public static Object[] getArgs(Request request, Response response, Route route, Class<?>[] params){
+	public static Object[] getArgs(Request request, Response response, Class<?>[] params){
 		
 		int len = params.length;
 		Object[] args = new Object[len];
@@ -52,9 +51,6 @@ public final class RouteArgument {
 			}
 			if(paramTypeClazz.getName().equals(Response.class.getName())){
 				args[i] = response;
-			}
-			if(paramTypeClazz.getName().equals(Route.class.getName())){
-				args[i] = route;
 			}
 		}
 		return args;
@@ -70,11 +66,11 @@ public final class RouteArgument {
 	 * @param route			当前操作的路由对象
 	 * @return				返回方法执行后的返回值
 	 */
-	public static Object executeMethod(Object object, Method method, Request request, Response response, Route route){
+	public static Object executeMethod(Object object, Method method, Request request, Response response){
 		int len = method.getParameterTypes().length;
 		method.setAccessible(true);
 		if(len > 0){
-			Object[] args = getArgs(request, response, route, method.getParameterTypes());
+			Object[] args = getArgs(request, response, method.getParameterTypes());
 			return ReflectKit.invokeMehod(object, method, args);
 		} else {
 			return ReflectKit.invokeMehod(object, method);

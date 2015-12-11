@@ -315,6 +315,11 @@ public interface Request {
 	void setRoute(Route route);
 	
 	/**
+	 * @return	返回当前请求的Route
+	 */
+	Route route();
+	
+	/**
 	 * 请求体接口
 	 * @author biezhi
 	 *

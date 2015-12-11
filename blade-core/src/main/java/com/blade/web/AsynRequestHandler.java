@@ -90,6 +90,7 @@ public class AsynRequestHandler implements Runnable {
 			
 			// 如果找到
 			if (route != null) {
+				request.setRoute(route);
 				// 执行before拦截
 				List<Route> befores = routeMatcher.getBefore(uri);
 				invokeInterceptor(request, response, befores);
@@ -163,6 +164,7 @@ public class AsynRequestHandler implements Runnable {
 	 * 
 	 * @param request		请求对象
 	 * @param response		响应对象
+	 * @param current		当前请求的路由
 	 * @param interceptors	要执行的拦截器列表
 	 */
 	private void invokeInterceptor(Request request, Response response, List<Route> interceptors) {
@@ -176,6 +178,7 @@ public class AsynRequestHandler implements Runnable {
 	 * 
 	 * @param request	请求对象
 	 * @param response	响应对象
+	 * @param current	当前请求的路由
 	 * @param route		路由对象
 	 */
 	private void handle(Request request, Response response, Route route){
@@ -191,7 +194,7 @@ public class AsynRequestHandler implements Runnable {
 			// 要执行的路由方法
 			Method actionMethod = route.getAction();
 			// 执行route方法
-			RouteArgument.executeMethod(target, actionMethod, request, response, route);
+			RouteArgument.executeMethod(target, actionMethod, request, response);
 		}
 	}
 
