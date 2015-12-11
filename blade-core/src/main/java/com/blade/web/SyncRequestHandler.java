@@ -8,7 +8,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import blade.exception.BladeException;
-import blade.kit.ReflectKit;
 import blade.kit.StringKit;
 import blade.kit.base.ThrowableKit;
 import blade.kit.log.Logger;
@@ -177,55 +176,10 @@ public class SyncRequestHandler {
 			// 要执行的路由方法
 			Method actionMethod = route.getAction();
 			// 执行route方法
-			executeMethod(target, actionMethod, request, response);
+			RouteArgument.executeMethod(target, actionMethod, request, response, route);
 		}
 	}
 	
-	/**
-	 * 获取方法内的参数
-	 * 
-	 * @param request		Request对象，用于注入到method参数列表中
-	 * @param response		Response对象，用于注入到method参数列表中
-	 * @param params		params参数列表
-	 * @return				返回生成后的参数数组
-	 */
-	private Object[] getArgs(Request request, Response response, Class<?>[] params){
-		
-		int len = params.length;
-		Object[] args = new Object[len];
-		
-		for(int i=0; i<len; i++){
-			Class<?> paramTypeClazz = params[i];
-			if(paramTypeClazz.getName().equals(Request.class.getName())){
-				args[i] = request;
-			}
-			if(paramTypeClazz.getName().equals(Response.class.getName())){
-				args[i] = response;
-			}
-		}
-		
-		return args;
-	}
-	
-	/**
-	 * 执行路由方法
-	 * 
-	 * @param object		方法的实例，即该方法所在类的对象
-	 * @param method		要执行的method
-	 * @param request		Request对象，作为参数注入
-	 * @param response		Response对象，作为参数注入
-	 * @return				返回方法执行后的返回值
-	 */
-	private Object executeMethod(Object object, Method method, Request request, Response response){
-		int len = method.getParameterTypes().length;
-		method.setAccessible(true);
-		if(len > 0){
-			Object[] args = getArgs(request, response, method.getParameterTypes());
-			return ReflectKit.invokeMehod(object, method, args);
-		} else {
-			return ReflectKit.invokeMehod(object, method);
-		}
-	}
 	
 	/**
 	 * 要过滤掉的目录
