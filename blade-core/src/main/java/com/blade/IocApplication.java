@@ -63,8 +63,8 @@ public class IocApplication {
 	
 	/**
 	 * 初始化IOC
-	 * 
-	 * @param blade	Blade实例
+	 * @param iocs		IOC包
+	 * @param bootstrap	启动对象
 	 */
 	public void init(String[] iocs, Bootstrap bootstrap){
 		

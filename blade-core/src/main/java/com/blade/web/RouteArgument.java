@@ -35,7 +35,6 @@ public final class RouteArgument {
 	 * 
 	 * @param request		Request对象，用于注入到method参数列表中
 	 * @param response		Response对象，用于注入到method参数列表中
-	 * @param route			当前操作的路由对象
 	 * @param params		params参数列表
 	 * @return				返回生成后的参数数组
 	 */
@@ -63,7 +62,6 @@ public final class RouteArgument {
 	 * @param method		要执行的method
 	 * @param request		Request对象，作为参数注入
 	 * @param response		Response对象，作为参数注入
-	 * @param route			当前操作的路由对象
 	 * @return				返回方法执行后的返回值
 	 */
 	public static Object executeMethod(Object object, Method method, Request request, Response response){
