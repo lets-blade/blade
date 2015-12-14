@@ -72,6 +72,15 @@ public class Model<T extends Serializable> {
 	private String CACHE_KEY_SQL_COUNT;
 	private String CACHE_KEY_SQL_DETAIL;
 	
+	/**
+	 * 创建一个Model
+	 * @param clazz	model class
+	 * @return		返回Model对象
+	 */
+	public static <T extends Serializable> Model<T> create(Class<T> clazz) {
+		return new Model<T>(clazz);
+	}
+	
 	public Model(Class<T> clazz) {
 		this.model = clazz;
 		this.condition = new Condition(table(), pk());
@@ -267,19 +276,6 @@ public class Model<T extends Serializable> {
      */
     public Model<T> param(String name, Object value){
     	condition.param(name, value);
-    	return this;
-    }
-    
-    /**
-     * 设置where参数列表，查询，更新，删除用到
-     * 
-     * @param name	参数键
-     * @param value	参数值
-     * @return		返回model对象
-     */
-    @Deprecated
-    public Model<T> where(String name, Object value){
-    	condition.eq(name, value);
     	return this;
     }
     
@@ -793,7 +789,7 @@ public class Model<T extends Serializable> {
     	
     	if(null != pk){
     		
-    		this.select().where(this.pk(), pk);
+    		this.select().eq(this.pk(), pk);
     		
     		String field = null;
     		// 启用缓存
