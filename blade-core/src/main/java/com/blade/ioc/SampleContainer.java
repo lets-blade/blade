@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import blade.exception.BladeException;
+import blade.kit.Assert;
 import blade.kit.CloneKit;
 import blade.kit.CollectionKit;
 import blade.kit.StringKit;
@@ -69,7 +69,7 @@ public class SampleContainer implements Container {
     
 	@Override
     public <T> T getBean(String name, Scope scope) {
-		
+		Assert.notBlank(name);
 		String className = beanKeys.get(name);
 		if(StringKit.isBlank(className)){
 			if(null == beans.get(name)){
@@ -92,6 +92,7 @@ public class SampleContainer implements Container {
 
     @Override
     public <T> T getBean(Class<T> type, Scope scope) {
+    	Assert.notNull(type);
     	return this.getBean(type.getName(), scope);
     }
 
@@ -107,17 +108,20 @@ public class SampleContainer implements Container {
 
     @Override
     public boolean hasBean(Class<?> clazz) {
+    	Assert.notNull(clazz);
     	String className = clazz.getName();
     	return beanKeys.containsValue(className);
     }
 
     @Override
     public boolean hasBean(String name) {
+    	Assert.notBlank(name);
 		return null != beanKeys.get(name);
     }
     
     @Override
 	public boolean removeBean(String name) {
+    	Assert.notBlank(name);
     	String className = beanKeys.get(name);
     	if(StringKit.isBlank(className)){
     		className = name;
@@ -130,11 +134,15 @@ public class SampleContainer implements Container {
 
 	@Override
 	public boolean removeBean(Class<?> clazz) {
+		Assert.notNull(clazz);
 		return this.removeBean(clazz.getName());
 	}
 
     @Override
 	public Object registerBean(String name, Object value) {
+    	Assert.notBlank(name);
+    	Assert.notNull(value);
+    	
     	Class<?> clazz = value.getClass();
 		//非抽象类、接口
 		if (isNormalClass(clazz)) {
@@ -169,6 +177,10 @@ public class SampleContainer implements Container {
 	}
     
 	private void registerParent(String name, Object value) {
+		
+		Assert.notBlank(name);
+		Assert.notNull(value);
+		
     	Class<?> clazz = value.getClass();
 			
 		// 如果容器已经存在该名称对于的对象，直接返回
@@ -185,6 +197,9 @@ public class SampleContainer implements Container {
     
     @Override
 	public Object registerBean(Object object) {
+    	
+    	Assert.notNull(object);
+    	
 		String className = object.getClass().getName();
 		return registerBean(className, object);
 	}
@@ -196,6 +211,7 @@ public class SampleContainer implements Container {
      * @param object		注册的bean对象
      */
     private void putAnnotationMap(Class<?> clazz, Object object){
+    	
     	Annotation[] annotations = clazz.getAnnotations();
     	List<Object> listObject = null;
     	for(Annotation annotation : annotations){
@@ -336,7 +352,7 @@ public class SampleContainer implements Container {
 					}
 			        
 			        if (null == injectField) {
-			            throw new BladeException("Unable to load " + field.getType().getName() + "！");
+			            throw new RuntimeException("Unable to load " + field.getType().getName() + "!");
 			        }
 			        
 			        boolean accessible = field.isAccessible();

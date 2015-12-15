@@ -17,6 +17,7 @@ package com.blade;
 
 import com.blade.ioc.AopCreator;
 
+import blade.kit.Assert;
 import blade.kit.ReflectKit;
 
 /**
@@ -40,20 +41,31 @@ public final class Aop {
 	}
 	
 	public static Object create(Class<?> clazz){
+		Assert.notNull(clazz);
 		if(AOP_OPEN){
 			return AopCreator.create(clazz);
 		} else {
-			return ReflectKit.newInstance(clazz);
+			try {
+				return ReflectKit.newInstance(clazz);
+			} catch (Exception e) {
+				new RuntimeException("create object error", e);
+			}
 		}
+		return null;
 	}
 	
 	public static <T> T createT(Class<T> clazz){
+		Assert.notNull(clazz);
 		if(AOP_OPEN){
 			return AopCreator.create(clazz);
 		} else {
-			Object object = ReflectKit.newInstance(clazz);
-			if(null != object){
-				return (T) object;
+			try {
+				Object object = ReflectKit.newInstance(clazz);
+				if(null != object){
+					return (T) object;
+				}
+			} catch (Exception e) {
+				new RuntimeException("create object error", e);
 			}
 		}
 		return null;

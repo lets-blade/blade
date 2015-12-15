@@ -21,9 +21,9 @@ import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
 
+import blade.kit.Assert;
 import blade.kit.IOKit;
 import blade.kit.PropertyKit;
-import blade.kit.StringKit;
 import blade.kit.json.JSONKit;
 
 import com.blade.ioc.Container;
@@ -150,6 +150,7 @@ public class Blade {
 	 * @return			返回blade
 	 */
 	public Blade container(Container container){
+		Assert.notNull(container);
 		this.container = container;
 		return this;
 	}
@@ -162,6 +163,7 @@ public class Blade {
 	 * @return				返回Blade单例实例
 	 */
 	public Blade config(String confName){
+		Assert.notBlank(confName);
 		Map<String, String> configMap = PropertyKit.getPropertyMap(confName);
 		configuration(configMap);
 		return this;
@@ -175,6 +177,7 @@ public class Blade {
 	 * @return				返回Blade单例实例
 	 */
 	public Blade setAppConf(String confName){
+		Assert.notBlank(confName);
 		Map<String, String> configMap = PropertyKit.getPropertyMap(confName);
 		configuration(configMap);
 		return this;
@@ -188,6 +191,7 @@ public class Blade {
 	 * @return				返回Blade单例实例
 	 */
 	public Blade setJsonConf(String jsonPath){
+		Assert.notBlank(jsonPath);
 		InputStream inputStream = Blade.class.getResourceAsStream(jsonPath);
 		if(null != inputStream){
 			try {
@@ -210,6 +214,7 @@ public class Blade {
 	 * @return				返回Blade单例实例
 	 */
 	public Blade setAppJson(String json){
+		Assert.notBlank(json);
 		Map<String, String> configMap = JSONKit.toMap(json);
 		configuration(configMap);
 		return this;
@@ -223,6 +228,7 @@ public class Blade {
 	 * @param configMap		存放配置的map
 	 */
 	private void configuration(Map<String, String> configMap){
+		Assert.notEmpty(configMap);
 		new Configurator(config, configMap).run();
 	}
 	
@@ -234,9 +240,8 @@ public class Blade {
      * @return				返回Blade单例实例
      */
     public Blade routes(String...packages){
-    	if(null != packages && packages.length >0){
-    		config.setRoutePackages(packages);
-    	}
+    	Assert.notNull(packages);
+    	config.setRoutePackages(packages);
     	return this;
     }
     
@@ -248,9 +253,8 @@ public class Blade {
      * @return				返回Blade单例实例
      */
     public Blade defaultRoute(String basePackage){
-    	if(null != basePackage){
-    		config.setBasePackage(basePackage);
-    	}
+    	Assert.notBlank(basePackage);
+   		config.setBasePackage(basePackage);
     	return this;
     }
     
@@ -261,9 +265,8 @@ public class Blade {
      * @return				返回Blade单例实例
      */
 	public Blade interceptor(String packageName) {
-		if(null != packageName && packageName.length() >0){
-			config.setInterceptorPackage(packageName);
-    	}
+		Assert.notBlank(packageName);
+		config.setInterceptorPackage(packageName);
 		return this;
 	}
 	
@@ -274,7 +277,8 @@ public class Blade {
      * @return				返回Blade单例实例
      */
     public Blade ioc(String...packages){
-    	if(null != packages && packages.length >0){
+    	Assert.notNull(packages);
+    	if(packages.length >0){
     		config.setIocPackages(packages);
     	}
     	return this;
@@ -448,6 +452,7 @@ public class Blade {
 	 * @return			返回Blade单例实例
 	 */
 	public Blade viewEngin(Render render) {
+		Assert.notNull(render);
 		this.render = render;
 		return this;
 	}
@@ -459,7 +464,8 @@ public class Blade {
 	 * @return			返回Blade单例实例
 	 */
 	public Blade viewPrefix(final String prefix) {
-		if(StringKit.isNotBlank(prefix) && prefix.startsWith("/")){
+		Assert.notBlank(prefix);
+		if(prefix.startsWith("/")){
 			config.setViewPrefix(prefix);
 		}
 		return this;
@@ -472,7 +478,8 @@ public class Blade {
 	 * @return			返回Blade单例实例
 	 */
 	public Blade viewSuffix(final String suffix) {
-		if(StringKit.isNotBlank(suffix) && suffix.startsWith(".")){
+		Assert.notBlank(suffix);
+		if(suffix.startsWith(".")){
 			config.setViewSuffix(suffix);
 		}
 		return this;
@@ -486,6 +493,8 @@ public class Blade {
 	 * @return			返回Blade单例实例
 	 */
 	public Blade view(final String viewPath, final String viewExt) {
+		Assert.notBlank(viewPath);
+		Assert.notBlank(viewExt);
 		viewPrefix(viewPath);
 		viewSuffix(viewExt);
 		return this;
@@ -498,6 +507,7 @@ public class Blade {
 	 * @return			返回Blade单例实例
 	 */
 	public Blade staticFolder(final String ... folders) {
+		Assert.notNull(folders);
 		config.setStaticFolders(folders);
 		return this;
 	}
@@ -520,6 +530,7 @@ public class Blade {
      * @return				返回Blade单例实例
      */
     public Blade app(Bootstrap bootstrap){
+    	Assert.notNull(bootstrap);
     	this.bootstrap = bootstrap;
     	return this;
     }
@@ -531,6 +542,7 @@ public class Blade {
      * @return				返回Blade单例实例
      */
     public Blade app(Class<? extends Bootstrap> bootstrap){
+    	Assert.notNull(bootstrap);
     	Object object = container.registerBean(Aop.create(bootstrap));
     	this.bootstrap = (Bootstrap) object;
     	return this;
@@ -543,6 +555,7 @@ public class Blade {
      * @return			返回Blade单例实例
      */
     public Blade setView404(final String view404){
+    	Assert.notBlank(view404);
     	config.setView404(view404);
     	return this;
     }
@@ -554,6 +567,7 @@ public class Blade {
      * @return			返回Blade单例实例
      */
     public Blade setView500(final String view500){
+    	Assert.notBlank(view500);
     	config.setView500(view500);
     	return this;
     }
@@ -565,6 +579,7 @@ public class Blade {
      * @return			返回Blade单例实例
      */
     public Blade webRoot(final String webRoot){
+    	Assert.notBlank(webRoot);
     	config.setWebRoot(webRoot);
     	return this;
     }
@@ -608,6 +623,7 @@ public class Blade {
 	 */
 	public void start(String contextPath) {
 		try {
+			Assert.notBlank(contextPath);
 			bladeServer = new Server(this.port, this.isAsyn);
 			bladeServer.start(contextPath);
 		} catch (Exception e) {
@@ -761,6 +777,7 @@ public class Blade {
 	 */
 	@SuppressWarnings("unchecked")
 	public <T> T plugin(Class<? extends Plugin> plugin){
+		Assert.notNull(plugin);
 		Object object = iocApplication.getPlugin(plugin);
 		if(null == object){
 			object = iocApplication.registerPlugin(plugin);
@@ -777,6 +794,8 @@ public class Blade {
 	 */
 	public Blade routeConf(String basePackage, String conf) {
 		try {
+			Assert.notBlank(basePackage);
+			Assert.notBlank(conf);
 			InputStream ins = Blade.class.getResourceAsStream("/" + conf);
 			ClassPathRouteLoader routesLoader = new ClassPathRouteLoader(ins);
 			routesLoader.setBasePackage(basePackage);

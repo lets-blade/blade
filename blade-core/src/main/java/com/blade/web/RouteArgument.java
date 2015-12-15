@@ -67,11 +67,15 @@ public final class RouteArgument {
 	public static Object executeMethod(Object object, Method method, Request request, Response response){
 		int len = method.getParameterTypes().length;
 		method.setAccessible(true);
-		if(len > 0){
-			Object[] args = getArgs(request, response, method.getParameterTypes());
-			return ReflectKit.invokeMehod(object, method, args);
-		} else {
-			return ReflectKit.invokeMehod(object, method);
+		try {
+			if(len > 0){
+				Object[] args = getArgs(request, response, method.getParameterTypes());
+				return ReflectKit.invokeMehod(object, method, args);
+			} else {
+				return ReflectKit.invokeMehod(object, method);
+			}
+		} catch (Exception e) {
+			throw new RuntimeException("invoke method error.", e);
 		}
 	}
 }

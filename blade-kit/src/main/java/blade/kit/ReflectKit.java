@@ -18,6 +18,7 @@ package blade.kit;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.AccessibleObject;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -47,16 +48,15 @@ public abstract class ReflectKit {
 	private static final Logger LOGGER = Logger.getLogger(ReflectKit.class);
 	
 	// ------------------------------------------------------
-	/** 新建对象 */
-	public static Object newInstance(String className) {
+	/** 新建对象 
+	 * @throws IllegalAccessException 
+	 * @throws InstantiationException 
+	 * @throws ClassNotFoundException */
+	public static Object newInstance(String className) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
 		Object obj = null;
-		try {
-			Class<?> clazz = Class.forName(className);
-			obj = clazz.newInstance();
-			LOGGER.debug("new %s", className);
-		} catch (Exception e) {
-			// quiet
-		}
+		Class<?> clazz = Class.forName(className);
+		obj = clazz.newInstance();
+		LOGGER.debug("new %s", className);
 		return obj;
 	}
 	
@@ -64,26 +64,27 @@ public abstract class ReflectKit {
      * 创建一个实例对象
      * @param clazz class对象
      * @return
+	 * @throws IllegalAccessException 
+	 * @throws InstantiationException 
      */
-    public static Object newInstance(Class<?> clazz){
-    	try {
-    		return clazz.newInstance();
-		} catch (InstantiationException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		}
-    	return null;
+    public static Object newInstance(Class<?> clazz) throws InstantiationException, IllegalAccessException{
+    	return clazz.newInstance();
     }
 
-	/** 用setter设置bean属性 */
-	public static void setProperty(Object bean, String name, Object value) {
+	/** 用setter设置bean属性 
+	 * @throws InvocationTargetException 
+	 * @throws IllegalArgumentException 
+	 * @throws IllegalAccessException */
+	public static void setProperty(Object bean, String name, Object value) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		String methodName = "set" + StringKit.firstUpperCase(name);
 		invokeMehodByName(bean, methodName, value);
 	}
 
-	/** 用getter获取bean属性 */
-	public static Object getProperty(Object bean, String name) {
+	/** 用getter获取bean属性 
+	 * @throws InvocationTargetException 
+	 * @throws IllegalArgumentException 
+	 * @throws IllegalAccessException */
+	public static Object getProperty(Object bean, String name) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		String methodName = "get" + StringKit.firstUpperCase(name);
 		return invokeMehodByName(bean, methodName);
 	}
@@ -146,29 +147,25 @@ public abstract class ReflectKit {
 	 * @param methodName 方法名称
 	 * @param args 方法参数
 	 * @return
+	 * @throws InvocationTargetException 
+	 * @throws IllegalArgumentException 
+	 * @throws IllegalAccessException 
 	 */
-	public static Object invokeMehodByName(Object bean, String methodName,
-			Object... args) {
-		try {
-			Method method = getMethodByName(bean, methodName);
-			Class<?>[] types = method.getParameterTypes();
+	public static Object invokeMehodByName(Object bean, String methodName, Object... args) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		Method method = getMethodByName(bean, methodName);
+		Class<?>[] types = method.getParameterTypes();
 
-			int argCount = args == null ? 0 : args.length;
+		int argCount = args == null ? 0 : args.length;
 
-			// 参数个数对不上
-			ExceptionKit.makeRunTimeWhen(argCount != types.length,
-					"%s in %s", methodName, bean);
+		// 参数个数对不上
+		ExceptionKit.makeRunTimeWhen(argCount != types.length,
+				"%s in %s", methodName, bean);
 
-			// 转参数类型
-			for (int i = 0; i < argCount; i++) {
-				args[i] = cast(args[i], types[i]);
-			}
-
-			return method.invoke(bean, args);
-		} catch (Exception e) {
-			ExceptionKit.makeRuntime(e);
+		// 转参数类型
+		for (int i = 0; i < argCount; i++) {
+			args[i] = cast(args[i], types[i]);
 		}
-		return null;
+		return method.invoke(bean, args);
 	}
 
 	/**
@@ -177,27 +174,23 @@ public abstract class ReflectKit {
 	 * @param methodName 方法名称
 	 * @param args 方法参数
 	 * @return
+	 * @throws InvocationTargetException 
+	 * @throws IllegalArgumentException 
+	 * @throws IllegalAccessException 
 	 */
-	public static Object invokeMehod(Object bean, Method method,
-			Object... args) {
-		try {
-			Class<?>[] types = method.getParameterTypes();
+	public static Object invokeMehod(Object bean, Method method, Object... args) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		Class<?>[] types = method.getParameterTypes();
 
-			int argCount = args == null ? 0 : args.length;
+		int argCount = args == null ? 0 : args.length;
 
-			// 参数个数对不上
-			ExceptionKit.makeRunTimeWhen(argCount != types.length, "%s in %s", method.getName(), bean);
-			
-			// 转参数类型
-			for (int i = 0; i < argCount; i++) {
-				args[i] = cast(args[i], types[i]);
-			}
-
-			return method.invoke(bean, args);
-		} catch (Exception e) {
-			ExceptionKit.makeRuntime(e);
+		// 参数个数对不上
+		ExceptionKit.makeRunTimeWhen(argCount != types.length, "%s in %s", method.getName(), bean);
+		
+		// 转参数类型
+		for (int i = 0; i < argCount; i++) {
+			args[i] = cast(args[i], types[i]);
 		}
-		return null;
+		return method.invoke(bean, args);
 	}
 	
 	// ------------------------------------------------------
@@ -215,7 +208,7 @@ public abstract class ReflectKit {
 	public static boolean isNot(Object obj, Object... mybe) {
 		return !is(obj, mybe);
 	}
-
+	
 	// ------------------------------------------------------
 
 	/** 扫描包下面所有的类 */
@@ -291,19 +284,16 @@ public abstract class ReflectKit {
      * @param target 目标对象
      * @param args 方法的参数值
      * @return 调用结果
+     * @throws InvocationTargetException 
+     * @throws IllegalArgumentException 
+     * @throws IllegalAccessException 
      */
-    public static Object invokeMethod(Method method, Object target, Object...args) {
+    public static Object invokeMethod(Method method, Object target, Object...args) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
         if (method == null) {
             return null;
         }
-
         method.setAccessible(true);
-        try {
-            return method.invoke(target, args);
-        } catch (Exception ex) {
-            throw ExceptionKit.toRuntimeException(ex);
-        }
-
+        return method.invoke(target, args);
     }
 
     /**
@@ -317,9 +307,12 @@ public abstract class ReflectKit {
      * @param args 参数值
      * @param parameterTypes 参数类型
      * @return 调用的方法的返回值
+     * @throws InvocationTargetException 
+     * @throws IllegalArgumentException 
+     * @throws IllegalAccessException 
      * 
      */
-    public static Object invokeMethod(Object object, String methodName, Object[] args, Class<?>...parameterTypes) {
+    public static Object invokeMethod(Object object, String methodName, Object[] args, Class<?>...parameterTypes) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
         if (object == null || StringKit.isEmpty(methodName)) {
             return null;
         }
@@ -339,9 +332,7 @@ public abstract class ReflectKit {
         if (method == null) {
             return null;
         }
-
         return invokeMethod(method, object, args);
-
     }
 
     /**
@@ -355,9 +346,12 @@ public abstract class ReflectKit {
      * @param args 参数值
      * @param parameterTypes 参数类型
      * @return 调用的方法的返回值
+     * @throws InvocationTargetException 
+     * @throws IllegalArgumentException 
+     * @throws IllegalAccessException 
      * 
      */
-    public static Object invokeStaticMethod(Class<?> clazz, String methodName, Object[] args, Class<?>...parameterTypes) {
+    public static Object invokeStaticMethod(Class<?> clazz, String methodName, Object[] args, Class<?>...parameterTypes) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
         if (parameterTypes == null) {
             parameterTypes = Emptys.EMPTY_CLASS_ARRAY;
         }
@@ -373,7 +367,6 @@ public abstract class ReflectKit {
         if (method == null) {
             return null;
         }
-
         return invokeMethod(method, null, args);
     }
 

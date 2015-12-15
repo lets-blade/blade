@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import blade.kit.Assert;
 import blade.kit.log.Logger;
 
 import com.blade.Aop;
@@ -87,6 +88,7 @@ public class Routers {
 	}
 	
 	public void addRoutes(List<Route> routes) {
+		Assert.notNull(routes);
 		for(Route route : routes){
 			this.addRoute(route);
 		}
@@ -98,6 +100,11 @@ public class Routers {
 	}
 	
 	public void addRoute(HttpMethod httpMethod, String path, Object controller, Method method) {
+		
+		Assert.notNull(httpMethod);
+		Assert.notBlank(path);
+		Assert.notNull(controller);
+		Assert.notNull(method);
 		
 		String key = path + "#" + httpMethod.toString();
 		// 存在的

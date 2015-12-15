@@ -8,7 +8,6 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import blade.exception.BladeException;
 import blade.kit.StringKit;
 import blade.kit.base.ThrowableKit;
 import blade.kit.log.Logger;
@@ -109,22 +108,7 @@ public class AsynRequestHandler implements Runnable {
 			render404(response, uri);
 			asyncContext.complete();
 			return;
-		} catch (BladeException bex) {
-			
-			String error = ThrowableKit.getStackTraceAsString(bex);
-            LOGGER.error(error);
-            ThrowableKit.propagate(bex);
-			
-            httpResponse.setStatus(500);
-            // 写入内容到浏览器
-            if (!httpResponse.isCommitted()) {
-                response.html(Const.INTERNAL_ERROR);
-                asyncContext.complete();
-                return;
-            }
-            
-        } catch (Exception e) {
-        	
+		} catch (Exception e) {
         	String error = ThrowableKit.getStackTraceAsString(e);
             LOGGER.error(error);
             ThrowableKit.propagate(e);
