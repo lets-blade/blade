@@ -11,22 +11,22 @@
 ## What Is Blade?
 
 Blade is a lightweight MVC framework. It is based on the principles of simplicity and elegance. 
-If you like it, can be [Star and Fork](https://github.com/biezhi/blade), thanks!
+If you like it, please [star and fork it](https://github.com/biezhi/blade). Thank you!
 
 ## Features
 
-* [x] Lightweight. The code is simple and structure is clear
+* [x] Lightweight: the code is simple and the structure is clear
 * [x] Modular (you can choose which components to use)
-* [x] Support plug-in extension mechanism
+* [x] Supports plug-in extension mechanism
 * [x] Restful style routing interface
-* [x] Multiple configuration files support (currently properties, json and coding)
-* [x] Eembed jetty server and template engine support
-* [x] Support jdk1.6 or higher version
+* [x] Supports multiple configuration files (currently properties, json and coding)
+* [x] Embedded jetty server and template engine support
+* [x] Supports jdk 1.6 and up
 
 ## Overview
 
-* Simplicity. The design is simple, easy to understand and doesn't introduce many layers between you and the standard library. It is a goal of the project that users should be able to understand the whole framework in a single day.
-* Elegance. `blade` Support the REST style routing interface, provide DSL grammar to write, no invasive interceptors.
+* Simplicity: the design is simple, easy to understand and doesn't introduce many layers between you and the standard library. It is a goal of the project that users should be able to understand the whole framework in a single day.
+* Elegance: `blade` supports the REST style routing interface, has no invasive interceptors and provides the writing of DSL grammar.
 
 ## Get Start
 
@@ -176,7 +176,7 @@ public Long getUserCount(String email){
 }
 ```
 
-OK, all this may seem simple, refer to the guidelines for use more ready-made examples for your reference:
+You may refer to these examples for additional guidance:
 
 + [Hello](https://github.com/bladejava/hello)
 + [Api Doc](http://bladejava.com/apidocs)
@@ -186,7 +186,7 @@ OK, all this may seem simple, refer to the guidelines for use more ready-made ex
 
 ## Plan
 
-- 1. The development of social application platform
+- 1. The development of the social application platform
 - 2. Add the test code
 - 3. Optimize the code base
 - 4. Optimization of concurrent ability
@@ -198,7 +198,7 @@ OK, all this may seem simple, refer to the guidelines for use more ready-made ex
 ## Contact
 
 - Blog:[https://biezhi.me](https://biezhi.me)
-- Mail: biezhi.me#gmail.com
+- Mail: biezhi.me@gmail.com
 - QQ Group: [1013565](http://shang.qq.com/wpa/qunwpa?idkey=932642920a5c0ef5f1ae902723c4f168c58ea63f3cef1139e30d68145d3b5b2f)
 
 ## licenses
