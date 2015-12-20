@@ -40,6 +40,11 @@ To get started, first [include the Blade library](http://bladejava.com/docs/intr
 	<artifactId>blade-core</artifactId>
 	<version>last_version</version>
 </dependency>
+<dependency>
+        <groupId>com.bladejava</groupId>
+        <artifactId>blade-startup</artifactId>
+        <version>1.0.0</version>
+</dependency>
 ```
 
 create `Main` method like this：
