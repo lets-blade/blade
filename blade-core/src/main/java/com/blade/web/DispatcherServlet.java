@@ -65,6 +65,7 @@ public class DispatcherServlet extends HttpServlet {
 	@Override
 	public void init(ServletConfig config) throws ServletException {
 		if(!blade.isInit()){
+			blade.webRoot(config.getServletContext().getRealPath("/"));
 			this.bootstrap = blade.bootstrap();
 			if(null == bootstrap){
 				String bootStrapClassName = config.getInitParameter("bootstrap");
