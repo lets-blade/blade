@@ -50,12 +50,13 @@ public class VelocityRender implements Render {
 	
 	private final VelocityEngine velocityEngine;
     
-	private Blade blade;
+	private String webRoot;
 	/**
 	 * 默认构造函数
 	 */
 	public VelocityRender() {
-		blade = Blade.me();
+		Blade blade = Blade.me();
+		this.webRoot = blade.webRoot();
 		Properties properties = new Properties();
 		
 		properties.setProperty(Velocity.FILE_RESOURCE_LOADER_PATH, blade.webRoot());
@@ -72,7 +73,8 @@ public class VelocityRender implements Render {
 	 * @throws IOException 		抛出IO异常
 	 */
 	public VelocityRender(String propertiesFile) throws IOException {
-		blade = Blade.me();
+		Blade blade = Blade.me();
+		this.webRoot = blade.webRoot();
 		String loadPath = VelocityRender.class.getClassLoader().getResource("/").getPath();
 		String fileName = loadPath + propertiesFile;
 		
@@ -93,7 +95,8 @@ public class VelocityRender implements Render {
 	 * @param properties	Properties配置文件
 	 */
 	public VelocityRender(Properties properties) {
-		blade = Blade.me();
+		Blade blade = Blade.me();
+		this.webRoot = blade.webRoot();
         velocityEngine = new VelocityEngine(properties);
 	}
 	
@@ -103,7 +106,8 @@ public class VelocityRender implements Render {
 	 * @param velocityEngine	velocity引擎对象
 	 */
 	public VelocityRender(VelocityEngine velocityEngine) {
-		blade = Blade.me();
+		Blade blade = Blade.me();
+		this.webRoot = blade.webRoot();
 		this.velocityEngine = velocityEngine;
 	}
 	
@@ -111,6 +115,8 @@ public class VelocityRender implements Render {
 	public void render(ModelAndView modelAndView, Writer writer) throws RenderException {
 		Request request = BladeWebContext.request();
 		Session session = request.session();
+		
+		String viewPath = webRoot + modelAndView.getView();
 		
 		VelocityContext context = new VelocityContext(modelAndView.getModel());
 		
@@ -129,7 +135,7 @@ public class VelocityRender implements Render {
 		}
 		
 		try {
-			Template template = velocityEngine.getTemplate(modelAndView.getView());
+			Template template = velocityEngine.getTemplate(viewPath);
 			template.merge(context, writer);
 			writer.flush(); 
 			writer.close();

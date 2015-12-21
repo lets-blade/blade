@@ -24,9 +24,10 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.blade.context.BladeWebContext;
-
 import blade.kit.log.Logger;
+
+import com.blade.Blade;
+import com.blade.context.BladeWebContext;
 
 /**
  * 
@@ -41,22 +42,27 @@ public final class JspRender implements Render {
 	
 	private static final Logger LOGGER = Logger.getLogger(JspRender.class);
 	
+	private String webRoot;
+	
+	public JspRender() {
+		webRoot = Blade.me().webRoot();
+	}
+	
 	@Override
 	public void render(ModelAndView modelAndView, Writer writer) {
 		HttpServletRequest servletRequest = BladeWebContext.request().raw();
 		HttpServletResponse servletResponse = BladeWebContext.response().raw();
 		
-		Map<String, Object> model = modelAndView.getModel();
-
-		String viewPath = modelAndView.getView();
-		
-		if (null != model && !model.isEmpty()) {
-			Set<String> keys = model.keySet();
-			for (String key : keys) {
-				servletRequest.setAttribute(key, model.get(key));
-			}
-		}
 		try {
+			Map<String, Object> model = modelAndView.getModel();
+			String viewPath = webRoot + modelAndView.getView();
+			
+			if (null != model && !model.isEmpty()) {
+				Set<String> keys = model.keySet();
+				for (String key : keys) {
+					servletRequest.setAttribute(key, model.get(key));
+				}
+			}
 			servletRequest.getRequestDispatcher(viewPath).forward(servletRequest, servletResponse);
 		} catch (ServletException e) {
 			e.printStackTrace();

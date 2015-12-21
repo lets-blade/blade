@@ -51,21 +51,18 @@ public class BeetlRender implements Render {
 	 */
 	private GroupTemplate groupTemplate = null;
 	
-	/**
-	 * Blade对象
-	 */
-	private Blade blade;
+	private String webRoot;
 	
 	/**
 	 * 默认构造函数
 	 */
 	public BeetlRender() {
 		try {
-			blade = Blade.me();
-			String root = blade.webRoot() + blade.viewPrefix();
+			Blade blade = Blade.me();
+			this.webRoot = blade.webRoot();
 			WebAppResourceLoader resourceLoader = new WebAppResourceLoader();
 			resourceLoader.setAutoCheck(true);
-			resourceLoader.setRoot(root);
+			resourceLoader.setRoot(this.webRoot);
 			Configuration cfg = Configuration.defaultConfiguration();
 			groupTemplate = new GroupTemplate(resourceLoader, cfg);
 		} catch (IOException e) {
@@ -74,17 +71,16 @@ public class BeetlRender implements Render {
 	}
 	
 	public BeetlRender(GroupTemplate groupTemplate) {
-		blade = Blade.me();
 		this.groupTemplate = groupTemplate;
 	}
 	
 	public BeetlRender(Configuration configuration) {
 		try {
-			blade = Blade.me();
-			String root = blade.webRoot() + blade.viewPrefix();
+			Blade blade = Blade.me();
+			this.webRoot = blade.webRoot();
 			WebAppResourceLoader resourceLoader = new WebAppResourceLoader();
 			resourceLoader.setAutoCheck(true);
-			resourceLoader.setRoot(root);
+			resourceLoader.setRoot(this.webRoot);
 			Configuration cfg = Configuration.defaultConfiguration();
 			groupTemplate = new GroupTemplate(resourceLoader, cfg);
 			groupTemplate.setConf(configuration);

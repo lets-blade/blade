@@ -49,12 +49,13 @@ public class JetbrickRender implements Render {
     
 	private Properties config;
 	
-	private Blade blade;
+	private String webRoot;
 	/**
 	 * 默认构造函数
 	 */
 	public JetbrickRender() {
-		this.blade = Blade.me();
+		Blade blade = Blade.me();
+		this.webRoot = blade.webRoot();
 		config = new Properties();
 		config.put("jetx.input.encoding", blade.encoding());
 		config.put("jetx.output.encoding", blade.encoding());
@@ -99,7 +100,8 @@ public class JetbrickRender implements Render {
 	 * @throws IOException 		抛出IO异常
 	 */
 	public JetbrickRender(String configLocation) throws IOException {
-		this.blade = Blade.me();
+		Blade blade = Blade.me();
+		this.webRoot = blade.webRoot();
 		jetEngine = JetEngine.create(configLocation);
 	}
 	
@@ -109,7 +111,8 @@ public class JetbrickRender implements Render {
 	 * @param config	Properties配置
 	 */
 	public JetbrickRender(Properties config) {
-		this.blade = Blade.me();
+		Blade blade = Blade.me();
+		this.webRoot = blade.webRoot();
 		this.config = config;
 		jetEngine = JetEngine.create(this.config);
 	}
@@ -120,17 +123,24 @@ public class JetbrickRender implements Render {
 	 * @param jetEngine	jetEngine引擎
 	 */
 	public JetbrickRender(JetEngine jetEngine) {
-		this.blade = Blade.me();
 		this.jetEngine = jetEngine;
 	}
 	
+	/**
+	 * @return	return config object
+	 */
+	public Properties getConfig() {
+		return config;
+	}
 
 	@Override
 	public void render(ModelAndView modelAndView, Writer writer) {
 		Request request = BladeWebContext.request();
 		Session session = request.session();
 		
-		JetTemplate template = jetEngine.getTemplate(modelAndView.getView());
+		String view = webRoot + modelAndView.getView();
+		
+		JetTemplate template = jetEngine.getTemplate(view);
 		
 		Map<String, Object> context = modelAndView.getModel();
 		
