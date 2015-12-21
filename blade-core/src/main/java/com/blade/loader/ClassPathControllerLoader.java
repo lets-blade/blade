@@ -1,3 +1,18 @@
+/**
+ * Copyright (c) 2015, biezhi 王爵 (biezhi.me@gmail.com)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * 	http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.blade.loader;
 
 import com.blade.Aop;
@@ -7,10 +22,7 @@ import com.blade.ioc.Scope;
 import com.blade.route.RouteException;
 
 /**
- * 
- * <p>
- * ClassPath控制器加载器
- * </p>
+ * ClassPath controller of loader 
  *
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since	1.0
@@ -42,7 +54,7 @@ public class ClassPathControllerLoader implements ControllerLoader {
 		String className = basePackage + controllerName;
 
 		try {
-			// 加载控制器实例
+			// Load controller instance 
 			Class<?> controllerClass = classLoader.loadClass(className);
 			
 			Object controller = container.getBean(controllerClass, Scope.SINGLE);

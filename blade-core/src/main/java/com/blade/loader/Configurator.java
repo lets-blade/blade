@@ -20,17 +20,17 @@ import java.util.Map;
 import blade.kit.StringKit;
 
 /**
- * Blade配置文件注入
+ * Blade configuration
  * 
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since	1.0
  */
 public class Configurator {
 
-	// 配置文件对象
+	// Configuration object 
 	private Config bladeConfig;
 	
-	// 配置map
+	// Configuration Map
 	private Map<String, String> configMap;
 	
 	public Configurator(Config bladeConfig,

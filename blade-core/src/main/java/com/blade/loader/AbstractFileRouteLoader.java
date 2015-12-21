@@ -1,3 +1,18 @@
+/**
+ * Copyright (c) 2015, biezhi 王爵 (biezhi.me@gmail.com)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * 	http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.blade.loader;
 
 import java.io.BufferedReader;
@@ -19,9 +34,7 @@ import com.blade.web.http.Response;
 import blade.kit.IOKit;
 
 /**
- * <p>
- * 抽象加载器实现
- * </p>
+ * Abstract loader implementation 
  *
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since	1.0
@@ -48,12 +61,12 @@ public abstract class AbstractFileRouteLoader implements RouteLoader {
 	}
 
 	/**
-	 * 加载路由
+	 * Load Route
 	 * 
-	 * @param inputStream		路由文件流
-	 * @return					返回路由列表
-	 * @throws ParseException	解析异常
-	 * @throws IOException		IO异常
+	 * @param inputStream		route inputstream 
+	 * @return					return route list 
+	 * @throws ParseException	parse exception
+	 * @throws IOException		io exception
 	 */
 	private List<Route> load(InputStream inputStream) throws ParseException, IOException {
 		int line = 0;
@@ -84,7 +97,7 @@ public abstract class AbstractFileRouteLoader implements RouteLoader {
 			throw new ParseException("Unrecognized format", line);
 		}
 
-		// 验证HTTP请求方
+		// Verify HTTP request 
 		String httpMethod = validateHttpMethod( st.nextToken().trim(), line );
 		
 		String path = validatePath( st.nextToken().trim(), line );
@@ -93,7 +106,7 @@ public abstract class AbstractFileRouteLoader implements RouteLoader {
 		int hashPos = controllerAndMethod.indexOf(".");
 		String controllerName = controllerAndMethod.substring(0, hashPos);
 
-		// 获取控制器方法
+		// Acquisition controller method 
 		String controllerMethod = controllerAndMethod.substring(hashPos + 1);
 
 		return buildRoute(httpMethod, path, controllerName, controllerMethod);
@@ -129,9 +142,7 @@ public abstract class AbstractFileRouteLoader implements RouteLoader {
 			if (path.charAt(i) == '}') {
 				openedKey = false;
 			}
-
 		}
-
 		return path;
 	}
 	
@@ -151,16 +162,16 @@ public abstract class AbstractFileRouteLoader implements RouteLoader {
 				}
 			}
 		}
-
+		
 		return true;
 	}
 
 	/**
-	 * 验证控制器方法
+	 * Verification controller method 
 	 * 
-	 * @param beanAndMethod		控制器和方法，使用.隔开
-	 * @param line				所在行数
-	 * @return					返回验证后的字符串，异常则抛出
+	 * @param beanAndMethod		controller and method, using. 
+	 * @param line				line number
+	 * @return					return a string that is verified after the verification. 
 	 * @throws ParseException
 	 */
 	private String validateControllerAndMethod(String beanAndMethod, int line) throws ParseException {
@@ -173,13 +184,13 @@ public abstract class AbstractFileRouteLoader implements RouteLoader {
 	}
 
 	/**
-	 * 构建一个路由对象
+	 * Construct a routing object 
 	 * 
-	 * @param httpMethod		请求方法
-	 * @param path				路由路径
-	 * @param controllerName	控制器名称
-	 * @param methodName		执行的方法名称
-	 * @return					返回路由对象
+	 * @param httpMethod		request httpMethod
+	 * @param path				route path
+	 * @param controllerName	controller name
+	 * @param methodName		method name
+	 * @return					return route object
 	 * @throws RouteException
 	 */
 	private Route buildRoute(String httpMethod, String path, String controllerName, String methodName) throws RouteException {

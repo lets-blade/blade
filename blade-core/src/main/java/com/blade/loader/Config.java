@@ -23,7 +23,7 @@ import blade.kit.CollectionKit;
 import blade.kit.PatternKit;
 
 /**
- * Blade配置类
+ * Blade Config Class
  * 
  * @author <a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since 1.0
@@ -31,46 +31,46 @@ import blade.kit.PatternKit;
  */
 public class Config {
 
-	// 存放所有变量
+	// Store all variables 
 	private Map<String, String> configMap = CollectionKit.newHashMap();
 	
-	// 存放所有路由的包
+	// Storage of all routing packets 
 	private List<String> routePackages = CollectionKit.newArrayList();
 	
-	// 存放所有IOC的包
+	// Store all IOC packages 
 	private List<String> iocPackages = CollectionKit.newArrayList();
 	
-	// 存放所有过滤目录
+	// Store all filter directories 
 	private List<String> staticFolders = CollectionKit.newArrayList();
 	
-	// 基础包
+	// Base package
 	private String basePackage;
 	
-	// 拦截器包
+	// Interceptor package
 	private String interceptorPackage;
 	
-	// 编码
+	// Encoding
 	private String encoding = "utf-8";
 	
-	// 视图前缀
+	// View prefix
 	private String viewPrefix = "/WEB-INF/";
 	
-	// 视图后缀
+	// View suffix
 	private String viewSuffix = ".jsp";
 	
-	// webroot根目录，物理路径
+	// web root path
 	private String webRoot;
 	
-	// 404视图位置
+	// 404 view page
 	private String view404;
 	
-	// 500视图位置
+	// 500 view page
 	private String view500;
 	
-	// 是否是DEBUG模式
+	// Is debug mode
 	private boolean isDebug = true;
 	
-	// 是否开启XSS防御
+	// Enabled XSS
 	private boolean enableXSS = false;
 	
 	public Config() {
