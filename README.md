@@ -38,7 +38,7 @@ To get started, first [include the Blade library](http://bladejava.com/docs/intr
 <dependency>
 	<groupId>com.bladejava</groupId>
 	<artifactId>blade-core</artifactId>
-	<version>last_version</version>
+	<version>1.5.0</version>
 </dependency>
 <dependency>
         <groupId>com.bladejava</groupId>
