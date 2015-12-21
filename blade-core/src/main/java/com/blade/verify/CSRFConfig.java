@@ -16,47 +16,44 @@
 package com.blade.verify;
 
 /**
- * 
- * <p>
- * CSRF配置
- * </p>
+ * CSRF Config
  *
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since	1.0
  */
 public class CSRFConfig {
 	
-	// 用于生成令牌的全局秘钥，默认为随机字符串
+	// For the global key generation token, default random string 
 	String secret = "blade";
 	
-	// 用于保存用户 ID 的 session 名称，默认为 "csrf_token"
+	// ID to save the session name of the user, default is "csrf_token" 
 	String session = "csrf_token";
     
-	// 用于传递令牌的 HTTP 请求头信息字段，默认为 "X-CSRFToken"
+	// HTTP request header information field for passing the token, default is "X-CSRFToken"" 
 	String header = "X-CSRFToken";
 	
-	// 用于传递令牌的表单字段名，默认为 "_csrf"
+	// Form field name for passing a token, defaukt is "_csrf"
 	String form = "_csrf";
 	
-	// 用于传递令牌的 Cookie 名称，默认为 "_csrf"
+	// Cookie name for passing a token, default is "_csrf"
 	String cookie = "_csrf";
 	
-	// Cookie 设置路径，默认为 "/"
+	// Cookie path, default is "/"
 	String cookiePath = "/";
 	
-	// 生成token的长度，默认32位
+	// Generate the token's length, the default 32 
 	int length = 32;
 	
-	// cookie过期时长，默认60秒
+	// Cookie long, the default 60 seconds 
 	int expire = 3600;
 	
-	// 用于指定是否要求只有使用 HTTPS 时才设置 Cookie，默认为 false
+	// Is used to specify whether the Cookie is set to HTTPS, default is false 
 	boolean secured = false;
 	
-	// 用于指定是否将令牌设置到响应的头信息中，默认为 false
+	// Is used to specify whether the token is set to the header information in the response, default is false
 	boolean setHeader = false;
 	
-	// 用于指定是否将令牌设置到响应的 Cookie 中，默认为 false
+	// Is used to specify whether the token is set to the Cookie of the response, default is false
 	boolean setCookie = false;
 	
 	public CSRFConfig() {

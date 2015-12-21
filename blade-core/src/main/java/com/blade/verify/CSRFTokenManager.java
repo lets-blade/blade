@@ -24,10 +24,7 @@ import blade.kit.StringKit;
 import blade.kit.log.Logger;
 
 /**
- * 
- * <p>
- * CSRF token管理器
- * </p>
+ * CSRF token Manager
  *
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since	1.0
@@ -49,11 +46,11 @@ public class CSRFTokenManager {
 	}
 	
 	/**
-	 * 创建一个token
+	 * Create a token
 	 * 
-	 * @param request		请求对象
-	 * @param response		响应对象
-	 * @return				返回token令牌
+	 * @param request		request object
+	 * @param response		response object
+	 * @return				return token
 	 */
     public static String createToken(Request request, Response response) {
         String token = null;
@@ -78,17 +75,17 @@ public class CSRFTokenManager {
     }
     
     /**
-     * 根据表单参数验证
+     * According to form parameter verification
      * 
-     * @param request		请求对象
-     * @param response		响应对象
-     * @return				返回是否验证成功
+     * @param request		request object
+	 * @param response		response object
+     * @return				return verify is success
      */
     public static boolean verifyAsForm(Request request, Response response) {
-		// 从 session 中得到 csrftoken 属性
+		// csrftoken attribute from session
 		String sToken = request.session().attribute(config.session);
 		if (sToken == null) {
-			// 产生新的 token 放入 session 中
+			// Generate new token into session
 			sToken = CSRFTokenManager.createToken(request, response);
 			return true;
 		} else {
@@ -102,17 +99,17 @@ public class CSRFTokenManager {
 	}
     
     /**
-     * 根据头信息验证
+     * According to header information verification
      * 
-     * @param request		请求对象
-     * @param response		响应对象
-     * @return				返回是否验证成功
+     * @param request		request object
+	 * @param response		response object
+     * @return				return verify is success
      */
     public static boolean verifyAsHeader(Request request, Response response) {
-		// 从 session 中得到 csrftoken 属性
+		// csrftoken attribute from session
 		String sToken = request.session().attribute(config.session);
 		if (sToken == null) {
-			// 产生新的 token 放入 session 中
+			// Generate new token into session
 			sToken = CSRFTokenManager.createToken(request, response);
 			return true;
 		} else {
@@ -126,17 +123,17 @@ public class CSRFTokenManager {
 	}
     
     /**
-     * 根据cookie验证
+     * According to cookie verification
      * 
-     * @param request		请求对象
-     * @param response		响应对象
-     * @return				返回是否验证成功
+     * @param request		request object
+	 * @param response		response object
+     * @return				return verify is success
      */
     public static boolean verifyAsCookie(Request request, Response response) {
-		// 从 session 中得到 csrftoken 属性
+		// csrftoken attribute from session
 		String sToken = request.session().attribute(config.session);
 		if (sToken == null) {
-			// 产生新的 token 放入 session 中
+			// Generate new token into session
 			sToken = CSRFTokenManager.createToken(request, response);
 			return true;
 		} else {

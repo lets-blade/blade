@@ -1,3 +1,18 @@
+/**
+ * Copyright (c) 2015, biezhi 王爵 (biezhi.me@gmail.com)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * 	http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.blade.web;
 
 import java.lang.reflect.Method;
@@ -27,8 +42,10 @@ import com.blade.web.http.wrapper.ServletRequest;
 import com.blade.web.http.wrapper.ServletResponse;
 
 /**
- * 异步请求处理器
- * @author biezhi
+ * Asynchronous request processor
+ * 
+ * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
+ * @since	1.0
  */
 public class AsynRequestHandler implements Runnable {
 	
@@ -58,13 +75,13 @@ public class AsynRequestHandler implements Runnable {
 		
 		Response response = null;
         try {
-        	// http方法, GET/POST ...
+        	// http method, GET/POST ...
             String method = httpRequest.getMethod();
             
-            // 请求的uri
+            // reuqest uri
             String uri = Path.getRelativePath(httpRequest.getRequestURI(), servletContext.getContextPath());
             
-            // 如果是静态资源则交给filter处理
+            // If it is static, the resource is handed over to the filter
             if(null != blade.staticFolder() && blade.staticFolder().length > 0){
             	if(!filterStaticFolder(uri)){
             		asyncContext.complete();
@@ -76,35 +93,35 @@ public class AsynRequestHandler implements Runnable {
             	LOGGER.debug("Request : " + method + "\t" + uri);
             }
             
-            // 创建请求对象
+            // Create Request
     		Request request = new ServletRequest(httpRequest);
             
-    		// 创建响应对象
+    		// Create Response
             response = new ServletResponse(httpResponse, blade.render());
             
-            // 初始化context
+            // Init Context
          	BladeWebContext.setContext(servletContext, request, response);
          	
 			Route route = routeMatcher.getRoute(method, uri);
 			
-			// 如果找到
+			// If find it
 			if (route != null) {
 				request.setRoute(route);
-				// 执行before拦截
+				// before inteceptor
 				List<Route> befores = routeMatcher.getBefore(uri);
 				invokeInterceptor(request, response, befores);
 				
-				// 实际执行方法
+				// execute
 				handle(request, response, route);
 				
-				// 执行after拦截
+				// after inteceptor
 				List<Route> afters = routeMatcher.getAfter(uri);
 				invokeInterceptor(request, response, afters);
 				asyncContext.complete();
 				return;
 			}
 			
-			// 没有找到
+			// Not found
 			render404(response, uri);
 			asyncContext.complete();
 			return;
@@ -114,7 +131,7 @@ public class AsynRequestHandler implements Runnable {
             ThrowableKit.propagate(e);
             
         	httpResponse.setStatus(500);
-        	// 写入内容到浏览器
+        	// Write content to the browser
             if (!httpResponse.isCommitted()) {
                 response.html(Const.INTERNAL_ERROR);
                 asyncContext.complete();
@@ -126,10 +143,10 @@ public class AsynRequestHandler implements Runnable {
 	}
 	
 	/**
-	 * 404视图渲染
+	 * 404 view render
 	 * 
-	 * @param response		响应对象
-	 * @param uri			404的URI
+	 * @param response	response object
+	 * @param uri		404 uri
 	 */
 	private void render404(Response response, String uri) {
 		String view404 = blade.view404();
@@ -144,12 +161,11 @@ public class AsynRequestHandler implements Runnable {
 	}
 	
 	/**
-	 * 执行拦截器的方法
+	 * Methods to perform the interceptor
 	 * 
-	 * @param request		请求对象
-	 * @param response		响应对象
-	 * @param current		当前请求的路由
-	 * @param interceptors	要执行的拦截器列表
+	 * @param request		request object
+	 * @param response		response object
+	 * @param interceptors	execute the interceptor list
 	 */
 	private void invokeInterceptor(Request request, Response response, List<Route> interceptors) {
 		for(Route route : interceptors){
@@ -158,35 +174,33 @@ public class AsynRequestHandler implements Runnable {
 	}
 
 	/**
-	 * 实际的路由方法执行
+	 * Actual routing method execution
 	 * 
-	 * @param request	请求对象
-	 * @param response	响应对象
-	 * @param current	当前请求的路由
-	 * @param route		路由对象
+	 * @param request	request object
+	 * @param response	response object
+	 * @param route		route object
 	 */
 	private void handle(Request request, Response response, Route route){
 		Object target = route.getTarget();
 		request.initPathParams(route.getPath());
 		
-		// 初始化context
+		// Init context
 		BladeWebContext.setContext(servletContext, request, response);
 		if(target instanceof RouteHandler){
 			RouteHandler routeHandler = (RouteHandler)target;
 			routeHandler.handle(request, response);
 		} else {
-			// 要执行的路由方法
 			Method actionMethod = route.getAction();
-			// 执行route方法
+			// execute
 			RouteArgument.executeMethod(target, actionMethod, request, response);
 		}
 	}
 
 	/**
-	 * 要过滤掉的目录
+	 * Filter out the directory
 	 * 
-	 * @param uri	URI表示当前路径，在静态目录中进行过滤
-	 * @return		返回false，过滤成功；返回true，不过滤
+	 * @param uri	URI represents the current path, filtering in a static directory
+	 * @return		Return false, filter the success; return true, do not filter
 	 */
 	private boolean filterStaticFolder(String uri){
 		int len = blade.staticFolder().length;

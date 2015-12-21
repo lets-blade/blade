@@ -21,10 +21,7 @@ import com.blade.web.http.HttpMethod;
 import com.blade.web.http.Path;
 
 /**
- * 
- * <p>
- * 路由对象
- * </p>
+ * Route Bean
  *
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since	1.0
@@ -32,22 +29,22 @@ import com.blade.web.http.Path;
 public class Route {
 	
 	/**
-	 * HTTP请求方法
+	 * HTTP Request Method
 	 */
 	private HttpMethod httpMethod;
 
 	/**
-	 * 路由路径
+	 * Route path
 	 */
 	private String path;
 	
 	/**
-	 * 执行逻辑的目标对象
+	 * Logical controller object 
 	 */
 	private Object target;
 
 	/**
-	 * 执行逻辑的目标方法
+	 * Implementation logic controller method 
 	 */
 	private Method action;
 	

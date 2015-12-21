@@ -16,10 +16,7 @@
 package com.blade.route;
 
 /**
- * 
- * <p>
- * 路由异常类
- * </p>
+ * RouteException
  *
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since	1.0

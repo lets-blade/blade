@@ -23,7 +23,7 @@ import com.blade.web.http.Request;
 import com.blade.web.http.Response;
 
 /**
- * 路由参数注入器
+ * Route parameters of injector
  * 
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since	1.0
@@ -31,12 +31,12 @@ import com.blade.web.http.Response;
 public final class RouteArgument {
 
 	/**
-	 * 获取方法内的参数
+	 * Parameters in the method
 	 * 
-	 * @param request		Request对象，用于注入到method参数列表中
-	 * @param response		Response对象，用于注入到method参数列表中
-	 * @param params		params参数列表
-	 * @return				返回生成后的参数数组
+	 * @param request		Request object for injection to the method parameter list
+	 * @param response		Response object for injection to the method parameter list
+	 * @param params		Params parameter list
+	 * @return				Return the generated array of parameters
 	 */
 	public static Object[] getArgs(Request request, Response response, Class<?>[] params){
 		
@@ -56,13 +56,13 @@ public final class RouteArgument {
 	}
 	
 	/**
-	 * 执行路由方法
+	 * Implementation route
 	 * 
-	 * @param object		方法的实例，即该方法所在类的对象
-	 * @param method		要执行的method
-	 * @param request		Request对象，作为参数注入
-	 * @param response		Response对象，作为参数注入
-	 * @return				返回方法执行后的返回值
+	 * @param object		The instance of the method, that is, the object of the method's class.
+	 * @param method		Method to execute
+	 * @param request		Request object, as parameter injection
+	 * @param response		Response object, as parameter injection
+	 * @return				Return value after the method returns
 	 */
 	public static Object executeMethod(Object object, Method method, Request request, Response response){
 		int len = method.getParameterTypes().length;

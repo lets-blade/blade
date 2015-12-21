@@ -17,9 +17,7 @@ package com.blade.web.multipart;
 
 /**
  * 
- * <p>
- * Multipart异常类
- * </p>
+ * MultipartException
  *
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since	1.0

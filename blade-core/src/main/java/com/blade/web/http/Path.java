@@ -23,10 +23,7 @@ import blade.kit.CollectionKit;
 import blade.kit.StringKit;
 
 /**
- * 
- * <p>
- * 路径、URL处理
- * </p>
+ * Path URL
  *
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since	1.0
@@ -41,9 +38,6 @@ public final class Path {
     
     public static String getRelativePath(String path, String contextPath) {
     	
-//        String path = request.getRequestURI();
-//        String contextPath = request.getContextPath();
-
         path = path.substring(contextPath.length());
 
         if (path.length() > 0) {

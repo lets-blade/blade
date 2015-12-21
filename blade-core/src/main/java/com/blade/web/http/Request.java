@@ -28,10 +28,7 @@ import com.blade.web.http.wrapper.Session;
 import com.blade.web.multipart.FileItem;
 
 /**
- * 
- * <p>
- * HTTP请求对象
- * </p>
+ * HTTP Request
  *
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since	1.0
@@ -39,290 +36,302 @@ import com.blade.web.multipart.FileItem;
 public interface Request {
 	
 	/**
-	 * @return	返回HttpServletRequest原生对象
+	 * @return	Return HttpServletRequest
 	 */
 	HttpServletRequest raw();
 	
 	/**
-	 * 初始化路由上的URL参数，如：/user/23
-	 * @param routePath	路由URL
+	 * URL parameters on the initial route, e.g:/user/23
+	 * @param routePath	Route URL
 	 */
 	void initPathParams(String routePath);
 	
 	/**
-	 * @return	返回客户端请求主机
+	 * @return	Return client request host
 	 */
 	String host();
 
 	/**
-	 * @return	返回请求URL
+	 * @return	Return request URL
 	 */
 	String url();
 
 	/**
-	 * @return	返回请求uri
+	 * @return	Return request URI
 	 */
 	String path();
 	
 	/**
-	 * @return	返回UA
+	 * @return	Return UA
 	 */
 	String userAgent();
 	
 	/**
-	 * @return	返回PathInfo
+	 * @return	Return PathInfo
 	 */
 	String pathInfo();
 	
 	/**
-	 * @return	返回协议
+	 * @return	Return protocol
 	 */
 	String protocol();
 	
 	/**
-	 * @return	返回servletPath
+	 * @return	Return servletPath
 	 */
 	String servletPath();
 	
 	/**
-	 * @return	返回contextPath
+	 * @return	Return contextPath
 	 */
 	String contextPath();
 	
 	/**
-	 * @return	返回上下文对象
+	 * @return	Return ServletContext
 	 */
 	ServletContext context();
 	
 	/**
-	 * @return	路径上的参数Map
+	 * @return	Return parameters on the path Map
 	 */
 	Map<String,String> pathParams();
 
 	/**
-	 * 获取一个URL上的参数
-	 * @param name	参数名
-	 * @return		返回参数值
+	 * Get a URL parameter
+	 * @param name	Parameter name  
+	 * @return		Return parameter value
 	 */
 	String param(String name);
 	
 	/**
-	 * 获取一个URL上的参数，如果为NULL则返回defaultValue
-	 * @param name			参数名
-	 * @param defaultValue	默认值
-	 * @return				返回参数值
+	 * Get a URL parameter, and returns defaultValue if it is NULL
+	 * @param name			Parameter name  
+	 * @param defaultValue	Default Value
+	 * @return				Return parameter value
 	 */
 	String param(String name, String defaultValue);
 	
 	/**
-	 * 返回一个Int类型的URL参数
-	 * @param name	参数名
-	 * @return		返回Int参数值
+	 * Return a URL parameter for a Int type
+	 * @param name	Parameter name  
+	 * @return		Return Int parameter value
 	 */
 	Integer paramAsInt(String name);
 	
 	/**
-	 * 返回一个Long类型的URL参数
-	 * @param name	参数名
-	 * @return		返回Long参数值
+	 * Return a URL parameter for a Long type
+	 * @param name	Parameter name  
+	 * @return		Return Long parameter value
 	 */
 	Long paramAsLong(String name);
 	
 	/**
-	 * 返回一个Boolean类型的URL参数
-	 * @param name	参数名
-	 * @return		返回Boolean参数值
+	 * Return a URL parameter for a Boolean type
+	 * @param name	Parameter name  
+	 * @return		Return Boolean parameter value
 	 */
 	Boolean paramAsBool(String name);
 
 	/**
-	 * @return	返回请求字符串
+	 * @return	Return query string
 	 */
 	String queryString();
 	
 	/**
-	 * @return	返回请求参数Map
+	 * @return	Return request query Map
 	 */
 	Map<String,String> querys();
 
 	/**
-	 * 获取一个请求参数
-	 * @param name	参数名
-	 * @return		返回请求参数值
+	 * Get a request parameter
+	 * 
+	 * @param name	Parameter name
+	 * @return		Return request parameter value
 	 */
 	String query(String name);
 	
 	/**
-	 * 获取一个请求参数，如果为NULL则返回defaultValue
-	 * @param name			参数名
-	 * @param defaultValue	默认返回值
-	 * @return				返回请求参数值
+	 * Get a request parameter, if NULL is returned to defaultValue
+	 * 
+	 * @param name			Parameter name
+	 * @param defaultValue	Default value
+	 * @return				Return request parameter values
 	 */
 	String query(String name, String defaultValue);
 	
 	/**
-	 * 返回一个Int类型的请求参数
-	 * @param name	参数名
-	 * @return		返回Int参数值
+	 * Returns a request parameter for a Int type
+	 * 
+	 * @param name	Parameter name
+	 * @return		Return Int parameter values
 	 */
 	Integer queryAsInt(String name);
 	
 	/**
-	 * 返回一个Long类型的请求参数
-	 * @param name	参数名
-	 * @return		返回Long参数值
+	 * Returns a request parameter for a Long type
+	 * 
+	 * @param name	Parameter name
+	 * @return		Return Long parameter values
 	 */
 	Long queryAsLong(String name);
 	
 	/**
-	 * 返回一个Boolean类型的请求参数
-	 * @param name	参数名
-	 * @return		返回Boolean参数值
+	 * Returns a request parameter for a Boolean type
+	 * 
+	 * @param name	Parameter name
+	 * @return		Return Boolean parameter values
 	 */
 	Boolean queryAsBool(String name);
 	
 	/**
-	 * 返回一个Float类型的请求参数
-	 * @param name	参数名
-	 * @return		返回Float参数值
+	 * Returns a request parameter for a Float type
+	 * 
+	 * @param name	Parameter name
+	 * @return		Return Float parameter values
 	 */
 	Float queryAsFloat(String name);
 	
 	/**
-	 * 返回一个Double类型的请求参数
-	 * @param name	参数名
-	 * @return		返回Double参数值
+	 * Returns a request parameter for a Double type
+	 * 
+	 * @param name	Parameter name
+	 * @return		Return Double parameter values
 	 */
 	Double queryAsDouble(String name);
 
 	/**
-	 * @return	返回请求方法
+	 * @return	Return request method
 	 */
 	String method();
 	
 	/**
-	 * @return	返回枚举类型的HttpMethod
+	 * @return	Return HttpMethod
 	 */
 	HttpMethod httpMethod();
 
 	/**
-	 * @return	返回服务器远程地址
+	 * @return	Return server remote address
 	 */
 	String address();
 	
 	/**
-	 * @return	返回当前会话
+	 * @return	Return current session
 	 */
 	Session session();
 	
 	/**
-	 * 返回当前或创建一个会话
-	 * @param create	是否创建会话
-	 * @return			返回会话对象
+	 * Return to the current or create a session
+	 * @param create	create session
+	 * @return			Return session
 	 */
 	Session session(boolean create);
 	
 	/**
-	 * @return	返回contentType
+	 * @return	Return contentType
 	 */
 	String contentType();
 
 	/**
-	 * @return	返回服务器端口
+	 * @return	Return Server Port
 	 */
 	int port();
 
 	/**
-	 * @return	返回是否使用SSL连接
+	 * @return	Return whether to use the SSL connection
 	 */
 	boolean isSecure();
 
 	/**
-	 * @return	放回当前请求是否是AJAX请求
+	 * @return	Return current request is a AJAX request
 	 */
 	boolean isAjax();
 
 	/**
-	 * @return	返回Cookie Map
+	 * @return	Return Cookie Map
 	 */
 	Map<String, Cookie> cookies();
 	
 	/**
-	 * 获取String类型Cookie
+	 * Get String Cookie Value
+	 * 
 	 * @param name	cookie name
-	 * @return		返回cookie值
+	 * @return		Return Cookie Value
 	 */
 	String cookie(String name);
 	
 	/**
-	 * 获取Cookie
+	 * Get Cookie
+	 * 
 	 * @param name	cookie name
-	 * @return		返回cookie值
+	 * @return		Return Cookie
 	 */
 	Cookie cookieRaw(String name);
 
 	/**
-	 * @return	返回头信息Map
+	 * @return	Return header information Map
 	 */
 	Map<String,String> headers();
 
 	/**
-	 * 获取头信息
-	 * @param name	参数名
-	 * @return		返回头信息
+	 * Get header information
+	 * 
+	 * @param name	Parameter name
+	 * @return		Return header information
 	 */
 	String header(String name);
 	
 	/**
-	 * 设置请求编码
-	 * @param encoding	编码字符串
+	 * Setting request encoding
+	 * 
+	 * @param encoding	coded string
 	 */
 	void encoding(String encoding);
 	
 	/**
-	 * 设置一个RequestAttribute
-	 * @param name	参数名
-	 * @param value	参数值
+	 * Setting Request Attribute
+	 * 
+	 * @param name	Parameter name
+	 * @param value	Parameter Value
 	 */
 	void attribute(String name, Object value);
 	
 	/**
-	 * 获取一个RequestAttribute
-	 * @param name	参数名
-	 * @return		返回参数值
+	 * Get a Request Attribute
+	 * @param name	Parameter name
+	 * @return		Return parameter value
 	 */
 	<T> T attribute(String name);
 	
 	/**
-	 * @return	返回Request中所有Attribute
+	 * @return	Return all Attribute in Request
 	 */
 	Set<String> attributes();
 	
 	/**
-	 * @return	返回请求中文件列表
+	 * @return	Return the requested file list
 	 */
 	FileItem[] files();
 	
 	/**
-	 * @return	返回请求体
+	 * @return	Return request body
 	 */
 	BodyParser body();
 	
 	/**
-	 * 设置路由，执行请求用
-	 * @param route	路由对象
+	 * Setting route, execute request for use
+	 * 
+	 * @param route	route object
 	 */
 	void setRoute(Route route);
 	
 	/**
-	 * @return	返回当前请求的Route
+	 * @return	Return Route of the current request
 	 */
 	Route route();
 	
 	/**
-	 * 请求体接口
+	 * Request body interface
 	 * @author biezhi
-	 *
 	 */
 	interface BodyParser {
 		String asString();

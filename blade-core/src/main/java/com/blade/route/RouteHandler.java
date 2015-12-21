@@ -19,10 +19,7 @@ import com.blade.web.http.Request;
 import com.blade.web.http.Response;
 
 /**
- * 
- * <p>
- * 路由执行器
- * </p>
+ * Route Handler
  *
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since	1.0

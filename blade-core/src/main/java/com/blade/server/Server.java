@@ -23,10 +23,7 @@ import blade.kit.log.Logger;
 import com.blade.web.DispatcherServlet;
 
 /**
- * 
- * <p>
- * Jetty服务
- * </p>
+ * Jetty Server
  *
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since	1.0

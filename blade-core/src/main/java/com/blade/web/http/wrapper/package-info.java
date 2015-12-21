@@ -1,4 +1,4 @@
 /**
- * Servlet封装
+ * Servlet Wrapper
  */
 package com.blade.web.http.wrapper;

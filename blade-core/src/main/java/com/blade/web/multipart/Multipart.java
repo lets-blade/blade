@@ -29,10 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 import blade.kit.IOKit;
 
 /**
- * 
- * <p>
- * Multipart对象
- * </p>
+ * Multipart
  *
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since	1.0

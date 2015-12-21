@@ -1,4 +1,4 @@
 /**
- * 认证、安全包
+ * Authentication And Security
  */
 package com.blade.verify;

@@ -35,7 +35,7 @@ import com.blade.route.RouteBuilder;
 import com.blade.route.RouteMatcher;
 
 /**
- * Blade核心调度器
+ * Blade Core DispatcherServlet
  * 
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since	1.0
@@ -82,10 +82,10 @@ public class DispatcherServlet extends HttpServlet {
 			}
 			bootstrap.init(blade);
 			
-		    // 构建路由
+		    // buiding route
 			new RouteBuilder(blade).building();
 			
-			// 初始化IOC
+			// initialization ioc
 			blade.iocInit();
 			
 		    blade.bootstrap().contextInitialized(blade);
@@ -117,10 +117,10 @@ public class DispatcherServlet extends HttpServlet {
 	}
 	
 	/**
-     * 获取全局初始化对象，初始化应用
+     * Get global initialization object, the application of the initialization
      * 
-     * @param botstrapClassName 		全局初始化类名
-     * @return 							一个全局初始化对象
+     * @param botstrapClassName 	botstrap class name
+     * @return 						return bootstrap object
      * @throws ServletException
      */
     @SuppressWarnings("unchecked")

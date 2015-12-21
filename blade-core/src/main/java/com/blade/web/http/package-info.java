@@ -1,4 +1,4 @@
 /**
- * Request、Response接口
+ * Request And Response
  */
 package com.blade.web.http;

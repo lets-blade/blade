@@ -20,11 +20,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * HTTP multipart/form-data Request
  * 
- * <p>
- * HTTP multipart/form-data 请求
- * </p>
- *
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since	1.0
  */

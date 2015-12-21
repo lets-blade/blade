@@ -29,10 +29,7 @@ import com.blade.web.http.HttpMethod;
 import com.blade.web.http.Path;
 
 /**
- * 
- * <p>
- * 路由匹配器默认实现
- * </p>
+ * Default Route Matcher
  *
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since	1.0
@@ -41,11 +38,11 @@ public class RouteMatcher {
 
 //	private static final Logger LOGGER = Logger.getLogger(SampleRouteMatcher.class);
     
-    // 存储URL和路由关系
+    // Storage URL and route
 	private Map<String, Route> routes = null;
 	private Map<String, Route> interceptors = null;
 	
-	// 存储Map Key
+	// Storage Map Key
 	private Set<String> routeKeys = null;
 	private List<Route> interceptorRoutes = new ArrayList<Route>();
 	
@@ -60,10 +57,10 @@ public class RouteMatcher {
     }
     
     /**
-     * 查找一个路由
-     * @param httpMethod	http请求方法
-     * @param path			请求路径
-     * @return				返回路由对象
+     * Find a route 
+     * @param httpMethod	httpMethod
+     * @param path			request path
+     * @return				return route object
      */
     public Route getRoute(String httpMethod, String path) {
 		String cleanPath = parsePath(path);
@@ -89,16 +86,16 @@ public class RouteMatcher {
 			}
 		}
 		
-		// 优先匹配原则
+		// Priority matching principle 
         giveMatch(path, matchRoutes);
         
         return matchRoutes.size() > 0 ? matchRoutes.get(0) : null;
 	}
     
     /**
-     * 查找所有前置拦截器
-     * @param path	请求路径
-     * @return		返回前置拦截器列表
+     * Find all in before of the interceptor 
+     * @param path	request path
+     * @return		return interceptor list
      */
     public List<Route> getBefore(String path) {
     	
@@ -114,9 +111,9 @@ public class RouteMatcher {
 	}
 	
     /**
-     * 查找所有后置拦截器
-     * @param path	请求路径
-     * @return		返回后置拦截器列表
+     * Find all in after of the interceptor 
+     * @param path	request path
+     * @return		return interceptor list
      */
 	public List<Route> getAfter(String path) {
 		List<Route> afters = new ArrayList<Route>();
@@ -131,9 +128,9 @@ public class RouteMatcher {
 	}
     
 	/**
-	 * 对path进行排序
-	 * @param uri		请求uri	
-	 * @param routes	路由列表
+	 * Sort of path 
+	 * @param uri		request uri	
+	 * @param routes	route list
 	 */
     private void giveMatch(final String uri, List<Route> routes) {
 		Collections.sort(routes, new Comparator<Route>() {
@@ -148,10 +145,11 @@ public class RouteMatcher {
 	}
     
     /**
-     * 匹配路径
-     * @param routePath		路由路径
-     * @param pathToMatch	要匹配的路径
-     * @return				返回是否匹配成功
+     * Matching path
+     * 
+     * @param routePath		route path
+     * @param pathToMatch	match path
+     * @return				return match is success
      */
     private boolean matchesPath(String routePath, String pathToMatch) {
 		routePath = routePath.replaceAll(Path.VAR_REGEXP, Path.VAR_REPLACE);
@@ -159,9 +157,10 @@ public class RouteMatcher {
 	}
     
     /**
-     * 解析路径
-     * @param path		路径地址
-     * @return			返回解析后的路径
+     * Parse Path
+     * 
+     * @param path		route path
+     * @return			return parsed path
      */
     private String parsePath(String path) {
 		path = Path.fixPath(path);

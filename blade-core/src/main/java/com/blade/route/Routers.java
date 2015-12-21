@@ -31,10 +31,7 @@ import com.blade.web.http.Request;
 import com.blade.web.http.Response;
 
 /**
- * 
- * <p>
- * 注册、管理路由
- * </p>
+ * Registration, management route
  *
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since	1.0
@@ -70,7 +67,7 @@ public class Routers {
 		HttpMethod httpMethod = route.getHttpMethod();
 		String key = path + "#" + httpMethod.toString();
 		
-		// 存在的
+		// existent
 		if (null != this.routes.get(key)) {
 			LOGGER.warn("\tRoute "+ path + " -> " + httpMethod.toString() +" has exist");
 		}
@@ -107,7 +104,7 @@ public class Routers {
 		Assert.notNull(method);
 		
 		String key = path + "#" + httpMethod.toString();
-		// 存在的
+		// existent
 		if (null != this.routes.get(key)) {
 			LOGGER.warn("\tRoute "+ path + " -> " + httpMethod.toString() +" has exist");
 		}

@@ -18,12 +18,12 @@ package com.blade.web.http.wrapper;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
+
+import blade.kit.Assert;
 
 import com.blade.Blade;
 import com.blade.context.BladeWebContext;
@@ -35,13 +35,8 @@ import com.blade.web.http.Path;
 import com.blade.web.http.Request;
 import com.blade.web.http.Response;
 
-import blade.kit.Assert;
-
 /**
- * 
- * <p>
  * ServletResponse
- * </p>
  *
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since	1.0
@@ -49,8 +44,6 @@ import blade.kit.Assert;
 public class ServletResponse implements Response {
 
 	private HttpServletResponse response;
-	
-	private Map<String,Object> attributes = new HashMap<String,Object>();
 	
 	private boolean written = false;
 	
@@ -183,16 +176,6 @@ public class ServletResponse implements Response {
 		return this;
 	}
 
-	@Override
-	public Map<String, Object> attributes() {
-		return attributes;
-	}
-
-	@Override
-	public Response attribute(String name, Object object) {
-		attributes.put(name, object);
-		return this;
-	}
 
 	@Override
 	public Response text(String text) {
