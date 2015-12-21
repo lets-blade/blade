@@ -26,7 +26,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import blade.kit.log.Logger;
 
-import com.blade.Blade;
 import com.blade.context.BladeWebContext;
 
 /**
@@ -39,10 +38,7 @@ public final class JspRender implements Render {
 	
 	private static final Logger LOGGER = Logger.getLogger(JspRender.class);
 	
-	private String webRoot;
-	
 	public JspRender() {
-		webRoot = Blade.me().webRoot();
 	}
 	
 	@Override
@@ -52,7 +48,7 @@ public final class JspRender implements Render {
 		
 		try {
 			Map<String, Object> model = modelAndView.getModel();
-			String viewPath = webRoot + modelAndView.getView();
+			String viewPath = modelAndView.getView();
 			
 			if (null != model && !model.isEmpty()) {
 				Set<String> keys = model.keySet();

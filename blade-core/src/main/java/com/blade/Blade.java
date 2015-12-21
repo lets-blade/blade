@@ -104,6 +104,7 @@ public class Blade {
 		this.container = new SampleContainer();
 		this.iocApplication = new IocApplication(container);
 		this.routers = new Routers(container);
+		this.render = new JspRender();
 	}
 	
 	public static final class BladeHolder {
@@ -761,10 +762,7 @@ public class Blade {
 	 * @return	Return current render engine
 	 */
 	public Render render() {
-		if(null == this.render){
-			this.render = new JspRender();
-		}
-		return render;
+		return this.render;
 	}
 
 	/**
