@@ -21,10 +21,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * 
- * <p>
- * 路由类注解，标识一个类是否是路由
- * </p>
+ * Route class notes, identifying whether a class is routed
  *
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since	1.0
@@ -35,12 +32,12 @@ import java.lang.annotation.Target;
 public @interface Path{
 
 	/**
-	 * @return	命名空间
+	 * @return	namespace
 	 */
 	String value() default "/";
 	
 	/**
-	 * @return	路由后缀
+	 * @return	route suffix
 	 */
 	String suffix() default "";
 	

@@ -21,8 +21,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * 拦截器注解，写在类上  
- * 如：
+ * Interceptor notes, written in the class
+ * e.g:
  * <pre>
  * {@link Interceptor}
  * public class BaseInterceptor {...}

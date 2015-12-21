@@ -23,7 +23,7 @@ import java.lang.annotation.Target;
 import com.blade.web.http.HttpMethod;
 
 /**
- * 方法上定义的路由注解
+ * Methods defined on the route notes
  * 
 	Restful routes:
 	<pre>
@@ -47,17 +47,17 @@ import com.blade.web.http.HttpMethod;
 public @interface Route {
 	
 	/**
-	 * @return 请求url
+	 * @return Request url
 	 */
 	String value() default "";
 	
 	/**
-	 * @return 请求类型 HttpMethod
+	 * @return Request HttpMethod
 	 */
 	HttpMethod method() default HttpMethod.ALL;
 	
 	/**
-	 * @return 多个请求
+	 * @return Multiple requests
 	 */
 	String[] values() default {};
 	

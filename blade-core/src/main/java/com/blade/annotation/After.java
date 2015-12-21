@@ -21,8 +21,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * 拦截器后置事件注解，写在方法上  
- * 如：
+ * Interceptor post event annotations, write in method
+ * e.g:
  * <pre>
  *  {@link After}
  *	public void after(Request request){...}
@@ -36,17 +36,17 @@ import java.lang.annotation.Target;
 public @interface After {
 	
 	/**
-	 * @return	后置事件要拦截的URL
+	 * @return	After event to intercept URL
 	 */
 	String value() default "";
 	
 	/**
-	 * @return	路由后缀
+	 * @return	Route suffix
 	 */
 	String suffix() default "";
 	
 	/**
-	 * @return	多个前置拦截
+	 * @return	Multiple after intercept
 	 */
 	String[] values() default {};
 }

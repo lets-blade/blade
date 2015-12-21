@@ -21,10 +21,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * 
- * <p>
- * 自动注入
- * </p>
+ * Automatic injection
  *
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since	1.0
@@ -34,12 +31,12 @@ import java.lang.annotation.Target;
 public @interface Inject {
 	
 	/**
-	 * @return	要注入的Class的对象
+	 * @return	The object to be injected into the Class
 	 */
     Class<?> value() default Class.class;
 
     /**
-     * @return	要注入某个名称的对象
+     * @return	To inject an object with a name
      */
     String name() default "";
 }
