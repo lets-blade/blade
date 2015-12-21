@@ -43,7 +43,7 @@ To get started, first [include the Blade library](http://bladejava.com/docs/intr
 <dependency>
         <groupId>com.bladejava</groupId>
         <artifactId>blade-startup</artifactId>
-        <version>1.0.0</version>
+        <version>1.0.1</version>
 </dependency>
 ```
 
