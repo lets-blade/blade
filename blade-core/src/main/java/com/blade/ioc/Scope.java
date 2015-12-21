@@ -16,10 +16,8 @@
 package com.blade.ioc;
 
 /**
- * Bean创建类型
- * <p>
- * SINGLE：单例，PROTOTYPE：原生
- * </p>
+ * Bean create type 
+ * SINGLE, PROTOTYPE
  *
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since	1.0

@@ -22,7 +22,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * IOC容器顶层接口
+ * IOC container top interface
  *
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since	1.0
@@ -30,127 +30,127 @@ import java.util.Set;
 public interface Container {
 
 	/**
-	 * 根据bean名称和对象作用于获取一个bean对象
+	 * According to the bean name and object function to obtain a bean object
 	 * 
-	 * @param name		bean名称，可以是类名
-	 * @param scope		对象作用域，单例或者每次都创建
-	 * @param <T> 		泛型
-	 * @return			一个bean对象
+	 * @param name		bean name
+	 * @param scope		object scope, single case or each time it is created
+	 * @param <T> 		generic
+	 * @return			return object
 	 */
 	<T> T getBean(String name, Scope scope);
 
     /**
-     * 根据class和对象作用于获取一个bean对象
+     * According to the class and the object function to obtain a bean object
      * 
-     * @param type		class类型
-     * @param scope		对象作用域，单例或者每次都创建
-     * @param <T> 		泛型
-     * @return			一个bean对象
+     * @param type		class type
+     * @param scope		object scope, single case or each time it is created
+     * @param <T> 		generic
+     * @return			return object
      */
     <T> T getBean(Class<T> type, Scope scope);
 
     /**
-     * @return 返回所有bean的名称集合
+     * @return Return the name of all bean
      */
     Set<String> getBeanNames();
     
     /**
-     * @param <T> 		泛型
-     * @return 返回所有bean的集合
+     * @param <T> 		generic
+     * @return Return a collection of all bean
      */
     <T> Collection<T> getBeans();
     
     /**
-     * 根据注解获取ioc容器中匹配的bean class集合
+     * Class bean set in the IOC container for matching based on annotations
      * 
-     * @param annotation	annotation class类型
-     * @return				返回符合annotation class类型的所有class
+     * @param annotation	annotation class type
+     * @return				return all class by annotation
      */
     List<Class<?>> getClassesByAnnotation(Class<? extends Annotation> annotation);
     
     /**
-     * 根据注解获取ioc容器中匹配的bean对象集合
+     * To obtain a set of bean objects that match the IOC container
      * 
-     * @param annotation	annotation class类型
-     * @param <T> 			泛型
-     * @return				返回符合annotation class类型的所有bean
+     * @param annotation	annotation class type
+     * @param <T> 			generic
+     * @return				return all bean by annotation
      */
     <T> List<T> getBeansByAnnotation(Class<? extends Annotation> annotation);
     
     /**
-     * 判断是否存在一个bean，根据class类型
+     * To determine if there is a bean, according to the class type
      * 
-     * @param clazz			类的class类型
-     * @return				true：存在，false：不存在
+     * @param clazz		class type
+     * @return			return class is exist
      */
     boolean hasBean(Class<?> clazz);
 
     /**
-     * 判断是否存在一个bean，根据bena name
+     * According to name Bena to determine whether there is
      * 
-     * @param name			bean的名称，一般是class名称
-     * @return				true：存在，false：不存在
+     * @param name		bean name, usually class name
+     * @return			return class is exist
      */
     boolean hasBean(String name);
     
     /**
-     * 根据名称从ioc容器中移除一个bean对象
+     * Remove an bean object from the IOC container by name 
      * 
-     * @param name			要移除的bean对象名称
-     * @return				true：成功，false：失败
+     * @param name			to remove the bean object name 
+     * @return				return if remove success 
      */
     boolean removeBean(String name);
     
     /**
-     * 根据名称从ioc容器中移除一个bean对象
+     * Remove an bean object from the IOC container by name
      * 
-     * @param clazz			要移除的bean class类型
-     * @return				true：成功，false：失败
+     * @param clazz			to remove the class bean type 
+     * @return				return if remove success 
      */
     boolean removeBean(Class<?> clazz);
     
     /**
-     * @return	清空容器
+     * @return	clean container
      */
     boolean removeAll();
     
     /**
-     * 获取annotations中的注解是否可以注册进入ioc容器
+     * To determine whether the comment in the annotations can be registered into the IOC container
      * 
-     * @param annotations	annotations要检测的annotation数组
-     * @return				true：可以注册，false：不可以注册
+     * @param annotations	annotation array to detect 
+     * @return				return is register
      */
     boolean isRegister(Annotation[] annotations);
 
     /**
-     * 注册一个代名称的Bean
-     * @param name	bean名称
-     * @param value	bean对象
-     * @return		返回注册的Bean
+     * Register bean with a name 
+     * @param name		bean name
+     * @param value		bean object
+     * @return			return register bean
      */
     Object registerBean(String name, Object value);
     
     /**
-     * 注册一个对象到bean容器中
+     * Register an object to the bean container
      * 
-     * @param object		要注册的object
-     * @return				返回注册后的Bean实例
+     * @param object	bean object
+     * @return			return register bean
      */
     Object registerBean(Object object);
     
     /**
-     * 初始化IOC
+     * Initialization IOC injection 
      */
     void initWired();
     
     /**
-     * 注入一个object
-     * @param object	要注入的object
+     * Inject a object 
+     * @param object	to inject object 
      */
     void injection(Object object);
     
     /**
-     * @return 返回ioc容器中的所有bean对象的K,V
+     * @return Returns the all bean objects<K,V> in the IOC container
      */
     Map<String, Object> getBeanMap();
     

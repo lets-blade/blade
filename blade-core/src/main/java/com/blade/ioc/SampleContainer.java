@@ -34,7 +34,7 @@ import com.blade.annotation.Inject;
 import com.blade.annotation.Path;
 
 /**
- * 默认的IOC容器实现
+ * IOC default implement
  *
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since	1.0
@@ -45,17 +45,17 @@ public class SampleContainer implements Container {
     private static final Logger LOGGER = Logger.getLogger(SampleContainer.class);
 
     /**
-     * 保存所有bean对象 如：com.xxxx.User @Userx7asc
+     * Save all bean objects, e.g: com.xxxx.User @Userx7asc
      */
     private Map<String, Object> beans = CollectionKit.newConcurrentHashMap();
     
     /**
-     * 存储所有的对象名和对于的类名关系
+     * All of the object storage and for class relations 
      */
     private Map<String, String> beanKeys = CollectionKit.newConcurrentHashMap();
     
     /**
-     * 保存所有注解的class
+     * Save all the notes class
      */
     private Map<Class<? extends Annotation>, List<Object>> annotaionBeans = CollectionKit.newConcurrentHashMap();
     
@@ -84,7 +84,7 @@ public class SampleContainer implements Container {
     		try {
 				return (T) CloneKit.deepClone(obj);
 			} catch (Exception e) {
-				LOGGER.error("克隆对象失败," + e.getMessage());
+				throw new IocException("clone object error", e);
 			}
     	}
         return (T) obj;
@@ -144,10 +144,10 @@ public class SampleContainer implements Container {
     	Assert.notNull(value);
     	
     	Class<?> clazz = value.getClass();
-		//非抽象类、接口
+		// Not abstract class, interface 
 		if (isNormalClass(clazz)) {
 			
-			// 如果容器已经存在该名称对于的对象，直接返回
+			// If the container already exists, the name is directly returned 
 			String className = beanKeys.get(name);
 			if (StringKit.isNotBlank(className)) {
 				return beans.get(className);
@@ -159,7 +159,7 @@ public class SampleContainer implements Container {
 				beans.put(className, value);
 			}
 		    
-		    //实现的接口对应存储
+		    // Achieve the interface corresponding storage 
 		    Class<?>[] interfaces = clazz.getInterfaces();
 		    if(interfaces.length > 0){
 		    	for(Class<?> interfaceClazz : interfaces){
@@ -168,7 +168,7 @@ public class SampleContainer implements Container {
 		    	}
 		    }
 		    
-		    //带有annotation
+		    // With annotation 
 		    if(null != clazz.getDeclaredAnnotations()){
 		    	putAnnotationMap(clazz, value);
 		    }
@@ -183,7 +183,7 @@ public class SampleContainer implements Container {
 		
     	Class<?> clazz = value.getClass();
 			
-		// 如果容器已经存在该名称对于的对象，直接返回
+		// If the container already exists, the name is directly returned 
 		String className = beanKeys.get(name);
 		if (StringKit.isNotBlank(className)) {
 			return;
@@ -205,10 +205,10 @@ public class SampleContainer implements Container {
 	}
     
     /**
-     * 给annotationMap添加元素
+     * Add elements to annotationMap 
      * 
-     * @param clazz			要注入的class类型
-     * @param object		注册的bean对象
+     * @param clazz		class type to be injected 
+     * @param object	registered bean object 
      */
     private void putAnnotationMap(Class<?> clazz, Object object){
     	
@@ -227,10 +227,10 @@ public class SampleContainer implements Container {
     }
     
     /**
-     * annotationBean容器存储
+     * AnnotationBean container storage 
      * 
-     * @param clazz			允许注册的Annotation类型
-     * @param listObject	要注入的对象列表
+     * @param clazz			allows the Annotation type to be registered 
+     * @param listObject	list of objects to be injected 
      */
     private void put(Class<? extends Annotation> clazz, List<Object> listObject){
     	if(null == annotaionBeans.get(clazz)){
@@ -239,7 +239,7 @@ public class SampleContainer implements Container {
     }
     
     /**
-     * 初始化注入
+     * Initialization injection
      */
     @Override
     public void initWired() throws RuntimeException {
@@ -251,7 +251,7 @@ public class SampleContainer implements Container {
     	}
     }
     
-    // 装配
+    // Assemble
     private Object recursiveAssembly(Class<?> clazz){
     	Object field = null;
     	if(null != clazz){
@@ -263,10 +263,10 @@ public class SampleContainer implements Container {
     
     
     /**
-     * 判断是否是可以注册的bean
+     * To determine whether the bean can be registered 
      * 
-     * @param annotations		注解类型
-     * @return 					true:可以注册 false:不可以注册
+     * @param annotations		annotation class type arrays
+     * @return 					return is register
      */
     @Override
     public boolean isRegister(Annotation[] annotations) {
@@ -282,9 +282,9 @@ public class SampleContainer implements Container {
     }
     
     /**
-     * 是否是一个非接口和抽象类的Class
-     * @param clazz
-     * @return
+     * Is not interface and abstract class Class 
+     * @param clazz 	class type
+     * @return			return is interface && abstract class
      */
     private boolean isNormalClass(Class<?> clazz){
     	if(!Modifier.isAbstract(clazz.getModifiers()) && !clazz.isInterface()){
@@ -292,7 +292,7 @@ public class SampleContainer implements Container {
     	}
     	return false;
     }
-
+    
 	@Override
 	public List<Class<?>> getClassesByAnnotation(Class<? extends Annotation> annotation) {
 		List<Object> objectList = getBeansByAnnotation(annotation);
@@ -321,14 +321,14 @@ public class SampleContainer implements Container {
 
 	@Override
 	public void injection(Object object) {
-		// 所有字段
+		// Traverse all fields 
 	    try {
 			Field[] fields = object.getClass().getDeclaredFields();
 			for (Field field : fields) {
-				// 需要注入的字段
+				// Need to inject the field 
 			    Inject inject = field.getAnnotation(Inject.class);
 			    if (null != inject ) {
-			    	// 要注入的字段
+			    	// Bean to be injected 
 			        Object injectField = null;
 			        String name = inject.name();
 			        if(!name.equals("")){
@@ -343,7 +343,7 @@ public class SampleContainer implements Container {
 	        			if(inject.value() == Class.class){
 	        				injectField = recursiveAssembly(field.getType());
 				        } else {
-				        	// 指定装配的类
+				        	// Specify an assembly
 				        	injectField = this.getBean(inject.value(), null);
 				            if (null == injectField) {
 				            	injectField = recursiveAssembly(inject.value());

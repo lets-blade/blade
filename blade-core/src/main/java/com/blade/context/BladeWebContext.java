@@ -22,7 +22,7 @@ import com.blade.web.http.Response;
 import com.blade.web.http.wrapper.Session;
 
 /**
- * 全局的WeContext
+ * BladeWebContext
  *
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since	1.0
@@ -30,22 +30,22 @@ import com.blade.web.http.wrapper.Session;
 public class BladeWebContext {
 	
 	/**
-	 * 当前线程的Request对象
+	 * BladeWebContext object for the current thread
 	 */
     private static ThreadLocal<BladeWebContext> ctx = new ThreadLocal<BladeWebContext>();
     
     /**
-     * ServletContext对象，在应用初始化时创建
+     * ServletContext Object that is created when the application is initialized
      */
     private ServletContext context; 
     
     /**
-     * Request对象
+     * Request
      */
     private Request request;
     
     /**
-     * Response对象
+     * Response
      */
     private Response response;
     
