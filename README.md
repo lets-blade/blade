@@ -6,6 +6,8 @@
 [![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg?style=flat-square)](https://www.apache.org/licenses/LICENSE-2.0.html)
 [![@biezhi on weibo](https://img.shields.io/badge/weibo-%40biezhi-red.svg?style=flat-square)](http://weibo.com/u/5238733773)
 
+[![Gitter](https://badges.gitter.im/biezhi/blade.svg)](https://gitter.im/biezhi/blade?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+
 [中文说明](https://github.com/biezhi/blade/blob/master/README_CN.md)
 
 ## What Is Blade?
@@ -204,7 +206,6 @@ You may refer to these examples for additional guidance:
 
 - Blog:[https://biezhi.me](https://biezhi.me)
 - Mail: biezhi.me@gmail.com
-- QQ Group: [1013565](http://shang.qq.com/wpa/qunwpa?idkey=932642920a5c0ef5f1ae902723c4f168c58ea63f3cef1139e30d68145d3b5b2f)
 
 ## licenses
 
