@@ -21,7 +21,7 @@ import blade.kit.Assert;
 import blade.kit.ReflectKit;
 
 /**
- * 作为AOP的基础，用于创建对象
+ * As the basis for AOP, used to create objects
  * 
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since	1.0

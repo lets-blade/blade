@@ -50,52 +50,52 @@ import com.blade.web.http.HttpMethod;
 public class Blade {
 	
 	/**
-     * 框架是否已经初始化
+     * Blade initialize
      */
     private boolean isInit = false;
     
     /**
-     * 是否异步调用
+     * Servlet asynchronous
      */
     private boolean isAsyn = true;
     
     /**
-     * blade全局初始化对象，在web.xml中配置，必须
+     * Blade initialize config class
      */
     private Bootstrap bootstrap = null;
     
     /**
-	 * 全局配置对象
+	 * Global configuration Object
 	 */
 	private Config config = new Config();
 	
     /**
-     * IOC容器，存储路由到ioc中
+     * IOC Container, save javabean
      */
     private Container container = new SampleContainer();
     
     /**
-	 * ioc全局对象
+	 * ioc application object
 	 */
 	private IocApplication iocApplication = new IocApplication(container);
     
     /**
-     * 默认JSP渲染
+     * default render is jspRender
      */
     private Render render = new JspRender();
     
     /**
-     * 路由管理对象
+     * manage route
      */
     private Routers routers = new Routers(container);
     
     /**
-     * blade启动端口，jetty服务
+     * jetty start port
      */
     private int port = Const.DEFAULT_PORT;
     
     /**
-     * jetty服务
+     * jetty server
      */
     private Server bladeServer;
     
@@ -107,47 +107,47 @@ public class Blade {
 	}
 	
 	/**
-	 * @return	单例方式返回Blade对象
+	 * @return	Single case method returns Blade object
 	 */
 	public static Blade me(){
 		return BladeHolder.ME;
 	}
 	
 	/**
-	 * 设置App是否已经初始化
-	 * @param isInit	是否初始化
+	 * Set Blade initialize
+	 * @param isInit	initialize
 	 */
 	public void setInit(boolean isInit) {
 		this.isInit = isInit;
 	}
 	
 	/**
-	 * 创建一个Jetty服务
-	 * @param port		服务端口
-	 * @return			返回Blade封装的Server
+	 * create a jetty server
+	 * @param port	server port
+	 * @return		return server object
 	 */
 	public Server createServer(int port){
 		return new Server(port, isAsyn);
 	}
 	
 	/**
-	 * @return		返回路由管理对象
+	 * @return	return route manager
 	 */
 	public Routers routers() {
 		return routers;
 	}
 	
 	/**
-	 * @return		返回Blade IOC容器
+	 * @return	return blade ioc container
 	 */
 	public Container container(){
 		return container;
 	}
 	
 	/**
-	 * 设置一个IOC容器
-	 * @param container	ioc容器对象
-	 * @return			返回blade
+	 * Setting a ioc container
+	 * @param container	ioc object
+	 * @return			return blade
 	 */
 	public Blade container(Container container){
 		Assert.notNull(container);
@@ -156,12 +156,13 @@ public class Blade {
 	}
 	
 	/**
-	 * Properties配置文件方式
-	 * 文件的路径基于classpath
+	 * Setting Properties configuration file
+	 * File path based on classpath
 	 * 
-	 * @param confName		配置文件路径
-	 * @return				返回Blade单例实例
+	 * @param confName		properties file name
+	 * @return				return blade
 	 */
+	@Deprecated
 	public Blade config(String confName){
 		Assert.notBlank(confName);
 		Map<String, String> configMap = PropertyKit.getPropertyMap(confName);
@@ -170,11 +171,11 @@ public class Blade {
 	}
 	
 	/**
-	 * Properties配置文件方式
-	 * 文件的路径基于classpath
+	 * Setting Properties configuration file
+	 * File path based on classpath
 	 * 
-	 * @param confName		配置文件路径
-	 * @return				返回Blade单例实例
+	 * @param confName		properties file name
+	 * @return				return blade
 	 */
 	public Blade setAppConf(String confName){
 		Assert.notBlank(confName);
@@ -184,15 +185,15 @@ public class Blade {
 	}
 	
 	/**
-	 * JSON文件的配置
-	 * 文件的路径基于classpath
+	 * Setting JSON file configuration
+	 * File path based on classpath
 	 * 
-	 * @param jsonPath		json文件路径
-	 * @return				返回Blade单例实例
+	 * @param fileName		json file name
+	 * @return				return blade
 	 */
-	public Blade setJsonConf(String jsonPath){
-		Assert.notBlank(jsonPath);
-		InputStream inputStream = Blade.class.getResourceAsStream(jsonPath);
+	public Blade setJsonConf(String fileName){
+		Assert.notBlank(fileName);
+		InputStream inputStream = Blade.class.getResourceAsStream(fileName);
 		if(null != inputStream){
 			try {
 				String json = IOKit.toString(inputStream);
@@ -206,12 +207,10 @@ public class Blade {
 	}
 	
 	/**
-	 * <pre>
-	 * JSON格式的配置
-	 * </pre>
+	 * Setting json character config, Not recommended
 	 * 
-	 * @param json		json配置
-	 * @return				返回Blade单例实例
+	 * @param json	json character
+	 * @return		return blade
 	 */
 	public Blade setAppJson(String json){
 		Assert.notBlank(json);
@@ -221,11 +220,8 @@ public class Blade {
 	}
 	
 	/**
-	 * <pre>
-	 * 根据配置map保存配置
-	 * </pre>
-	 * 
-	 * @param configMap		存放配置的map
+	 * Setting Map config
+	 * @param configMap	set config map	
 	 */
 	private void configuration(Map<String, String> configMap){
 		Assert.notEmpty(configMap);
@@ -233,11 +229,11 @@ public class Blade {
 	}
 	
 	/**
-     * 设置路由包，如：com.baldejava.route
-     * 可传入多个包，所有的路由类都在该包下
+     * Setting route package，e.g：com.baldejava.route
+     * Can be introduced into multiple packages, all of which are in the package.
      * 
-     * @param packages 	路由包路径
-     * @return				返回Blade单例实例
+     * @param packages 	route package path, is your package name
+     * @return			return blade
      */
     public Blade routes(String...packages){
     	Assert.notNull(packages);
@@ -246,11 +242,11 @@ public class Blade {
     }
     
     /**
-     * 设置顶层包，框架自动寻找路由包和拦截器包，如：com.bladejava
-     * 如上规则，会超找com.bladejava.route、com.bladejava.interceptor下的路由和拦截器
+     * Setting top package frame automatically for routing packets and packet interceptor, e.g:com.bladejava
+     * As above, it will be over:com.bladejava.route、com.bladejava.interceptor Routing and interceptor inside
      * 
-     * @param basePackage 	默认包路径
-     * @return				返回Blade单例实例
+     * @param basePackage 	default package path
+     * @return				return blade
      */
     public Blade defaultRoute(String basePackage){
     	Assert.notBlank(basePackage);
@@ -259,10 +255,10 @@ public class Blade {
     }
     
     /**
-     * 设置拦截器所在的包路径，如：com.bladejava.interceptor
+     * Setting the path where the interceptor, e.g:com.bladejava.interceptor
      * 
-     * @param packageName 拦截器所在的包
-     * @return				返回Blade单例实例
+     * @param packageName 	interceptor packagename
+     * @return				return blade
      */
 	public Blade interceptor(String packageName) {
 		Assert.notBlank(packageName);
@@ -271,10 +267,10 @@ public class Blade {
 	}
 	
 	/**
-     * 设置依赖注入包，如：com.bladejava.service
+     * Setting Ioc packages, e.g:com.bladejava.service
      * 
-     * @param packages 	所有需要做注入的包，可传入多个
-     * @return				返回Blade单例实例
+     * @param packages 	All need to do into the package, can be introduced into a number of
+     * @return			return blade
      */
     public Blade ioc(String...packages){
     	Assert.notNull(packages);
@@ -285,12 +281,12 @@ public class Blade {
     }
     
     /**
-     * 添加一个路由
+     * Add a route
      * 
-     * @param path		路由路径
-     * @param target	路由执行的目标对象
-     * @param method	路由执行的方法名称（同时指定HttpMethod的方式是：post:saveUser，如不指定则为HttpMethod.ALL）
-     * @return			返回Blade单例实例
+     * @param path		route path
+     * @param target	Target object for routing
+     * @param method	The method name of the route (at the same time, the HttpMethod is specified: post:saveUser, if not specified, HttpMethod.ALL)
+     * @return			return blade
      */
 	public Blade route(String path, Object target, String method){
 		routers.route(path, target, method);
@@ -298,13 +294,13 @@ public class Blade {
 	}
 	
 	/**
-     * 添加一个路由
+     * Add a route
      * 
-     * @param path		路由路径
-     * @param target	路由执行的目标对象
-     * @param method	路由执行的方法名称（同时指定HttpMethod的方式是：post:saveUser，如不指定则为HttpMethod.ALL）
-     * @param httpMethod HTTP方法
-     * @return			返回Blade单例实例
+     * @param path			route path
+     * @param target		Target object for routing
+     * @param method		The method name of the route (at the same time, the HttpMethod is specified: post:saveUser, if not specified, HttpMethod.ALL)
+     * @param httpMethod 	HTTPMethod
+     * @return				return blade
      */
 	public Blade route(String path, Object target, String method, HttpMethod httpMethod){
 		routers.route(path, target, method, httpMethod);
@@ -326,13 +322,13 @@ public class Blade {
 	}
 	
 	/**
-	 * 注册一个函数式的路由
+	 * Register a functional route
 	 * 
-	 * @param path			路由url	
-	 * @param clazz			路由处理类
-	 * @param method		路由处理方法名称
-	 * @param httpMethod	请求类型,GET/POST
-	 * @return Blade		返回Blade单例实例
+	 * @param path			route url	
+	 * @param clazz			route processing class
+	 * @param method		route processing method name
+	 * @param httpMethod	HttpMethod Type, GET/POST/...
+	 * @return Blade		return blade
 	 */
 	public Blade route(String path, Class<?> clazz, String method, HttpMethod httpMethod){
 		routers.route(path, clazz, method, httpMethod);
@@ -340,9 +336,9 @@ public class Blade {
 	}
 	
 	/**
-	 * 添加路由列表
-	 * @param routes		路由列表
-	 * @return				返回Blade单例实例
+	 * Add a route list
+	 * @param routes	route list
+	 * @return			return blade
 	 */
 	public Blade routes(List<Route> routes){
 		routers.addRoutes(routes);
@@ -350,11 +346,11 @@ public class Blade {
 	}
 	
 	/**
-	 * 注册一个GET请求的路由
+	 * Register a GET request route
 	 * 
-	 * @param path		路由路径
-	 * @param handler	执行路由的Handle
-	 * @return			返回Blade单例实例
+	 * @param path		route path, request url
+	 * @param handler	execute route Handle
+	 * @return			return blade
 	 */
 	public Blade get(String path, RouteHandler handler){
 		routers.route(path, handler, HttpMethod.GET);
@@ -362,11 +358,11 @@ public class Blade {
 	}
 	
 	/**
-	 * 注册一个POST请求的路由
+	 * Register a POST request route
 	 * 
-	 * @param path		路由路径
-	 * @param handler	执行路由的Handle
-	 * @return			返回Blade单例实例
+	 * @param path		route path, request url
+	 * @param handler	execute route Handle
+	 * @return			return blade
 	 */
 	public Blade post(String path, RouteHandler handler){
 		routers.route(path, handler, HttpMethod.POST);
@@ -374,11 +370,11 @@ public class Blade {
 	}
 	
 	/**
-	 * 注册一个DELETE请求的路由
+	 * Register a DELETE request route
 	 * 
-	 * @param path		路由路径
-	 * @param handler	执行路由的Handle
-	 * @return			返回Blade单例实例
+	 * @param path		route path, request url
+	 * @param handler	execute route Handle
+	 * @return			return blade
 	 */
 	public Blade delete(String path, RouteHandler handler){
 		routers.route(path, handler, HttpMethod.DELETE);
@@ -386,11 +382,11 @@ public class Blade {
 	}
 	
 	/**
-	 * 注册一个PUT请求的路由
+	 * Register a PUT request route
 	 * 
-	 * @param path		路由路径
-	 * @param handler	执行路由的Handle
-	 * @return			返回Blade单例实例
+	 * @param path		route path, request url
+	 * @param handler	execute route Handle
+	 * @return			return blade
 	 */
 	public Blade put(String path, RouteHandler handler){
 		routers.route(path, handler, HttpMethod.PUT);
@@ -398,11 +394,11 @@ public class Blade {
 	}
 	
 	/**
-	 * 注册一个任意请求的路由
+	 * Register for any request routing
 	 * 
-	 * @param path		路由路径
-	 * @param handler	执行路由的Handle
-	 * @return			返回Blade单例实例
+	 * @param path		route path, request url
+	 * @param handler	execute route Handle
+	 * @return			return blade
 	 */
 	public Blade all(String path, RouteHandler handler){
 		routers.route(path, handler, HttpMethod.ALL);
@@ -410,11 +406,11 @@ public class Blade {
 	}
 	
 	/**
-	 * 注册一个任意请求的路由
+	 * Register for any request routing
 	 * 
-	 * @param path		路由路径
-	 * @param handler	执行路由的Handle
-	 * @return			返回Blade单例实例
+	 * @param path		route path, request url
+	 * @param handler	execute route Handle
+	 * @return			return blade
 	 */
 	public Blade any(String path, RouteHandler handler){
 		routers.route(path, handler, HttpMethod.ALL);
@@ -422,11 +418,11 @@ public class Blade {
 	}
 	
 	/**
-	 * 注册一个前置拦截器请求的路由
+	 * Register a pre routing request interceptor
 	 * 
-	 * @param path		路由路径
-	 * @param handler	执行路由的Handle
-	 * @return			返回Blade单例实例
+	 * @param path		route path, request url
+	 * @param handler	execute route Handle
+	 * @return			return blade
 	 */
 	public Blade before(String path, RouteHandler handler){
 		routers.route(path, handler, HttpMethod.BEFORE);
@@ -434,11 +430,11 @@ public class Blade {
 	}
 
 	/**
-	 * 注册一个后置拦截器请求的路由
+	 * Register a after routing request interceptor
 	 * 
-	 * @param path		路由路径
-	 * @param handler	执行路由的Handle
-	 * @return			返回Blade单例实例
+	 * @param path		route path, request url
+	 * @param handler	execute route Handle
+	 * @return			return blade
 	 */
 	public Blade after(String path, RouteHandler handler){
 		routers.route(path, handler, HttpMethod.AFTER);
@@ -446,10 +442,10 @@ public class Blade {
 	}
 	
 	/**
-	 * 设置渲染引擎，默认是JSP引擎
+	 * Setting Render Engin, Default is JspRender
 	 * 
-	 * @param render 	渲染引擎对象
-	 * @return			返回Blade单例实例
+	 * @param render 	Render engine object
+	 * @return			return blade
 	 */
 	public Blade viewEngin(Render render) {
 		Assert.notNull(render);
@@ -458,10 +454,10 @@ public class Blade {
 	}
 	
 	/**
-	 * 设置默认视图前缀，默认为WEBROOT/WEB-INF/目录
+	 * Setting default view prefix, default is WEBROOT/WEB-INF/
 	 * 
-	 * @param prefix 	视图路径，如：/WEB-INF/views/
-	 * @return			返回Blade单例实例
+	 * @param prefix 	views path, e.g:/WEB-INF/views/
+	 * @return			return blade
 	 */
 	public Blade viewPrefix(final String prefix) {
 		Assert.notBlank(prefix);
@@ -472,10 +468,10 @@ public class Blade {
 	}
 	
 	/**
-	 * 设置视图默认后缀名，默认为.jsp
+	 * Setting view default suffix, default is .jsp
 	 * 
-	 * @param suffix	视图后缀，如：.html	 .vm
-	 * @return			返回Blade单例实例
+	 * @param suffix	view suffix, e.g:.html .vm
+	 * @return			return blade
 	 */
 	public Blade viewSuffix(final String suffix) {
 		Assert.notBlank(suffix);
@@ -486,11 +482,11 @@ public class Blade {
 	}
 	
 	/**
-	 * 同事设置视图所在目录和视图后缀名
+	 * Also set the view's directory and view the suffix name
 	 * 
-	 * @param viewPath	视图路径，如：/WEB-INF/views
-	 * @param viewExt	视图后缀，如：.html	 .vm
-	 * @return			返回Blade单例实例
+	 * @param viewPath	views path, e.g:/WEB-INF/views
+	 * @param viewExt	view suffix, e.g:.html .vm
+	 * @return			return blade
 	 */
 	public Blade view(final String viewPath, final String viewExt) {
 		Assert.notBlank(viewPath);
@@ -501,10 +497,10 @@ public class Blade {
 	}
 	
 	/**
-	 * 设置框架静态文件所在文件夹
+	 * Setting the frame static file folder
 	 * 
-	 * @param folders	要过滤的目录数组，如："/public,/static,/images"
-	 * @return			返回Blade单例实例
+	 * @param folders	List of directories to filter, e.g: "/public,/static,/images"
+	 * @return			return blade
 	 */
 	public Blade staticFolder(final String ... folders) {
 		Assert.notNull(folders);
@@ -513,10 +509,10 @@ public class Blade {
 	}
 	
 	/**
-	 * 设置是否启用XSS防御
+	 * Setting XSS is enable
 	 * 
-	 * @param enableXSS	是否启用XSS防御，默认不启用
-	 * @return			返回Blade单例实例
+	 * @param enableXSS	enable XSS, default is false
+	 * @return			return blade
 	 */
 	public Blade enableXSS(boolean enableXSS){
 		config.setEnableXSS(enableXSS);
@@ -524,10 +520,10 @@ public class Blade {
 	}
 	
 	/**
-     * 动态设置全局初始化类, 内嵌式Jetty启动用
+     * Dynamically set the global initialization class, the embedded Jetty boot
      * 
-     * @param bootstrap 	全局初始化bladeApplication
-     * @return				返回Blade单例实例
+     * @param bootstrap 	global initialization config class
+     * @return				return blade
      */
     public Blade app(Bootstrap bootstrap){
     	Assert.notNull(bootstrap);
@@ -536,10 +532,10 @@ public class Blade {
     }
     
     /**
-     * 动态设置全局初始化类
+     * Dynamically set global initialization class
      * 
-     * @param bootstrap 	全局初始化bladeApplication
-     * @return				返回Blade单例实例
+     * @param bootstrap 	global initialization config class
+     * @return				return blade
      */
     public Blade app(Class<? extends Bootstrap> bootstrap){
     	Assert.notNull(bootstrap);
@@ -549,10 +545,10 @@ public class Blade {
     }
     
     /**
-     * 设置404视图页面
+     * Setting 404 view page
      * 
-     * @param view404	404视图页面
-     * @return			返回Blade单例实例
+     * @param view404	404 view page
+     * @return			return blade
      */
     public Blade setView404(final String view404){
     	Assert.notBlank(view404);
@@ -561,10 +557,10 @@ public class Blade {
     }
     
     /**
-     * 设置500视图页面
+     * Setting 500 view page
      * 
-     * @param view500	500视图页面
-     * @return			返回Blade单例实例
+     * @param view500	500 view page
+     * @return			return blade
      */
     public Blade setView500(final String view500){
     	Assert.notBlank(view500);
@@ -573,10 +569,10 @@ public class Blade {
     }
 
     /**
-     * 设置web根目录
+     * Setting blade web root path
      * 
-     * @param webRoot	web根目录物理路径
-     * @return			返回Blade单例实例
+     * @param webRoot	web root path
+     * @return			return blade
      */
     public Blade webRoot(final String webRoot){
     	Assert.notBlank(webRoot);
@@ -585,10 +581,10 @@ public class Blade {
     }
     
     /**
-	 * 设置系统是否以debug方式运行
+	 * Setting blade run mode
 	 * 
-	 * @param isdebug	true:是，默认true；false:否
-	 * @return			返回Blade单例实例
+	 * @param isdebug	is debug mode
+	 * @return			return blade
 	 */
 	public Blade debug(boolean isdebug){
 		config.setDebug(isdebug);
@@ -596,10 +592,10 @@ public class Blade {
 	}
 	
 	/**
-	 * 设置Jetty服务监听端口
+	 * Setting jetty listen port
 	 * 
-	 * @param port		端口，默认9000
-	 * @return			返回Blade单例实例
+	 * @param port		port, default is 9000
+	 * @return			return blade
 	 */
 	public Blade listen(int port){
 		this.port = port;
@@ -607,9 +603,9 @@ public class Blade {
 	}
 	
 	/**
-	 * 是否异步调用
-	 * @param isAsyn	是否异步
-	 * @return			返回Blade单例对象
+	 * Setting servlet asynchronous
+	 * @param isAsyn	is asynchronous
+	 * @return			return blade
 	 */
 	public Blade isAsyn(boolean isAsyn){
 		this.isAsyn = isAsyn;
@@ -617,9 +613,9 @@ public class Blade {
 	}
 	
 	/**
-	 * 设置jetty启动上下文
+	 * Setting jetty context
 	 * 
-	 * @param contextPath	设置上下文contextPath，默认/
+	 * @param contextPath	context path, default is /
 	 */
 	public void start(String contextPath) {
 		try {
@@ -632,14 +628,14 @@ public class Blade {
 	}
 	
 	/**
-	 * 启动Jetty服务
+	 * Start jetty server
 	 */
 	public void start() {
 		this.start("/");
 	}
 	
 	/**
-	 * 停止jetty服务
+	 * Jetty sever shutdown
 	 */
 	public void stop() {
 		try {
@@ -650,44 +646,44 @@ public class Blade {
 	}
 	
 	/**
-	 * join in server
+	 * Join in server
 	 * 
-	 * @throws InterruptedException join异常 
+	 * @throws InterruptedException join exception
 	 */
 	public void join() throws InterruptedException {
 		bladeServer.join();
 	}
 	
 	/**
-	 * @return	返回系统配置对象
+	 * @return	Return blade config object
 	 */
 	public Config config(){
     	return config;
     }
 	
     /**
-     * @return	返回Blade要扫描的基础包
+     * @return	Return blade scan base package
      */
     public String basePackage(){
     	return config.getBasePackage();
     }
     
 	/**
-     * @return	返回路由包数组
+     * @return	Return route packages
      */
     public String[] routePackages(){
     	return config.getRoutePackages();
     }
     
     /**
-     * @return	返回IOC所有包
+     * @return	Return ioc packages
      */
     public String[] iocs(){
     	return config.getIocPackages();
     }
     
     /**
-     * @return	返回拦截器包数组，只有一个元素 这里统一用String[]
+     * @return	Returns the interceptor array, only one element here use String[]
      */
     public String interceptorPackage(){
     	return config.getInterceptorPackage();
@@ -695,85 +691,88 @@ public class Blade {
     
     
     /**
-     * @return	返回视图存放路径
+     * @return	Return views prefix
      */
     public String viewPrefix(){
     	return config.getViewPrefix();
     }
     
     /**
-     * @return	返回系统默认字符编码
+     * @return	Return blade encoding, default is UTF-8
      */
     public String encoding(){
     	return config.getEncoding();
     }
     
     /**
-     * @return	返回balde启动端口
+     * @return	Return view suffix
      */
     public String viewSuffix(){
     	return config.getViewSuffix();
     }
     
     /**
-     * @return	返回404视图
+     * @return	Return 404 view
      */
     public String view404(){
     	return config.getView404();
     }
     
     /**
-     * @return	返回500视图
+     * @return	Return 500 view
      */
     public String view500(){
     	return config.getView500();
     }
     
     /**
-     * @return	返回webroot路径
+     * @return	Return blade web root path
      */
     public String webRoot(){
     	return config.getWebRoot();
     }
     
     /**
-	 * @return	返回系统是否以debug方式运行
+	 * @return	Return is debug mode
 	 */
 	public boolean debug(){
 		return config.isDebug();
 	}
 	
 	/**
-	 * @return	返回静态资源目录
+	 * @return	Return static resource directory
 	 */
 	public String[] staticFolder(){
 		return config.getStaticFolders();
 	}
 	
 	/**
-	 * @return	返回Bootstrap对象
+	 * @return	Return bootstrap object
 	 */
 	public Bootstrap bootstrap(){
 		return bootstrap; 
 	}
 	
+	/**
+	 * @return	Return current render engine
+	 */
 	public Render render() {
 		return render;
 	}
 
 	/**
-	 * @return	返回是否启用XSS防御
+	 * @return	Return XSS is enabled
 	 */
 	public boolean enableXSS(){
 		return config.isEnableXSS(); 
 	}
 	
 	/**
-	 * 返回插件对象
+	 * return register plugin object
 	 * 
-	 * @param plugin		插件class
-	 * @param <T>			泛型
-	 * @return				返回插件对象
+	 * @param plugin		plugin class
+	 * @param <T>			generic
+	 * @return				return plugin object
 	 */
 	@SuppressWarnings("unchecked")
 	public <T> T plugin(Class<? extends Plugin> plugin){
@@ -786,11 +785,11 @@ public class Blade {
 	}
 
 	/**
-	 * 注册一个配置文件的路由，如："com.xxx.route","route.conf"
+	 * Registration of a configuration file, e.g: "com.xxx.route","route.conf"
 	 * 
-	 * @param basePackage	控制器包名
-	 * @param conf			配置文件路径，配置文件必须在classpath下
-	 * @return				返回Blade单例实例
+	 * @param basePackage	controller package name
+	 * @param conf			Configuration file path, the configuration file must be in classpath
+	 * @return				return blade
 	 */
 	public Blade routeConf(String basePackage, String conf) {
 		try {
@@ -810,14 +809,14 @@ public class Blade {
 	}
 	
 	/**
-	 * @return	返回IocApplication对象
+	 * @return	Return IocApplication object
 	 */
 	public IocApplication iocApplication(){
 		return iocApplication;
 	}
 	
 	/**
-	 * @return	返回IocApplication对象
+	 * @return	Initialize ioc application and return blade
 	 */
 	public Blade iocInit(){
 		iocApplication.init(iocs(), bootstrap);
@@ -825,7 +824,7 @@ public class Blade {
 	}
 
 	/**
-	 * @return	返回是否已经初始化
+	 * @return	Return blade is initialize 
 	 */
 	public boolean isInit() {
 		return isInit;
