@@ -16,7 +16,7 @@
 package com.blade;
 
 /**
- * 常量接口
+ * Const Interface
  * 
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since	1.0
@@ -24,29 +24,29 @@ package com.blade;
 public interface Const {
 
 	/**
-	 * 当前最新版本
+	 * Current version
 	 */
 	String BLADE_VERSION = "1.5.0-beta";
 	
 	/**
-     * 服务器500错误时返回的HTML
+     * Server 500 error HTML
      */
 	String INTERNAL_ERROR = "<html><head><title>500 Internal Error</title></head><body bgcolor=\"white\"><center><h1>500 Internal Error</h1></center><hr><center>blade "
 			+ BLADE_VERSION +"</center></body></html>";
     
 	/**
-	 * 服务器404错误HTML
+	 * Server 404 error HTML
 	 */
 	String VIEW_NOTFOUND = "<html><head><title>404 Not Found</title></head><body bgcolor=\"white\"><center><h1>[ %s ] Not Found</h1></center><hr><center>blade "
 			+ BLADE_VERSION +"</center></body></html>";
 	
 	/**
-	 * jetty默认端口
+	 * Default jetty server port
 	 */
 	int DEFAULT_PORT = 9000;
 	
 	/**
-	 * 请求线程池context key
+	 * Request ThreadPoll context key
 	 */
 	String BLADE_EXECUTOR = "blade-req-executor";
 }

@@ -191,7 +191,7 @@ You may refer to these examples for additional guidance:
 
 ## Plan
 
-- 1. The development of the social application platform
+- 1. Written in English Docs
 - 2. Add the test code
 - 3. Optimize the code base
 - 4. Optimization of concurrent ability

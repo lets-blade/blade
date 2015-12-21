@@ -28,10 +28,7 @@ import com.blade.ioc.Scope;
 import com.blade.plugin.Plugin;
 
 /**
- * IOC容器初始化类
- * <p>
- * 用于初始化ioc对象
- * </p>
+ * IOC container, used to initialize the IOC object
  *
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since	1.0
@@ -41,17 +38,17 @@ public class IocApplication {
 	private static final Logger LOGGER = Logger.getLogger(IocApplication.class);
 	
 	/**
-	 * IOC容器，单例获取默认的容器实现
+	 * Ioc Container
 	 */
 	private Container container = null;
 	
 	/**
-	 * 类读取对象，加载class
+	 * Class to read object, load class
 	 */
 	private ClassReader classReader = null;
 	
 	/**
-	 * 插件列表
+	 * Plugin List
 	 */
 	private List<Plugin> plugins = null;
 	
@@ -62,25 +59,25 @@ public class IocApplication {
 	}
 	
 	/**
-	 * 初始化IOC
-	 * @param iocs		IOC包
-	 * @param bootstrap	启动对象
+	 * IOC initialize
+	 * @param iocs		ioc packages
+	 * @param bootstrap	bootstrap object
 	 */
 	public void init(String[] iocs, Bootstrap bootstrap){
 		
-		// 初始化全局配置类
+		// Initialize the global configuration class
 		if(null == container.getBean(Bootstrap.class, Scope.SINGLE)){
 			container.registerBean(bootstrap);
 		}
 		
-		// 初始化ioc容器，加载ioc包的对象 要配置符合ioc的注解的类才会被加载
+		// The object to initialize the IOC container loads the IOC package to configure the class that conforms to the IOC
 		if(null != iocs && iocs.length > 0){
 			for(String packageName : iocs){
 				registerBean(packageName);
 			}
 		}
 		
-		// 初始化注入
+		// Initialization injection
 		container.initWired();
 		
 		Set<String> names = container.getBeanNames();
@@ -106,20 +103,20 @@ public class IocApplication {
 	}
 	
 	/**
-	 * 注册一个包下的所有对象
+	 * Register all objects in a package
 	 * 
-	 * @param packageName 包名称
+	 * @param packageName package name
 	 */
 	private void registerBean(String packageName) {
 		
-		// 是否递归扫描
+		// Recursive scan
 		boolean recursive = false; 
 		if (packageName.endsWith(".*")) {
 			packageName = packageName.substring(0, packageName.length() - 2);
 			recursive = true;
 		}
 		
-		// 扫描包下所有class
+		// Scan package all class
 		Set<Class<?>> classes = classReader.getClass(packageName, recursive);
 		for (Class<?> clazz : classes) {
 			// 注册带有Component和Service注解的类
@@ -134,10 +131,10 @@ public class IocApplication {
 	}
 
 	/**
-	 * 销毁
+	 * destroy
 	 */
 	public void destroy() {
-		// 清空ioc容器
+		// clean ioc container
 		container.removeAll();
 		for(Plugin plugin : plugins){
 			plugin.destroy();
