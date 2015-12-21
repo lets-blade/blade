@@ -18,10 +18,7 @@ package com.blade.render;
 import java.io.Writer;
 
 /**
- * 
- * <p>
- * 渲染器接口
- * </p>
+ * Render Interface, For view layer to display data 
  *
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since	1.0

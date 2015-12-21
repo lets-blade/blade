@@ -34,10 +34,7 @@ import com.blade.web.http.wrapper.Session;
 import blade.kit.log.Logger;
 
 /**
- * 
- * <p>
- * Beetl渲染引擎
- * </p>
+ * Beetl Render
  *
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since	1.0
@@ -47,15 +44,12 @@ public class BeetlRender implements Render {
 	private static final Logger LOGGER = Logger.getLogger(BeetlRender.class);
 	
 	/**
-	 * Beetl获取模板对象
+	 * Beetl GroupTemplate Object
 	 */
 	private GroupTemplate groupTemplate = null;
 	
 	private String webRoot;
 	
-	/**
-	 * 默认构造函数
-	 */
 	public BeetlRender() {
 		try {
 			Blade blade = Blade.me();

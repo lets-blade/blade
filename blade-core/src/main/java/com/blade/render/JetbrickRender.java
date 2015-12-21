@@ -33,10 +33,7 @@ import jetbrick.template.JetEngine;
 import jetbrick.template.JetTemplate;
 
 /**
- * 
- * <p>
- * Velocity渲染引擎
- * </p>
+ * Velocity Render
  *
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since	1.0
@@ -50,9 +47,7 @@ public class JetbrickRender implements Render {
 	private Properties config;
 	
 	private String webRoot;
-	/**
-	 * 默认构造函数
-	 */
+	
 	public JetbrickRender() {
 		Blade blade = Blade.me();
 		this.webRoot = blade.webRoot();
@@ -65,14 +60,14 @@ public class JetbrickRender implements Render {
 	}
 	
 	/**
-	 * @return	返回JetEngine引擎
+	 * @return	return JetEngine
 	 */
 	public JetEngine getJetEngine(){
 		return jetEngine;
 	}
 	
 	/**
-	 * 清空配置
+	 * clean config
 	 */
 	public void clean(){
 		if(null != config){
@@ -81,10 +76,10 @@ public class JetbrickRender implements Render {
 	}
 	
 	/**
-	 * 添加一个配置
+	 * add config
 	 * 
-	 * @param key	配置键
-	 * @param value	配置值
+	 * @param key	key
+	 * @param value	value
 	 */
 	public void put(String key, Object value){
 		if(null == config){
@@ -94,10 +89,10 @@ public class JetbrickRender implements Render {
 	}
 	
 	/**
-	 * 根据配置文件构造一个JetEngine引擎
+	 * Construct a JetEngine engine based on the configuration file 
 	 * 
-	 * @param configLocation	配置文件路径
-	 * @throws IOException 		抛出IO异常
+	 * @param configLocation	configuration file path for ClassPath
+	 * @throws IOException 		io exception
 	 */
 	public JetbrickRender(String configLocation) throws IOException {
 		Blade blade = Blade.me();
@@ -106,9 +101,9 @@ public class JetbrickRender implements Render {
 	}
 	
 	/**
-	 * 根据构造一个JetEngine引擎
+	 * According to the construction of a JetEngine engine 
 	 * 
-	 * @param config	Properties配置
+	 * @param config	properties configuration 
 	 */
 	public JetbrickRender(Properties config) {
 		Blade blade = Blade.me();
@@ -118,9 +113,9 @@ public class JetbrickRender implements Render {
 	}
 	
 	/**
-	 * 手动构造JetEngine引擎
+	 * Manually constructed JetEngine engine 
 	 * 
-	 * @param jetEngine	jetEngine引擎
+	 * @param jetEngine	jetEngine engine object
 	 */
 	public JetbrickRender(JetEngine jetEngine) {
 		this.jetEngine = jetEngine;

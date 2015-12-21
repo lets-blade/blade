@@ -20,10 +20,7 @@ import java.util.Map;
 import blade.kit.CollectionKit;
 
 /**
- * 
- * <p>
- * ModelAndView使用模型和视图来渲染
- * </p>
+ * ModelAndView, Using templates and data 
  *
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since	1.0
@@ -31,19 +28,19 @@ import blade.kit.CollectionKit;
 public class ModelAndView {
 	
 	/**
-	 * 数据对象，该对象被放在httprequest的attribute中
+	 * Data object, the object is placed in the attribute httprequest 
 	 */
 	private Map<String, Object> model;
     
 	/**
-	 * 视图
+	 * View Page
 	 */
     private String view;
 
     /**
-     * 创建一个空视图
+     * Create an empty view 
      * 
-     * @param view		视图
+     * @param view	view page
      */
     public ModelAndView(String view) {
         super();
@@ -52,10 +49,10 @@ public class ModelAndView {
     }
     
     /**
-     * 创建一个带数据的模型视图对象
+     * Create a model view object with data 
      * 
-     * @param model		数据模型
-     * @param view		视图
+     * @param model		model data
+     * @param view		view page
      */
     public ModelAndView(Map<String, Object> model, String view) {
         super();
@@ -64,19 +61,19 @@ public class ModelAndView {
     }
 
     /**
-     * 添加数据
+     * Add data to model 
      * 
-     * @param key		数据键
-     * @param value 	数据值
+     * @param key		key
+     * @param value 	value
      */
     public void add(String key, Object value){
     	this.model.put(key, value);
     }
     
     /**
-     * 移除一个数据
+     * Remove model data 
      * 
-     * @param key 		模型的键
+     * @param key 		key
      */
     public void remove(String key){
     	this.model.remove(key);
@@ -84,31 +81,32 @@ public class ModelAndView {
     
     /**
      * 
-     * @return 获取视图
+     * @return Return view page
      */
 	public String getView() {
 		return view;
 	}
 	
 	/**
-	 * 设置视图
-	 * @param view	视图文件名称
+	 * Setting view page
+	 * 
+	 * @param view	view page
 	 */
 	public void setView(String view) {
 		this.view = view;
 	}
 
 	/**
-	 * @return 获取模型
+	 * @return Return model map
 	 */
 	public Map<String, Object> getModel() {
 		return model;
 	}
 	
 	/**
-	 * 设置model
+	 * Setting model
 	 * 
-	 * @param model	存放数据的map
+	 * @param model	Storage data map
 	 */
 	public void setModel(Map<String, Object> model) {
 		this.model = model;

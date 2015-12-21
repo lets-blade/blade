@@ -36,10 +36,7 @@ import com.blade.web.http.wrapper.Session;
 import blade.kit.log.Logger;
 
 /**
- * 
- * <p>
- * Velocity渲染引擎
- * </p>
+ * Velocity Render
  *
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since	1.0
@@ -51,9 +48,7 @@ public class VelocityRender implements Render {
 	private final VelocityEngine velocityEngine;
     
 	private String webRoot;
-	/**
-	 * 默认构造函数
-	 */
+	
 	public VelocityRender() {
 		Blade blade = Blade.me();
 		this.webRoot = blade.webRoot();
@@ -67,10 +62,10 @@ public class VelocityRender implements Render {
 	}
 	
 	/**
-	 * 根据配置文件构造一个Velocity引擎
+	 * Construct a Velocity engine based on the configuration file 
 	 * 
-	 * @param propertiesFile	properties文件路径
-	 * @throws IOException 		抛出IO异常
+	 * @param propertiesFile	properties file path
+	 * @throws IOException 		IO Exception
 	 */
 	public VelocityRender(String propertiesFile) throws IOException {
 		Blade blade = Blade.me();
@@ -82,7 +77,7 @@ public class VelocityRender implements Render {
 		InputStream inStream = new FileInputStream(new File(fileName));
 		properties.load(inStream);
 		
-		// 默认查询路径
+		// Default query path
 		if(!properties.contains(Velocity.FILE_RESOURCE_LOADER_PATH)){
 			properties.put(Velocity.FILE_RESOURCE_LOADER_PATH, blade.webRoot());
 		}
@@ -90,7 +85,7 @@ public class VelocityRender implements Render {
 	}
 	
 	/**
-	 * 根据构造一个Velocity引擎
+	 * According to the construction of a Velocity engine 
 	 * 
 	 * @param properties	Properties配置文件
 	 */
@@ -101,9 +96,9 @@ public class VelocityRender implements Render {
 	}
 	
 	/**
-	 * 手动构造Velocity引擎
+	 * Manually constructed Velocity engine 
 	 * 
-	 * @param velocityEngine	velocity引擎对象
+	 * @param velocityEngine	velocity engine object
 	 */
 	public VelocityRender(VelocityEngine velocityEngine) {
 		Blade blade = Blade.me();

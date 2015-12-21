@@ -30,10 +30,7 @@ import com.blade.Blade;
 import com.blade.context.BladeWebContext;
 
 /**
- * 
- * <p>
- * JSP渲染引擎，默认的渲染器
- * </p>
+ * JSP Render, Default Render
  *
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since	1.0
@@ -71,7 +68,6 @@ public final class JspRender implements Render {
 			e.printStackTrace();
 			LOGGER.error(e);
 		}
-		
 	}
     
 }
