@@ -4,9 +4,8 @@ import java.io.IOException;
 
 import javax.servlet.AsyncEvent;
 import javax.servlet.AsyncListener;
-import javax.servlet.annotation.WebListener;
  
-@WebListener
+//@WebListener
 public class AppAsyncListener implements AsyncListener {
 	
     @Override

@@ -67,27 +67,27 @@ public class Blade {
     /**
 	 * Global configuration Object
 	 */
-	private Config config = new Config();
+	private Config config = null;
 	
     /**
      * IOC Container, save javabean
      */
-    private Container container = new SampleContainer();
+    private Container container = null;
     
     /**
 	 * ioc application object
 	 */
-	private IocApplication iocApplication = new IocApplication(container);
+	private IocApplication iocApplication = null;
     
     /**
      * default render is jspRender
      */
-    private Render render = new JspRender();
+    private Render render = null;
     
     /**
      * manage route
      */
-    private Routers routers = new Routers(container);
+    private Routers routers = null;
     
     /**
      * jetty start port
@@ -100,16 +100,20 @@ public class Blade {
     private Server bladeServer;
     
 	private Blade() {
+		this.config = new Config();
+		this.container = new SampleContainer();
+		this.iocApplication = new IocApplication(container);
+		this.routers = new Routers(container);
 	}
 	
-	private static class BladeHolder {
-		private static Blade ME = new Blade();
+	public static final class BladeHolder {
+		private static final Blade ME = new Blade();
 	}
 	
 	/**
 	 * @return	Single case method returns Blade object
 	 */
-	public static Blade me(){
+	public static final Blade me(){
 		return BladeHolder.ME;
 	}
 	
@@ -757,6 +761,9 @@ public class Blade {
 	 * @return	Return current render engine
 	 */
 	public Render render() {
+		if(null == this.render){
+			this.render = new JspRender();
+		}
 		return render;
 	}
 

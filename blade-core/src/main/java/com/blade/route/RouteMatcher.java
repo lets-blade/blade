@@ -81,6 +81,7 @@ public class RouteMatcher {
 			HttpMethod routeMethod = HttpMethod.valueOf(keyArr[1]);
 			if (matchesPath(keyArr[0], cleanPath)) {
 				if (routeMethod == HttpMethod.ALL || HttpMethod.valueOf(httpMethod) == routeMethod) {
+					route = routes.get(key);
 					matchRoutes.add(route);
 				}
 			}
