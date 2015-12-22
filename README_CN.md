@@ -101,7 +101,7 @@ public static void main(String[] args) {
 public static void main(String[] args) {
 	Blade blade = Blade.me();
 	blade.get("/user", (request, response) -> {
-		Integer uid = request.query("uid");
+		Integer uid = request.queryAsInt("uid");
 		response.text("uid : " + uid);
 	});
 	blade.listen(9001).start();
