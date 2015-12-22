@@ -180,10 +180,10 @@ public Long getUserCount(String email){
 
 OK，这一切看起来多么的简单，查阅使用指南更多现成的例子供你参考:
 
-+ [hello工程](https://github.com/bladejava/hello)
++ [hello工程](https://github.com/blade-samples/hello)
 + [API文档](http://bladejava.com/apidocs)
 + [使用指南](http://bladejava.com/docs)
-+ [相关案例](https://github.com/bladejava)
++ [相关案例](https://github.com/blade-samples)
 + [版本查询](LAST_VERSION.md)
 
 ### 计划

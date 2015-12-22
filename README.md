@@ -185,10 +185,10 @@ public Long getUserCount(String email){
 
 You may refer to these examples for additional guidance:
 
-+ [Hello](https://github.com/bladejava/hello)
++ [Hello](https://github.com/blade-samples/hello)
 + [Api Doc](http://bladejava.com/apidocs)
 + [User Guide](http://bladejava.com/docs)
-+ [Examples](https://github.com/bladejava)
++ [Examples](https://github.com/blade-samples)
 + [Version](LAST_VERSION.md)
 
 ## Plan
