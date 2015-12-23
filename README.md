@@ -21,11 +21,11 @@ If you like it, please [star and fork it](https://github.com/biezhi/blade). Than
 * [x] Restful style routing interface
 * [x] Supports multiple configuration files (currently properties, json and coding)
 * [x] Embedded jetty server and template engine support
-* [x] Supports jdk 1.6 and up
+* [x] Supports JDK 1.6 and up
 
 ## Overview
 
-* Simplicity: the design is simple, easy to understand and doesn't introduce many layers between you and the standard library. It is a goal of the project that users should be able to understand the whole framework in a single day.
+* Simplicity: The design is simple, easy to understand and doesn't introduce many layers between you and the standard library. The goal of this project is that the users should be able to understand the whole framework in a single day.
 * Elegance: `blade` supports the REST style routing interface, has no invasive interceptors and provides the writing of DSL grammar.
 
 ## Get Start
@@ -47,7 +47,7 @@ To get started, first [include the Blade library](http://bladejava.com/docs/intr
 </dependency>
 ```
 
-create `Main` method like this：
+Create `Main` method like this：
 
 ```java
 public class App {
@@ -184,7 +184,7 @@ public Long getUserCount(String email){
 You may refer to these examples for additional guidance:
 
 + [Hello](https://github.com/blade-samples/hello)
-+ [Api Doc](http://bladejava.com/apidocs)
++ [API Doc](http://bladejava.com/apidocs)
 + [User Guide](http://bladejava.com/docs)
 + [Examples](https://github.com/blade-samples)
 + [Version](LAST_VERSION.md)
@@ -204,7 +204,7 @@ You may refer to these examples for additional guidance:
 - Blog:[https://biezhi.me](https://biezhi.me)
 - Mail: biezhi.me@gmail.com
 
-## licenses
+## Licenses
 
 ```
 Copyright 2015 biezhi
