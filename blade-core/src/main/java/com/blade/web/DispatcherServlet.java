@@ -64,7 +64,9 @@ public class DispatcherServlet extends HttpServlet {
 	
 	@Override
 	public void init(ServletConfig config) throws ServletException {
+		servletContext = config.getServletContext();
 		if(!blade.isInit()){
+		    blade.webRoot(servletContext.getRealPath("/"));
 			this.bootstrap = blade.bootstrap();
 			if(null == bootstrap){
 				String bootStrapClassName = config.getInitParameter("bootstrap");
@@ -89,9 +91,6 @@ public class DispatcherServlet extends HttpServlet {
 			
 		    blade.bootstrap().contextInitialized(blade);
 		    
-		    servletContext = config.getServletContext();
-		    
-		    blade.webRoot(servletContext.getRealPath("/"));
 		    syncRequestHandler = new SyncRequestHandler(servletContext, blade.routers());
 		    AsynRequestHandler.routeMatcher = new RouteMatcher(blade.routers());
 		    
