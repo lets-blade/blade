@@ -48,7 +48,7 @@ Grab via `Maven`：
 ```
 or `Gradle`:
 ```
-compile 'com.bladejava:blade-core:1.5.0'
+compile 'com.bladejava:blade-core:1.5.1-alpha'
 compile 'com.bladejava:blade-startup:1.0.1'
 ```
 
@@ -214,12 +214,14 @@ You may refer to these examples for additional guidance:
 Thank you very much for the developers to help in the project, if you are willing to contribute, welcome!
 
 - [mfarid](https://github.com/mfarid)
+- [daimajia](https://github.com/daimajia)
 - [shenjie1993](https://github.com/shenjie1993)
 - [sumory](https://github.com/sumory)
 - [udaykadaboina](https://github.com/udaykadaboina)
 - [SyedWasiHaider](https://github.com/SyedWasiHaider)
 - [Awakens](https://github.com/Awakens)
 - [shellac](https://github.com/shellac)
+- [SudarAbisheck](https://github.com/SudarAbisheck)
 
 ## Licenses
 

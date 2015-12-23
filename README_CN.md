@@ -47,6 +47,13 @@ Blade 是一个轻量级的MVC框架. 它拥有简洁的代码，优雅的设计
 </dependency>
 ```
 
+或者  `Gradle`:
+
+```
+compile 'com.bladejava:blade-core:1.5.1-alpha'
+compile 'com.bladejava:blade-startup:1.0.1'
+```
+
 编写 `Main`函数：
 
 ```java
@@ -207,12 +214,14 @@ OK，这一切看起来多么的简单，查阅使用指南更多现成的例子
 非常感谢下面的开发者朋友对本项目的帮助，如果你也愿意提交PR，欢迎你！
 
 - [mfarid](https://github.com/mfarid)
+- [daimajia](https://github.com/daimajia)
 - [shenjie1993](https://github.com/shenjie1993)
 - [sumory](https://github.com/sumory)
 - [udaykadaboina](https://github.com/udaykadaboina)
 - [SyedWasiHaider](https://github.com/SyedWasiHaider)
 - [Awakens](https://github.com/Awakens)
 - [shellac](https://github.com/shellac)
+- [SudarAbisheck](https://github.com/SudarAbisheck)
 
 ## 开源协议
 
