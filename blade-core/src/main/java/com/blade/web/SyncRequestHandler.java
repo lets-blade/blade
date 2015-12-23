@@ -168,13 +168,18 @@ public class SyncRequestHandler {
 	 * @param route		route object
 	 */
 	private void handle(Request request, Response response, Route route){
+		
 		Object target = route.getTarget();
+		if(null == target){
+			Class<?> clazz = route.getAction().getDeclaringClass();
+			target = Blade.me().container().getBean(clazz, null);
+		}
 		request.initPathParams(route.getPath());
 		
 		// Init context
 		BladeWebContext.setContext(servletContext, request, response);
 		if(target instanceof RouteHandler){
-			RouteHandler routeHandler = (RouteHandler)target;
+			RouteHandler routeHandler = (RouteHandler) target;
 			routeHandler.handle(request, response);
 		} else {
 			Method actionMethod = route.getAction();

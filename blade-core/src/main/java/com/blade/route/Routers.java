@@ -91,16 +91,15 @@ public class Routers {
 		}
 	}
 	
-	public void addRoute(HttpMethod httpMethod, String path, Object controller, String methodName) throws NoSuchMethodException {
-		Method method = controller.getClass().getMethod(methodName, Request.class, Response.class);
-		addRoute(httpMethod, path, controller, method);
+	public void addRoute(HttpMethod httpMethod, String path, RouteHandler handler, String methodName) throws NoSuchMethodException {
+		Method method = handler.getClass().getMethod(methodName, Request.class, Response.class);
+		addRoute(httpMethod, path, handler, method);
 	}
 	
 	public void addRoute(HttpMethod httpMethod, String path, Object controller, Method method) {
 		
 		Assert.notNull(httpMethod);
 		Assert.notBlank(path);
-		Assert.notNull(controller);
 		Assert.notNull(method);
 		
 		String key = path + "#" + httpMethod.toString();
@@ -188,14 +187,14 @@ public class Routers {
 		}
 	}
 	
-	public void route(String path, Class<?> clazz, Method method, HttpMethod httpMethod) {
+	public void buildRoute(String path, Class<?> clazz, Method method, HttpMethod httpMethod) {
 		try {
 			Object controller = container.getBean(clazz, Scope.SINGLE);
 			if(null == controller){
 				controller = Aop.create(clazz);
 				container.registerBean(controller);
 			}
-			addRoute(httpMethod, path, controller, method);
+			addRoute(httpMethod, path, null, method);
 		} catch (SecurityException e) {
 			e.printStackTrace();
 		}

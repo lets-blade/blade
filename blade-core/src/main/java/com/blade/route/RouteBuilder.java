@@ -283,7 +283,7 @@ public class RouteBuilder {
      * @param method		route httpmethod
      */
     private void buildRoute(Class<?> clazz, Method execMethod, String path, HttpMethod method){
-    	this.routers.route(path, clazz, execMethod, method);
+    	routers.buildRoute(path, clazz, execMethod, method);
     }
     
     /**
@@ -295,7 +295,7 @@ public class RouteBuilder {
      * @param method		route httpmethod
      */
     private void buildInterceptor(String path, Class<?> clazz, Method execMethod, HttpMethod method){
-    	this.routers.route(path, clazz, execMethod, method);
+    	routers.buildRoute(path, clazz, execMethod, method);
     }
     
 }

@@ -181,7 +181,12 @@ public class AsynRequestHandler implements Runnable {
 	 * @param route		route object
 	 */
 	private void handle(Request request, Response response, Route route){
+		
 		Object target = route.getTarget();
+		if(null == target){
+			Class<?> clazz = route.getAction().getDeclaringClass();
+			target = Blade.me().container().getBean(clazz, null);
+		}
 		request.initPathParams(route.getPath());
 		
 		// Init context
