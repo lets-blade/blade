@@ -38,7 +38,7 @@ Blade 是一个轻量级的MVC框架. 它拥有简洁的代码，优雅的设计
 <dependency>
 	<groupId>com.bladejava</groupId>
 	<artifactId>blade-core</artifactId>
-	<version>1.5.0</version>
+	<version>1.5.1-alpha</version>
 </dependency>
 <dependency>
     <groupId>com.bladejava</groupId>
