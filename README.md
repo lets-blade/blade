@@ -18,7 +18,7 @@ If you like it, please [star and fork it](https://github.com/biezhi/blade). Than
 * [x] Lightweight: the code is simple and the structure is clear
 * [x] Modular (you can choose which components to use)
 * [x] Supports plug-in extension mechanism
-* [x] Restful style routing interface
+* [x] RESTful style routing interface
 * [x] Supports multiple configuration files (currently properties, json and coding)
 * [x] Embedded jetty server and template engine support
 * [x] Supports JDK 1.6 and up
@@ -26,7 +26,7 @@ If you like it, please [star and fork it](https://github.com/biezhi/blade). Than
 ## Overview
 
 * Simplicity: The design is simple, easy to understand and doesn't introduce many layers between you and the standard library. The goal of this project is that the users should be able to understand the whole framework in a single day.
-* Elegance: `blade` supports the REST style routing interface, has no invasive interceptors and provides the writing of DSL grammar.
+* Elegance: `blade` supports the RESTful style routing interface, has no invasive interceptors and provides the writing of DSL grammar.
 
 ## Get Start
 
