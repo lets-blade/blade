@@ -32,7 +32,7 @@ If you like it, please [star and fork it](https://github.com/biezhi/blade). Than
 
 To get started, first [include the Blade library](http://bladejava.com/docs/intro/getting_start) :
 
-`Maven` config：
+Grab via `Maven`：
 
 ```sh
 <dependency>
@@ -45,6 +45,11 @@ To get started, first [include the Blade library](http://bladejava.com/docs/intr
         <artifactId>blade-startup</artifactId>
         <version>1.0.1</version>
 </dependency>
+```
+or `Gradle`:
+```
+compile 'com.bladejava:blade-core:1.5.0'
+compile 'com.bladejava:blade-startup:1.0.1'
 ```
 
 Create `Main` method like this：
@@ -62,7 +67,7 @@ public class App {
 }
 ```
 
-Run it and point your browser to http://localhost:9001. There you go, you've just created your first Blade app!
+Run it and point your browser to [http://localhost:9001](http://localhost:9001). There you go, you've just created your first Blade app!
 
 ## API Example
 
