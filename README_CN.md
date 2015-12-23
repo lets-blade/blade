@@ -202,20 +202,19 @@ OK，这一切看起来多么的简单，查阅使用指南更多现成的例子
 - Mail: biezhi.me#gmail.com
 - Java交流群: [1013565](http://shang.qq.com/wpa/qunwpa?idkey=932642920a5c0ef5f1ae902723c4f168c58ea63f3cef1139e30d68145d3b5b2f)
 
+## 贡献
+
+非常感谢下面的开发者朋友对本项目的帮助，如果你也愿意提交PR，欢迎你！
+
+- [mfarid](https://github.com/mfarid)
+- [shenjie1993](https://github.com/shenjie1993)
+- [sumory](https://github.com/sumory)
+- [udaykadaboina](https://github.com/udaykadaboina)
+- [SyedWasiHaider](https://github.com/SyedWasiHaider)
+- [Awakens](https://github.com/Awakens)
+- [shellac](https://github.com/shellac)
+
 ## 开源协议
 
-```
-Copyright 2015 biezhi
+请查看 [Apache License](LICENSE)
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-   http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-```

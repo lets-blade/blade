@@ -204,20 +204,18 @@ You may refer to these examples for additional guidance:
 - Blog:[https://biezhi.me](https://biezhi.me)
 - Mail: biezhi.me@gmail.com
 
+## Contributor
+
+Thank you very much for the developers to help in the project, if you are willing to contribute, welcome!
+
+- [mfarid](https://github.com/mfarid)
+- [shenjie1993](https://github.com/shenjie1993)
+- [sumory](https://github.com/sumory)
+- [udaykadaboina](https://github.com/udaykadaboina)
+- [SyedWasiHaider](https://github.com/SyedWasiHaider)
+- [Awakens](https://github.com/Awakens)
+- [shellac](https://github.com/shellac)
+
 ## Licenses
 
-```
-Copyright 2015 biezhi
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-   http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-```
+Please see [Apache License](LICENSE)
