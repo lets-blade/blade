@@ -26,7 +26,7 @@ public interface Const {
 	/**
 	 * Current version
 	 */
-	String BLADE_VERSION = "1.5.0";
+	String BLADE_VERSION = "1.5.1-alpha";
 	
 	/**
      * Server 500 error HTML
