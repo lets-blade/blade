@@ -51,7 +51,7 @@ Blade 是一个轻量级的MVC框架. 它拥有简洁的代码，优雅的设计
 
 ```java
 public static void main(String[] args) {
-	Blade blade = Blade.me();
+	Blade blade = me();
 	blade.get("/", (request, response) -> {
 		response.html("<h1>Hello blade!</h1>");
 	});
@@ -65,7 +65,7 @@ public static void main(String[] args) {
 
 ```java
 public static void main(String[] args) {
-	Blade blade = Blade.me();
+	Blade blade = me();
 	blade.get("/user/21", getxxx);
 	blade.post("/save", postxxx);
 	blade.delete("/del/21", deletexxx);
@@ -78,7 +78,7 @@ public static void main(String[] args) {
 
 ```java
 public static void main(String[] args) {
-	Blade blade = Blade.me();
+	Blade blade = me();
 	blade.get("/user/:uid", (request, response) -> {
 		Integer uid = request.paramAsInt("uid");
 		response.text("uid : " + uid);
@@ -99,7 +99,7 @@ public static void main(String[] args) {
 
 ```java
 public static void main(String[] args) {
-	Blade blade = Blade.me();
+	Blade blade = me();
 	blade.get("/user", (request, response) -> {
 		Integer uid = request.queryAsInt("uid");
 		response.text("uid : " + uid);
@@ -144,7 +144,7 @@ POST	/upload_img			UploadRoute.upload_img
 
 ```java
 public static void main(String[] args) {
-	Blade blade = Blade.me();
+	Blade blade = me();
 	blade.before("/.*", (request, response) -> {
 		System.out.println("before...");
 	});
@@ -188,10 +188,9 @@ OK，这一切看起来多么的简单，查阅使用指南更多现成的例子
 
 ### 计划
 
-- 1. 编写英文文档
-- 2. 添加测试代码
-- 3. 优化基础代码
-- 4. 优化并发能力
+- 1. 添加测试代码
+- 2. 优化基础代码
+- 3. 优化并发能力
 
 ## 更新日志
 

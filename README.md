@@ -55,7 +55,7 @@ create `Main` method like this：
 public class App {
 	
 	public static void main(String[] args) {
-		Blade blade = Blade.me();
+		Blade blade = me();
 		blade.get("/", (request, response) -> {
 			response.html("<h1>Hello blade!</h1>");
 		});
@@ -70,7 +70,7 @@ Run it and point your browser to http://localhost:9001. There you go, you've jus
 
 ```java
 public static void main(String[] args) {
-	Blade blade = Blade.me();
+	Blade blade = me();
 	blade.get("/user/21", getxxx);
 	blade.post("/save", postxxx);
 	blade.delete("/del/21", deletexxx);
@@ -83,7 +83,7 @@ public static void main(String[] args) {
 
 ```java
 public static void main(String[] args) {
-	Blade blade = Blade.me();
+	Blade blade = me();
 	blade.get("/user/:uid", (request, response) -> {
 		Integer uid = request.paramAsInt("uid");
 		response.text("uid : " + uid);
@@ -104,7 +104,7 @@ public static void main(String[] args) {
 
 ```java
 public static void main(String[] args) {
-	Blade blade = Blade.me();
+	Blade blade = me();
 	blade.get("/user", (request, response) -> {
 		Integer uid = request.queryAsInt("uid");
 		response.text("uid : " + uid);
@@ -149,7 +149,7 @@ POST	/upload_img			UploadRoute.upload_img
 
 ```java
 public static void main(String[] args) {
-	Blade blade = Blade.me();
+	Blade blade = me();
 	blade.before("/.*", (request, response) -> {
 		System.out.println("before...");
 	});
@@ -193,10 +193,9 @@ You may refer to these examples for additional guidance:
 
 ## Plan
 
-- 1. Written in English Docs
-- 2. Add the test code
-- 3. Optimize the code base
-- 4. Optimization of concurrent ability
+- 1. Add the test code
+- 2. Optimize the code base
+- 3. Optimization of concurrent ability
 	
 ## Update
 
