@@ -129,18 +129,20 @@ public class ServletResponse implements Response {
 
 	@Override
 	public Response cookie(String name, String value, int maxAge) {
-		return cookie(name, value, maxAge);
+		return cookie(name, value, maxAge, false);
 	}
 
 	@Override
 	public Response cookie(String name, String value, int maxAge, boolean secured) {
-		return cookie(name, value, maxAge, secured);
+		return cookie(null, name, value, maxAge, secured);
 	}
 
 	@Override
 	public Response cookie(String path, String name, String value, int maxAge, boolean secured) {
 		Cookie cookie = new Cookie(name, value);
-        cookie.setPath(path);
+		if(null != path){
+			cookie.setPath(path);
+		}
         cookie.setMaxAge(maxAge);
         cookie.setSecure(secured);
         response.addCookie(cookie);
