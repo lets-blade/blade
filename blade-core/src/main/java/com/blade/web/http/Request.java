@@ -16,6 +16,7 @@
 package com.blade.web.http;
 
 import java.io.InputStream;
+import java.io.Serializable;
 import java.util.Map;
 import java.util.Set;
 
@@ -316,6 +317,15 @@ public interface Request {
 	 * @return	Return request body
 	 */
 	BodyParser body();
+	
+	/**
+	 * Serialized form data, converted to the javabean
+	 * 
+	 * @param slug		bean slug, e.g: <input name="person.uid" value="123"/>, the slug is person
+	 * @param clazz		bean type
+	 * @return			Return converted Bean Object
+	 */
+	<T> T model(String slug, Class<? extends Serializable> clazz);
 	
 	/**
 	 * Setting route, execute request for use

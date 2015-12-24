@@ -38,7 +38,7 @@ Grab via `Maven`：
 <dependency>
 	<groupId>com.bladejava</groupId>
 	<artifactId>blade-core</artifactId>
-	<version>1.5.1-alpha</version>
+	<version>1.5.1-beta</version>
 </dependency>
 <dependency>
         <groupId>com.bladejava</groupId>
@@ -48,7 +48,7 @@ Grab via `Maven`：
 ```
 or `Gradle`:
 ```
-compile 'com.bladejava:blade-core:1.5.1-alpha'
+compile 'com.bladejava:blade-core:1.5.1-beta'
 compile 'com.bladejava:blade-startup:1.0.1'
 ```
 

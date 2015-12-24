@@ -4,6 +4,7 @@
 	1. 修复webRoot是null
 	2. 修复模板引擎路径错误
 	3. 修复控制器注入对象失败
+	4. 添加request.model表单数据转JavaBean
 
 ### v1.5.0
 	1. 优化路由寻址算法

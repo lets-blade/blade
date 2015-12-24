@@ -34,11 +34,9 @@ import java.util.jar.JarFile;
 import blade.kit.log.Logger;
 
 /**
- * 有关 <code>Reflection</code> 处理的工具类。
+ * 有关 Reflection处理的工具类。
  * 
- * <p>
  * 这个类中的每个方法都可以“安全”地处理 <code>null</code> ，而不会抛出 <code>NullPointerException</code>。
- * </p>
  * 
  * @author	<a href="mailto:biezhi.me@gmail.com">biezhi</a>
  * @since	1.0
@@ -47,7 +45,6 @@ public abstract class ReflectKit {
 
 	private static final Logger LOGGER = Logger.getLogger(ReflectKit.class);
 	
-	// ------------------------------------------------------
 	/** 新建对象 
 	 * @throws IllegalAccessException 
 	 * @throws InstantiationException 
