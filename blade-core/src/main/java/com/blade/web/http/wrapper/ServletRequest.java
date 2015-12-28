@@ -225,7 +225,7 @@ public class ServletRequest implements Request {
 	@Override
 	public Integer paramAsInt(String name) {
 		String value = param(name);
-		if (null != value) {
+		if (StringKit.isNotBlank(value)) {
 			return Integer.valueOf(value);
 		}
 		return null;
@@ -234,7 +234,7 @@ public class ServletRequest implements Request {
 	@Override
 	public Long paramAsLong(String name) {
 		String value = param(name);
-		if (null != value) {
+		if (StringKit.isNotBlank(value)) {
 			return Long.valueOf(value);
 		}
 		return null;
@@ -243,7 +243,7 @@ public class ServletRequest implements Request {
 	@Override
 	public Boolean paramAsBool(String name) {
 		String value = param(name);
-		if (null != value) {
+		if (StringKit.isNotBlank(value)) {
 			return Boolean.valueOf(value);
 		}
 		return null;
@@ -302,7 +302,7 @@ public class ServletRequest implements Request {
 	@Override
 	public Integer queryAsInt(String name) {
 		String value = query(name);
-		if (null != value) {
+		if (StringKit.isNotBlank(value)) {
 			return Integer.valueOf(value);
 		}
 		return null;
@@ -311,7 +311,7 @@ public class ServletRequest implements Request {
 	@Override
 	public Long queryAsLong(String name) {
 		String value = query(name);
-		if (null != value) {
+		if (StringKit.isNotBlank(value)) {
 			return Long.valueOf(value);
 		}
 		return null;
@@ -320,7 +320,7 @@ public class ServletRequest implements Request {
 	@Override
 	public Boolean queryAsBool(String name) {
 		String value = query(name);
-		if (null != value) {
+		if (StringKit.isNotBlank(value)) {
 			return Boolean.valueOf(value);
 		}
 		return null;
@@ -329,7 +329,7 @@ public class ServletRequest implements Request {
 	@Override
 	public Float queryAsFloat(String name) {
 		String value = query(name);
-		if (null != value) {
+		if (StringKit.isNotBlank(value)) {
 			return Float.valueOf(value);
 		}
 		return null;
@@ -338,7 +338,7 @@ public class ServletRequest implements Request {
 	@Override
 	public Double queryAsDouble(String name) {
 		String value = query(name);
-		if (null != value) {
+		if (StringKit.isNotBlank(value)) {
 			return Double.valueOf(value);
 		}
 		return null;
