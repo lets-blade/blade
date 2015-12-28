@@ -18,11 +18,11 @@ import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Method;
 import java.util.List;
 
+import net.sf.cglib.proxy.MethodInterceptor;
+
 import com.blade.aop.annotation.AfterAdvice;
 import com.blade.aop.annotation.BeforeAdvice;
 import com.blade.aop.intercept.MethodInvocation;
-
-import blade.kit.log.Logger;
 
 /**
  * 默认的方法执行器实现
@@ -31,17 +31,15 @@ import blade.kit.log.Logger;
  */
 public class DefaultMethodInvocation implements MethodInvocation {
 	
-	private static final Logger LOGGER = Logger.getLogger(DefaultMethodInvocation.class);
-	
 	List<AbstractMethodInterceptor> interceptors;
-	private DefaultProxy proxy;
+	private MethodInterceptor proxy;
 	private Method method;
 	private Object target;
 	private Object[] args;
 	int index = 0;
 	private boolean executed = false;
 
-	public DefaultMethodInvocation(DefaultProxy proxy, Method method, Object target, Object[] args, List<AbstractMethodInterceptor> interceptorChain) {
+	public DefaultMethodInvocation(MethodInterceptor proxy, Method method, Object target, Object[] args, List<AbstractMethodInterceptor> interceptorChain) {
 		this.interceptors = interceptorChain;
 		this.method = method;
 		this.target = target;
@@ -49,7 +47,7 @@ public class DefaultMethodInvocation implements MethodInvocation {
 		this.proxy = proxy;
 	}
 
-	public Object proceed() throws Exception {
+	public Object proceed() throws Throwable {
 		AbstractMethodInterceptor interceptor = null;
 		Object result = null;
 		if (interceptors.size() > 0 && index < interceptors.size()) {
@@ -62,11 +60,12 @@ public class DefaultMethodInvocation implements MethodInvocation {
 		// 执行真正的方法调用
 		if (!executed) {
 			executed = true;
-			try {
+			result = method.invoke(target, args);
+			/*try {
 				result = method.invoke(target, args);
 			} catch (RuntimeException e) {
 				LOGGER.error(e.getMessage());
-			}
+			}*/
 		}
 		if (index > 0) {
 			interceptor = interceptors.get(--index);
@@ -89,7 +88,7 @@ public class DefaultMethodInvocation implements MethodInvocation {
 		return method;
 	}
 
-	public DefaultProxy getProxy() {
+	public MethodInterceptor getProxy() {
 		return proxy;
 	}
 
