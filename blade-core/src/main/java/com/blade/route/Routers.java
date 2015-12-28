@@ -148,24 +148,31 @@ public class Routers {
 	}
 
 	public void route(String path, Class<?> clazz, String methodName) {
-		try {
-			HttpMethod httpMethod = HttpMethod.ALL;
-			if(methodName.indexOf(":") != -1){
-    			String[] methodArr = methodName.split(":");
-    			httpMethod = HttpMethod.valueOf(methodArr[0].toUpperCase());
-    			methodName = methodArr[1];
-    		}
-			Object controller = container.getBean(clazz, Scope.SINGLE);
-			if(null == controller){
-				controller = Aop.create(clazz);
-				container.registerBean(controller);
-			}
-			
+		
+		HttpMethod httpMethod = HttpMethod.ALL;
+		if(methodName.indexOf(":") != -1){
+			String[] methodArr = methodName.split(":");
+			httpMethod = HttpMethod.valueOf(methodArr[0].toUpperCase());
+			methodName = methodArr[1];
+		}
+		Object controller = container.getBean(clazz, Scope.SINGLE);
+		if(null == controller){
+			controller = Aop.create(clazz);
+			container.registerBean(controller);
+		}
+		try {	
 			Method method = clazz.getMethod(methodName, Request.class, Response.class);
 			
 			addRoute(httpMethod, path, controller, method);
 		} catch (NoSuchMethodException e) {
-			e.printStackTrace();
+			try {
+				Method method = clazz.getMethod(methodName, Response.class, Request.class);
+				addRoute(httpMethod, path, controller, method);
+			} catch (NoSuchMethodException e1) {
+				e1.printStackTrace();
+			} catch (SecurityException e1) {
+				e1.printStackTrace();
+			}
 		} catch (SecurityException e) {
 			e.printStackTrace();
 		}
