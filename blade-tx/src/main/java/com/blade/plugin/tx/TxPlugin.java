@@ -2,6 +2,8 @@ package com.blade.plugin.tx;
 
 import javax.sql.DataSource;
 
+import blade.kit.Assert;
+
 import com.blade.aop.AopProxy;
 import com.blade.plugin.Plugin;
 
@@ -12,7 +14,7 @@ import com.blade.plugin.Plugin;
  */
 public class TxPlugin implements Plugin {
 	
-	private TransactionInterceptor transactionInterceptor;
+	TransactionInterceptor transactionInterceptor = null;
 	
 	public TxPlugin() {
 	}
@@ -24,11 +26,8 @@ public class TxPlugin implements Plugin {
 	
 	@Override
 	public void run() {
-		if(null == transactionInterceptor){
-			throw new RuntimeException("transaction plugin load error，TransactionInterceptor is NULL!");
-		} else {
-			AopProxy.addInterceptor(transactionInterceptor);
-		}
+		Assert.notNull(transactionInterceptor);
+		AopProxy.addInterceptor(transactionInterceptor);
 	}
 	
 	@Override
