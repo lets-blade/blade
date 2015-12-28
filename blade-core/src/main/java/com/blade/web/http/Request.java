@@ -340,6 +340,16 @@ public interface Request {
 	Route route();
 	
 	/**
+	 * Abort current request
+	 */
+	void abort();
+	
+	/**
+	 * @return	Return is abort request
+	 */
+	boolean isAbort();
+	
+	/**
 	 * Request body interface
 	 * @author biezhi
 	 */

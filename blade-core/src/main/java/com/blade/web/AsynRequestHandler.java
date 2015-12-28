@@ -107,17 +107,21 @@ public class AsynRequestHandler implements Runnable {
 			// If find it
 			if (route != null) {
 				request.setRoute(route);
+				
+				boolean result = false;
 				// before inteceptor
 				List<Route> befores = routeMatcher.getBefore(uri);
-				invokeInterceptor(request, response, befores);
-				
-				// execute
-				handle(request, response, route);
-				
-				// after inteceptor
-				List<Route> afters = routeMatcher.getAfter(uri);
-				invokeInterceptor(request, response, afters);
-				asyncContext.complete();
+				result = invokeInterceptor(request, response, befores);
+				if(result){
+					// execute
+					handle(request, response, route);
+					
+					if(!request.isAbort()){
+						// after inteceptor
+						List<Route> afters = routeMatcher.getAfter(uri);
+						invokeInterceptor(request, response, afters);
+					}
+				}
 				return;
 			}
 			
@@ -166,11 +170,16 @@ public class AsynRequestHandler implements Runnable {
 	 * @param request		request object
 	 * @param response		response object
 	 * @param interceptors	execute the interceptor list
+	 * @return				Return execute is ok
 	 */
-	private void invokeInterceptor(Request request, Response response, List<Route> interceptors) {
+	private boolean invokeInterceptor(Request request, Response response, List<Route> interceptors) {
 		for(Route route : interceptors){
 			handle(request, response, route);
+			if(request.isAbort()){
+				return false;
+			}
 		}
+		return true;
 	}
 
 	/**

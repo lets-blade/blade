@@ -77,6 +77,8 @@ public class ServletRequest implements Request {
 	
 	private Blade blade = null;
 	
+	private boolean isAbort = false;
+	
 	public ServletRequest(HttpServletRequest request) throws MultipartException, IOException {
 		this.request = request;
 		this.pathParams = new HashMap<String,String>();
@@ -513,6 +515,16 @@ public class ServletRequest implements Request {
 		return this.route;
 	}
 
+	@Override
+	public void abort() {
+		this.isAbort = true;
+	}
+	
+	@Override
+	public boolean isAbort() {
+		 return this.isAbort;
+	}
+	
 	@Override
 	public <T> T model(String slug, Class<? extends Serializable> clazz) {
 		if(StringKit.isNotBlank(slug) && null != clazz){
