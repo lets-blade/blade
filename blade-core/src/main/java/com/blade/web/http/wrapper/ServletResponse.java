@@ -29,7 +29,6 @@ import com.blade.Blade;
 import com.blade.context.BladeWebContext;
 import com.blade.render.ModelAndView;
 import com.blade.render.Render;
-import com.blade.web.http.HttpException;
 import com.blade.web.http.HttpStatus;
 import com.blade.web.http.Path;
 import com.blade.web.http.Request;
@@ -188,8 +187,9 @@ public class ServletResponse implements Response {
 			this.written = true;
 			return this;
 		} catch (IOException e) {
-			throw new HttpException(e);
+			e.printStackTrace();
 		}
+		return null;
 	}
 
 	@Override
@@ -315,7 +315,7 @@ public class ServletResponse implements Response {
 		try {
 			response.sendRedirect(path);
 		} catch (IOException e) {
-			throw new HttpException(e);
+			e.printStackTrace();
 		}
 	}
 	
@@ -326,7 +326,7 @@ public class ServletResponse implements Response {
         	String location = Path.fixPath(ctx + path);
 			response.sendRedirect(location);
 		} catch (IOException e) {
-			throw new HttpException(e);
+			e.printStackTrace();
 		}
 	}
 

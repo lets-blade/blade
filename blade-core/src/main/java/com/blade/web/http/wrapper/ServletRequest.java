@@ -44,7 +44,6 @@ import blade.kit.text.HTMLFilter;
 
 import com.blade.Blade;
 import com.blade.route.Route;
-import com.blade.web.http.HttpException;
 import com.blade.web.http.HttpMethod;
 import com.blade.web.http.Path;
 import com.blade.web.http.Request;
@@ -226,7 +225,7 @@ public class ServletRequest implements Request {
 	public Integer paramAsInt(String name) {
 		String value = param(name);
 		if (StringKit.isNotBlank(value)) {
-			return Integer.valueOf(value);
+			return Integer.parseInt(value);
 		}
 		return null;
 	}
@@ -235,7 +234,7 @@ public class ServletRequest implements Request {
 	public Long paramAsLong(String name) {
 		String value = param(name);
 		if (StringKit.isNotBlank(value)) {
-			return Long.valueOf(value);
+			return Long.parseLong(value);
 		}
 		return null;
 	}
@@ -244,7 +243,7 @@ public class ServletRequest implements Request {
 	public Boolean paramAsBool(String name) {
 		String value = param(name);
 		if (StringKit.isNotBlank(value)) {
-			return Boolean.valueOf(value);
+			return Boolean.parseBoolean(value);
 		}
 		return null;
 	}
@@ -303,7 +302,7 @@ public class ServletRequest implements Request {
 	public Integer queryAsInt(String name) {
 		String value = query(name);
 		if (StringKit.isNotBlank(value)) {
-			return Integer.valueOf(value);
+			return Integer.parseInt(value);
 		}
 		return null;
 	}
@@ -312,7 +311,7 @@ public class ServletRequest implements Request {
 	public Long queryAsLong(String name) {
 		String value = query(name);
 		if (StringKit.isNotBlank(value)) {
-			return Long.valueOf(value);
+			return Long.parseLong(value);
 		}
 		return null;
 	}
@@ -321,7 +320,7 @@ public class ServletRequest implements Request {
 	public Boolean queryAsBool(String name) {
 		String value = query(name);
 		if (StringKit.isNotBlank(value)) {
-			return Boolean.valueOf(value);
+			return Boolean.parseBoolean(value);
 		}
 		return null;
 	}
@@ -330,7 +329,7 @@ public class ServletRequest implements Request {
 	public Float queryAsFloat(String name) {
 		String value = query(name);
 		if (StringKit.isNotBlank(value)) {
-			return Float.valueOf(value);
+			return Float.parseFloat(value);
 		}
 		return null;
 	}
@@ -339,7 +338,7 @@ public class ServletRequest implements Request {
 	public Double queryAsDouble(String name) {
 		String value = query(name);
 		if (StringKit.isNotBlank(value)) {
-			return Double.valueOf(value);
+			return Double.parseDouble(value);
 		}
 		return null;
 	}
@@ -546,7 +545,7 @@ public class ServletRequest implements Request {
 	public BodyParser body() {
 		return new BodyParser() {
 			@Override
-			public String asString() throws HttpException {
+			public String asString() {
 				try {
 					BufferedReader reader = new BufferedReader( new InputStreamReader(request.getInputStream()) );
 					StringBuilder sb = new StringBuilder();
@@ -560,17 +559,19 @@ public class ServletRequest implements Request {
 
 					return data;
 				} catch (IOException e) {
-					throw new HttpException(e);
+					e.printStackTrace();
 				}
+				return null;
 			}
 
 			@Override
-			public InputStream asInputStream() throws HttpException {
+			public InputStream asInputStream() {
 				try {
 					return request.getInputStream();
 				} catch (IOException e) {
-					throw new HttpException(e);
+					e.printStackTrace();
 				}
+				return null;
 			}
 
 			@Override

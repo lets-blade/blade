@@ -38,6 +38,7 @@ import com.blade.web.http.HttpStatus;
 import com.blade.web.http.Path;
 import com.blade.web.http.Request;
 import com.blade.web.http.Response;
+import com.blade.web.http.ResponsePrint;
 import com.blade.web.http.wrapper.ServletRequest;
 import com.blade.web.http.wrapper.ServletResponse;
 
@@ -65,24 +66,28 @@ public class SyncRequestHandler {
 	public void handle(HttpServletRequest httpRequest, HttpServletResponse httpResponse){
 		
 		Response response = null;
+		
+		// http method, GET/POST ...
+        String method = httpRequest.getMethod();
+        
+        // reuqest uri
+        String uri = Path.getRelativePath(httpRequest.getRequestURI(), servletContext.getContextPath());
+        
+        // If it is static, the resource is handed over to the filter
+        if(null != blade.staticFolder() && blade.staticFolder().length > 0){
+        	if(!filterStaticFolder(uri)){
+        		if(blade.debug()){
+                	LOGGER.debug("Request : " + method + "\t" + uri);
+                }
+        		String realpath = httpRequest.getServletContext().getRealPath(uri);
+        		ResponsePrint.printStatic(uri, realpath, httpResponse);
+				return;
+        	}
+        }
+        
+        LOGGER.info("Request : " + method + "\t" + uri);
+        
         try {
-        	// http method, GET/POST ...
-            String method = httpRequest.getMethod();
-            
-            // reuqest uri
-            String uri = Path.getRelativePath(httpRequest.getRequestURI(), servletContext.getContextPath());
-            
-            // If it is static, the resource is handed over to the filter
-            if(null != blade.staticFolder() && blade.staticFolder().length > 0){
-            	if(!filterStaticFolder(uri)){
-            		return;
-            	}
-            }
-            
-            if(blade.debug()){
-            	LOGGER.debug("Request : " + method + "\t" + uri);
-            }
-            
             // Create Request
     		Request request = new ServletRequest(httpRequest);
             
@@ -212,4 +217,5 @@ public class SyncRequestHandler {
     	return true;
 	}
 	
+    
 }

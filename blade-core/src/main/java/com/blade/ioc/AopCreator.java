@@ -17,6 +17,7 @@ package com.blade.ioc;
 
 import com.blade.aop.AopProxy;
 
+
 /**
  * Aop Create Object
  * 
@@ -41,24 +42,6 @@ public final class AopCreator {
 	 */
 	public static Object createProxy(Class<?> clazz){
 		return AopProxy.create(clazz);
-	}
-	
-	/**
-	 * Create a proxy object
-	 * @param target	original java object
-	 * @return			return proxy object
-	 */
-	public static <T> T create(Object target){
-		return AopProxy.create(target);
-	}
-	
-	/**
-	 * Create a proxy object
-	 * @param target	original java object
-	 * @return			return proxy object
-	 */
-	public static Object createProxy(Object target){
-		return AopProxy.create(target);
 	}
 	
 }

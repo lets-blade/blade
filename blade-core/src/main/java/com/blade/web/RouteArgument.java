@@ -21,6 +21,7 @@ import blade.kit.ReflectKit;
 
 import com.blade.web.http.Request;
 import com.blade.web.http.Response;
+import com.blade.web.http.ResponsePrint;
 
 /**
  * Route parameters of injector
@@ -75,7 +76,9 @@ public final class RouteArgument {
 				return ReflectKit.invokeMehod(object, method);
 			}
 		} catch (Exception e) {
-			throw new RuntimeException("invoke method error.", e);
+			request.abort();
+			ResponsePrint.printError(e, 500, response.raw());
 		}
+		return null;
 	}
 }
