@@ -15,7 +15,12 @@ import javax.servlet.http.HttpServletResponse;
 import blade.kit.FileKit;
 import blade.kit.StreamKit;
 
+import com.blade.Blade;
+import com.blade.Const;
+
 public final class ResponsePrint {
+	
+	private static boolean isDev = Blade.me().isDev();
 	
 	private ResponsePrint() {
 	}
@@ -28,13 +33,26 @@ public final class ResponsePrint {
 	 */
 	public static void printError(Throwable err, int code, HttpServletResponse response){
 		err.printStackTrace();
-		final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        final PrintWriter writer = new PrintWriter(baos);
-        err.printStackTrace(writer);
-        writer.close();
-        response.setStatus(code);
-        InputStream body = new ByteArrayInputStream(baos.toByteArray());
-        try {
+		try {
+			final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+	        final PrintWriter writer = new PrintWriter(baos);
+	        
+			// If the developer mode, the error output to the page
+			if(isDev){
+				writer.println(String.format(HTML, err.getClass() + " : " + err.getMessage()));
+				writer.println();
+				err.printStackTrace(writer);
+				writer.println(END);
+			} else {
+				if(code == 404){
+					writer.write(err.getMessage());
+				} else {
+					writer.write(Const.INTERNAL_ERROR);
+				}
+			}
+			writer.close();
+	        response.setStatus(code);
+	        InputStream body = new ByteArrayInputStream(baos.toByteArray());
 			print(body, response.getOutputStream());
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -85,4 +103,11 @@ public final class ResponsePrint {
 		}
 	}
     
+	private static final String HTML = "<!DOCTYPE html><html><head><meta charset='utf-8'><title>Blade Framework Error Page</title>"
+			+ "<style type='text/css'>*{margin:0;padding:0}.info{margin:0;padding:10px;color:#000;background-color:#f8edc2;height:60px;line-height:60px;border-bottom:5px solid #761226}.isa_error{margin:0;padding:10px;font-size:14px;font-weight:bold;background-color:#e0c9db;border-bottom:1px solid #000}.version{color:green;font-size:16px;font-weight:bold;padding:10px}</style></head><body>"
+			+ "<div class='info'><h3>%s</h3></div><div class='isa_error'><pre>";
+	
+	
+	private static final String END = "</pre></div><div class='version'>Blade-" + Const.BLADE_VERSION + "（<a href='http://bladejava.com' target='_blank'>Blade Framework</a>） </div></body></html>";
+	
 }

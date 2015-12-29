@@ -588,11 +588,11 @@ public class Blade {
     /**
 	 * Setting blade run mode
 	 * 
-	 * @param isdebug	is debug mode
+	 * @param isDev		is dev mode
 	 * @return			return blade
 	 */
-	public Blade debug(boolean isdebug){
-		config.setDebug(isdebug);
+	public Blade isDev(boolean isDev){
+		config.setDev(isDev);
 		return this;
 	}
 	
@@ -738,10 +738,10 @@ public class Blade {
     }
     
     /**
-	 * @return	Return is debug mode
+	 * @return	Return is dev mode
 	 */
-	public boolean debug(){
-		return config.isDebug();
+	public boolean isDev(){
+		return config.isDev();
 	}
 	
 	/**

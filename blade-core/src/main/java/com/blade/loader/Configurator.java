@@ -48,7 +48,7 @@ public class Configurator {
 	private static final String BLADE_ENCODING = "blade.encoding";
 	private static final String BLADE_VIEW_404 = "blade.view404";
 	private static final String BLADE_VIEW_500 = "blade.view500";
-	private static final String BLADE_DEBUG = "blade.debug";
+	private static final String BLADE_DEV = "blade.dev";
 	private static final String BLADE_ENABLEXSS = "blade.enableXSS";
 	
 	public void run() {
@@ -66,7 +66,7 @@ public class Configurator {
 			String encoding = configMap.get(BLADE_ENCODING);
 			String view404 = configMap.get(BLADE_VIEW_404);
 			String view500 = configMap.get(BLADE_VIEW_500);
-			String debug = configMap.get(BLADE_DEBUG);
+			String dev = configMap.get(BLADE_DEV);
 			String xss = configMap.get(BLADE_ENABLEXSS);
 			
 			if (StringKit.isNotBlank(route)) {
@@ -108,9 +108,9 @@ public class Configurator {
 				bladeConfig.setView500(view500);
 			}
 			
-			if (StringKit.isNotBlank(debug)) {
-				Boolean debugBool = Boolean.valueOf(debug);
-				bladeConfig.setDebug(debugBool);
+			if (StringKit.isNotBlank(dev)) {
+				Boolean isDev = Boolean.parseBoolean(dev);
+				bladeConfig.setDev(isDev);
 			}
 			
 			if (StringKit.isNotBlank(xss)) {

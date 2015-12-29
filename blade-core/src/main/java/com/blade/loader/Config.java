@@ -67,8 +67,8 @@ public class Config {
 	// 500 view page
 	private String view500;
 	
-	// Is debug mode
-	private boolean isDebug = true;
+	// Is dev mode
+	private boolean isDev = false;
 	
 	// Enabled XSS
 	private boolean enableXSS = false;
@@ -212,12 +212,12 @@ public class Config {
 		this.webRoot = webRoot;
 	}
 
-	public boolean isDebug() {
-		return isDebug;
+	public boolean isDev() {
+		return isDev;
 	}
 
-	public void setDebug(boolean isDebug) {
-		this.isDebug = isDebug;
+	public void setDev(boolean isDev) {
+		this.isDev = isDev;
 	}
 
 	public String getEncoding() {

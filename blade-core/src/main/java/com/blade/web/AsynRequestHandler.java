@@ -85,7 +85,7 @@ public class AsynRequestHandler implements Runnable {
             // If it is static, the resource is handed over to the filter
             if(null != blade.staticFolder() && blade.staticFolder().length > 0){
             	if(!filterStaticFolder(uri)){
-            		if(blade.debug()){
+            		if(LOGGER.isDebugEnabled()){
                     	LOGGER.debug("Request : " + method + "\t" + uri);
                     }
             		String realpath = httpRequest.getServletContext().getRealPath(uri);
