@@ -4,7 +4,11 @@ import java.sql.Connection;
 
 import javax.sql.DataSource;
 
+import blade.kit.log.Logger;
+
 public class TransactionHolder implements TransactionManager {
+	
+	private static final Logger LOGGER = Logger.getLogger(TransactionHolder.class);
 	
 	private static DataSource dataSource;
 	
@@ -14,7 +18,7 @@ public class TransactionHolder implements TransactionManager {
 	
 	private static final ThreadLocal<TransactionManager> tranManager = new ThreadLocal<TransactionManager>() {
 		protected TransactionManager initialValue() {
-			System.out.println(this.toString() + "--Thread Local Initialize--");
+			LOGGER.info("TransactionHolder Initialize");
 			return new TransactionManagerImpl(dataSource);
 		}
 	};
