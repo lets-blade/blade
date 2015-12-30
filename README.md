@@ -120,15 +120,13 @@ public static void main(String[] args) {
 
 ```java
 public void upload_img(Request request, Response response){
-		
-	JsonObject jsonObject = new JsonObject();
-
+	
 	FileItem[] fileItems = request.files();
 	if(null != fileItems && fileItems.length > 0){
 		
 		FileItem fileItem = fileItems[0];
 		File file = fileItem.getFile();
-
+		
 		String fileRealPath = "your upload file path!";
 		
 		nioTransferCopy(file, fileRealPath);
