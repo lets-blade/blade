@@ -119,7 +119,7 @@ public class IocApplication {
 		// Scan package all class
 		Set<Class<?>> classes = classReader.getClass(packageName, recursive);
 		for (Class<?> clazz : classes) {
-			// 注册带有Component和Service注解的类
+			// Register classes with annotation of @Component or @Service
 			if (container.isRegister(clazz.getAnnotations())) {
 				container.registerBean(Aop.create(clazz));
 			}
@@ -134,7 +134,7 @@ public class IocApplication {
 	 * destroy
 	 */
 	public void destroy() {
-		// clean ioc container
+		// Clean IOC container
 		container.removeAll();
 		for(Plugin plugin : plugins){
 			plugin.destroy();
