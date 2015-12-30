@@ -81,7 +81,7 @@ public class DispatcherServlet extends HttpServlet {
 				}
 				blade.app(bootstrap);
 			}
-			bootstrap.init(blade);
+			blade.bootstrap().init(blade);
 			
 		    // buiding route
 			new RouteBuilder(blade).building();

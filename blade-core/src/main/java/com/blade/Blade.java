@@ -57,7 +57,7 @@ public class Blade {
     /**
      * Servlet asynchronous
      */
-    private boolean isAsyn = true;
+    private boolean isAsyn = false;
     
     /**
      * Blade initialize config class

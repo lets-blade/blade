@@ -94,14 +94,6 @@ public interface Container {
     boolean hasBean(String name);
     
     /**
-     * Remove an bean object from the IOC container by name 
-     * 
-     * @param name			to remove the bean object name 
-     * @return				return if remove success 
-     */
-    boolean removeBean(String name);
-    
-    /**
      * Remove an bean object from the IOC container by name
      * 
      * @param clazz			to remove the class bean type 
@@ -123,14 +115,6 @@ public interface Container {
     boolean isRegister(Annotation[] annotations);
 
     /**
-     * Register bean with a name 
-     * @param name		bean name
-     * @param value		bean object
-     * @return			return register bean
-     */
-    Object registerBean(String name, Object value);
-    
-    /**
      * Register an object to the bean container
      * 
      * @param object	bean object
@@ -147,11 +131,11 @@ public interface Container {
      * Inject a object 
      * @param object	to inject object 
      */
-    void injection(Object object);
+    void injection(Class<?> clazz, Object object);
     
     /**
      * @return Returns the all bean objects<K,V> in the IOC container
      */
-    Map<String, Object> getBeanMap();
+    Map<Class<?>, Object> getBeanMap();
     
 }

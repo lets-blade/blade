@@ -34,9 +34,5 @@ public @interface Inject {
 	 * @return	The object to be injected into the Class
 	 */
     Class<?> value() default Class.class;
-
-    /**
-     * @return	To inject an object with a name
-     */
-    String name() default "";
+    
 }

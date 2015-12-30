@@ -19,6 +19,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -26,7 +27,6 @@ import java.util.Set;
 import blade.kit.Assert;
 import blade.kit.CloneKit;
 import blade.kit.CollectionKit;
-import blade.kit.StringKit;
 import blade.kit.log.Logger;
 
 import com.blade.annotation.Component;
@@ -47,12 +47,7 @@ public class SampleContainer implements Container {
     /**
      * Save all bean objects, e.g: com.xxxx.User @Userx7asc
      */
-    private Map<String, Object> beans = CollectionKit.newConcurrentHashMap();
-    
-    /**
-     * All of the object storage and for class relations 
-     */
-    private Map<String, String> beanKeys = CollectionKit.newConcurrentHashMap();
+    private Map<Class<?>, Object> beans = CollectionKit.newConcurrentHashMap();
     
     /**
      * Save all the notes class
@@ -63,23 +58,27 @@ public class SampleContainer implements Container {
     public SampleContainer() {
     }
     
-    public Map<String, Object> getBeanMap() {
+    public Map<Class<?>, Object> getBeanMap() {
         return beans;
     }
     
 	@Override
     public <T> T getBean(String name, Scope scope) {
 		Assert.notBlank(name);
-		String className = beanKeys.get(name);
-		if(StringKit.isBlank(className)){
-			if(null == beans.get(name)){
-				return null;
-			} else {
-				className = name;
-			}
+		try {
+			Class<T> clazz = (Class<T>) Class.forName(name);
+			return getBean(clazz, scope);
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
 		}
-		
-    	Object obj = beans.get(className);
+		return null;
+    }
+
+    @Override
+    public <T> T getBean(Class<T> type, Scope scope) {
+    	Assert.notNull(type);
+    	
+    	Object obj = beans.get(type);
     	if(null != scope && null != Scope.SINGLE){
     		try {
 				return (T) CloneKit.deepClone(obj);
@@ -87,18 +86,20 @@ public class SampleContainer implements Container {
 				throw new IocException("clone object error", e);
 			}
     	}
-        return (T) obj;
-    }
-
-    @Override
-    public <T> T getBean(Class<T> type, Scope scope) {
-    	Assert.notNull(type);
-    	return this.getBean(type.getName(), scope);
+    	return type.cast(obj);
     }
 
     @Override
     public Set<String> getBeanNames() {
-        return beanKeys.keySet();
+    	Set<Class<?>> classes = beans.keySet();
+    	if(null != classes){
+    		Set<String> beanNames = new HashSet<String>(classes.size());
+    		for(Class<?> clazz : classes){
+    			beanNames.add(clazz.getName());
+        	}
+    		return beanNames;
+    	}
+        return new HashSet<String>(0);
     }
     
     @Override
@@ -108,100 +109,68 @@ public class SampleContainer implements Container {
 
     @Override
     public boolean hasBean(Class<?> clazz) {
-    	Assert.notNull(clazz);
-    	String className = clazz.getName();
-    	return beanKeys.containsValue(className);
+    	if(null != clazz){
+    		return beans.get(clazz) != null;
+    	}
+    	return false;
     }
 
     @Override
     public boolean hasBean(String name) {
-    	Assert.notBlank(name);
-		return null != beanKeys.get(name);
+		try {
+			Class<?> clazz = Class.forName(name);
+			return hasBean(clazz);
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+		return false;
     }
     
-    @Override
-	public boolean removeBean(String name) {
-    	Assert.notBlank(name);
-    	String className = beanKeys.get(name);
-    	if(StringKit.isBlank(className)){
-    		className = name;
-    	} else {
-    		beanKeys.remove(name);
-		}
-		beans.remove(className);
-		return true;
-	}
-
 	@Override
 	public boolean removeBean(Class<?> clazz) {
-		Assert.notNull(clazz);
-		return this.removeBean(clazz.getName());
-	}
-
-    @Override
-	public Object registerBean(String name, Object value) {
-    	Assert.notBlank(name);
-    	Assert.notNull(value);
-    	
-    	Class<?> clazz = value.getClass();
-		// Not abstract class, interface 
-		if (isNormalClass(clazz)) {
-			
-			// If the container already exists, the name is directly returned 
-			String className = beanKeys.get(name);
-			if (StringKit.isNotBlank(className)) {
-				return beans.get(className);
-			}
-			
-			className = clazz.getName();
-			beanKeys.put(name, className);
-			if(null == beans.get(className)){
-				beans.put(className, value);
-			}
-		    
-		    // Achieve the interface corresponding storage 
-		    Class<?>[] interfaces = clazz.getInterfaces();
-		    if(interfaces.length > 0){
-		    	for(Class<?> interfaceClazz : interfaces){
-		    		String clsName = interfaceClazz.getName();
-		    		this.registerParent(clsName, value);
-		    	}
-		    }
-		    
-		    // With annotation 
-		    if(null != clazz.getDeclaredAnnotations()){
-		    	putAnnotationMap(clazz, value);
-		    }
+		if(null != clazz && beans.containsKey(clazz)){
+			beans.remove(clazz);
+			return true;
 		}
-    	return value;
+		return false;
 	}
-    
-	private void registerParent(String name, Object value) {
-		
-		Assert.notBlank(name);
-		Assert.notNull(value);
-		
-    	Class<?> clazz = value.getClass();
-			
-		// If the container already exists, the name is directly returned 
-		String className = beanKeys.get(name);
-		if (StringKit.isNotBlank(className)) {
-			return;
-		}
-		className = clazz.getName();
-		beanKeys.put(name, className);
-		if(null == beans.get(className)){
-			beans.put(className, value);
+	
+	private void registerParent(Class<?> clazz, Object value) {
+		if(!beans.containsKey(clazz)){
+			beans.put(clazz, value);
 		}
 	}
     
     @Override
-	public Object registerBean(Object object) {
-    	
-    	Assert.notNull(object);
-    	
-		String className = object.getClass().getName();
-		return registerBean(className, object);
+	public Object registerBean(Object value) {
+    	if(null != value){
+    		Class<?> clazz = value.getClass();
+    		// Not abstract class, interface 
+    		if (isNormalClass(clazz)) {
+    			
+    			// If the container already exists, the name is directly returned 
+    			if(beans.containsKey(clazz)){
+    				return beans.get(clazz);
+    			}
+    			
+    			beans.put(clazz, value);
+    		    
+    		    // Achieve the interface corresponding storage 
+    		    Class<?>[] interfaces = clazz.getInterfaces();
+    		    if(interfaces.length > 0){
+    		    	for(Class<?> interfaceClazz : interfaces){
+    		    		this.registerParent(interfaceClazz, value);
+    		    	}
+    		    }
+    		    
+    		    // With annotation 
+    		    if(null != clazz.getDeclaredAnnotations()){
+    		    	putAnnotationMap(clazz, value);
+    		    }
+    		    return value;
+    		}
+    	}
+		return null;
 	}
     
     /**
@@ -244,21 +213,19 @@ public class SampleContainer implements Container {
     @Override
     public void initWired() throws RuntimeException {
     	
-    	Set<String> keys = beans.keySet();
-    	for(String className : keys){
-    		Object object = beans.get(className);
-			injection(object);
+    	Set<Class<?>> keys = beans.keySet();
+    	for(Class<?> clazz : keys){
+    		Object object = beans.get(clazz);
+			injection(clazz, object);
     	}
     }
     
     // Assemble
     private Object recursiveAssembly(Class<?> clazz){
-    	Object field = null;
-    	if(null != clazz){
-    		String className = beanKeys.get(clazz.getName());
-    		field = beans.get(className);
+    	if(null != clazz && beans.containsKey(clazz)){
+    		return beans.get(clazz);
     	}
-    	return field;
+    	return null;
     }
     
     
@@ -313,42 +280,35 @@ public class SampleContainer implements Container {
 	
 	@Override
 	public boolean removeAll() {
-		beanKeys.clear();
 		beans.clear();
 		annotaionBeans.clear();
 		return true;
 	}
 
 	@Override
-	public void injection(Object object) {
+	public void injection(Class<?> clazz, Object object) {
+		
+		if(null == clazz || null == object){
+			return;
+		}
+		
 		// Traverse all fields 
 	    try {
-			Field[] fields = object.getClass().getDeclaredFields();
+			Field[] fields = clazz.getDeclaredFields();
 			for (Field field : fields) {
 				// Need to inject the field 
 			    Inject inject = field.getAnnotation(Inject.class);
 			    if (null != inject ) {
 			    	// Bean to be injected 
 			        Object injectField = null;
-			        String name = inject.name();
-			        if(!name.equals("")){
-	        			String className = beanKeys.get(name);
-	        			if(null != className && !className.equals("")){
-	        				injectField = beans.get(className);
-	        			}
-	        			if (null == injectField) {
-				            throw new RuntimeException("Unable to load " + name);
-				        }
-	        		} else {
-	        			if(inject.value() == Class.class){
-	        				injectField = recursiveAssembly(field.getType());
-				        } else {
-				        	// Specify an assembly
-				        	injectField = this.getBean(inject.value(), null);
-				            if (null == injectField) {
-				            	injectField = recursiveAssembly(inject.value());
-				            }
-						}
+        			if(inject.value() == Class.class){
+        				injectField = recursiveAssembly(field.getType());
+			        } else {
+			        	// Specify an assembly
+			        	injectField = this.getBean(inject.value(), null);
+			            if (null == injectField) {
+			            	injectField = recursiveAssembly(inject.value());
+			            }
 					}
 			        
 			        if (null == injectField) {

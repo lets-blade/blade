@@ -126,11 +126,10 @@ public class AsynRequestHandler implements Runnable {
 						invokeInterceptor(request, response, afters);
 					}
 				}
-				return;
+			} else {
+				// Not found
+				render404(response, uri);
 			}
-			
-			// Not found
-			render404(response, uri);
 			asyncContext.complete();
 			return;
 		} catch (Exception e) {
