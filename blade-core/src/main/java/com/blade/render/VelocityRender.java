@@ -87,7 +87,7 @@ public class VelocityRender implements Render {
 	/**
 	 * According to the construction of a Velocity engine 
 	 * 
-	 * @param properties	Properties配置文件
+	 * @param properties	Properties document
 	 */
 	public VelocityRender(Properties properties) {
 		Blade blade = Blade.me();
