@@ -34,20 +34,20 @@ To get started, first [include the Blade library](http://bladejava.com/docs/intr
 
 Grab via `Maven`：
 
-```sh
+```xml
 <dependency>
 	<groupId>com.bladejava</groupId>
 	<artifactId>blade-core</artifactId>
 	<version>1.5.1</version>
 </dependency>
 <dependency>
-        <groupId>com.bladejava</groupId>
-        <artifactId>blade-startup</artifactId>
-        <version>1.0.1</version>
+	<groupId>com.bladejava</groupId>
+	<artifactId>blade-startup</artifactId>
+	<version>1.0.1</version>
 </dependency>
 ```
 or `Gradle`:
-```
+```sh
 compile 'com.bladejava:blade-core:1.5.1'
 compile 'com.bladejava:blade-startup:1.0.1'
 ```

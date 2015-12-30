@@ -24,7 +24,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import blade.kit.StringKit;
-import blade.kit.base.ThrowableKit;
 import blade.kit.log.Logger;
 
 import com.blade.Blade;
@@ -133,20 +132,8 @@ public class AsynRequestHandler implements Runnable {
 			asyncContext.complete();
 			return;
 		} catch (Exception e) {
-        	String error = ThrowableKit.getStackTraceAsString(e);
-            LOGGER.error(error);
-            ThrowableKit.propagate(e);
-            
-        	httpResponse.setStatus(500);
-        	// Write content to the browser
-            if (!httpResponse.isCommitted()) {
-                response.html(Const.INTERNAL_ERROR);
-                asyncContext.complete();
-                return;
-            }
+			ResponsePrint.printError(e, 500, httpResponse);
         }
-        asyncContext.complete();
-        return;
 	}
 	
 	/**

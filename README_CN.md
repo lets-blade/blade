@@ -34,7 +34,7 @@ Blade 是一个轻量级的MVC框架. 它拥有简洁的代码，优雅的设计
 
 `Maven` 配置：
 
-```sh
+```xml
 <dependency>
 	<groupId>com.bladejava</groupId>
 	<artifactId>blade-core</artifactId>
@@ -49,7 +49,7 @@ Blade 是一个轻量级的MVC框架. 它拥有简洁的代码，优雅的设计
 
 或者  `Gradle`:
 
-```
+```sh
 compile 'com.bladejava:blade-core:1.5.1'
 compile 'com.bladejava:blade-startup:1.0.1'
 ```
