@@ -313,14 +313,13 @@ public class Blade {
 	}
 	
 	/**
-	 * 注册一个函数式的路由
-	 * 方法上指定请求类型（同时指定HttpMethod的方式是：post:saveUser，如不指定则为HttpMethod.ALL）
-	 * 
-	 * @param path			路由url	
-	 * @param clazz			路由处理类
-	 * @param method		路由处理方法名称
-	 * @return Blade		返回Blade单例实例
-	 */
+     * Add a route
+     * 
+     * @param path			route path
+     * @param target		Target object for routing
+     * @param method		The method name of the route (at the same time, the HttpMethod is specified: post:saveUser, if not specified, HttpMethod.ALL)
+     * @return				return blade
+     */
 	public Blade route(String path, Class<?> clazz, String method){
 		routers.route(path, clazz, method);
 		return this;
