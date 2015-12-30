@@ -102,7 +102,7 @@ public static void main(String[] args) {
 }
 ```
 
-## Form URL参数获取
+## 表单参数获取
 
 ```java
 public static void main(String[] args) {
