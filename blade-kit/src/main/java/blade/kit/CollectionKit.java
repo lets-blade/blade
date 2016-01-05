@@ -1305,7 +1305,7 @@ public abstract class CollectionKit {
 	public static <T> List<T> listToHeavy(List<T> list){
 		Set<T> set = new HashSet<T>(list);
 		list.clear();
-		list.removeAll(set);
+		list.addAll(set);
 		return list;
 	}
 	
