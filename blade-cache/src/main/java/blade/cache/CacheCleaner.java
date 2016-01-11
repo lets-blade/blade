@@ -20,7 +20,7 @@ import java.util.Set;
 /**
  * 
  * <p>
- * 定时清理缓存线程
+ * Regularly clean cache threads
  * </p>
  *
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
@@ -29,18 +29,18 @@ import java.util.Set;
 public class CacheCleaner<K, V> extends Thread {
 	
 	/**
-	 * 清理间隔
+	 * Clean interval
 	 */
 	private long _cleanInterval;
 	
 	/**
-	 * 是不是在睡眠中
+	 * Is sleep
 	 */
 	private boolean _sleep = false;
 	
 	/**
-	 * 设置清理间隔并初始化
-	 * 
+	 * Set cleanInterval and initialize
+	 *
 	 * @param cleanInterval
 	 */
 	public CacheCleaner(long cleanInterval) {
@@ -50,7 +50,7 @@ public class CacheCleaner<K, V> extends Thread {
 	}
 
 	/**
-	 * 设置清理间隔
+	 * Set clean interval
 	 * 
 	 * @param cleanInterval
 	 */
@@ -64,7 +64,7 @@ public class CacheCleaner<K, V> extends Thread {
 	}
 
 	/**
-	 * 执行缓存清理工作
+	 * Run cache clean
 	 */
 	@Override
 	public void run() {

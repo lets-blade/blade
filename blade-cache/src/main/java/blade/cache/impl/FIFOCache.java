@@ -23,7 +23,7 @@ import blade.cache.CacheObject;
 /**
  * 
  * <p>
- * FIFO实现
+ * FIFO Implementation
  * </p>
  *
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>

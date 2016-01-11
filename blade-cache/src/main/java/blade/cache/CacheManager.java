@@ -26,7 +26,7 @@ import blade.cache.impl.LRUCache;
 /**
  * 
  * <p>
- * 缓存管理对象
+ * Cache management object
  * </p>
  *
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
@@ -169,7 +169,7 @@ public class CacheManager {
 	/***************************** LFUCache:END **************************************/
 	
 	/**
-	 * @return	返回所有缓存id
+	 * @return	Return all cached ids
 	 */
 	public Set<String> getCacheIds(){
 		synchronized (_mlock) {
@@ -181,7 +181,7 @@ public class CacheManager {
 	}
 	
 	/**
-	 * 移除一个缓存
+	 * Remove a cache
 	 * @param cacheId
 	 * @throws CacheException
 	 */
@@ -195,7 +195,7 @@ public class CacheManager {
     }
     
     /**
-	 * 移除所有缓存
+	 * Remove all caches
 	 * @param cacheId
 	 * @throws CacheException
 	 */
