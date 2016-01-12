@@ -23,7 +23,7 @@ import blade.cache.CacheObject;
 /**
  * 
  * <p>
- * LFU实现
+ * LFU Implementation
  * </p>
  *
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
@@ -36,7 +36,7 @@ public class LFUCache<K, V> extends AbstractCache<K, V> {
 	}
 
 	/**
-	 * 实现删除过期对象 和 删除访问次数最少的对象
+	 * Implement remove expired objects and remove least accessed objects
 	 * 
 	 */
 	@Override

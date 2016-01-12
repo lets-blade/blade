@@ -17,7 +17,7 @@ package blade.cache;
 
 /**
  * <p>
- * 缓存实体对象
+ * Cache entity object
  * </p>
  *
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
@@ -43,7 +43,7 @@ public class CacheObject<K, V> {
 	}
 
 	/**
-	 * @return 返回是否已经过期
+	 * @return Return whether the cache is expired
 	 */
 	public boolean isExpired() {
 		if (expires == 0) {

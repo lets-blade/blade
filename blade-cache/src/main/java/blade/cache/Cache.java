@@ -21,7 +21,7 @@ import java.util.Set;
 /**
  * 
  * <p>
- * 缓存顶级接口
+ * Cache top level interface
  * </p>
  *
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
@@ -30,7 +30,7 @@ import java.util.Set;
 public interface Cache<K, V> {
  
 	/**
-	 * 向缓存添加value对象,其在缓存中生存时间为默认值
+     * Add value object to cache, default cache expire interval
 	 * 
 	 * @param key
 	 * @param value
@@ -39,7 +39,7 @@ public interface Cache<K, V> {
     void set(K key, V value);
     
     /**
-     * 向缓存添加value对象,并指定存活时间
+     * Add value object to cache and set expire interval
      * 
      * @param key
      * @param value	过期时间
@@ -49,8 +49,7 @@ public interface Cache<K, V> {
     void set(K key, V value, long expire);
     
     /**
-     * 向缓存添加一个hash类型的数据
-     * 
+     * Add a hash value to cache
      * @param key
      * @param field
      * @param value
@@ -58,8 +57,7 @@ public interface Cache<K, V> {
     <F> void hset(K key, F field, V value);
     
     /**
-     * 向缓存添加一个hash类型的数据并设置有效期
-     * 
+     * Add a hash value to cache and set expire interval
      * @param key
      * @param field
      * @param value
@@ -68,7 +66,7 @@ public interface Cache<K, V> {
     <F> void hset(K key, F field, V value, long expire);
     
     /**
-     * 查找缓存对象
+     * Search cache object
      * 
      * @param key
      * @return
@@ -77,7 +75,7 @@ public interface Cache<K, V> {
     V get(K key);
     
     /**
-     * 查找缓存对象
+     * Search cache object
      * 
      * @param key
      * @param field
@@ -86,21 +84,21 @@ public interface Cache<K, V> {
     <F> V hget(K key, F field);
     
     /**
-     * 删除缓存对象
+     * Delete cache object
      * 
      * @param key
      */
     void del(K key);
     
     /**
-     * 删除缓存对象
+     * Delete cache object
      * 
      * @param key
      */
     void hdel(K key);
     
     /**
-     * 删除缓存对象
+     * Delete cache object
      * 
      * @param key
      * @param field
@@ -108,59 +106,58 @@ public interface Cache<K, V> {
     <F> void del(K key, F field);
     
     /**
-     * @return	返回所有key
+     * @return return all keys
      */
     Set<K> keys();
     
     /**
-     * @return	返回一个key所有flied
+     * @return	return all fields of a key
      */
     <F> Set<F> flieds(K key);
     
     /**
-     * @return	返回当前缓存的大小
+     * @return	return size of current cache
      */
     int size();
     
     /**
-     * 淘汰对象
+     * Eliminate a object
      * 
-     * @return  被删除对象大小
+     * @return  Size of the eliminated object
      */
     int eliminate();
     
     /**
-     * 缓存是否已经满
+     * Whether cache is full
      * @return
      */
     boolean isFull();
     
     /**
-     * 清除所有缓存对象
+     * Clear all cached objects
      */
     void clear();
  
     /**
-     * 返回缓存大小
-     * 
+     * Return size of cache
      * @return  
      */
     int getCacheSize();
  
     /**
-     * 缓存中是否为空
+     * Whether cache is Empty
      */
     boolean isEmpty();
     
     /**
-     * 设置缓存大小
+     * Set cache size
      * @param cacheSize
      * @return
      */
     <A,B> Cache<A,B> cacheSize(int cacheSize);
     
     /**
-     * 设置缓存有效期
+     * Set cache expire interval
      * @param expire
      * @return
      */

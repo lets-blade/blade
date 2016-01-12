@@ -18,7 +18,7 @@ package blade.cache;
 /**
  * 
  * <p>
- * 缓存异常封装
+ * Cache exception package
  * </p>
  *
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
