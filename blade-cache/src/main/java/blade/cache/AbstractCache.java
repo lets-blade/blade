@@ -25,7 +25,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 /**
  * 
  * <p>
- * 抽象缓存基础实现
+ * Abstract cache basic implementation
  * </p>
  *
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
@@ -35,53 +35,55 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 public abstract class AbstractCache<K, V> implements Cache<K, V> {
 
 	/**
-	 * 同步缓存容器
+	 * Sync cache container
 	 */
 	protected Map<K, CacheObject<K, V>> _mCache;
 	
 	/**
-	 * 同步缓存容器
+	 * Sync cache container
 	 */
 	protected Map<K, Map<?, CacheObject<K, V>>> _hCache;
 	
 	/**
-	 * 缓存锁
+	 * Cache lock
 	 */
 	protected final ReentrantReadWriteLock cacheLock = new ReentrantReadWriteLock();
 	
 	/**
-	 * 读取锁
+	 * Read lock
 	 */
 	protected final Lock readLock = cacheLock.readLock();
     
 	/**
-	 * 写入锁
+	 * Write lock
 	 */
 	protected final Lock writeLock = cacheLock.writeLock();
 	
 	/**
-	 * 最大缓存数
+	 * Cache size
 	 */
 	protected int cacheSize;
 	
 	/**
 	 * 默认过期时间, 0 -> 永不过期
+	 * Default expire interval, 0 -> never expired
 	 */
 	protected long defaultExpire;
 	
 	/**
 	 * 是否设置默认过期时间
+	 * Whether set custom expire time
 	 */
 	protected  boolean existCustomExpire;
 
 	/**
-     * 淘汰对象具体实现
+	 * Concrete implementation of eliminate a cache
      * @return
      */
     protected abstract int eliminateCache(); 
     
     /**
-     * 设置一个缓存大小并初始化
+	 * Set cache size and initialize
      * @param cacheSize
      */
 	public AbstractCache(int cacheSize) {
@@ -91,14 +93,14 @@ public abstract class AbstractCache<K, V> implements Cache<K, V> {
 	}
 	
 	/**
-	 * 放一个缓存
+	 * Set a cache object
 	 */
 	public void set(K key, V obj) {
 		set(key, obj, defaultExpire);
 	}
 
 	/**
-	 * 放一个缓存并设置缓存时间
+	 * Set a cache object with expire time
 	 */
 	public void set(K key, V value, long expire) {
 		writeLock.lock();
@@ -118,14 +120,14 @@ public abstract class AbstractCache<K, V> implements Cache<K, V> {
 	}
 	
 	/**
-	 * 放一个缓存
+	 * Set a hashed cache object
 	 */
 	public <F> void hset(K key, F field, V obj) {
 		hset(key, field, obj, defaultExpire);
 	}
 	
 	/**
-	 * 放一个hash类型缓存并设置缓存时间
+	 * Set a hash cache object with expire time
 	 */
 	public <F> void hset(K key, F field, V value, long expire) {
 		writeLock.lock();
@@ -155,7 +157,7 @@ public abstract class AbstractCache<K, V> implements Cache<K, V> {
 	
 	
 	/**
-	 * 取一个缓存
+	 * Get a cache object
 	 */
 	public V get(K key) {
 		readLock.lock();
@@ -175,7 +177,7 @@ public abstract class AbstractCache<K, V> implements Cache<K, V> {
 	}
 	
 	/**
-	 * 取一个缓存
+	 * Get a hash cache object
 	 */
 	public <F> V hget(K key, F field) {
 		readLock.lock();
@@ -204,7 +206,7 @@ public abstract class AbstractCache<K, V> implements Cache<K, V> {
 	}
 
 	/**
-	 * 移除一个缓存
+	 * Remove a cache object
 	 */
 	public void del(K key) {
 		writeLock.lock();
@@ -216,7 +218,7 @@ public abstract class AbstractCache<K, V> implements Cache<K, V> {
 	}
 	
 	/**
-	 * 移除一个缓存
+	 * Remove a hash cache object
 	 */
 	public void hdel(K key) {
 		writeLock.lock();
@@ -228,7 +230,7 @@ public abstract class AbstractCache<K, V> implements Cache<K, V> {
 	}
 	
 	/**
-	 * 移除一个缓存
+	 * Remove a cache object
 	 */
 	public <F> void del(K key, F feild) {
 		writeLock.lock();

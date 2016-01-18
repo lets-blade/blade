@@ -24,7 +24,7 @@ import blade.cache.CacheObject;
 /**
  * 
  * <p>
- * LRU  实现
+ * LRU  Implementation
  * </p>
  *
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
@@ -56,7 +56,7 @@ public class LRUCache<K, V> extends AbstractCache<K, V> {
     }
  
     /**
-     * 只需要实现清除过期对象就可以了,linkedHashMap已经实现LRU
+     * Implement eliminateCache,linkedHashMap has implemented LRU
      */
     @Override
     protected int eliminateCache() {
