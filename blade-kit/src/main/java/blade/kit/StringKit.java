@@ -2603,6 +2603,5 @@ public abstract class StringKit {
         builder.setLength(builder.length() - split.length());
         return builder.toString();
     }
-
-   
+  
 }
