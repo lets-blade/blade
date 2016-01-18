@@ -542,7 +542,7 @@ public abstract class StringKit {
             } else if (stripChars.length() == 0) {
                 return str;
             } else {
-                while ((start < end) && (stripChars.indexOf(str.charAt(start)) != -1)) {
+                while ((start < end) && (str.startsWith(stripChars) && stripChars.indexOf(str.charAt(start)) != -1)) {
                     start++;
                 }
             }
@@ -557,7 +557,7 @@ public abstract class StringKit {
             } else if (stripChars.length() == 0) {
                 return str;
             } else {
-                while ((start < end) && (stripChars.indexOf(str.charAt(end - 1)) != -1)) {
+                while ((start < end) && (str.endsWith(stripChars) && stripChars.indexOf(str.charAt(end - 1)) != -1)) {
                     end--;
                 }
             }
