@@ -58,19 +58,18 @@ public class RedisExecutor {
          * 
          * @return 执行结果
          */
-        @SuppressWarnings("deprecation")
 		public T getResult() {
             T result = null;
             try {
                 result = execute();
             } catch (Throwable e) {
                 if (null != jedis) {
-                    shardedJedisPool.returnResourceObject(jedis);
+                    jedis.close();
                 }
                 throw new RuntimeException("Redis execute exception", e);
             } finally {
                 if (null != jedis) {
-                    shardedJedisPool.returnResourceObject(jedis);
+                    jedis.close();
                 }
             }
             return result;
