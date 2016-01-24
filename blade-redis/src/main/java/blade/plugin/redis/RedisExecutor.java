@@ -1,13 +1,7 @@
 package blade.plugin.redis;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPubSub;
@@ -91,10 +85,10 @@ public class RedisExecutor {
     }
     
     /**
-     * 删除模糊匹配的key
+     * 获取模糊匹配的key
      * 
      * @param likeKey 模糊匹配的key
-     * @return 删除成功的条数
+     * @return 匹配key的集合
      */
     public Set<String> getKeyLike(final String likeKey) {
         return new Executor<Set<String>>(shardedJedisPool) {
@@ -103,10 +97,10 @@ public class RedisExecutor {
             Set<String> execute() {
                 Collection<Jedis> jedisC = jedis.getAllShards();
                 Iterator<Jedis> iter = jedisC.iterator();
-                Set<String> keys = null;
+                Set<String> keys = new HashSet<String>();
                 while (iter.hasNext()) {
                     Jedis _jedis = iter.next();
-                    keys = _jedis.keys(likeKey + "*");
+                    keys.addAll(_jedis.keys(likeKey + "*"));
                 }
                 return keys;
             }
