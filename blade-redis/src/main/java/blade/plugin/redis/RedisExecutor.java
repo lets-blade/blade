@@ -1,22 +1,9 @@
 package blade.plugin.redis;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPubSub;
-import redis.clients.jedis.Pipeline;
-import redis.clients.jedis.Response;
-import redis.clients.jedis.ShardedJedis;
-import redis.clients.jedis.ShardedJedisPipeline;
-import redis.clients.jedis.ShardedJedisPool;
-import redis.clients.jedis.Transaction;
+import redis.clients.jedis.*;
 import redis.clients.util.SafeEncoder;
 import blade.kit.SerializeKit;
 
@@ -64,19 +51,18 @@ public class RedisExecutor {
          * 
          * @return 执行结果
          */
-        @SuppressWarnings("deprecation")
 		public T getResult() {
             T result = null;
             try {
                 result = execute();
             } catch (Throwable e) {
                 if (null != jedis) {
-                    shardedJedisPool.returnResourceObject(jedis);
+                    jedis.close();
                 }
                 throw new RuntimeException("Redis execute exception", e);
             } finally {
                 if (null != jedis) {
-                    shardedJedisPool.returnResourceObject(jedis);
+                    jedis.close();
                 }
             }
             return result;
@@ -91,22 +77,31 @@ public class RedisExecutor {
     }
     
     /**
-     * 删除模糊匹配的key
+     * 获取模糊匹配的key
      * 
      * @param likeKey 模糊匹配的key
-     * @return 删除成功的条数
+     * @return 匹配key的集合
      */
     public Set<String> getKeyLike(final String likeKey) {
         return new Executor<Set<String>>(shardedJedisPool) {
+            final String pattern = likeKey + "*";
 
             @Override
             Set<String> execute() {
                 Collection<Jedis> jedisC = jedis.getAllShards();
                 Iterator<Jedis> iter = jedisC.iterator();
-                Set<String> keys = null;
+                Set<String> keys = new HashSet<String>();
                 while (iter.hasNext()) {
                     Jedis _jedis = iter.next();
-                    keys = _jedis.keys(likeKey + "*");
+                    String cursor = "0";
+                    while (true) {
+                        ScanResult<String> result = _jedis.scan(cursor, new ScanParams().match(pattern));
+                        keys.addAll(result.getResult());
+                        cursor = result.getStringCursor();
+                        if ("0".equals(cursor)) {
+                            break;
+                        }
+                    }
                 }
                 return keys;
             }
@@ -120,6 +115,8 @@ public class RedisExecutor {
      * @return 删除成功的条数
      */
     public long delKeysLike(final String likeKey) {
+        final String pattern = likeKey + "*";
+
         return new Executor<Long>(shardedJedisPool) {
 
             @Override
@@ -129,7 +126,16 @@ public class RedisExecutor {
                 long count = 0;
                 while (iter.hasNext()) {
                     Jedis _jedis = iter.next();
-                    Set<String> keys = _jedis.keys(likeKey + "*");
+                    Set<String> keys = new HashSet<String>();
+                    String cursor = "0";
+                    while (true) {
+                        ScanResult<String> result = _jedis.scan(cursor, new ScanParams().match(pattern));
+                        keys.addAll(result.getResult());
+                        cursor = result.getStringCursor();
+                        if ("0".equals(cursor)) {
+                            break;
+                        }
+                    }
                     count += _jedis.del(keys.toArray(new String[keys.size()]));
                 }
                 return count;
@@ -886,7 +892,7 @@ public class RedisExecutor {
      * 将一个或多个值 value 插入到列表 key 的表头
      * 
      * @param key key
-     * @param value string value
+     * @param values string value
      * @return 执行 listPushHead 命令后，列表的长度。
      */
     public Long listPushHead(final String key, final String... values) {
