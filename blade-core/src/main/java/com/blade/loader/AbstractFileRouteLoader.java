@@ -31,6 +31,7 @@ import java.lang.reflect.Method;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 import java.util.StringTokenizer;
 
 /**
@@ -75,7 +76,7 @@ public abstract class AbstractFileRouteLoader implements RouteLoader {
 		try {
 			in = new BufferedReader(new InputStreamReader(inputStream));
 			String input;
-			Group group = null;
+			Stack<Group> groups = new Stack<Group>();
 			while ( (input = in.readLine()) != null ) {
 				line++;
 
@@ -83,11 +84,13 @@ public abstract class AbstractFileRouteLoader implements RouteLoader {
 
 				if (!input.equals("") && !input.startsWith(".")) {
 					if (input.startsWith("GROUP")) {
-						group = parseGroup(input, line);
+						groups.push(parseGroup(input, line, groups.isEmpty() ? null : groups.peek()));
 					} else if (input.startsWith("END")) {
-						group = null;
+						if (!groups.isEmpty()) {
+							groups.pop();
+						}
 					} else {
-						Route route = parse(input, line, group);
+						Route route = parse(input, line, groups.isEmpty() ? null : groups.peek());
 						routes.add(route);
 					}
 				}
@@ -98,20 +101,28 @@ public abstract class AbstractFileRouteLoader implements RouteLoader {
 		return routes;
 	}
 
-	protected Group parseGroup(String input, int line) throws ParseException {
+	protected Group parseGroup(String input, int line, Group parent) throws ParseException {
 		StringTokenizer st = new StringTokenizer(input, " \t");
-		if (st.countTokens() != 3) {
+		if (st.countTokens() != 3 && (st.countTokens() != 2 || parent == null)) {
 			throw new ParseException("Unrecognized format", line);
 		}
 
-		//"group" do nothing
+		//"GROUP" do nothing
 		st.nextToken();
 
-		String path = validatePath( st.nextToken().trim(), line );
-		String controllerName = st.nextToken().trim();
-
+		String path;
+		String controllerName;
+		if (parent != null) {
+			path = RouteGroup.formatPath(parent.getPath(), st.nextToken().trim());
+		} else {
+			path = validatePath( st.nextToken().trim(), line );
+		}
+		if (st.hasMoreTokens()) {
+			controllerName = st.nextToken().trim();
+		} else {
+			controllerName = parent.getControllerName();
+		}
 		return new Group(path, controllerName);
-
 	}
 
 	private class Group {
@@ -143,8 +154,10 @@ public abstract class AbstractFileRouteLoader implements RouteLoader {
 		// Verify HTTP request 
 		String httpMethod = validateHttpMethod( st.nextToken().trim(), line );
 		
-		String path = validatePath( st.nextToken().trim(), line );
+		String path = st.nextToken().trim();
 		if (group == null) {
+			path = validatePath(path, line);
+
 			String controllerAndMethod = validateControllerAndMethod(st.nextToken().trim(), line);
 
 			int hashPos = controllerAndMethod.indexOf(".");
@@ -156,9 +169,23 @@ public abstract class AbstractFileRouteLoader implements RouteLoader {
 
 			return buildRoute(httpMethod, path, controllerName, controllerMethod);
 		} else {
-			String methodName = st.nextToken().trim();
+			path = validatePath(RouteGroup.formatPath(group.getPath(), path), line);
 
-			return buildRoute(httpMethod, RouteGroup.formatPath(group.getPath(), path), group.getControllerName(), methodName);
+			String controllerAndMethod = st.nextToken().trim();
+
+			int hashPos = controllerAndMethod.indexOf(".");
+
+			if (hashPos == -1) {
+				return buildRoute(httpMethod, path, group.getControllerName(), controllerAndMethod);
+			} else {
+				String controllerName = controllerAndMethod.substring(0, hashPos);
+
+				// Acquisition controller method
+				String controllerMethod = controllerAndMethod.substring(hashPos + 1);
+
+				return buildRoute(httpMethod, path, controllerName, controllerMethod);
+			}
+
 		}
 	}
 

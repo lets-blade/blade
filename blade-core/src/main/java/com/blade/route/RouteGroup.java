@@ -51,27 +51,36 @@ public abstract class RouteGroup {
         blade.put(formatPath(prefix, path), handler);
     }
 
+    public void group(String path, RouteGroup group) {
+        group.index(formatPath(this.prefix, path), this.blade);
+    }
+
     public abstract void route();
 
-    public void merge(String path, Blade blade) {
+    public void index(String path, Blade blade) {
         this.prefix = path;
         this.blade = blade;
         route();
     }
 
     public static String formatPath(String prefix, String path) {
+        String routePath;
         if (prefix.endsWith("/")) {
             if (path.startsWith("/")) {
-                return prefix + path.substring(1);
+                routePath = prefix + path.substring(1);
             } else {
-                return prefix + path;
+                routePath = prefix + path;
             }
         } else {
             if (path.startsWith("/")) {
-                return prefix + path;
+                routePath = prefix + path;
             } else {
-                return prefix + "/" + path;
+                routePath = prefix + "/" + path;
             }
         }
+        if (routePath.endsWith("/")) {
+            return routePath.substring(0, routePath.length() - 1);
+        }
+        return routePath;
     }
 }

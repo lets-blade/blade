@@ -22,6 +22,7 @@
 		<velocity.version>1.7</velocity.version>
 		<httpclient.version>4.3.5</httpclient.version>
 		<slf4j.version>1.7.7</slf4j.version>
+		<junit.version>4.12</junit.version>
 	</properties>
 
 	<dependencies>
@@ -72,6 +73,11 @@
 			<version>${jetty.version}</version>
 			<scope>provided</scope>
 		</dependency>
-
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>${junit.version}</version>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 </project>
