@@ -359,7 +359,7 @@ public class Blade {
 
 
 	public Blade group(String path, RouteGroup group) {
-		group.merge(path, this);
+		group.index(path, this);
 		return this;
 	}
 	
