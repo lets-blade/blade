@@ -15,6 +15,14 @@
  */
 package com.blade.loader;
 
+import blade.kit.IOKit;
+import com.blade.route.Route;
+import com.blade.route.RouteException;
+import com.blade.route.RouteGroup;
+import com.blade.web.http.HttpMethod;
+import com.blade.web.http.Request;
+import com.blade.web.http.Response;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -23,15 +31,8 @@ import java.lang.reflect.Method;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 import java.util.StringTokenizer;
-
-import com.blade.route.Route;
-import com.blade.route.RouteException;
-import com.blade.web.http.HttpMethod;
-import com.blade.web.http.Request;
-import com.blade.web.http.Response;
-
-import blade.kit.IOKit;
 
 /**
  * Abstract loader implementation 
@@ -75,14 +76,23 @@ public abstract class AbstractFileRouteLoader implements RouteLoader {
 		try {
 			in = new BufferedReader(new InputStreamReader(inputStream));
 			String input;
+			Stack<Group> groups = new Stack<Group>();
 			while ( (input = in.readLine()) != null ) {
 				line++;
 
 				input = input.trim();
 
 				if (!input.equals("") && !input.startsWith(".")) {
-					Route route = parse(input, line);
-					routes.add(route);
+					if (input.startsWith("GROUP")) {
+						groups.push(parseGroup(input, line, groups.isEmpty() ? null : groups.peek()));
+					} else if (input.startsWith("END")) {
+						if (!groups.isEmpty()) {
+							groups.pop();
+						}
+					} else {
+						Route route = parse(input, line, groups.isEmpty() ? null : groups.peek());
+						routes.add(route);
+					}
 				}
 			}
 		} finally {
@@ -91,7 +101,51 @@ public abstract class AbstractFileRouteLoader implements RouteLoader {
 		return routes;
 	}
 
-	private Route parse(String input, int line) throws ParseException {
+	protected Group parseGroup(String input, int line, Group parent) throws ParseException {
+		StringTokenizer st = new StringTokenizer(input, " \t");
+		if (st.countTokens() != 3 && (st.countTokens() != 2 || parent == null)) {
+			throw new ParseException("Unrecognized format", line);
+		}
+
+		//"GROUP" do nothing
+		st.nextToken();
+
+		String path;
+		String controllerName;
+		if (parent != null) {
+			path = RouteGroup.formatPath(parent.getPath(), st.nextToken().trim());
+		} else {
+			path = validatePath( st.nextToken().trim(), line );
+		}
+		if (st.hasMoreTokens()) {
+			controllerName = st.nextToken().trim();
+		} else {
+			controllerName = parent.getControllerName();
+		}
+		return new Group(path, controllerName);
+	}
+
+	private class Group {
+		private String path;
+
+		private String controllerName;
+
+		public Group(String path, String controllerName) {
+			this.path = path;
+			this.controllerName = controllerName;
+		}
+
+		public String getPath() {
+			return path;
+		}
+
+		public String getControllerName() {
+			return controllerName;
+		}
+
+	}
+
+	private Route parse(String input, int line, Group group) throws ParseException {
 		StringTokenizer st = new StringTokenizer(input, " \t");
 		if (st.countTokens() != 3) {
 			throw new ParseException("Unrecognized format", line);
@@ -100,16 +154,39 @@ public abstract class AbstractFileRouteLoader implements RouteLoader {
 		// Verify HTTP request 
 		String httpMethod = validateHttpMethod( st.nextToken().trim(), line );
 		
-		String path = validatePath( st.nextToken().trim(), line );
-		String controllerAndMethod = validateControllerAndMethod( st.nextToken().trim(), line );
+		String path = st.nextToken().trim();
+		if (group == null) {
+			path = validatePath(path, line);
 
-		int hashPos = controllerAndMethod.indexOf(".");
-		String controllerName = controllerAndMethod.substring(0, hashPos);
+			String controllerAndMethod = validateControllerAndMethod(st.nextToken().trim(), line);
 
-		// Acquisition controller method 
-		String controllerMethod = controllerAndMethod.substring(hashPos + 1);
+			int hashPos = controllerAndMethod.indexOf(".");
 
-		return buildRoute(httpMethod, path, controllerName, controllerMethod);
+			String controllerName = controllerAndMethod.substring(0, hashPos);
+
+			// Acquisition controller method
+			String controllerMethod = controllerAndMethod.substring(hashPos + 1);
+
+			return buildRoute(httpMethod, path, controllerName, controllerMethod);
+		} else {
+			path = validatePath(RouteGroup.formatPath(group.getPath(), path), line);
+
+			String controllerAndMethod = st.nextToken().trim();
+
+			int hashPos = controllerAndMethod.indexOf(".");
+
+			if (hashPos == -1) {
+				return buildRoute(httpMethod, path, group.getControllerName(), controllerAndMethod);
+			} else {
+				String controllerName = controllerAndMethod.substring(0, hashPos);
+
+				// Acquisition controller method
+				String controllerMethod = controllerAndMethod.substring(hashPos + 1);
+
+				return buildRoute(httpMethod, path, controllerName, controllerMethod);
+			}
+
+		}
 	}
 
 	private String validateHttpMethod(String httpMethod, int line) throws ParseException {
