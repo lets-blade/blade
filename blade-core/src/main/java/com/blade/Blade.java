@@ -15,17 +15,10 @@
  */
 package com.blade;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.text.ParseException;
-import java.util.List;
-import java.util.Map;
-
 import blade.kit.Assert;
 import blade.kit.IOKit;
 import blade.kit.PropertyKit;
 import blade.kit.json.JSONKit;
-
 import com.blade.ioc.Container;
 import com.blade.ioc.SampleContainer;
 import com.blade.loader.ClassPathRouteLoader;
@@ -34,12 +27,15 @@ import com.blade.loader.Configurator;
 import com.blade.plugin.Plugin;
 import com.blade.render.JspRender;
 import com.blade.render.Render;
-import com.blade.route.Route;
-import com.blade.route.RouteException;
-import com.blade.route.RouteHandler;
-import com.blade.route.Routers;
+import com.blade.route.*;
 import com.blade.server.Server;
 import com.blade.web.http.HttpMethod;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.text.ParseException;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Blade Core Class
@@ -316,7 +312,7 @@ public class Blade {
      * Add a route
      * 
      * @param path			route path
-     * @param target		Target object for routing
+     * @param clazz			The class for routing
      * @param method		The method name of the route (at the same time, the HttpMethod is specified: post:saveUser, if not specified, HttpMethod.ALL)
      * @return				return blade
      */
@@ -358,6 +354,12 @@ public class Blade {
 	 */
 	public Blade get(String path, RouteHandler handler){
 		routers.route(path, handler, HttpMethod.GET);
+		return this;
+	}
+
+
+	public Blade group(String path, RouteGroup group) {
+		group.merge(path, this);
 		return this;
 	}
 	
