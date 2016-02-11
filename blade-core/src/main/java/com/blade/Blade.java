@@ -21,13 +21,8 @@ import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
 
-import blade.kit.Assert;
-import blade.kit.IOKit;
-import blade.kit.PropertyKit;
-import blade.kit.json.JSONKit;
-
-import com.blade.ioc.Container;
-import com.blade.ioc.SampleContainer;
+import com.blade.ioc.Ioc;
+import com.blade.ioc.SampleIoc;
 import com.blade.loader.ClassPathRouteLoader;
 import com.blade.loader.Config;
 import com.blade.loader.Configurator;
@@ -40,6 +35,11 @@ import com.blade.route.RouteHandler;
 import com.blade.route.Routers;
 import com.blade.server.Server;
 import com.blade.web.http.HttpMethod;
+
+import blade.kit.Assert;
+import blade.kit.IOKit;
+import blade.kit.PropertyKit;
+import blade.kit.json.JSONKit;
 
 /**
  * Blade Core Class
@@ -72,7 +72,7 @@ public class Blade {
     /**
      * IOC Container, save javabean
      */
-    private Container container = null;
+    private Ioc ioc = null;
     
     /**
 	 * ioc application object
@@ -101,9 +101,9 @@ public class Blade {
     
 	private Blade() {
 		this.config = new Config();
-		this.container = new SampleContainer();
-		this.iocApplication = new IocApplication(container);
-		this.routers = new Routers(container);
+		this.ioc = new SampleIoc();
+		this.iocApplication = new IocApplication(ioc);
+		this.routers = new Routers(ioc);
 		this.render = new JspRender();
 	}
 	
@@ -145,8 +145,8 @@ public class Blade {
 	/**
 	 * @return	return blade ioc container
 	 */
-	public Container container(){
-		return container;
+	public Ioc ioc(){
+		return ioc;
 	}
 	
 	/**
@@ -154,9 +154,9 @@ public class Blade {
 	 * @param container	ioc object
 	 * @return			return blade
 	 */
-	public Blade container(Container container){
-		Assert.notNull(container);
-		this.container = container;
+	public Blade container(Ioc ioc){
+		Assert.notNull(ioc);
+		this.ioc = ioc;
 		return this;
 	}
 	
@@ -543,8 +543,7 @@ public class Blade {
      */
     public Blade app(Class<? extends Bootstrap> bootstrap){
     	Assert.notNull(bootstrap);
-    	Object object = container.registerBean(Aop.create(bootstrap));
-    	this.bootstrap = (Bootstrap) object;
+    	ioc.addBean(bootstrap);
     	return this;
     }
     
@@ -754,7 +753,7 @@ public class Blade {
 	 * @return	Return bootstrap object
 	 */
 	public Bootstrap bootstrap(){
-		return bootstrap; 
+		return ioc.getBean(Bootstrap.class); 
 	}
 	
 	/**

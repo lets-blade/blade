@@ -25,14 +25,13 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import blade.kit.StringKit;
-import blade.kit.log.Logger;
-
-import com.blade.Aop;
 import com.blade.Blade;
 import com.blade.Bootstrap;
 import com.blade.route.RouteBuilder;
 import com.blade.route.RouteMatcher;
+
+import blade.kit.StringKit;
+import blade.kit.log.Logger;
 
 /**
  * Blade Core DispatcherServlet
@@ -71,17 +70,18 @@ public class DispatcherServlet extends HttpServlet {
 			if(null == bootstrap){
 				String bootStrapClassName = config.getInitParameter("bootstrap");
 				if(StringKit.isNotBlank(bootStrapClassName)){
-					bootstrap = getBootstrap(bootStrapClassName);
+					this.bootstrap = getBootstrap(bootStrapClassName);
 				} else {
-					bootstrap = new Bootstrap() {
+					this.bootstrap = new Bootstrap() {
 						@Override
 						public void init(Blade blade) {
 						}
 					}; 
 				}
-				blade.app(bootstrap);
+				blade.app(this.bootstrap);
 			}
-			blade.bootstrap().init(blade);
+			
+			this.bootstrap.init(blade);
 			
 		    // buiding route
 			new RouteBuilder(blade).building();
@@ -89,7 +89,7 @@ public class DispatcherServlet extends HttpServlet {
 			// initialization ioc
 			blade.iocInit();
 			
-		    blade.bootstrap().contextInitialized(blade);
+			this.bootstrap.contextInitialized(blade);
 		    
 		    syncRequestHandler = new SyncRequestHandler(servletContext, blade.routers());
 		    AsynRequestHandler.routeMatcher = new RouteMatcher(blade.routers());
@@ -129,7 +129,7 @@ public class DispatcherServlet extends HttpServlet {
         	if(null != botstrapClassName){
             	Class<Bootstrap> applicationClass = (Class<Bootstrap>) Class.forName(botstrapClassName);
                 if(null != applicationClass){
-                	bootstrapClass = Aop.createT(applicationClass);
+                	bootstrapClass = applicationClass.newInstance();
                 }
         	} else {
         		throw new ServletException("bootstrapClass is null !");

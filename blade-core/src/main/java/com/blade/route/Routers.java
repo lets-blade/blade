@@ -20,15 +20,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import blade.kit.Assert;
-import blade.kit.log.Logger;
-
-import com.blade.Aop;
-import com.blade.ioc.Container;
-import com.blade.ioc.Scope;
+import com.blade.ioc.Ioc;
 import com.blade.web.http.HttpMethod;
 import com.blade.web.http.Request;
 import com.blade.web.http.Response;
+
+import blade.kit.Assert;
+import blade.kit.log.Logger;
 
 /**
  * Registration, management route
@@ -40,7 +38,7 @@ public class Routers {
 	
 	private Logger LOGGER = Logger.getLogger(Routers.class);
 	
-	private Container container = null;
+	private Ioc ioc = null;
 	
 	private Map<String, Route> routes = null;
 	
@@ -48,8 +46,8 @@ public class Routers {
 	
 	private static final String METHOD_NAME = "handle";
 	
-	public Routers(Container container) {
-		this.container = container;
+	public Routers(Ioc ioc) {
+		this.ioc = ioc;
 		this.routes = new HashMap<String, Route>();
 		this.interceptors = new HashMap<String, Route>();
 	}
@@ -155,10 +153,10 @@ public class Routers {
 			httpMethod = HttpMethod.valueOf(methodArr[0].toUpperCase());
 			methodName = methodArr[1];
 		}
-		Object controller = container.getBean(clazz, Scope.SINGLE);
+		Object controller = ioc.getBean(clazz);
 		if(null == controller){
-			controller = Aop.create(clazz);
-			container.registerBean(controller);
+			ioc.addBean(clazz);
+			controller = ioc.getBean(clazz);
 		}
 		try {	
 			Method method = clazz.getMethod(methodName, Request.class, Response.class);
@@ -180,10 +178,10 @@ public class Routers {
 	
 	public void route(String path, Class<?> clazz, String methodName, HttpMethod httpMethod) {
 		try {
-			Object controller = container.getBean(clazz, Scope.SINGLE);
+			Object controller = ioc.getBean(clazz);
 			if(null == controller){
-				controller = Aop.create(clazz);
-				container.registerBean(controller);
+				ioc.addBean(clazz);
+				controller = ioc.getBean(clazz);
 			}
 			Method method = clazz.getMethod(methodName, Request.class, Response.class);
 			addRoute(httpMethod, path, controller, method);
@@ -196,10 +194,10 @@ public class Routers {
 	
 	public void buildRoute(String path, Class<?> clazz, Method method, HttpMethod httpMethod) {
 		try {
-			Object controller = container.getBean(clazz, Scope.SINGLE);
+			Object controller = ioc.getBean(clazz);
 			if(null == controller){
-				controller = Aop.create(clazz);
-				container.registerBean(controller);
+				ioc.addBean(clazz);
+				controller = ioc.getBean(clazz);
 			}
 			addRoute(httpMethod, path, null, method);
 		} catch (SecurityException e) {
@@ -210,7 +208,7 @@ public class Routers {
 	public void route(String path, Object target, String methodName, HttpMethod httpMethod) {
 		try {
 			Class<?> clazz = target.getClass();
-			container.registerBean(target);
+			ioc.addBean(target);
 			Method method = clazz.getMethod(methodName, Request.class, Response.class);
 			addRoute(httpMethod, path, target, method);
 		} catch (NoSuchMethodException e) {

@@ -13,35 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.blade.ioc;
-
-import com.blade.aop.AopProxy;
-
+package com.blade.route.annotation;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * Aop Create Object
- * 
+ * Interceptor notes, written in the class
+ * e.g:
+ * <pre>
+ * {@link Interceptor}
+ * public class BaseInterceptor {...}
+ * </pre>
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since	1.0
  */
-public final class AopCreator {
-	
-	/**
-	 * Create an agent based on Class
-	 * @param clazz	class Object
-	 * @return		return proxy object
-	 */
-	public static <T> T create(Class<?> clazz){
-		return AopProxy.create(clazz);
-	}
-	
-	/**
-	 * Create an agent based on Class
-	 * @param clazz	class Object
-	 * @return		return proxy object
-	 */
-	public static Object createProxy(Class<?> clazz){
-		return AopProxy.create(clazz);
-	}
-	
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+public @interface Interceptor{
 }

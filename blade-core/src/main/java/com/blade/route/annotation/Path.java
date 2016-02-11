@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.blade.annotation;
+package com.blade.route.annotation;
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -21,17 +21,24 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Interceptor notes, written in the class
- * e.g:
- * <pre>
- * {@link Interceptor}
- * public class BaseInterceptor {...}
- * </pre>
+ * Route class notes, identifying whether a class is routed
+ *
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since	1.0
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface Interceptor{
+public @interface Path{
+
+	/**
+	 * @return	namespace
+	 */
+	String value() default "/";
+	
+	/**
+	 * @return	route suffix
+	 */
+	String suffix() default "";
+	
 }

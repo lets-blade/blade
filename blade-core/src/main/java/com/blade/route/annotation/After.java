@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.blade.annotation;
+package com.blade.route.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -21,22 +21,22 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Interceptor pre event annotation, write in method
+ * Interceptor post event annotations, write in method
  * e.g:
  * <pre>
- *  {@link Before}
- *	public void before(Request request){...}
- *</pre>
- *
+ *  {@link After}
+ *	public void after(Request request){...}
+ * </pre>
+ * 
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since	1.0
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-public @interface Before {
+public @interface After {
 	
 	/**
-	 * @return	Pre event to intercept URL
+	 * @return	After event to intercept URL
 	 */
 	String value() default "";
 	
@@ -46,7 +46,7 @@ public @interface Before {
 	String suffix() default "";
 	
 	/**
-	 * @return	Multiple front intercept
+	 * @return	Multiple after intercept
 	 */
 	String[] values() default {};
 }

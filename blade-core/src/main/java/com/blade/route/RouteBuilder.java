@@ -18,19 +18,18 @@ package com.blade.route;
 import java.lang.reflect.Method;
 import java.util.Set;
 
+import com.blade.Blade;
+import com.blade.ioc.Ioc;
+import com.blade.route.annotation.After;
+import com.blade.route.annotation.Before;
+import com.blade.route.annotation.Interceptor;
+import com.blade.route.annotation.Path;
+import com.blade.route.annotation.Route;
+import com.blade.web.http.HttpMethod;
+
 import blade.kit.StringKit;
 import blade.kit.resource.ClassPathClassReader;
 import blade.kit.resource.ClassReader;
-
-import com.blade.Aop;
-import com.blade.Blade;
-import com.blade.annotation.After;
-import com.blade.annotation.Before;
-import com.blade.annotation.Interceptor;
-import com.blade.annotation.Path;
-import com.blade.annotation.Route;
-import com.blade.ioc.Container;
-import com.blade.web.http.HttpMethod;
 
 /**
  * Route builder
@@ -58,7 +57,7 @@ public class RouteBuilder {
     /**
      * IOC container, storage route to IOC
      */
-    private Container container = null;
+    private Ioc ioc = null;
     
     private Blade blade;
     
@@ -67,7 +66,7 @@ public class RouteBuilder {
     public RouteBuilder(Blade blade) {
     	this.blade = blade;
     	this.routers = blade.routers();
-    	this.container = blade.container();
+    	this.ioc = blade.ioc();
     }
     
     /**
@@ -175,7 +174,7 @@ public class RouteBuilder {
     		return;
     	}
     	
-    	container.registerBean(Aop.create(interceptor));
+    	ioc.addBean(interceptor);
     	
     	for (Method method : methods) {
 			
@@ -230,7 +229,7 @@ public class RouteBuilder {
     		return;
     	}
     	
-    	container.registerBean(Aop.create(router));
+    	ioc.addBean(router);
     	
 		final String nameSpace = router.getAnnotation(Path.class).value();
 		

@@ -13,25 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.blade.ioc;
+package com.blade.ioc.loader;
 
-public class IocException extends RuntimeException {
+import com.blade.ioc.SampleIoc;
 
-	private static final long serialVersionUID = -1896357479295031509L;
+public interface IocLoader {
 
-	public IocException() {
-	}
-	
-	public IocException(String msg) {
-		super(msg);
-	}
-	
-	public IocException(Throwable t) {
-		super(t);
-	}
-	
-	public IocException(String msg, Throwable t) {
-		super(msg, t);
-	}
-	
+    void load(SampleIoc ioc);
+
 }

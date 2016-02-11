@@ -19,13 +19,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import com.blade.ioc.Ioc;
+import com.blade.plugin.Plugin;
+
 import blade.kit.log.Logger;
 import blade.kit.resource.ClassPathClassReader;
 import blade.kit.resource.ClassReader;
-
-import com.blade.ioc.Container;
-import com.blade.ioc.Scope;
-import com.blade.plugin.Plugin;
 
 /**
  * IOC container, used to initialize the IOC object
@@ -40,7 +39,7 @@ public class IocApplication {
 	/**
 	 * Ioc Container
 	 */
-	private Container container = null;
+	private Ioc ioc = null;
 	
 	/**
 	 * Class to read object, load class
@@ -52,10 +51,10 @@ public class IocApplication {
 	 */
 	private List<Plugin> plugins = null;
 	
-	public IocApplication(Container container) {
+	public IocApplication(Ioc ioc) {
 		this.classReader = new ClassPathClassReader();
 		this.plugins = new ArrayList<Plugin>();
-		this.container = container;
+		this.ioc = ioc;
 	}
 	
 	/**
@@ -66,8 +65,8 @@ public class IocApplication {
 	public void init(String[] iocs, Bootstrap bootstrap){
 		
 		// Initialize the global configuration class
-		if(null == container.getBean(Bootstrap.class, Scope.SINGLE)){
-			container.registerBean(bootstrap);
+		if(null == ioc.getBean(Bootstrap.class)){
+			ioc.addBean(bootstrap);
 		}
 		
 		// The object to initialize the IOC container loads the IOC package to configure the class that conforms to the IOC
@@ -78,26 +77,25 @@ public class IocApplication {
 		}
 		
 		// Initialization injection
-		container.initWired();
+//		container.initWired();
 		
-		Set<String> names = container.getBeanNames();
+		Set<String> names = ioc.getBeanNames();
 		for(String name : names){
-			LOGGER.info("Add Object：" + name + "=" + container.getBean(name, null));
+			LOGGER.info("Add Object：" + name + "=" + ioc.getBean(name));
 		}
 		
 	}
 	
-	@SuppressWarnings("unchecked")
 	public <T extends Plugin> T registerPlugin(Class<T> plugin){
-		Object object = container.registerBean(Aop.create(plugin));
-		T t = (T) object;
+		ioc.addBean(plugin);
+		T t = ioc.getBean(plugin);
 		plugins.add(t);
 		return t;
 	}
 
 	public <T extends Plugin> T getPlugin(Class<T> plugin){
-		if(null != plugin && null != container){
-			return container.getBean(plugin, null);
+		if(null != plugin && null != ioc){
+			return ioc.getBean(plugin);
 		}
 		return null;
 	}
@@ -119,10 +117,8 @@ public class IocApplication {
 		// Scan package all class
 		Set<Class<?>> classes = classReader.getClass(packageName, recursive);
 		for (Class<?> clazz : classes) {
-			// Register classes with annotation of @Component or @Service
-			if (container.isRegister(clazz.getAnnotations())) {
-				container.registerBean(Aop.create(clazz));
-			}
+			// Register classes
+			ioc.addBean(clazz);
 		}
 	}
 	
@@ -135,7 +131,7 @@ public class IocApplication {
 	 */
 	public void destroy() {
 		// Clean IOC container
-		container.removeAll();
+		ioc.clearAll();
 		for(Plugin plugin : plugins){
 			plugin.destroy();
 		}

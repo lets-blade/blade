@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.blade.annotation;
+package com.blade.ioc.annotation;
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -21,7 +21,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Route class notes, identifying whether a class is routed
+ * Bean annotations can be injected
  *
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since	1.0
@@ -29,16 +29,9 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface Path{
-
-	/**
-	 * @return	namespace
-	 */
-	String value() default "/";
+public @interface Component{
 	
-	/**
-	 * @return	route suffix
-	 */
-	String suffix() default "";
-	
+	String value() default "";
+    
+    boolean singleton() default true;
 }

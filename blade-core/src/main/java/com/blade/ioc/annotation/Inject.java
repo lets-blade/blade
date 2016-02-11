@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.blade.annotation;
+package com.blade.ioc.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -30,9 +30,6 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Inject {
 	
-	/**
-	 * @return	The object to be injected into the Class
-	 */
-    Class<?> value() default Class.class;
+	String value() default "";
     
 }

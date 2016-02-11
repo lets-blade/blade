@@ -15,10 +15,8 @@
  */
 package com.blade.loader;
 
-import com.blade.Aop;
 import com.blade.Blade;
-import com.blade.ioc.Container;
-import com.blade.ioc.Scope;
+import com.blade.ioc.Ioc;
 import com.blade.route.RouteException;
 
 /**
@@ -33,7 +31,7 @@ public class ClassPathControllerLoader implements ControllerLoader {
 
 	private ClassLoader classLoader = ClassPathControllerLoader.class.getClassLoader();
 
-	private Container container = Blade.me().container();
+	private Ioc ioc = Blade.me().ioc();
 	
 	public ClassPathControllerLoader() {
 		this("");
@@ -57,10 +55,10 @@ public class ClassPathControllerLoader implements ControllerLoader {
 			// Load controller instance 
 			Class<?> controllerClass = classLoader.loadClass(className);
 			
-			Object controller = container.getBean(controllerClass, Scope.SINGLE);
+			Object controller = ioc.getBean(controllerClass);
 			if(null == controller){
-				controller = Aop.create(controllerClass);
-				container.registerBean(controller);
+				ioc.addBean(controllerClass);
+				controller = ioc.getBean(controllerClass);
 			}
 			return controller;
 		} catch (Exception e) {

@@ -173,7 +173,7 @@ public class SyncRequestHandler {
 		Object target = route.getTarget();
 		if(null == target){
 			Class<?> clazz = route.getAction().getDeclaringClass();
-			target = Blade.me().container().getBean(clazz, null);
+			target = Blade.me().ioc().getBean(clazz);
 		}
 		request.initPathParams(route.getPath());
 		
