@@ -31,6 +31,7 @@ import com.blade.render.JspRender;
 import com.blade.render.Render;
 import com.blade.route.Route;
 import com.blade.route.RouteException;
+import com.blade.route.RouteGroup;
 import com.blade.route.RouteHandler;
 import com.blade.route.Routers;
 import com.blade.server.Server;
@@ -330,6 +331,7 @@ public class Blade {
 	 * @return			return blade
 	 */
 	public Blade routes(List<Route> routes){
+		Assert.notEmpty(routes, "Routes not is empty!");
 		routers.addRoutes(routes);
 		return this;
 	}
@@ -404,6 +406,16 @@ public class Blade {
 	public Blade any(String path, RouteHandler handler){
 		routers.route(path, handler, HttpMethod.ALL);
 		return this;
+	}
+	
+	/**
+	 * Route Group. e.g blade.group('/users').get().post()
+	 * @param g
+	 * @return
+	 */
+	public RouteGroup group(String prefix){
+		Assert.notNull(prefix, "Route group prefix not is null");
+		return new RouteGroup(this, prefix);
 	}
 	
 	/**

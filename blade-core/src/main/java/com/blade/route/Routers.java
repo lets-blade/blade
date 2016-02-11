@@ -136,6 +136,10 @@ public class Routers {
 	
 	public void route(String path, Object target, String methodName) {
 		try {
+			Assert.notNull(path, "Route path not is null!");
+			Assert.notNull(target, "Target Controller not is null!");
+			Assert.notNull(methodName, "Method name not is null");
+			
 			Method method = target.getClass().getMethod(methodName, Request.class, Response.class);
 			addRoute(HttpMethod.ALL, path, target, method);
 		} catch (NoSuchMethodException e) {
@@ -146,6 +150,10 @@ public class Routers {
 	}
 
 	public void route(String path, Class<?> clazz, String methodName) {
+		
+		Assert.notNull(path, "Route path not is null!");
+		Assert.notNull(clazz, "Class Type not is null!");
+		Assert.notNull(methodName, "Method name not is null");
 		
 		HttpMethod httpMethod = HttpMethod.ALL;
 		if(methodName.indexOf(":") != -1){
@@ -178,6 +186,11 @@ public class Routers {
 	
 	public void route(String path, Class<?> clazz, String methodName, HttpMethod httpMethod) {
 		try {
+			Assert.notNull(path, "Route path not is null!");
+			Assert.notNull(clazz, "Class Type not is null!");
+			Assert.notNull(methodName, "Method name not is null");
+			Assert.notNull(httpMethod, "Request Method not is null");
+			
 			Object controller = ioc.getBean(clazz);
 			if(null == controller){
 				ioc.addBean(clazz);
