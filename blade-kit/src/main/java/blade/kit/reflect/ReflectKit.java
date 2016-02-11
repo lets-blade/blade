@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package blade.kit;
+package blade.kit.reflect;
 
 import java.io.File;
 import java.io.IOException;
@@ -31,6 +31,10 @@ import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+import blade.kit.Emptys;
+import blade.kit.ExceptionKit;
+import blade.kit.StringKit;
+import blade.kit.SystemKit;
 import blade.kit.log.Logger;
 
 /**
@@ -66,6 +70,25 @@ public abstract class ReflectKit {
      */
     public static Object newInstance(Class<?> clazz) throws InstantiationException, IllegalAccessException{
     	return clazz.newInstance();
+    }
+    
+    /**
+     * 创建一个实例对象
+     * @param clazz class对象
+     * @return
+	 * @throws IllegalAccessException 
+	 * @throws InstantiationException 
+     */
+    public static <T> T newBean(Class<T> clazz) {
+    	try {
+			Object object = clazz.newInstance();
+			return clazz.cast(object);
+		} catch (InstantiationException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		}
+    	return null;
     }
 
 	/** 用setter设置bean属性 
