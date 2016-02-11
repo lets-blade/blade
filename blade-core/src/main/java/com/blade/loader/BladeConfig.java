@@ -29,7 +29,7 @@ import blade.kit.PatternKit;
  * @since 1.0
  *
  */
-public class Config {
+public class BladeConfig {
 
 	// Store all variables 
 	private Map<String, String> configMap = CollectionKit.newHashMap();
@@ -73,7 +73,7 @@ public class Config {
 	// Enabled XSS
 	private boolean enableXSS = false;
 	
-	public Config() {
+	public BladeConfig() {
 	}
 	
 	public Map<String, String> getConfigMap() {

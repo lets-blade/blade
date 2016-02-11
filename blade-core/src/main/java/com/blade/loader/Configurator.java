@@ -28,12 +28,12 @@ import blade.kit.StringKit;
 public class Configurator {
 
 	// Configuration object 
-	private Config bladeConfig;
+	private BladeConfig bladeConfig;
 	
 	// Configuration Map
 	private Map<String, String> configMap;
 	
-	public Configurator(Config bladeConfig,
+	public Configurator(BladeConfig bladeConfig,
 			Map<String, String> configMap) {
 		this.bladeConfig = bladeConfig;
 		this.configMap = configMap;

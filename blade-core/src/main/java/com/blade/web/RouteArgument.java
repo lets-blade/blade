@@ -17,11 +17,11 @@ package com.blade.web;
 
 import java.lang.reflect.Method;
 
-import blade.kit.ReflectKit;
-
 import com.blade.web.http.Request;
 import com.blade.web.http.Response;
 import com.blade.web.http.ResponsePrint;
+
+import blade.kit.reflect.ReflectKit;
 
 /**
  * Route parameters of injector

@@ -24,7 +24,7 @@ import java.util.Map;
 import com.blade.ioc.Ioc;
 import com.blade.ioc.SampleIoc;
 import com.blade.loader.ClassPathRouteLoader;
-import com.blade.loader.Config;
+import com.blade.loader.BladeConfig;
 import com.blade.loader.Configurator;
 import com.blade.plugin.Plugin;
 import com.blade.render.JspRender;
@@ -38,7 +38,7 @@ import com.blade.web.http.HttpMethod;
 
 import blade.kit.Assert;
 import blade.kit.IOKit;
-import blade.kit.PropertyKit;
+import blade.kit.config.loader.ConfigLoader;
 import blade.kit.json.JSONKit;
 
 /**
@@ -67,7 +67,7 @@ public class Blade {
     /**
 	 * Global configuration Object
 	 */
-	private Config config = null;
+	private BladeConfig config = null;
 	
     /**
      * IOC Container, save javabean
@@ -100,7 +100,7 @@ public class Blade {
     private Server bladeServer;
     
 	private Blade() {
-		this.config = new Config();
+		this.config = new BladeConfig();
 		this.ioc = new SampleIoc();
 		this.iocApplication = new IocApplication(ioc);
 		this.routers = new Routers(ioc);
@@ -167,25 +167,10 @@ public class Blade {
 	 * @param confName		properties file name
 	 * @return				return blade
 	 */
-	@Deprecated
-	public Blade config(String confName){
-		Assert.notBlank(confName);
-		Map<String, String> configMap = PropertyKit.getPropertyMap(confName);
-		configuration(configMap);
-		return this;
-	}
-	
-	/**
-	 * Setting Properties configuration file
-	 * File path based on classpath
-	 * 
-	 * @param confName		properties file name
-	 * @return				return blade
-	 */
 	public Blade setAppConf(String confName){
 		Assert.notBlank(confName);
-		Map<String, String> configMap = PropertyKit.getPropertyMap(confName);
-		configuration(configMap);
+		blade.kit.config.Config config = ConfigLoader.load(confName);
+		this.configuration(config.getConfigMap());
 		return this;
 	}
 	
@@ -660,7 +645,7 @@ public class Blade {
 	/**
 	 * @return	Return blade config object
 	 */
-	public Config config(){
+	public BladeConfig config(){
     	return config;
     }
 	
