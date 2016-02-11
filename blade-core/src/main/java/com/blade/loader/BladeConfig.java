@@ -16,10 +16,10 @@
 package com.blade.loader;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import blade.kit.CollectionKit;
 import blade.kit.PatternKit;
 
 /**
@@ -32,16 +32,16 @@ import blade.kit.PatternKit;
 public class BladeConfig {
 
 	// Store all variables 
-	private Map<String, String> configMap = CollectionKit.newHashMap();
+	private Map<String, String> configMap = Collections.emptyMap();
 	
 	// Storage of all routing packets 
-	private List<String> routePackages = CollectionKit.newArrayList();
+	private List<String> routePackages = Collections.emptyList();
 	
 	// Store all IOC packages 
-	private List<String> iocPackages = CollectionKit.newArrayList();
+	private List<String> iocPackages = Collections.emptyList();
 	
 	// Store all filter directories 
-	private List<String> staticFolders = CollectionKit.newArrayList();
+	private List<String> staticFolders = Collections.emptyList();
 	
 	// Base package
 	private String basePackage;
@@ -53,7 +53,7 @@ public class BladeConfig {
 	private String encoding = "utf-8";
 	
 	// View prefix
-	private String viewPrefix = "/WEB-INF/";
+	private String viewPrefix = "/WEB-INF/views/";
 	
 	// View suffix
 	private String viewSuffix = ".jsp";

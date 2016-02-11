@@ -30,5 +30,5 @@ import com.blade.route.RouteException;
 public interface RouteLoader {
 
 	List<Route> load() throws ParseException, RouteException;
-
+	
 }

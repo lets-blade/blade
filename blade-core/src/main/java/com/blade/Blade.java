@@ -788,6 +788,16 @@ public class Blade {
 	 * Registration of a configuration file, e.g: "com.xxx.route","route.conf"
 	 * 
 	 * @param basePackage	controller package name
+	 * @return				return blade
+	 */
+	public Blade routeConf(String basePackage) {
+		return routeConf(basePackage, "route.conf");
+	}
+	
+	/**
+	 * Registration of a configuration file, e.g: "com.xxx.route","route.conf"
+	 * 
+	 * @param basePackage	controller package name
 	 * @param conf			Configuration file path, the configuration file must be in classpath
 	 * @return				return blade
 	 */

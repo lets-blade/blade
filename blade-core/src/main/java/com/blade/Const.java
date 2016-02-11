@@ -49,4 +49,17 @@ public interface Const {
 	 * Request ThreadPoll context key
 	 */
 	String BLADE_EXECUTOR = "blade-req-executor";
+	
+	String BLADE_ROUTE = "blade.route";
+	String BLADE_INTERCEPTOR = "blade.interceptor";
+	String BLADE_IOC = "blade.ioc";
+	String BLADE_PREFIX = "blade.prefix";
+	String BLADE_SUFFIX = "blade.suffix";
+	String BLADE_FILTER_FOLDER = "blade.filter_folder";
+	String BLADE_ENCODING = "blade.encoding";
+	String BLADE_VIEW_404 = "blade.view404";
+	String BLADE_VIEW_500 = "blade.view500";
+	String BLADE_DEV = "blade.dev";
+	String BLADE_ENABLE_XSS = "blade.enableXSS";
+	
 }
