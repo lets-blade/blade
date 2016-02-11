@@ -945,15 +945,12 @@ public abstract class StringKit {
         if (str == null) {
             return false;
         }
-
         int length = str.length();
-
         for (int i = 0; i < length; i++) {
             if (!Character.isWhitespace(str.charAt(i))) {
                 return false;
             }
         }
-
         return true;
     }
 

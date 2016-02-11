@@ -9,7 +9,7 @@
 		<version>1.0</version>
 	</parent>
 	<artifactId>blade-oauth2</artifactId>
-	<version>1.0.2</version>
+	<version>1.0.3</version>
 	<name>blade-oauth2</name>
 	<url>https://github.com/biezhi/blade/tree/master/blade-oauth2</url>
 		
