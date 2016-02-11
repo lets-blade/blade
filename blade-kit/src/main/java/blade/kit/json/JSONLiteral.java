@@ -21,50 +21,77 @@
  ******************************************************************************/
 package blade.kit.json;
 
-/**
- * An unchecked exception to indicate that an input does not qualify as valid JSON.
- */
+import java.io.IOException;
+
+
 @SuppressWarnings("serial") // use default serial UID
-public class ParseException extends RuntimeException {
+class JSONLiteral extends JSONValue {
 
-  private final int offset;
-  private final int line;
-  private final int column;
+  private final String value;
+  private final boolean isNull;
+  private final boolean isTrue;
+  private final boolean isFalse;
 
-  ParseException(String message, int offset, int line, int column) {
-    super(message + " at " + line + ":" + column);
-    this.offset = offset;
-    this.line = line;
-    this.column = column;
+  JSONLiteral(String value) {
+    this.value = value;
+    isNull = "null".equals(value);
+    isTrue = "true".equals(value);
+    isFalse = "false".equals(value);
   }
 
-  /**
-   * Returns the absolute index of the character at which the error occurred. The index of the first
-   * character of a document is 0.
-   *
-   * @return the character offset at which the error occurred, will be &gt;= 0
-   */
-  public int getOffset() {
-    return offset;
+  @Override
+  void write(JSONWriter writer) throws IOException {
+    writer.writeLiteral(value);
   }
 
-  /**
-   * Returns the number of the line in which the error occurred. The first line counts as 1.
-   *
-   * @return the line in which the error occurred, will be &gt;= 1
-   */
-  public int getLine() {
-    return line;
+  @Override
+  public String toString() {
+    return value;
   }
 
-  /**
-   * Returns the index of the character at which the error occurred, relative to the line. The index
-   * of the first character of a line is 0.
-   *
-   * @return the column in which the error occurred, will be &gt;= 0
-   */
-  public int getColumn() {
-    return column;
+  @Override
+  public int hashCode() {
+    return value.hashCode();
+  }
+
+  @Override
+  public boolean isNull() {
+    return isNull;
+  }
+
+  @Override
+  public boolean isTrue() {
+    return isTrue;
+  }
+
+  @Override
+  public boolean isFalse() {
+    return isFalse;
+  }
+
+  @Override
+  public boolean isBoolean() {
+    return isTrue || isFalse;
+  }
+
+  @Override
+  public boolean asBoolean() {
+    return isNull ? super.asBoolean() : isTrue;
+  }
+
+  @Override
+  public boolean equals(Object object) {
+    if (this == object) {
+      return true;
+    }
+    if (object == null) {
+      return false;
+    }
+    if (getClass() != object.getClass()) {
+      return false;
+    }
+    JSONLiteral other = (JSONLiteral)object;
+    return value.equals(other.value);
   }
 
 }

@@ -21,50 +21,74 @@
  ******************************************************************************/
 package blade.kit.json;
 
-/**
- * An unchecked exception to indicate that an input does not qualify as valid JSON.
- */
+import java.io.IOException;
+
+
 @SuppressWarnings("serial") // use default serial UID
-public class ParseException extends RuntimeException {
+class JSONNumber extends JSONValue {
 
-  private final int offset;
-  private final int line;
-  private final int column;
+  private final String string;
 
-  ParseException(String message, int offset, int line, int column) {
-    super(message + " at " + line + ":" + column);
-    this.offset = offset;
-    this.line = line;
-    this.column = column;
+  JSONNumber(String string) {
+    if (string == null) {
+      throw new NullPointerException("string is null");
+    }
+    this.string = string;
   }
 
-  /**
-   * Returns the absolute index of the character at which the error occurred. The index of the first
-   * character of a document is 0.
-   *
-   * @return the character offset at which the error occurred, will be &gt;= 0
-   */
-  public int getOffset() {
-    return offset;
+  @Override
+  public String toString() {
+    return string;
   }
 
-  /**
-   * Returns the number of the line in which the error occurred. The first line counts as 1.
-   *
-   * @return the line in which the error occurred, will be &gt;= 1
-   */
-  public int getLine() {
-    return line;
+  @Override
+  void write(JSONWriter writer) throws IOException {
+    writer.writeNumber(string);
   }
 
-  /**
-   * Returns the index of the character at which the error occurred, relative to the line. The index
-   * of the first character of a line is 0.
-   *
-   * @return the column in which the error occurred, will be &gt;= 0
-   */
-  public int getColumn() {
-    return column;
+  @Override
+  public boolean isNumber() {
+    return true;
+  }
+
+  @Override
+  public int asInt() {
+    return Integer.parseInt(string, 10);
+  }
+
+  @Override
+  public long asLong() {
+    return Long.parseLong(string, 10);
+  }
+
+  @Override
+  public float asFloat() {
+    return Float.parseFloat(string);
+  }
+
+  @Override
+  public double asDouble() {
+    return Double.parseDouble(string);
+  }
+
+  @Override
+  public int hashCode() {
+    return string.hashCode();
+  }
+
+  @Override
+  public boolean equals(Object object) {
+    if (this == object) {
+      return true;
+    }
+    if (object == null) {
+      return false;
+    }
+    if (getClass() != object.getClass()) {
+      return false;
+    }
+    JSONNumber other = (JSONNumber)object;
+    return string.equals(other.string);
   }
 
 }
