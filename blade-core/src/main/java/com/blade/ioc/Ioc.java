@@ -20,6 +20,12 @@ import java.util.Set;
 
 import com.blade.ioc.loader.IocLoader;
 
+/**
+ * IOC container, it provides an interface for registration and bean.
+ *
+ * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
+ * @since	1.0
+ */
 public interface Ioc {
 	
 	void load(IocLoader iocLoader);
@@ -35,6 +41,6 @@ public interface Ioc {
     List<Object> getBeans();
     
     Set<String> getBeanNames();
-
+    
 	void clearAll();
 }

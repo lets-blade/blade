@@ -15,15 +15,18 @@
  */
 package com.blade.ioc;
 
+/**
+ * Bean Define, IOC to define a target
+ *
+ * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
+ * @since	1.0
+ */
 public class BeanDefine {
 	
 	private Object bean;
 	private Class<?> type;
 	private boolean isSignle;
 	
-	public BeanDefine() {
-	}
-
 	public BeanDefine(Object bean) {
 		this(bean, bean.getClass());
 	}

@@ -15,6 +15,7 @@
  */
 package com.blade.ioc;
 
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -23,58 +24,104 @@ import java.util.Set;
 
 import com.blade.ioc.loader.IocLoader;
 
+import blade.kit.Assert;
 import blade.kit.log.Logger;
 
-public class SampleIoc implements Ioc{
+/**
+ * The default IOC container implementation
+ *
+ * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
+ * @since	1.0
+ */
+public class SampleIoc implements Ioc {
 	
 	private static final Logger LOGGER = Logger.getLogger(Ioc.class);
 	
 	private final Map<String, BeanDefine> pool = new HashMap<String, BeanDefine>();
 	
+	/**
+	 * ioc loader
+	 */
 	@Override
 	public void load(IocLoader loader) {
         loader.load(this);
     }
 	
-	// 添加用户自定义的对象
+	/**
+	 * Add user-defined objects
+	 */
 	@Override
-    public void addBean(Object beanObject) {
-        addBean(beanObject.getClass().getName(), beanObject);
+    public void addBean(Object bean) {
+		Assert.notNull(bean);
+        addBean(bean.getClass().getName(), bean);
     }
 
-    // 添加用户自定义的对象
-    public void addBean(Class<?> beanClass, Object beanObject) {
-        addBean(beanClass.getName(), beanObject);
+	/**
+	 * Add user-defined objects
+	 */
+    public void addBean(Class<?> beanClass, Object bean) {
+    	Assert.notNull(beanClass);
+        addBean(beanClass.getName(), bean);
     }
 
-    // 添加用户自定义的对象
-    public void addBean(String name, Object beanObject) {
-        addBean(name, new BeanDefine(beanObject));
+    /**
+	 * Add user-defined objects
+	 */
+    public void addBean(String name, Object bean) {
+    	Assert.notNull(bean);
+    	BeanDefine beanDefine = new BeanDefine(bean);
+        addBean(name, beanDefine);
+        
+        // add interface
+        Class<?>[] interfaces = beanDefine.getType().getInterfaces();
+	    if(interfaces.length > 0){
+	    	for(Class<?> interfaceClazz : interfaces){
+	    		this.addBean(interfaceClazz.getName(), beanDefine);
+	    	}
+	    }
     }
 
-    // 添加用户自定义的对象
+    /**
+	 * Add user-defined objects
+	 */
     public void addBean(String name, BeanDefine beanDefine) {
     	
+    	Assert.notNull(name);
+    	Assert.notNull(beanDefine);
+        
     	LOGGER.debug("addBean: %s", name);
 
         if (pool.put(name, beanDefine) != null) {
         	LOGGER.warn("Duplicated Bean: %s", name);
         }
+        
     }
 
-    // 注册 @Component 标注的对象
+    /**
+     * Register @Component marked objects
+     */
     @Override
     public void addBean(Class<?> type) {
         addBean(type, true);
     }
 
-    // 注册 @Component 标注的对象
+    /**
+     * Register @Component marked objects
+     */
     public void addBean(Class<?> type, boolean singleton) {
+    	Assert.notNull(type);
         addBean(type.getName(), type, singleton);
     }
     
-    // 注册 @Component 标注的对象
+    /**
+     * Register @Component marked objects
+     */
     public void addBean(String name, Class<?> beanClass, boolean singleton) {
+    	
+    	Assert.notNull(name);
+    	Assert.notNull(beanClass);
+    	Assert.isFalse(beanClass.isInterface(), "Must not be interface: %s", beanClass.getName());
+    	Assert.isFalse(Modifier.isAbstract(beanClass.getModifiers()), "Must not be abstract class: %s", beanClass.getName());
     	
         LOGGER.debug("addBean: %s", name, beanClass.getName());
         
@@ -84,15 +131,15 @@ public class SampleIoc implements Ioc{
         	LOGGER.warn("Duplicated Bean: %s", name);
         }
         
+        // add interface
         Class<?>[] interfaces = beanClass.getInterfaces();
 	    if(interfaces.length > 0){
 	    	for(Class<?> interfaceClazz : interfaces){
 	    		this.addBean(interfaceClazz.getName(), beanDefine);
 	    	}
 	    }
-	    
     }
-
+    
     private BeanDefine getBeanDefine(Class<?> beanClass, boolean singleton) {
     	try {
 			Object object = beanClass.newInstance();
@@ -131,7 +178,7 @@ public class SampleIoc implements Ioc{
 		}
 		return beans;
 	}
-
+	
 	@Override
 	public Set<String> getBeanNames() {
 		return pool.keySet();

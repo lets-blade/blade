@@ -42,4 +42,32 @@ public class IocTest {
 		assertEquals(userService, userServiceImpl);
 	}
 	
+	@Test
+	public void testGetInterface2() {
+		
+		ioc.addBean(UserServiceImpl.class);
+		
+		UserService userService = ioc.getBean(UserService.class);
+		assertNotNull(userService);
+		assertEquals("blade", userService.getName());
+		
+		UserServiceImpl userServiceImpl = ioc.getBean(UserServiceImpl.class);
+		
+		assertEquals(userService, userServiceImpl);
+	}
+	
+	@Test
+	public void testGetInterface3() {
+		
+		ioc.addBean(new UserServiceImpl());
+		
+		UserService userService = ioc.getBean(UserService.class);
+		assertNotNull(userService);
+		assertEquals("blade", userService.getName());
+		
+		UserServiceImpl userServiceImpl = ioc.getBean(UserServiceImpl.class);
+		
+		assertEquals(userService, userServiceImpl);
+	}
+	
 }

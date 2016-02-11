@@ -14,7 +14,7 @@
 	<version>${blade.version}</version>
 	<name>blade-core</name>
 	<url>https://github.com/biezhi/blade/blade-core</url>
-
+	
 	<properties>
 		<jetty.version>9.2.12.v20150709</jetty.version>
 		<jetbrick.version>2.0.12</jetbrick.version>
@@ -28,7 +28,7 @@
 		<dependency>
 			<groupId>com.bladejava</groupId>
 			<artifactId>blade-kit</artifactId>
-			<version>1.2.8</version>
+			<version>1.2.9-alpha</version>
 		</dependency>
 		<dependency>
 			<groupId>com.bladejava</groupId>
@@ -71,6 +71,11 @@
 			<artifactId>jetty-webapp</artifactId>
 			<version>${jetty.version}</version>
 			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
 		</dependency>
 
 	</dependencies>

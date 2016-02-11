@@ -26,9 +26,21 @@ import com.blade.ioc.injector.FieldInjector;
 
 import blade.kit.reflect.ClassDefine;
 
+/**
+ * IocKit, get Bean
+ *
+ * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
+ * @since	1.0
+ */
 public class IocKit {
 
-	// @Inject标注的字段
+	/**
+	 * Get @Inject Annotated field
+	 * 
+	 * @param ioc			ioc container
+	 * @param classDefine	classDefine
+	 * @return				return FieldInjector
+	 */
     public static List<FieldInjector> getInjectFields(Ioc ioc, ClassDefine classDefine) {
         List<FieldInjector> injectors = new ArrayList<FieldInjector>(8);
         for (Field field : classDefine.getDeclaredFields()) {
@@ -45,6 +57,13 @@ public class IocKit {
         return injectors;
     }
     
+    /**
+     * Get bean according to BeanDefine
+     * 
+     * @param ioc			ioc container
+     * @param beanDefine	beandefine object
+     * @return				bean object
+     */
     public static Object getBean(Ioc ioc, BeanDefine beanDefine) {
     	ClassDefine classDefine = ClassDefine.create(beanDefine.getType());
 		List<FieldInjector> fieldInjectors = IocKit.getInjectFields(ioc, classDefine);
