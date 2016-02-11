@@ -31,6 +31,7 @@ public class SampleIoc implements Ioc{
 	
 	private final Map<String, BeanDefine> pool = new HashMap<String, BeanDefine>();
 	
+	@Override
 	public void load(IocLoader loader) {
         loader.load(this);
     }
@@ -78,9 +79,18 @@ public class SampleIoc implements Ioc{
         LOGGER.debug("addBean: %s", name, beanClass.getName());
         
         BeanDefine beanDefine = this.getBeanDefine(beanClass, singleton);
+        
         if (pool.put(name, beanDefine) != null) {
         	LOGGER.warn("Duplicated Bean: %s", name);
         }
+        
+        Class<?>[] interfaces = beanClass.getInterfaces();
+	    if(interfaces.length > 0){
+	    	for(Class<?> interfaceClazz : interfaces){
+	    		this.addBean(interfaceClazz.getName(), beanDefine);
+	    	}
+	    }
+	    
     }
 
     private BeanDefine getBeanDefine(Class<?> beanClass, boolean singleton) {

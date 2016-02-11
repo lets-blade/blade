@@ -21,19 +21,21 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import com.blade.ioc.annotation.Inject;
+import com.blade.ioc.annotation.InjectWith;
+import com.blade.ioc.injector.FieldInjector;
 
 import blade.kit.reflect.ClassDefine;
 
 public class IocKit {
 
 	// @Inject标注的字段
-    public static List<Field> getInjectFields(ClassDefine classDefine) {
-        List<Field> injectors = new ArrayList<Field>(8);
+    public static List<FieldInjector> getInjectFields(Ioc ioc, ClassDefine classDefine) {
+        List<FieldInjector> injectors = new ArrayList<FieldInjector>(8);
         for (Field field : classDefine.getDeclaredFields()) {
             for (Annotation annotation : field.getAnnotations()) {
-                if (annotation.annotationType().equals(Inject.class)) {
-                	injectors.add(field);
+            	InjectWith with = annotation.annotationType().getAnnotation(InjectWith.class);
+                if (with != null) {
+                	injectors.add(new FieldInjector(ioc, field));
                 }
             }
         }
@@ -45,25 +47,12 @@ public class IocKit {
     
     public static Object getBean(Ioc ioc, BeanDefine beanDefine) {
     	ClassDefine classDefine = ClassDefine.create(beanDefine.getType());
-		List<Field> fields = IocKit.getInjectFields(classDefine);
-		try {
-			Object bean = beanDefine.getBean();
-			for (Field field : fields) {
-				String name = field.getType().getName();
-				Object value = ioc.getBean(name);
-				if (value == null) {
-					throw new IllegalStateException("Can't inject bean: " + name + " for field: " + field);
-				}
-				field.setAccessible(true);
-				field.set(bean, value);
-			}
-			return bean;
-		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
+		List<FieldInjector> fieldInjectors = IocKit.getInjectFields(ioc, classDefine);
+		Object bean = beanDefine.getBean();
+		for (FieldInjector fieldInjector : fieldInjectors) {
+			fieldInjector.injection(bean);
 		}
-        return null;
+		return bean;
     }
 	
 }

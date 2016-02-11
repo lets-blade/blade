@@ -18,7 +18,11 @@ package com.blade.ioc;
 import java.util.List;
 import java.util.Set;
 
+import com.blade.ioc.loader.IocLoader;
+
 public interface Ioc {
+	
+	void load(IocLoader iocLoader);
 	
 	void addBean(Object bean);
 	

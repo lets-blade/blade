@@ -20,6 +20,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import com.blade.ioc.injector.FieldInjector;
+
 /**
  * Automatic injection
  *
@@ -27,6 +29,7 @@ import java.lang.annotation.Target;
  * @since	1.0
  */
 @Target(ElementType.FIELD)
+@InjectWith(FieldInjector.class)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Inject {
 	
