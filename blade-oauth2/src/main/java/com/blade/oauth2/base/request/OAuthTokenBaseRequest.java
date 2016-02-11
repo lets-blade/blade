@@ -4,14 +4,14 @@
 
 package com.blade.oauth2.base.request;
 
-import blade.kit.StringKit;
-
-import com.blade.Aop;
 import com.blade.oauth2.OAuth;
 import com.blade.oauth2.base.validator.OAuthValidator;
 import com.blade.oauth2.exception.OAuthProblemException;
 import com.blade.oauth2.kit.OAuthKit;
 import com.blade.web.http.Request;
+
+import blade.kit.StringKit;
+import blade.kit.reflect.ReflectKit;
 
 /**
  * Abstract OAuth Token request class
@@ -38,7 +38,7 @@ public abstract class OAuthTokenBaseRequest extends OAuthBaseRequest {
 			throw OAuthKit
 					.handleOAuthProblemException("Invalid grant_type parameter value");
 		}
-		return Aop.createT(clazz);
+		return ReflectKit.newBean(clazz);
 	}
 
 	public String getPassword() {
