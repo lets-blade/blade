@@ -46,7 +46,7 @@ public class PropConfigAdapter extends ConfigAdapter {
 				configMap.put(key, value);
 			}
 			
-			LOGGER.debug("加载properties文件 [" + prop_file + "]");
+			LOGGER.debug("Loading config file: [classpath:/" + prop_file + "]");
 			return this;
 		} catch (IOException e) {
 			throw new ConfigAdapterException("load properties file error!");

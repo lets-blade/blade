@@ -30,7 +30,7 @@ import com.blade.view.template.ModelAndView;
  * @since	1.0
  */
 public interface Response {
-
+	
 	/**
 	 * @return	Return HttpServletResponse
 	 */

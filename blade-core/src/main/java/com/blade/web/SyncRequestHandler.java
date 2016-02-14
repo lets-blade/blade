@@ -51,17 +51,21 @@ import blade.kit.StringKit;
  */
 public class SyncRequestHandler {
 	
-	private static final Logger LOGGER = LoggerFactory.getLogger(SyncRequestHandler.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(DispatcherServlet.class);
 
-	private Blade blade = Blade.me();
+	private Blade blade;
 	
 	private ServletContext servletContext;
 	
 	private RouteMatcher routeMatcher;
 	
+	private StaticFileFilter staticFileFilter;
+	
 	public SyncRequestHandler(ServletContext servletContext, Routers routers) {
+		this.blade = Blade.me();
 		this.servletContext = servletContext;
 		this.routeMatcher = new RouteMatcher(routers);
+		this.staticFileFilter = new StaticFileFilter(blade.staticFolder());
 	}
 	
 	public void handle(HttpServletRequest httpRequest, HttpServletResponse httpResponse){
@@ -75,16 +79,14 @@ public class SyncRequestHandler {
         String uri = Path.getRelativePath(httpRequest.getRequestURI(), servletContext.getContextPath());
         
         // If it is static, the resource is handed over to the filter
-        if(null != blade.staticFolder() && blade.staticFolder().length > 0){
-        	if(!filterStaticFolder(uri)){
-        		if(LOGGER.isDebugEnabled()){
-                	LOGGER.debug("Request : {}\t{}", method, uri);
-                }
-        		String realpath = httpRequest.getServletContext().getRealPath(uri);
-        		ResponsePrint.printStatic(uri, realpath, httpResponse);
-				return;
-        	}
-        }
+    	if(staticFileFilter.isStatic(uri)){
+    		if(LOGGER.isDebugEnabled()){
+            	LOGGER.debug("Request : {}\t{}", method, uri);
+            }
+    		String realpath = httpRequest.getServletContext().getRealPath(uri);
+    		ResponsePrint.printStatic(uri, realpath, httpResponse);
+			return;
+    	}
         
         LOGGER.info("Request : {}\t{}", method, uri);
         
@@ -110,6 +112,7 @@ public class SyncRequestHandler {
 				if(result){
 					// execute
 					handle(request, response, route);
+					response.status(HttpStatus.OK);
 					if(!request.isAbort()){
 						// after inteceptor
 						List<Route> afters = routeMatcher.getAfter(uri);
@@ -189,22 +192,6 @@ public class SyncRequestHandler {
 			// execute
 			RouteArgument.executeMethod(target, actionMethod, request, response);
 		}
-	}
-
-	/**
-	 * Filter out the directory
-	 * 
-	 * @param uri	URI represents the current path, filtering in a static directory
-	 * @return		Return false, filter the success; return true, do not filter
-	 */
-	private boolean filterStaticFolder(String uri){
-		int len = blade.staticFolder().length;
-    	for(int i=0; i<len; i++){
-    		if(uri.startsWith(blade.staticFolder()[i])){
-    			return false;
-    		}
-    	}
-    	return true;
 	}
 	
     

@@ -114,10 +114,10 @@ public class Routers {
 				LOGGER.warn("\tInterceptor {} -> {} has exist", path, httpMethod.toString());
 			}
 			this.interceptors.put(key, route);
-			LOGGER.debug("Add Interceptor：{}", route);
+			LOGGER.info("Add Interceptor：{}", route);
 		} else {
 			this.routes.put(key, route);
-			LOGGER.debug("Add Route：{}", route);
+			LOGGER.info("Add Route：{}", route);
 		}
 		
 	}

@@ -18,8 +18,10 @@ package com.blade;
 import java.io.InputStream;
 import java.text.ParseException;
 import java.util.List;
+import java.util.Set;
 
 import com.blade.ioc.Ioc;
+import com.blade.ioc.IocApplication;
 import com.blade.ioc.SampleIoc;
 import com.blade.loader.BladeConfig;
 import com.blade.loader.Configurator;
@@ -121,9 +123,11 @@ public class Blade {
 	 * Set Blade initialize
 	 * @param isInit	initialize
 	 */
-	public void setInit(boolean isInit) {
-		this.isInit = isInit;
-		new BladeBanner().print(System.out);
+	public synchronized void init() {
+		if(!this.isInit){
+			this.isInit = true;
+			new BladeBanner().print(System.out);
+		}
 	}
 	
 	/**
@@ -636,7 +640,7 @@ public class Blade {
 	/**
 	 * @return	Return static resource directory
 	 */
-	public String[] staticFolder(){
+	public Set<String> staticFolder(){
 		return bladeConfig.getStaticFolders();
 	}
 	
@@ -732,6 +736,10 @@ public class Blade {
 	 */
 	public boolean isInit() {
 		return isInit;
+	}
+	
+	public boolean httpCache() {
+		return bladeConfig.isHttpCache();
 	}
 	
 }

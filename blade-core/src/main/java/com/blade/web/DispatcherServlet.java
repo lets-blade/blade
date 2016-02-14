@@ -32,6 +32,7 @@ import com.blade.Bootstrap;
 import com.blade.route.RouteBuilder;
 
 import blade.kit.StringKit;
+import blade.kit.SystemKit;
 
 /**
  * Blade Core DispatcherServlet
@@ -58,14 +59,28 @@ public class DispatcherServlet extends HttpServlet {
 	
 	public DispatcherServlet(Bootstrap bootstrap) {
 		this.bootstrap = bootstrap;
-		blade.setInit(true);
+		blade.init();
 	}
 	
 	@Override
 	public void init(ServletConfig config) throws ServletException {
 		servletContext = config.getServletContext();
 		if(!blade.isInit()){
-		    blade.webRoot(servletContext.getRealPath("/"));
+			
+			LOGGER.info("DispatcherServlet start ...");
+			LOGGER.info("jdk.version = {}", SystemKit.getJavaInfo().getVersion());
+			LOGGER.info("user.dir = {}", System.getProperty("user.dir"));
+			LOGGER.info("java.io.tmpdir = {}", System.getProperty("java.io.tmpdir"));
+			LOGGER.info("user.timezone = {}", System.getProperty("user.timezone"));
+			LOGGER.info("file.encoding = {}", System.getProperty("file.encoding"));
+			
+			long initStart = System.currentTimeMillis();
+			
+		    blade.webRoot(DispatchKit.getWebroot(servletContext).getPath());
+		    
+		    LOGGER.info("blade.webroot = {}", blade.webRoot());
+		    LOGGER.info("blade.isDev = {}", blade.isDev());
+		    
 			this.bootstrap = blade.bootstrap();
 			if(null == bootstrap){
 				String bootStrapClassName = config.getInitParameter("bootstrap");
@@ -93,9 +108,9 @@ public class DispatcherServlet extends HttpServlet {
 		    
 		    syncRequestHandler = new SyncRequestHandler(servletContext, blade.routers());
 		    
-		    blade.setInit(true);
+		    blade.init();
 		    
-		    LOGGER.info("blade init complete!");
+		    LOGGER.info("DispatcherFilter initialize successfully, Time elapsed: {} ms.", System.currentTimeMillis() - initStart);
 		}
 	}
 
@@ -103,6 +118,9 @@ public class DispatcherServlet extends HttpServlet {
 	protected void service(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws ServletException, IOException {
 		httpRequest.setCharacterEncoding(blade.encoding());
 		httpResponse.setCharacterEncoding(blade.encoding());
+		if(!blade.httpCache()){
+			DispatchKit.setNoCache(httpResponse);
+		}
 		syncRequestHandler.handle(httpRequest, httpResponse);
 	}
 	

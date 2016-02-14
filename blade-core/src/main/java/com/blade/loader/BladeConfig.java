@@ -16,10 +16,11 @@
 package com.blade.loader;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import blade.kit.CollectionKit;
 import blade.kit.PatternKit;
 import blade.kit.config.Config;
 import blade.kit.config.loader.ConfigLoader;
@@ -37,13 +38,13 @@ public class BladeConfig {
 	private Map<String, String> configMap;
 	
 	// Storage of all routing packets 
-	private List<String> routePackages = Collections.emptyList();
+	private List<String> routePackages = CollectionKit.newArrayList();
 	
 	// Store all IOC packages 
-	private List<String> iocPackages = Collections.emptyList();
+	private List<String> iocPackages = CollectionKit.newArrayList();
 	
 	// Store all filter directories 
-	private List<String> staticFolders = Collections.emptyList();
+	private Set<String> staticFolders = CollectionKit.newHashSet();
 	
 	// Base package
 	private String basePackage;
@@ -174,9 +175,8 @@ public class BladeConfig {
 		this.interceptorPackage = interceptorPackage;
 	}
 
-	public String[] getStaticFolders() {
-		String[] folderArr = new String[staticFolders.size()];
-		return staticFolders.toArray(folderArr);
+	public Set<String> getStaticFolders() {
+		return staticFolders;
 	}
 	
 	public void setStaticFolders(String ... packages) {
