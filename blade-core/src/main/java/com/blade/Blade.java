@@ -32,7 +32,7 @@ import com.blade.route.Routers;
 import com.blade.route.loader.ClassPathRouteLoader;
 import com.blade.server.Server;
 import com.blade.view.template.JspEngine;
-import com.blade.view.template.TemplteEngine;
+import com.blade.view.template.TemplateEngine;
 import com.blade.web.BladeBanner;
 import com.blade.web.http.HttpMethod;
 
@@ -81,7 +81,7 @@ public class Blade {
     /**
      * default render is jspRender
      */
-    private TemplteEngine templteEngine = null;
+    private TemplateEngine templateEngine = null;
     
     /**
      * manage route
@@ -103,7 +103,7 @@ public class Blade {
 		this.ioc = new SampleIoc();
 		this.iocApplication = new IocApplication(ioc);
 		this.routers = new Routers(ioc);
-		this.templteEngine = new JspEngine();
+		this.templateEngine = new JspEngine();
 	}
 	
 	public static final class BladeHolder {
@@ -393,12 +393,12 @@ public class Blade {
 	/**
 	 * Setting Render Engin, Default is JspRender
 	 * 
-	 * @param templteEngine 	Render engine object
-	 * @return			return blade
+	 * @param templateEngine 	Render engine object
+	 * @return					return blade
 	 */
-	public Blade viewEngin(TemplteEngine templteEngine) {
-		Assert.notNull(templteEngine);
-		this.templteEngine = templteEngine;
+	public Blade viewEngin(TemplateEngine templateEngine) {
+		Assert.notNull(templateEngine);
+		this.templateEngine = templateEngine;
 		return this;
 	}
 	
@@ -648,10 +648,10 @@ public class Blade {
 	}
 	
 	/**
-	 * @return	Return current render engine
+	 * @return	Return current templateEngine
 	 */
-	public TemplteEngine templteEngine() {
-		return this.templteEngine;
+	public TemplateEngine templateEngine() {
+		return this.templateEngine;
 	}
 
 	/**

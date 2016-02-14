@@ -16,28 +16,28 @@
 package com.blade.view.template;
 
 /**
- * RenderException
+ * TemplateException
  *
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since	1.0
  */
-public class TemplteException extends RuntimeException {
+public class TemplateException extends RuntimeException {
 
 	private static final long serialVersionUID = 1L;
 
-	public TemplteException() {
+	public TemplateException() {
 		super();
 	}
 
-	public TemplteException(String message, Throwable cause) {
+	public TemplateException(String message, Throwable cause) {
 		super(message, cause);
 	}
 
-	public TemplteException(String message) {
+	public TemplateException(String message) {
 		super(message);
 	}
 
-	public TemplteException(Throwable cause) {
+	public TemplateException(Throwable cause) {
 		super(cause);
 	}
 

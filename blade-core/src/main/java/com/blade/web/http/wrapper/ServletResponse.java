@@ -25,7 +25,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.blade.context.BladeWebContext;
 import com.blade.view.template.ModelAndView;
-import com.blade.view.template.TemplteEngine;
+import com.blade.view.template.TemplateEngine;
 import com.blade.web.http.HttpStatus;
 import com.blade.web.http.Path;
 import com.blade.web.http.Request;
@@ -45,9 +45,9 @@ public class ServletResponse implements Response {
 	
 	private boolean written = false;
 	
-	private TemplteEngine render;
+	private TemplateEngine render;
 			
-	public ServletResponse(HttpServletResponse response, TemplteEngine render) {
+	public ServletResponse(HttpServletResponse response, TemplateEngine render) {
 		this.response = response;
 		this.render = render;
 	}

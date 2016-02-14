@@ -35,7 +35,7 @@ import com.blade.context.BladeWebContext;
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since	1.0
  */
-public final class JspEngine implements TemplteEngine {
+public final class JspEngine implements TemplateEngine {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(JspEngine.class);
 	

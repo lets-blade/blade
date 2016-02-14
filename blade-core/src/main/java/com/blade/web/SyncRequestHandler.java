@@ -93,7 +93,7 @@ public class SyncRequestHandler {
     		Request request = new ServletRequest(httpRequest);
             
     		// Create Response
-            response = new ServletResponse(httpResponse, blade.templteEngine());
+            response = new ServletResponse(httpResponse, blade.templateEngine());
             
             // Init Context
          	BladeWebContext.setContext(servletContext, request, response);

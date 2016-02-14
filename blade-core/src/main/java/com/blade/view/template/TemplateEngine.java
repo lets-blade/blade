@@ -18,13 +18,13 @@ package com.blade.view.template;
 import java.io.Writer;
 
 /**
- * TemplteEngine Interface, For view layer to display data 
+ * TemplateEngine Interface, For view layer to display data 
  *
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since	1.0
  */
-public interface TemplteEngine {
+public interface TemplateEngine {
 	
-	public void render(ModelAndView modelAndView, Writer writer) throws TemplteException;
+	public void render(ModelAndView modelAndView, Writer writer) throws TemplateException;
 	
 }
