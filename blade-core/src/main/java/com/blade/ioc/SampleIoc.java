@@ -22,10 +22,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.blade.ioc.loader.IocLoader;
 
 import blade.kit.Assert;
-import blade.kit.log.Logger;
 
 /**
  * The default IOC container implementation
@@ -35,7 +37,7 @@ import blade.kit.log.Logger;
  */
 public class SampleIoc implements Ioc {
 	
-	private static final Logger LOGGER = Logger.getLogger(Ioc.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(Ioc.class);
 	
 	private final Map<String, BeanDefine> pool = new HashMap<String, BeanDefine>();
 	
@@ -89,10 +91,10 @@ public class SampleIoc implements Ioc {
     	Assert.notNull(name);
     	Assert.notNull(beanDefine);
         
-    	LOGGER.debug("addBean: %s", name);
+    	LOGGER.debug("addBean: {}", name);
 
         if (pool.put(name, beanDefine) != null) {
-        	LOGGER.warn("Duplicated Bean: %s", name);
+        	LOGGER.warn("Duplicated Bean: {}", name);
         }
         
     }
@@ -123,12 +125,12 @@ public class SampleIoc implements Ioc {
     	Assert.isFalse(beanClass.isInterface(), "Must not be interface: %s", beanClass.getName());
     	Assert.isFalse(Modifier.isAbstract(beanClass.getModifiers()), "Must not be abstract class: %s", beanClass.getName());
     	
-        LOGGER.debug("addBean: %s", name, beanClass.getName());
+        LOGGER.debug("addBean: {}={}", name, beanClass.getName());
         
         BeanDefine beanDefine = this.getBeanDefine(beanClass, singleton);
         
         if (pool.put(name, beanDefine) != null) {
-        	LOGGER.warn("Duplicated Bean: %s", name);
+        	LOGGER.warn("Duplicated Bean: {}", name);
         }
         
         // add interface

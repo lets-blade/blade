@@ -27,14 +27,14 @@ import com.blade.loader.ClassPathRouteLoader;
 import com.blade.loader.BladeConfig;
 import com.blade.loader.Configurator;
 import com.blade.plugin.Plugin;
-import com.blade.render.JspRender;
-import com.blade.render.Render;
 import com.blade.route.Route;
 import com.blade.route.RouteException;
 import com.blade.route.RouteGroup;
 import com.blade.route.RouteHandler;
 import com.blade.route.Routers;
 import com.blade.server.Server;
+import com.blade.view.template.JspEngine;
+import com.blade.view.template.TemplteEngine;
 import com.blade.web.http.HttpMethod;
 
 import blade.kit.Assert;
@@ -83,7 +83,7 @@ public class Blade {
     /**
      * default render is jspRender
      */
-    private Render render = null;
+    private TemplteEngine render = null;
     
     /**
      * manage route
@@ -105,7 +105,7 @@ public class Blade {
 		this.ioc = new SampleIoc();
 		this.iocApplication = new IocApplication(ioc);
 		this.routers = new Routers(ioc);
-		this.render = new JspRender();
+		this.render = new JspEngine();
 	}
 	
 	public static final class BladeHolder {
@@ -448,52 +448,9 @@ public class Blade {
 	 * @param render 	Render engine object
 	 * @return			return blade
 	 */
-	public Blade viewEngin(Render render) {
+	public Blade viewEngin(TemplteEngine render) {
 		Assert.notNull(render);
 		this.render = render;
-		return this;
-	}
-	
-	/**
-	 * Setting default view prefix, default is WEBROOT/WEB-INF/
-	 * 
-	 * @param prefix 	views path, e.g:/WEB-INF/views/
-	 * @return			return blade
-	 */
-	public Blade viewPrefix(final String prefix) {
-		Assert.notBlank(prefix);
-		if(prefix.startsWith("/")){
-			config.setViewPrefix(prefix);
-		}
-		return this;
-	}
-	
-	/**
-	 * Setting view default suffix, default is .jsp
-	 * 
-	 * @param suffix	view suffix, e.g:.html .vm
-	 * @return			return blade
-	 */
-	public Blade viewSuffix(final String suffix) {
-		Assert.notBlank(suffix);
-		if(suffix.startsWith(".")){
-			config.setViewSuffix(suffix);
-		}
-		return this;
-	}
-	
-	/**
-	 * Also set the view's directory and view the suffix name
-	 * 
-	 * @param viewPath	views path, e.g:/WEB-INF/views
-	 * @param viewExt	view suffix, e.g:.html .vm
-	 * @return			return blade
-	 */
-	public Blade view(final String viewPath, final String viewExt) {
-		Assert.notBlank(viewPath);
-		Assert.notBlank(viewExt);
-		viewPrefix(viewPath);
-		viewSuffix(viewExt);
 		return this;
 	}
 	
@@ -756,7 +713,7 @@ public class Blade {
 	/**
 	 * @return	Return current render engine
 	 */
-	public Render render() {
+	public TemplteEngine render() {
 		return this.render;
 	}
 

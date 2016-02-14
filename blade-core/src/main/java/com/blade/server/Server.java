@@ -17,8 +17,8 @@ package com.blade.server;
 
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
-
-import blade.kit.log.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.blade.web.DispatcherServlet;
 
@@ -30,7 +30,7 @@ import com.blade.web.DispatcherServlet;
  */
 public class Server {
 	
-	private static final Logger LOGGER = Logger.getLogger(Server.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(Server.class);
 	
 	private int port = 9000;
 	
@@ -68,7 +68,7 @@ public class Server {
         server.setHandler(this.context);
 	    server.start();
 //	    server.dump(System.err);
-	    LOGGER.info("Blade Server Listen on 0.0.0.0:" + this.port);
+	    LOGGER.info("Blade Server Listen on 0.0.0.0:{}", this.port);
 	}
 	
 	public void join() throws InterruptedException {

@@ -19,10 +19,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.blade.ioc.Ioc;
 import com.blade.plugin.Plugin;
 
-import blade.kit.log.Logger;
 import blade.kit.resource.ClassPathClassReader;
 import blade.kit.resource.ClassReader;
 
@@ -34,7 +36,7 @@ import blade.kit.resource.ClassReader;
  */
 public class IocApplication {
 
-	private static final Logger LOGGER = Logger.getLogger(IocApplication.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(IocApplication.class);
 	
 	/**
 	 * Ioc Container
@@ -81,7 +83,7 @@ public class IocApplication {
 		
 		Set<String> names = ioc.getBeanNames();
 		for(String name : names){
-			LOGGER.info("Add Object：" + name + "=" + ioc.getBean(name));
+			LOGGER.info("Add Object：{}={}", name, ioc.getBean(name));
 		}
 		
 	}

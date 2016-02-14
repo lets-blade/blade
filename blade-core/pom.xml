@@ -31,10 +31,9 @@
 			<version>1.2.9-alpha</version>
 		</dependency>
 		<dependency>
-			<groupId>com.bladejava</groupId>
-			<artifactId>blade-aop</artifactId>
-			<version>1.0.0</version>
-			<scope>provided</scope>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>1.7.16</version>
 		</dependency>
 		<dependency>
 			<groupId>javax.servlet</groupId>

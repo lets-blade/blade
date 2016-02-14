@@ -20,13 +20,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.blade.ioc.Ioc;
 import com.blade.web.http.HttpMethod;
 import com.blade.web.http.Request;
 import com.blade.web.http.Response;
 
 import blade.kit.Assert;
-import blade.kit.log.Logger;
 
 /**
  * Registration, management route
@@ -36,7 +38,7 @@ import blade.kit.log.Logger;
  */
 public class Routers {
 	
-	private Logger LOGGER = Logger.getLogger(Routers.class);
+	private Logger LOGGER = LoggerFactory.getLogger(Routers.class);
 	
 	private Ioc ioc = null;
 	
@@ -67,18 +69,18 @@ public class Routers {
 		
 		// existent
 		if (null != this.routes.get(key)) {
-			LOGGER.warn("\tRoute "+ path + " -> " + httpMethod.toString() +" has exist");
+			LOGGER.warn("\tRoute {} -> {} has exist", path, httpMethod.toString());
 		}
 		
 		if(httpMethod == HttpMethod.BEFORE || httpMethod == HttpMethod.AFTER){
 			if (null != this.interceptors.get(key)) {
-				LOGGER.warn("\tInterceptor "+ path + " -> " + httpMethod.toString() +" has exist");
+				LOGGER.warn("\tInterceptor {} -> {} has exist", path, httpMethod.toString());
 			}
 			this.interceptors.put(key, route);
-			LOGGER.debug("Add Interceptor：" + route);
+			LOGGER.debug("Add Interceptor：{}", route);
 		} else {
 			this.routes.put(key, route);
-			LOGGER.debug("Add Route：" + route);
+			LOGGER.debug("Add Route：{}", route);
 		}
 	}
 	
@@ -103,19 +105,19 @@ public class Routers {
 		String key = path + "#" + httpMethod.toString();
 		// existent
 		if (null != this.routes.get(key)) {
-			LOGGER.warn("\tRoute "+ path + " -> " + httpMethod.toString() +" has exist");
+			LOGGER.warn("\tRoute {} -> {} has exist", path, httpMethod.toString());
 		}
 		
 		Route route = new Route(httpMethod, path, controller, method);
 		if(httpMethod == HttpMethod.BEFORE || httpMethod == HttpMethod.AFTER){
 			if (null != this.interceptors.get(key)) {
-				LOGGER.warn("\tInterceptor "+ path + " -> " + httpMethod.toString() +" has exist");
+				LOGGER.warn("\tInterceptor {} -> {} has exist", path, httpMethod.toString());
 			}
 			this.interceptors.put(key, route);
-			LOGGER.debug("Add Interceptor：" + route);
+			LOGGER.debug("Add Interceptor：{}", route);
 		} else {
 			this.routes.put(key, route);
-			LOGGER.debug("Add Route：" + route);
+			LOGGER.debug("Add Route：{}", route);
 		}
 		
 	}

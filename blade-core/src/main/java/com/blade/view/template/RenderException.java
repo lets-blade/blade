@@ -13,18 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.blade.render;
-
-import java.io.Writer;
+package com.blade.view.template;
 
 /**
- * Render Interface, For view layer to display data 
+ * RenderException
  *
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since	1.0
  */
-public interface Render {
-	
-	public void render(ModelAndView modelAndView, Writer writer) throws RenderException;
-	
+public class RenderException extends RuntimeException {
+
+	private static final long serialVersionUID = 1L;
+
+	public RenderException() {
+		super();
+	}
+
+	public RenderException(String message, Throwable cause) {
+		super(message, cause);
+	}
+
+	public RenderException(String message) {
+		super(message);
+	}
+
+	public RenderException(Throwable cause) {
+		super(cause);
+	}
+
 }

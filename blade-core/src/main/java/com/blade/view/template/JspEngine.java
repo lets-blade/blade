@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.blade.render;
+package com.blade.view.template;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -24,7 +24,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import blade.kit.log.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.blade.context.BladeWebContext;
 
@@ -34,11 +35,17 @@ import com.blade.context.BladeWebContext;
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since	1.0
  */
-public final class JspRender implements Render {
+public final class JspEngine implements TemplteEngine {
 	
-	private static final Logger LOGGER = Logger.getLogger(JspRender.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(JspEngine.class);
 	
-	public JspRender() {
+	private String viewPath = "/WEB-INF/";
+	
+	public JspEngine() {
+	}
+	
+	public JspEngine(String viewPath) {
+		this.viewPath = viewPath;
 	}
 	
 	@Override
@@ -48,7 +55,7 @@ public final class JspRender implements Render {
 		
 		try {
 			Map<String, Object> model = modelAndView.getModel();
-			String viewPath = modelAndView.getView();
+			String realPath = viewPath + modelAndView.getView();
 			
 			if (null != model && !model.isEmpty()) {
 				Set<String> keys = model.keySet();
@@ -56,13 +63,13 @@ public final class JspRender implements Render {
 					servletRequest.setAttribute(key, model.get(key));
 				}
 			}
-			servletRequest.getRequestDispatcher(viewPath).forward(servletRequest, servletResponse);
+			servletRequest.getRequestDispatcher(realPath).forward(servletRequest, servletResponse);
 		} catch (ServletException e) {
 			e.printStackTrace();
-			LOGGER.error(e);
+			LOGGER.error("", e);
 		} catch (IOException e) {
 			e.printStackTrace();
-			LOGGER.error(e);
+			LOGGER.error("", e);
 		}
 	}
     

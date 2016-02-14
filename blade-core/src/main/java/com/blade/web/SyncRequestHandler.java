@@ -22,17 +22,17 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import blade.kit.StringKit;
-import blade.kit.log.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.blade.Blade;
 import com.blade.Const;
 import com.blade.context.BladeWebContext;
-import com.blade.render.ModelAndView;
 import com.blade.route.Route;
 import com.blade.route.RouteHandler;
 import com.blade.route.RouteMatcher;
 import com.blade.route.Routers;
+import com.blade.view.template.ModelAndView;
 import com.blade.web.http.HttpStatus;
 import com.blade.web.http.Path;
 import com.blade.web.http.Request;
@@ -40,6 +40,8 @@ import com.blade.web.http.Response;
 import com.blade.web.http.ResponsePrint;
 import com.blade.web.http.wrapper.ServletRequest;
 import com.blade.web.http.wrapper.ServletResponse;
+
+import blade.kit.StringKit;
 
 /**
  * Synchronous request processor
@@ -49,7 +51,7 @@ import com.blade.web.http.wrapper.ServletResponse;
  */
 public class SyncRequestHandler {
 	
-	private static final Logger LOGGER = Logger.getLogger(SyncRequestHandler.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(SyncRequestHandler.class);
 
 	private Blade blade = Blade.me();
 	
@@ -76,7 +78,7 @@ public class SyncRequestHandler {
         if(null != blade.staticFolder() && blade.staticFolder().length > 0){
         	if(!filterStaticFolder(uri)){
         		if(LOGGER.isDebugEnabled()){
-                	LOGGER.debug("Request : " + method + "\t" + uri);
+                	LOGGER.debug("Request : {}\t{}", method, uri);
                 }
         		String realpath = httpRequest.getServletContext().getRealPath(uri);
         		ResponsePrint.printStatic(uri, realpath, httpResponse);
@@ -84,7 +86,7 @@ public class SyncRequestHandler {
         	}
         }
         
-        LOGGER.info("Request : " + method + "\t" + uri);
+        LOGGER.info("Request : {}\t{}", method, uri);
         
         try {
             // Create Request

@@ -15,13 +15,15 @@
  */
 package com.blade.verify;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.blade.web.http.Request;
 import com.blade.web.http.Response;
 import com.blade.web.http.wrapper.Session;
 
 import blade.kit.HashidKit;
 import blade.kit.StringKit;
-import blade.kit.log.Logger;
 
 /**
  * CSRF token Manager
@@ -31,7 +33,7 @@ import blade.kit.log.Logger;
  */
 public class CSRFTokenManager {
 	
-	private static Logger LOGGER = Logger.getLogger(CSRFTokenManager.class);
+	private static Logger LOGGER = LoggerFactory.getLogger(CSRFTokenManager.class);
 	
 	private static CSRFConfig config = new CSRFConfig();
 	
@@ -69,7 +71,7 @@ public class CSRFTokenManager {
         	if(config.setCookie){
         		response.cookie(config.cookiePath, config.cookie, token, config.expire, config.secured);
         	}
-        	LOGGER.info("create csrf_token：" + token);
+        	LOGGER.debug("create csrf_token：{}", token);
         }
         return token;
     }

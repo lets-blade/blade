@@ -27,8 +27,8 @@ import blade.kit.Assert;
 
 import com.blade.Blade;
 import com.blade.context.BladeWebContext;
-import com.blade.render.ModelAndView;
-import com.blade.render.Render;
+import com.blade.view.template.ModelAndView;
+import com.blade.view.template.TemplteEngine;
 import com.blade.web.http.HttpStatus;
 import com.blade.web.http.Path;
 import com.blade.web.http.Request;
@@ -46,9 +46,9 @@ public class ServletResponse implements Response {
 	
 	private boolean written = false;
 	
-	private Render render;
+	private TemplteEngine render;
 			
-	public ServletResponse(HttpServletResponse response, Render render) {
+	public ServletResponse(HttpServletResponse response, TemplteEngine render) {
 		this.response = response;
 		this.render = render;
 	}

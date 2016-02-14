@@ -17,7 +17,6 @@ package com.blade.web;
 
 import java.io.IOException;
 
-import javax.servlet.AsyncContext;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -25,13 +24,14 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.blade.Blade;
 import com.blade.Bootstrap;
 import com.blade.route.RouteBuilder;
-import com.blade.route.RouteMatcher;
 
 import blade.kit.StringKit;
-import blade.kit.log.Logger;
 
 /**
  * Blade Core DispatcherServlet
@@ -43,7 +43,7 @@ public class DispatcherServlet extends HttpServlet {
 	
 	private static final long serialVersionUID = -2607425162473178733L;
 	
-	private static final Logger LOGGER = Logger.getLogger(DispatcherServlet.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(DispatcherServlet.class);
 	
 	private Blade blade = Blade.me();
 	
@@ -92,9 +92,11 @@ public class DispatcherServlet extends HttpServlet {
 			this.bootstrap.contextInitialized(blade);
 		    
 		    syncRequestHandler = new SyncRequestHandler(servletContext, blade.routers());
-		    AsynRequestHandler.routeMatcher = new RouteMatcher(blade.routers());
 		    
 		    blade.setInit(true);
+		    
+		    new BladeBanner().print(System.out);
+		    
 		    LOGGER.info("blade init complete!");
 		}
 	}
@@ -103,16 +105,7 @@ public class DispatcherServlet extends HttpServlet {
 	protected void service(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws ServletException, IOException {
 		httpRequest.setCharacterEncoding(blade.encoding());
 		httpResponse.setCharacterEncoding(blade.encoding());
-		
-		boolean isAsync = httpRequest.isAsyncSupported();
-		if (isAsync) {
-			AsyncContext asyncCtx = httpRequest.startAsync();
-			asyncCtx.addListener(new AppAsyncListener());
-			asyncCtx.setTimeout(10000L);
-			asyncCtx.start(new AsynRequestHandler(servletContext, asyncCtx));
-		} else {
-			syncRequestHandler.handle(httpRequest, httpResponse);
-		}
+		syncRequestHandler.handle(httpRequest, httpResponse);
 	}
 	
 	/**
