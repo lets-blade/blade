@@ -15,11 +15,9 @@
  */
 package com.blade.loader;
 
-import java.util.Map;
-
-import com.blade.Const;
-
+import blade.kit.Assert;
 import blade.kit.StringKit;
+import blade.kit.config.Config;
 
 /**
  * Blade configuration
@@ -27,70 +25,39 @@ import blade.kit.StringKit;
  * @author <a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since 1.0
  */
-public class Configurator {
-
-	// Configuration object
-	private BladeConfig bladeConfig;
-
-	// Configuration Map
-	private Map<String, String> configMap;
-
-	public Configurator(BladeConfig bladeConfig, Map<String, String> configMap) {
-		this.bladeConfig = bladeConfig;
-		this.configMap = configMap;
-	}
-
-	public void run() {
-
-		if (null != configMap && configMap.size() > 0) {
-
-			bladeConfig.setConfigMap(configMap);
-			
-			String route = configMap.get(Const.BLADE_ROUTE);
-			String ioc = configMap.get(Const.BLADE_IOC);
-			String filter_folder = configMap.get(Const.BLADE_FILTER_FOLDER);
-			String encoding = configMap.get(Const.BLADE_ENCODING);
-			String view404 = configMap.get(Const.BLADE_VIEW_404);
-			String view500 = configMap.get(Const.BLADE_VIEW_500);
-			String dev = configMap.get(Const.BLADE_DEV);
-			String xss = configMap.get(Const.BLADE_ENABLE_XSS);
-
-			if (StringKit.isNotBlank(route)) {
-				String[] blade_routes = StringKit.split(route, ",");
-				bladeConfig.setRoutePackages(blade_routes);
-			}
-
-			if (StringKit.isNotBlank(filter_folder)) {
-				String[] blade_filter_folders = StringKit.split(filter_folder, ",");
-				bladeConfig.setStaticFolders(blade_filter_folders);
-			}
-			
-			if (StringKit.isNotBlank(ioc)) {
-				String[] blade_iocs = StringKit.split(ioc, ",");
-				bladeConfig.setIocPackages(blade_iocs);
-			}
-			
-			if (StringKit.isNotBlank(encoding)) {
-				bladeConfig.setEncoding(encoding);
-			}
-
-			if (StringKit.isNotBlank(view404)) {
-				bladeConfig.setView404(view404);
-			}
-
-			if (StringKit.isNotBlank(view500)) {
-				bladeConfig.setView500(view500);
-			}
-
-			if (StringKit.isNotBlank(dev)) {
-				Boolean isDev = Boolean.parseBoolean(dev);
-				bladeConfig.setDev(isDev);
-			}
-			
-			if (StringKit.isNotBlank(xss)) {
-				Boolean enableXssBool = Boolean.valueOf(xss);
-				bladeConfig.setEnableXSS(enableXssBool);
-			}
+public final class Configurator {
+	
+	public static void init(BladeConfig bladeConfig, Config config) {
+		
+		Assert.notNull(bladeConfig);
+		Assert.notNull(config);
+		
+		Boolean dev = config.getBoolean("blade.dev");
+		Boolean httpCache = config.getBoolean("blade.http.cache");
+		Boolean httpXss = config.getBoolean("blade.http.xss");
+		
+		String httpEncoding = config.getString("blade.http.encoding");
+		String httpFilters = config.getString("blade.http.filters");
+		
+		if(null != dev){
+			bladeConfig.setDev(dev);
+		}
+		
+		if(null != httpCache){
+			bladeConfig.setHttpCache(httpCache);
+		}
+		
+		if(StringKit.isNotBlank(httpEncoding)){
+			bladeConfig.setEncoding(httpEncoding);
+		}
+		
+		if(null != httpXss){
+			bladeConfig.setHttpXss(httpXss);
+		}
+		
+		if(StringKit.isNotBlank(httpFilters)){
+			bladeConfig.setStaticFolders(httpFilters.split(","));
 		}
 	}
+	
 }

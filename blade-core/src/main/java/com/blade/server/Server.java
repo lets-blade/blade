@@ -34,7 +34,7 @@ public class Server {
 	
 	private int port = 9000;
 	
-	private boolean async = true;
+	private boolean async = false;
 	
 	private org.eclipse.jetty.server.Server server;
 	

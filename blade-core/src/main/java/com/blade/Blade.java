@@ -15,11 +15,9 @@
  */
 package com.blade;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.text.ParseException;
 import java.util.List;
-import java.util.Map;
 
 import com.blade.ioc.Ioc;
 import com.blade.ioc.SampleIoc;
@@ -35,12 +33,12 @@ import com.blade.route.loader.ClassPathRouteLoader;
 import com.blade.server.Server;
 import com.blade.view.template.JspEngine;
 import com.blade.view.template.TemplteEngine;
+import com.blade.web.BladeBanner;
 import com.blade.web.http.HttpMethod;
 
 import blade.kit.Assert;
-import blade.kit.IOKit;
 import blade.kit.config.loader.ConfigLoader;
-import blade.kit.json.JSONKit;
+import blade.kit.reflect.ReflectKit;
 
 /**
  * Blade Core Class
@@ -68,7 +66,7 @@ public class Blade {
     /**
 	 * Global configuration Object
 	 */
-	private BladeConfig config = null;
+	private BladeConfig bladeConfig = null;
 	
     /**
      * IOC Container, save javabean
@@ -101,7 +99,7 @@ public class Blade {
     private Server bladeServer;
     
 	private Blade() {
-		this.config = new BladeConfig();
+		this.bladeConfig = new BladeConfig();
 		this.ioc = new SampleIoc();
 		this.iocApplication = new IocApplication(ioc);
 		this.routers = new Routers(ioc);
@@ -125,6 +123,7 @@ public class Blade {
 	 */
 	public void setInit(boolean isInit) {
 		this.isInit = isInit;
+		new BladeBanner().print(System.out);
 	}
 	
 	/**
@@ -171,52 +170,8 @@ public class Blade {
 	public Blade setAppConf(String confName){
 		Assert.notBlank(confName);
 		blade.kit.config.Config config = ConfigLoader.load(confName);
-		this.configuration(config.getConfigMap());
+		Configurator.init(bladeConfig, config);
 		return this;
-	}
-	
-	/**
-	 * Setting JSON file configuration
-	 * File path based on classpath
-	 * 
-	 * @param fileName		json file name
-	 * @return				return blade
-	 */
-	public Blade setJsonConf(String fileName){
-		Assert.notBlank(fileName);
-		InputStream inputStream = Blade.class.getResourceAsStream(fileName);
-		if(null != inputStream){
-			try {
-				String json = IOKit.toString(inputStream);
-				Map<String, String> configMap = JSONKit.toMap(json);
-				configuration(configMap);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-		return this;
-	}
-	
-	/**
-	 * Setting json character config, Not recommended
-	 * 
-	 * @param json	json character
-	 * @return		return blade
-	 */
-	public Blade setAppJson(String json){
-		Assert.notBlank(json);
-		Map<String, String> configMap = JSONKit.toMap(json);
-		configuration(configMap);
-		return this;
-	}
-	
-	/**
-	 * Setting Map config
-	 * @param configMap	set config map	
-	 */
-	private void configuration(Map<String, String> configMap){
-		Assert.notEmpty(configMap);
-		new Configurator(config, configMap).run();
 	}
 	
 	/**
@@ -228,7 +183,7 @@ public class Blade {
      */
     public Blade routes(String...packages){
     	Assert.notNull(packages);
-    	config.setRoutePackages(packages);
+    	bladeConfig.setRoutePackages(packages);
     	return this;
     }
     
@@ -241,7 +196,7 @@ public class Blade {
      */
     public Blade defaultRoute(String basePackage){
     	Assert.notBlank(basePackage);
-   		config.setBasePackage(basePackage);
+    	bladeConfig.setBasePackage(basePackage);
     	return this;
     }
     
@@ -253,7 +208,7 @@ public class Blade {
      */
 	public Blade interceptor(String packageName) {
 		Assert.notBlank(packageName);
-		config.setInterceptorPackage(packageName);
+		bladeConfig.setInterceptorPackage(packageName);
 		return this;
 	}
 	
@@ -266,7 +221,7 @@ public class Blade {
     public Blade ioc(String...packages){
     	Assert.notNull(packages);
     	if(packages.length >0){
-    		config.setIocPackages(packages);
+    		bladeConfig.setIocPackages(packages);
     	}
     	return this;
     }
@@ -462,7 +417,7 @@ public class Blade {
 	 */
 	public Blade staticFolder(final String ... folders) {
 		Assert.notNull(folders);
-		config.setStaticFolders(folders);
+		bladeConfig.setStaticFolders(folders);
 		return this;
 	}
 	
@@ -472,8 +427,8 @@ public class Blade {
 	 * @param enableXSS	enable XSS, default is false
 	 * @return			return blade
 	 */
-	public Blade enableXSS(boolean enableXSS){
-		config.setEnableXSS(enableXSS);
+	public Blade enableXSS(boolean httpXss){
+		bladeConfig.setHttpXss(httpXss);
 		return this; 
 	}
 	
@@ -497,7 +452,11 @@ public class Blade {
      */
     public Blade app(Class<? extends Bootstrap> bootstrap){
     	Assert.notNull(bootstrap);
-    	ioc.addBean(bootstrap);
+    	try {
+			ioc.addBean(Bootstrap.class.getName(), ReflectKit.newInstance(bootstrap));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
     	return this;
     }
     
@@ -509,7 +468,7 @@ public class Blade {
      */
     public Blade setView404(final String view404){
     	Assert.notBlank(view404);
-    	config.setView404(view404);
+    	bladeConfig.setView404(view404);
     	return this;
     }
     
@@ -521,7 +480,7 @@ public class Blade {
      */
     public Blade setView500(final String view500){
     	Assert.notBlank(view500);
-    	config.setView500(view500);
+    	bladeConfig.setView500(view500);
     	return this;
     }
 
@@ -533,7 +492,7 @@ public class Blade {
      */
     public Blade webRoot(final String webRoot){
     	Assert.notBlank(webRoot);
-    	config.setWebRoot(webRoot);
+    	bladeConfig.setWebRoot(webRoot);
     	return this;
     }
     
@@ -544,7 +503,7 @@ public class Blade {
 	 * @return			return blade
 	 */
 	public Blade isDev(boolean isDev){
-		config.setDev(isDev);
+		bladeConfig.setDev(isDev);
 		return this;
 	}
 	
@@ -615,92 +574,77 @@ public class Blade {
 	 * @return	Return blade config object
 	 */
 	public BladeConfig config(){
-    	return config;
+    	return bladeConfig;
     }
 	
     /**
      * @return	Return blade scan base package
      */
     public String basePackage(){
-    	return config.getBasePackage();
+    	return bladeConfig.getBasePackage();
     }
     
 	/**
      * @return	Return route packages
      */
     public String[] routePackages(){
-    	return config.getRoutePackages();
+    	return bladeConfig.getRoutePackages();
     }
     
     /**
      * @return	Return ioc packages
      */
     public String[] iocs(){
-    	return config.getIocPackages();
+    	return bladeConfig.getIocPackages();
     }
     
     /**
      * @return	Returns the interceptor array, only one element here use String[]
      */
     public String interceptorPackage(){
-    	return config.getInterceptorPackage();
-    }
-    
-    
-    /**
-     * @return	Return views prefix
-     */
-    public String viewPrefix(){
-    	return config.getViewPrefix();
+    	return bladeConfig.getInterceptorPackage();
     }
     
     /**
      * @return	Return blade encoding, default is UTF-8
      */
     public String encoding(){
-    	return config.getEncoding();
-    }
-    
-    /**
-     * @return	Return view suffix
-     */
-    public String viewSuffix(){
-    	return config.getViewSuffix();
+    	return bladeConfig.getEncoding();
     }
     
     /**
      * @return	Return 404 view
      */
     public String view404(){
-    	return config.getView404();
+    	return bladeConfig.getView404();
     }
     
     /**
      * @return	Return 500 view
      */
     public String view500(){
-    	return config.getView500();
+    	return bladeConfig.getView500();
     }
     
     /**
      * @return	Return blade web root path
      */
     public String webRoot(){
-    	return config.getWebRoot();
+    	return bladeConfig.getWebRoot();
     }
     
     /**
 	 * @return	Return is dev mode
 	 */
 	public boolean isDev(){
-		return config.isDev();
+		return bladeConfig.isDev();
 	}
 	
 	/**
 	 * @return	Return static resource directory
 	 */
 	public String[] staticFolder(){
-		return config.getStaticFolders();
+		return bladeConfig.getStaticFolders();
 	}
 	
 	/**
@@ -721,7 +665,7 @@ public class Blade {
 	 * @return	Return XSS is enabled
 	 */
 	public boolean enableXSS(){
-		return config.isEnableXSS(); 
+		return bladeConfig.isHttpXss(); 
 	}
 	
 	/**

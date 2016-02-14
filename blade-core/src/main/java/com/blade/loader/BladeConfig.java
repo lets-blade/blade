@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.Map;
 
 import blade.kit.PatternKit;
+import blade.kit.config.Config;
+import blade.kit.config.loader.ConfigLoader;
 
 /**
  * Blade Config Class
@@ -32,7 +34,7 @@ import blade.kit.PatternKit;
 public class BladeConfig {
 
 	// Store all variables 
-	private Map<String, String> configMap = Collections.emptyMap();
+	private Map<String, String> configMap;
 	
 	// Storage of all routing packets 
 	private List<String> routePackages = Collections.emptyList();
@@ -52,12 +54,6 @@ public class BladeConfig {
 	// Encoding
 	private String encoding = "utf-8";
 	
-	// View prefix
-	private String viewPrefix = "/WEB-INF/views/";
-	
-	// View suffix
-	private String viewSuffix = ".jsp";
-	
 	// web root path
 	private String webRoot;
 	
@@ -71,9 +67,25 @@ public class BladeConfig {
 	private boolean isDev = false;
 	
 	// Enabled XSS
-	private boolean enableXSS = false;
+	private boolean httpXss = false;
+	
+	private boolean httpCache = false;
 	
 	public BladeConfig() {
+		init();
+	}
+	
+	private void init(){
+		Config config = ConfigLoader.load("default.properties");
+		Configurator.init(this, config);
+		
+		try {
+			config = ConfigLoader.load("blade.properties");
+			if(null != config){
+				Configurator.init(this, config);
+			}
+		} catch (Exception e) {
+		}
 	}
 	
 	public Map<String, String> getConfigMap() {
@@ -162,23 +174,6 @@ public class BladeConfig {
 		this.interceptorPackage = interceptorPackage;
 	}
 
-	public String getViewPrefix() {
-		return viewPrefix;
-	}
-
-	public void setViewPrefix(String viewPrefix) {
-		this.viewPrefix = viewPrefix;
-	}
-
-	public String getViewSuffix() {
-		return viewSuffix;
-	}
-
-
-	public void setViewSuffix(String viewSuffix) {
-		this.viewSuffix = viewSuffix;
-	}
-
 	public String[] getStaticFolders() {
 		String[] folderArr = new String[staticFolders.size()];
 		return staticFolders.toArray(folderArr);
@@ -228,12 +223,20 @@ public class BladeConfig {
 		this.encoding = encoding;
 	}
 
-	public boolean isEnableXSS() {
-		return enableXSS;
+	public boolean isHttpXss() {
+		return httpXss;
 	}
 
-	public void setEnableXSS(boolean enableXSS) {
-		this.enableXSS = enableXSS;
+	public void setHttpXss(boolean httpXss) {
+		this.httpXss = httpXss;
 	}
 
+	public boolean isHttpCache() {
+		return httpCache;
+	}
+
+	public void setHttpCache(boolean httpCache) {
+		this.httpCache = httpCache;
+	}
+	
 }

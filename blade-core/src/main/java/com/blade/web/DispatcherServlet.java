@@ -95,8 +95,6 @@ public class DispatcherServlet extends HttpServlet {
 		    
 		    blade.setInit(true);
 		    
-		    new BladeBanner().print(System.out);
-		    
 		    LOGGER.info("blade init complete!");
 		}
 	}

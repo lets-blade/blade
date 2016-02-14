@@ -34,6 +34,8 @@ public interface Ioc {
 	
 	void addBean(Class<?> type);
 	
+	void addBean(String name, Object bean);
+	
 	Object getBean(String name);
 	
     <T> T getBean(Class<T> type);
