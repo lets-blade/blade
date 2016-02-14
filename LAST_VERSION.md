@@ -81,12 +81,3 @@
     <version>1.0.2</version>
 </dependency>
 ```
-
-## [blade-aop](http://search.maven.org/#search%7Cga%7C1%7Cblade-aop)
-```xml
-<dependency>
-    <groupId>com.bladejava</groupId>
-    <artifactId>blade-aop</artifactId>
-    <version>1.0.0</version>
-</dependency>
-```
