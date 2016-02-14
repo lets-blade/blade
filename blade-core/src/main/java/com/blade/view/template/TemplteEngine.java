@@ -18,7 +18,7 @@ package com.blade.view.template;
 import java.io.Writer;
 
 /**
- * Render Interface, For view layer to display data 
+ * TemplteEngine Interface, For view layer to display data 
  *
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since	1.0
