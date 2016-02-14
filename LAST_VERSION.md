@@ -24,7 +24,7 @@
 <dependency>
     <groupId>com.bladejava</groupId>
     <artifactId>blade-kit</artifactId>
-    <version>1.2.8</version>
+    <version>1.2.9-alpha</version>
 </dependency>
 ```
 
@@ -33,15 +33,7 @@
 <dependency>
     <groupId>com.bladejava</groupId>
     <artifactId>blade-core</artifactId>
-    <version>1.5.1</version>
-</dependency>
-```
-## [blade-sql2o](http://search.maven.org/#search%7Cga%7C1%7Cblade-sql2o)
-```xml
-<dependency>
-    <groupId>com.bladejava</groupId>
-    <artifactId>blade-sql2o</artifactId>
-    <version>1.3.0-alpha</version>
+    <version>1.6.0-alpha</version>
 </dependency>
 ```
 
