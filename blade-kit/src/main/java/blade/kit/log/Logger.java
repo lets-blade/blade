@@ -188,11 +188,11 @@ public abstract class Logger {
 		if (message == null) {
 			return null;
 		}
-
-		if (args == null || args.length == 0)
+		if (args == null || args.length == 0) {
 			return message.toString();
-		else
+		} else {
 			return String.format(message.toString(), args);
+		}
 	}
 
 	public boolean isDebugEnabled() {
