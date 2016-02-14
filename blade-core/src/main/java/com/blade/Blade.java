@@ -23,7 +23,6 @@ import java.util.Map;
 
 import com.blade.ioc.Ioc;
 import com.blade.ioc.SampleIoc;
-import com.blade.loader.ClassPathRouteLoader;
 import com.blade.loader.BladeConfig;
 import com.blade.loader.Configurator;
 import com.blade.plugin.Plugin;
@@ -32,6 +31,7 @@ import com.blade.route.RouteException;
 import com.blade.route.RouteGroup;
 import com.blade.route.RouteHandler;
 import com.blade.route.Routers;
+import com.blade.route.loader.ClassPathRouteLoader;
 import com.blade.server.Server;
 import com.blade.view.template.JspEngine;
 import com.blade.view.template.TemplteEngine;

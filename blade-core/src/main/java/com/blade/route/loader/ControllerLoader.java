@@ -13,22 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.blade.loader;
+package com.blade.route.loader;
 
-import java.text.ParseException;
-import java.util.List;
-
-import com.blade.route.Route;
 import com.blade.route.RouteException;
 
 /**
- * Route loader 
+ * Controller loading interface
  *
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since	1.0
  */
-public interface RouteLoader {
-
-	List<Route> load() throws ParseException, RouteException;
+public interface ControllerLoader {
+	
+	Object load(String controllerName) throws RouteException;
 	
 }

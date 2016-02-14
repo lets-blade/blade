@@ -47,10 +47,7 @@ public class Configurator {
 			bladeConfig.setConfigMap(configMap);
 			
 			String route = configMap.get(Const.BLADE_ROUTE);
-			String interceptor = configMap.get(Const.BLADE_INTERCEPTOR);
 			String ioc = configMap.get(Const.BLADE_IOC);
-			String prefix = configMap.get(Const.BLADE_PREFIX);
-			String suffix = configMap.get(Const.BLADE_SUFFIX);
 			String filter_folder = configMap.get(Const.BLADE_FILTER_FOLDER);
 			String encoding = configMap.get(Const.BLADE_ENCODING);
 			String view404 = configMap.get(Const.BLADE_VIEW_404);
@@ -67,24 +64,12 @@ public class Configurator {
 				String[] blade_filter_folders = StringKit.split(filter_folder, ",");
 				bladeConfig.setStaticFolders(blade_filter_folders);
 			}
-
-			if (StringKit.isNotBlank(interceptor)) {
-				bladeConfig.setInterceptorPackage(interceptor);
-			}
-
+			
 			if (StringKit.isNotBlank(ioc)) {
 				String[] blade_iocs = StringKit.split(ioc, ",");
 				bladeConfig.setIocPackages(blade_iocs);
 			}
-
-			if (StringKit.isNotBlank(prefix)) {
-				bladeConfig.setViewPrefix(prefix);
-			}
-
-			if (StringKit.isNotBlank(suffix)) {
-				bladeConfig.setViewSuffix(suffix);
-			}
-
+			
 			if (StringKit.isNotBlank(encoding)) {
 				bladeConfig.setEncoding(encoding);
 			}

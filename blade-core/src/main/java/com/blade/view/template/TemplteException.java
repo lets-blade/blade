@@ -21,23 +21,23 @@ package com.blade.view.template;
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since	1.0
  */
-public class RenderException extends RuntimeException {
+public class TemplteException extends RuntimeException {
 
 	private static final long serialVersionUID = 1L;
 
-	public RenderException() {
+	public TemplteException() {
 		super();
 	}
 
-	public RenderException(String message, Throwable cause) {
+	public TemplteException(String message, Throwable cause) {
 		super(message, cause);
 	}
 
-	public RenderException(String message) {
+	public TemplteException(String message) {
 		super(message);
 	}
 
-	public RenderException(Throwable cause) {
+	public TemplteException(Throwable cause) {
 		super(cause);
 	}
 

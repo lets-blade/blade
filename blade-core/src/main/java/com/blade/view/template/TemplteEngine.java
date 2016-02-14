@@ -25,6 +25,6 @@ import java.io.Writer;
  */
 public interface TemplteEngine {
 	
-	public void render(ModelAndView modelAndView, Writer writer) throws RenderException;
+	public void render(ModelAndView modelAndView, Writer writer) throws TemplteException;
 	
 }

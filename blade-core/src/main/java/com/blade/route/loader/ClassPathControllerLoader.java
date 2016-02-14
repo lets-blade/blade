@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.blade.loader;
+package com.blade.route.loader;
 
 import com.blade.Blade;
 import com.blade.ioc.Ioc;
