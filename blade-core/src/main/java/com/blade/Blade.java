@@ -187,13 +187,16 @@ public class Blade {
      */
     public Blade routes(String...packages){
     	Assert.notNull(packages);
-    	bladeConfig.setRoutePackages(packages);
+    	bladeConfig.addRoutePackages(packages);
     	return this;
     }
     
     public Blade basePackage(String basePackage){
     	Assert.notBlank(basePackage);
     	bladeConfig.setBasePackage(basePackage);
+    	bladeConfig.addIocPackages(basePackage + ".service.*");
+    	bladeConfig.addRoutePackages(basePackage + ".controller");
+    	bladeConfig.setInterceptorPackage(basePackage + ".interceptor");
     	return this;
     }
     
@@ -217,9 +220,7 @@ public class Blade {
      */
     public Blade ioc(String...packages){
     	Assert.notNull(packages);
-    	if(packages.length >0){
-    		bladeConfig.setIocPackages(packages);
-    	}
+    	bladeConfig.addIocPackages(packages);
     	return this;
     }
     
@@ -463,7 +464,7 @@ public class Blade {
      * @param view404	404 view page
      * @return			return blade
      */
-    public Blade setView404(final String view404){
+    public Blade view404(final String view404){
     	Assert.notBlank(view404);
     	bladeConfig.setView404(view404);
     	return this;
@@ -475,7 +476,7 @@ public class Blade {
      * @param view500	500 view page
      * @return			return blade
      */
-    public Blade setView500(final String view500){
+    public Blade view500(final String view500){
     	Assert.notBlank(view500);
     	bladeConfig.setView500(view500);
     	return this;
@@ -574,13 +575,6 @@ public class Blade {
     	return bladeConfig;
     }
 	
-    /**
-     * @return	Return blade scan base package
-     */
-    public String basePackage(){
-    	return bladeConfig.getBasePackage();
-    }
-    
 	/**
      * @return	Return route packages
      */

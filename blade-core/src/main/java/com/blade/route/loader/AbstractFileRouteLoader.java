@@ -195,14 +195,14 @@ public abstract class AbstractFileRouteLoader implements RouteLoader {
 	 */
 	private Route buildRoute(String httpMethod, String path, String controllerName, String methodName) throws RouteException {
 		Object controller = controllerLoader.load(controllerName);
-		Method method = getMethod(controller, methodName);
-
-		return new Route(HttpMethod.valueOf(httpMethod.toUpperCase()), path, null, method);
+		Class<?> controllerType = controller.getClass();
+		Method method = getMethod(controllerType, methodName);
+		return new Route(HttpMethod.valueOf(httpMethod.toUpperCase()), path, controller, controllerType, method);
 	}
-
-	private Method getMethod(Object controller, String methodName) throws RouteException {
+	
+	private Method getMethod(Class<?> controllerType, String methodName) throws RouteException {
 		try {
-			return controller.getClass().getMethod(methodName, Request.class, Response.class);
+			return controllerType.getMethod(methodName, Request.class, Response.class);
 		} catch (Exception e) {
 			throw new RouteException(e);
 		}

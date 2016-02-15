@@ -16,7 +16,6 @@
 package com.blade.loader;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -38,10 +37,10 @@ public class BladeConfig {
 	private Map<String, String> configMap;
 	
 	// Storage of all routing packets 
-	private List<String> routePackages = CollectionKit.newArrayList();
+	private Set<String> routePackages = CollectionKit.newHashSet();
 	
 	// Store all IOC packages 
-	private List<String> iocPackages = CollectionKit.newArrayList();
+	private Set<String> iocPackages = CollectionKit.newHashSet();
 	
 	// Store all filter directories 
 	private Set<String> staticFolders = CollectionKit.newHashSet();
@@ -72,20 +71,24 @@ public class BladeConfig {
 	
 	private boolean httpCache = false;
 	
+	private boolean configInit = false;
+	
 	public BladeConfig() {
-		init();
 	}
 	
-	private void init(){
-		Config config = ConfigLoader.load("default.properties");
-		Configurator.init(this, config);
-		
-		try {
-			config = ConfigLoader.load("blade.properties");
-			if(null != config){
-				Configurator.init(this, config);
+	public void init(){
+		if(!configInit){
+			try {
+				Config config = ConfigLoader.load("default.properties");
+				if(null != config){
+					Configurator.init(this, config);
+				}
+				config = ConfigLoader.load("blade.properties");
+				if(null != config){
+					Configurator.init(this, config);
+				}
+			} catch (Exception e) {
 			}
-		} catch (Exception e) {
 		}
 	}
 	
@@ -146,8 +149,10 @@ public class BladeConfig {
 		return routePackages.toArray(routeArr);
 	}
 	
-	public void setRoutePackages(String ... packages) {
-		routePackages.addAll(Arrays.asList(packages));
+	public void addRoutePackages(String ... packages) {
+		if(null != packages && packages.length > 0){
+			routePackages.addAll(Arrays.asList(packages));
+		}
 	}
 	
 	public String getBasePackage() {
@@ -163,8 +168,10 @@ public class BladeConfig {
 		return iocPackages.toArray(iocArr);
 	}
 
-	public void setIocPackages(String ... packages) {
-		iocPackages.addAll(Arrays.asList(packages));
+	public void addIocPackages(String ... packages) {
+		if(null != packages && packages.length > 0){
+			iocPackages.addAll(Arrays.asList(packages));
+		}
 	}
 
 	public String getInterceptorPackage() {

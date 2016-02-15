@@ -13,40 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.blade.route.annotation;
-
+package com.blade.interceptor.annotation;
+import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Interceptor post event annotations, write in method
+ * Interceptor notes, written in the class
  * e.g:
  * <pre>
- *  {@link After}
- *	public void after(Request request){...}
+ * {@link Intercept}
+ * public class BaseInterceptor {...}
  * </pre>
- * 
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since	1.0
  */
+@Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
-public @interface After {
+@Documented
+public @interface Intercept{
 	
-	/**
-	 * @return	After event to intercept URL
-	 */
-	String value() default "";
+	String value() default "/.*";
 	
-	/**
-	 * @return	Route suffix
-	 */
-	String suffix() default "";
-	
-	/**
-	 * @return	Multiple after intercept
-	 */
-	String[] values() default {};
 }

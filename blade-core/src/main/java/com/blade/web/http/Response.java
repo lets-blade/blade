@@ -168,34 +168,34 @@ public interface Response {
 	/**
 	 * Render by text
 	 * 
-	 * @param output	text content
+	 * @param text		text content
 	 * @return			Return Response
 	 */
-	Response text(String output);
+	Response text(String text);
 	
 	/**
 	 * Render by html
 	 * 
-	 * @param output	html content
+	 * @param html		html content
 	 * @return			Return Response
 	 */
-	Response html(String output);
+	Response html(String html);
 	
 	/**
 	 * Render by json
 	 * 
-	 * @param output	json content
+	 * @param json		json content
 	 * @return			Return Response
 	 */
-	Response json(String output);
+	Response json(String json);
 	
 	/**
 	 * Render by xml
 	 * 
-	 * @param output	xml content
+	 * @param xml		xml content
 	 * @return			Return Response
 	 */
-	Response xml(String output);
+	Response xml(String xml);
 	
 	/**
 	 * @return	Return OutputStream

@@ -78,13 +78,7 @@ public class IocApplication {
 			}
 		}
 		
-		// Initialization injection
-//		container.initWired();
-		
-		Set<String> names = ioc.getBeanNames();
-		for(String name : names){
-			LOGGER.info("Add Object：{}={}", name, ioc.getBean(name));
-		}
+		LOGGER.info("Add Object: {}", ioc.getBeans());
 		
 	}
 	

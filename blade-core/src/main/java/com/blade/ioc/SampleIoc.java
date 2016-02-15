@@ -125,7 +125,7 @@ public class SampleIoc implements Ioc {
     	Assert.isFalse(beanClass.isInterface(), "Must not be interface: %s", beanClass.getName());
     	Assert.isFalse(Modifier.isAbstract(beanClass.getModifiers()), "Must not be abstract class: %s", beanClass.getName());
     	
-        LOGGER.debug("addBean: {}={}", name, beanClass.getName());
+        LOGGER.debug("addBean: {} = {}", name, beanClass.getName());
         
         BeanDefine beanDefine = this.getBeanDefine(beanClass, singleton);
         
@@ -137,6 +137,9 @@ public class SampleIoc implements Ioc {
         Class<?>[] interfaces = beanClass.getInterfaces();
 	    if(interfaces.length > 0){
 	    	for(Class<?> interfaceClazz : interfaces){
+	    		if(null != this.getBean(interfaceClazz)){
+	    			break;
+	    		}
 	    		this.addBean(interfaceClazz.getName(), beanDefine);
 	    	}
 	    }

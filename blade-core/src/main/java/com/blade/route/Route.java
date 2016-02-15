@@ -42,7 +42,12 @@ public class Route {
 	 * Logical controller object 
 	 */
 	private Object target;
-
+	
+	/**
+	 * Controller Class Type
+	 */
+	private Class<?> targetType;
+	
 	/**
 	 * Implementation logic controller method 
 	 */
@@ -51,11 +56,12 @@ public class Route {
 	public Route() {
 	}
 
-	public Route(HttpMethod httpMethod, String path, Object target, Method action) {
+	public Route(HttpMethod httpMethod, String path, Object target, Class<?> targetType, Method action) {
 		super();
 		this.httpMethod = httpMethod;
 		this.path = Path.fixPath(path);
 		this.target = target;
+		this.targetType = targetType;
 		this.action = action;
 	}
 	
@@ -91,6 +97,10 @@ public class Route {
 		this.action = action;
 	}
 	
+	public Class<?> getTargetType() {
+		return targetType;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;

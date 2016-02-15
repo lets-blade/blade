@@ -15,7 +15,6 @@
  */
 package com.blade.web;
 
-import java.lang.reflect.Method;
 import java.util.List;
 
 import javax.servlet.ServletContext;
@@ -28,16 +27,17 @@ import org.slf4j.LoggerFactory;
 import com.blade.Blade;
 import com.blade.Const;
 import com.blade.context.BladeWebContext;
+import com.blade.ioc.Ioc;
 import com.blade.route.Route;
 import com.blade.route.RouteHandler;
 import com.blade.route.RouteMatcher;
 import com.blade.route.Routers;
+import com.blade.view.handle.RouteViewHandler;
 import com.blade.view.template.ModelAndView;
 import com.blade.web.http.HttpStatus;
 import com.blade.web.http.Path;
 import com.blade.web.http.Request;
 import com.blade.web.http.Response;
-import com.blade.web.http.ResponsePrint;
 import com.blade.web.http.wrapper.ServletRequest;
 import com.blade.web.http.wrapper.ServletResponse;
 
@@ -49,10 +49,12 @@ import blade.kit.StringKit;
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since	1.0
  */
-public class SyncRequestHandler {
+public class DispatcherHandler {
 	
-	private static final Logger LOGGER = LoggerFactory.getLogger(DispatcherServlet.class);
-
+	private static final Logger LOGGER = LoggerFactory.getLogger(DispatcherHandler.class);
+	
+	private Ioc ioc;
+	
 	private Blade blade;
 	
 	private ServletContext servletContext;
@@ -61,11 +63,15 @@ public class SyncRequestHandler {
 	
 	private StaticFileFilter staticFileFilter;
 	
-	public SyncRequestHandler(ServletContext servletContext, Routers routers) {
-		this.blade = Blade.me();
+	private RouteViewHandler routeViewHandler;
+	
+	public DispatcherHandler(ServletContext servletContext, Routers routers) {
 		this.servletContext = servletContext;
+		this.blade = Blade.me();
+		this.ioc = blade.ioc();
 		this.routeMatcher = new RouteMatcher(routers);
 		this.staticFileFilter = new StaticFileFilter(blade.staticFolder());
+		this.routeViewHandler = new RouteViewHandler();
 	}
 	
 	public void handle(HttpServletRequest httpRequest, HttpServletResponse httpResponse){
@@ -84,7 +90,7 @@ public class SyncRequestHandler {
             	LOGGER.debug("Request : {}\t{}", method, uri);
             }
     		String realpath = httpRequest.getServletContext().getRealPath(uri);
-    		ResponsePrint.printStatic(uri, realpath, httpResponse);
+    		DispatchKit.printStatic(uri, realpath, httpResponse);
 			return;
     	}
         
@@ -111,8 +117,7 @@ public class SyncRequestHandler {
 				result = invokeInterceptor(request, response, befores);
 				if(result){
 					// execute
-					handle(request, response, route);
-					response.status(HttpStatus.OK);
+					this.routeHandle(request, response, route);
 					if(!request.isAbort()){
 						// after inteceptor
 						List<Route> afters = routeMatcher.getAfter(uri);
@@ -125,7 +130,7 @@ public class SyncRequestHandler {
 			}
 			return;
 		} catch (Exception e) {
-			ResponsePrint.printError(e, 500, httpResponse);
+			DispatchKit.printError(e, 500, httpResponse);
         }
         return;
 	}
@@ -158,8 +163,8 @@ public class SyncRequestHandler {
 	 */
 	private boolean invokeInterceptor(Request request, Response response, List<Route> interceptors) {
 		for(Route route : interceptors){
-			handle(request, response, route);
-			if(request.isAbort()){
+			boolean flag = routeViewHandler.intercept(request, response, route);
+			if(!flag){
 				return false;
 			}
 		}
@@ -173,26 +178,25 @@ public class SyncRequestHandler {
 	 * @param response	response object
 	 * @param route		route object
 	 */
-	private void handle(Request request, Response response, Route route){
+	private void routeHandle(Request request, Response response, Route route){
 		
 		Object target = route.getTarget();
 		if(null == target){
 			Class<?> clazz = route.getAction().getDeclaringClass();
-			target = Blade.me().ioc().getBean(clazz);
+			target = ioc.getBean(clazz);
+			route.setTarget(target);
 		}
+		
 		request.initPathParams(route.getPath());
 		
 		// Init context
 		BladeWebContext.setContext(servletContext, request, response);
-		if(target instanceof RouteHandler){
+		if(route.getTargetType() == RouteHandler.class){
 			RouteHandler routeHandler = (RouteHandler) target;
 			routeHandler.handle(request, response);
 		} else {
-			Method actionMethod = route.getAction();
-			// execute
-			RouteArgument.executeMethod(target, actionMethod, request, response);
+			routeViewHandler.handle(request, response, route);
 		}
 	}
-	
     
 }

@@ -52,7 +52,7 @@ public class DispatcherServlet extends HttpServlet {
 	
 	private ServletContext servletContext;
 	
-	private SyncRequestHandler syncRequestHandler;
+	private DispatcherHandler dispatcherHandler;
 	
 	public DispatcherServlet() {
 	}
@@ -81,6 +81,8 @@ public class DispatcherServlet extends HttpServlet {
 		    LOGGER.info("blade.webroot = {}", blade.webRoot());
 		    LOGGER.info("blade.isDev = {}", blade.isDev());
 		    
+		    blade.config().init();
+		    
 			this.bootstrap = blade.bootstrap();
 			if(null == bootstrap){
 				String bootStrapClassName = config.getInitParameter("bootstrap");
@@ -106,11 +108,11 @@ public class DispatcherServlet extends HttpServlet {
 			
 			this.bootstrap.contextInitialized(blade);
 		    
-		    syncRequestHandler = new SyncRequestHandler(servletContext, blade.routers());
+			dispatcherHandler = new DispatcherHandler(servletContext, blade.routers());
 		    
 		    blade.init();
 		    
-		    LOGGER.info("DispatcherFilter initialize successfully, Time elapsed: {} ms.", System.currentTimeMillis() - initStart);
+		    LOGGER.info("DispatcherServlet initialize successfully, Time elapsed: {} ms.", System.currentTimeMillis() - initStart);
 		}
 	}
 
@@ -121,7 +123,7 @@ public class DispatcherServlet extends HttpServlet {
 		if(!blade.httpCache()){
 			DispatchKit.setNoCache(httpResponse);
 		}
-		syncRequestHandler.handle(httpRequest, httpResponse);
+		dispatcherHandler.handle(httpRequest, httpResponse);
 	}
 	
 	/**
