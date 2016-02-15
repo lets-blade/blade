@@ -24,9 +24,11 @@ import java.net.URLDecoder;
 import java.util.Enumeration;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import blade.kit.Assert;
 import blade.kit.CollectionKit;
-import blade.kit.log.Logger;
 
 /**
  * 抽象类读取器
@@ -36,7 +38,7 @@ import blade.kit.log.Logger;
  */
 public abstract class AbstractClassReader implements ClassReader {
 
-	private static final Logger LOGGER = Logger.getLogger(AbstractClassReader.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(AbstractClassReader.class);
 	
 	@Override
 	public Set<Class<?>> getClass(String packageName, boolean recursive) {
@@ -65,7 +67,7 @@ public abstract class AbstractClassReader implements ClassReader {
         File dir = new File(packagePath);
         // 如果不存在或者 也不是目录就直接返回
         if ((!dir.exists()) || (!dir.isDirectory())) {
-        	LOGGER.warn("包 " + packageName + " 不存在!");
+        	LOGGER.warn("The package [{}] not found.", packageName);
         }
         // 如果存在 就获取包下的所有文件 包括目录
         File[] dirfiles = accept(dir, recursive);
@@ -156,7 +158,7 @@ public abstract class AbstractClassReader implements ClassReader {
 				}
             }
         } catch (IOException e) {
-        	LOGGER.error(e.getMessage());
+        	LOGGER.error(e.getMessage(), e);
         }
         return classes;
 	}

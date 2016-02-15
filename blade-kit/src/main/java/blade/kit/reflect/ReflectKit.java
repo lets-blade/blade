@@ -31,11 +31,13 @@ import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import blade.kit.Emptys;
 import blade.kit.ExceptionKit;
 import blade.kit.StringKit;
 import blade.kit.SystemKit;
-import blade.kit.log.Logger;
 
 /**
  * 有关 Reflection处理的工具类。
@@ -47,7 +49,7 @@ import blade.kit.log.Logger;
  */
 public abstract class ReflectKit {
 
-	private static final Logger LOGGER = Logger.getLogger(ReflectKit.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ReflectKit.class);
 	
 	/** 新建对象 
 	 * @throws IllegalAccessException 
@@ -57,7 +59,7 @@ public abstract class ReflectKit {
 		Object obj = null;
 		Class<?> clazz = Class.forName(className);
 		obj = clazz.newInstance();
-		LOGGER.debug("new %s", className);
+		LOGGER.debug("New {}", className);
 		return obj;
 	}
 	
@@ -238,20 +240,18 @@ public abstract class ReflectKit {
 			ClassLoader loader = Thread.currentThread().getContextClassLoader();
 			URL url = loader.getResource(rootPackageName.replace('.', '/'));
 
-			ExceptionKit.makeRunTimeWhen(url == null,
-					"package[%s] not found!", rootPackageName);
+			ExceptionKit.makeRunTimeWhen(url == null, "package[%s] not found!", rootPackageName);
 
 			String protocol = url.getProtocol();
 			if ("file".equals(protocol)) {
-				LOGGER.debug("scan in file");
+				LOGGER.debug("Scan in file ...");
 				File[] files = new File(url.toURI()).listFiles();
 				for (File f : files) {
 					scanPackageClassInFile(rootPackageName, f, classNames);
 				}
 			} else if ("jar".equals(protocol)) {
-				LOGGER.debug("scan in jar");
-				JarFile jar = ((JarURLConnection) url.openConnection())
-						.getJarFile();
+				LOGGER.debug("Scan in jar ...");
+				JarFile jar = ((JarURLConnection) url.openConnection()).getJarFile();
 				scanPackageClassInJar(jar, rootPackageName, classNames);
 			}
 

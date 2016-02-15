@@ -18,7 +18,8 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.internet.MimeUtility;
 
-import blade.kit.log.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 邮件发送处理工具类
@@ -27,7 +28,7 @@ import blade.kit.log.Logger;
  */
 public class EmailHandle {
 
-	private static final Logger LOGGER = Logger.getLogger(EmailHandle.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(EmailHandle.class);
 	
 	/** 邮件对象 **/
 	private MimeMessage mimeMsg;
@@ -266,7 +267,7 @@ public class EmailHandle {
 	 * @return
 	 */
 	public boolean sendEmail() throws Exception {
-		LOGGER.debug("正在发送邮件....");
+		LOGGER.debug("Sending mail ...");
 		
 		mimeMsg.setContent(mp);
 		mimeMsg.saveChanges();
@@ -279,7 +280,7 @@ public class EmailHandle {
 		/** 发送邮件 **/
 		transport.sendMessage(mimeMsg, mimeMsg.getRecipients(Message.RecipientType.TO));
 		transport.close();
-		LOGGER.debug("发送邮件成功！");
+		LOGGER.debug("Send mail success.");
 		return true;
 	}
 	

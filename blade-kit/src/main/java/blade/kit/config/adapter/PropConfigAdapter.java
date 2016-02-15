@@ -8,10 +8,12 @@ import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import blade.kit.IOKit;
 import blade.kit.config.Config;
 import blade.kit.config.exception.ConfigAdapterException;
-import blade.kit.log.Logger;
 
 /**
  * 解析Properties配置文件
@@ -19,7 +21,7 @@ import blade.kit.log.Logger;
  */
 public class PropConfigAdapter extends ConfigAdapter {
 	
-	private static final Logger LOGGER = Logger.getLogger(PropConfigAdapter.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(PropConfigAdapter.class);
 	
 	@Override
 	public Config read(String prop_file) {
@@ -46,7 +48,7 @@ public class PropConfigAdapter extends ConfigAdapter {
 				configMap.put(key, value);
 			}
 			
-			LOGGER.debug("Loading config file: [classpath:/" + prop_file + "]");
+			LOGGER.info("Loading config file: [classpath:/" + prop_file + "]");
 			return this;
 		} catch (IOException e) {
 			throw new ConfigAdapterException("load properties file error!");

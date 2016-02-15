@@ -19,7 +19,8 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-import blade.kit.log.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 计数均衡器
@@ -32,7 +33,7 @@ import blade.kit.log.Logger;
  */
 public class TimwKit {
 	
-	private static final Logger LOGGER = Logger.getLogger(TimwKit.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(TimwKit.class);
 	
 	private ArrayList<Number> numList = new ArrayList<Number>();
 
@@ -92,7 +93,7 @@ public class TimwKit {
 	 * @return
 	 */
 	public String print() {
-		String str = "执行(" + size() + ")次，耗时: " + numList + " ms";
+		String str = "Execute count = " + size() + ", elapsed time: " + numList + " ms.";
 		LOGGER.debug(str);
 		return str;
 	}
@@ -106,8 +107,7 @@ public class TimwKit {
 		Number number = avg();
 		BigDecimal b = new BigDecimal(number.doubleValue());
 		double avg = b.setScale(3, BigDecimal.ROUND_HALF_UP).doubleValue();
-		String str = "平均耗时: " + avg + " ms";
-		
+		String str = "average time cost: " + avg + " ms";
 		LOGGER.debug(str);
 		return str;
 	}
