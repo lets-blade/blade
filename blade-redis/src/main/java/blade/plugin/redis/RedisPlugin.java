@@ -3,9 +3,11 @@ package blade.plugin.redis;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.blade.plugin.Plugin;
 
-import blade.kit.log.Logger;
 import redis.clients.jedis.JedisShardInfo;
 
 /**
@@ -18,7 +20,7 @@ public enum RedisPlugin implements Plugin {
 	
 	INSTANCE;
 	
-	private Logger LOGGER = Logger.getLogger(RedisPlugin.class);
+	private final Logger LOGGER = LoggerFactory.getLogger(RedisPlugin.class);
 	
 	private RedisPlugin() {
 		redisPoolConfig = new RedisPoolConfig();

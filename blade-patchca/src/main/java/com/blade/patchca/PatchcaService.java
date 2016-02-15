@@ -14,8 +14,8 @@ import org.patchca.service.ConfigurableCaptchaService;
 import org.patchca.utils.encoder.EncoderHelper;
 import org.patchca.word.RandomWordFactory;
 import org.patchca.word.WordFactory;
-
-import blade.kit.log.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.blade.web.http.Response;
 import com.blade.web.http.wrapper.Session;
@@ -25,7 +25,7 @@ import com.blade.web.http.wrapper.Session;
  */
 public class PatchcaService {
 	
-	private static final Logger LOGGER = Logger.getLogger(PatchcaService.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(PatchcaService.class);
 
 	private ConfigurableCaptchaService cs = null;
 	private static Random random = new Random();
@@ -80,7 +80,7 @@ public class PatchcaService {
 			setResponseHeaders(response);
 			String token = EncoderHelper.getChallangeAndWriteImage(cs, "png", response.outputStream());
 			session.attribute(patchca, token);
-			LOGGER.info("当前sessionid = " + session.id() + ", 验证码 = " + token);
+			LOGGER.debug("current sessionid = {}, token = {}", session.id(), token);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
