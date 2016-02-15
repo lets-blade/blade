@@ -11,6 +11,7 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import blade.kit.CollectionKit;
 import blade.kit.IOKit;
 import blade.kit.config.Config;
 import blade.kit.config.exception.ConfigAdapterException;
@@ -25,7 +26,6 @@ public class PropConfigAdapter extends ConfigAdapter {
 	
 	@Override
 	public Config read(String prop_file) {
-		
 		Properties props = new Properties();
 		InputStream in = null;
 		try {
@@ -35,21 +35,23 @@ public class PropConfigAdapter extends ConfigAdapter {
 			}
 			// 解析properties文件
 			Set<Entry<Object, Object>> set = props.entrySet();
-			Iterator<Map.Entry<Object, Object>> it = set.iterator();
-			while (it.hasNext()) {
-				Entry<Object, Object> entry = it.next();
-				String key = entry.getKey().toString();
-				String value = entry.getValue().toString();
-				String fuKey = getWildcard(value);
-				if(null != fuKey && null != props.get(fuKey)){
-					String fuValue = props.get(fuKey).toString();
-					value = value.replaceAll("\\$\\{" + fuKey + "\\}", fuValue);
+			if(CollectionKit.isNotEmpty(set)){
+				Iterator<Map.Entry<Object, Object>> it = set.iterator();
+				while (it.hasNext()) {
+					Entry<Object, Object> entry = it.next();
+					String key = entry.getKey().toString();
+					String value = entry.getValue().toString();
+					String fuKey = getWildcard(value);
+					if(null != fuKey && null != props.get(fuKey)){
+						String fuValue = props.get(fuKey).toString();
+						value = value.replaceAll("\\$\\{" + fuKey + "\\}", fuValue);
+					}
+					configMap.put(key, value);
 				}
-				configMap.put(key, value);
+				LOGGER.info("Loading config file [classpath:/" + prop_file + "]");
+				return this;
 			}
-			
-			LOGGER.info("Loading config file: [classpath:/" + prop_file + "]");
-			return this;
+			return null;
 		} catch (IOException e) {
 			throw new ConfigAdapterException("load properties file error!");
 		} finally {
