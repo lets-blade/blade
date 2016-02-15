@@ -456,4 +456,18 @@ public abstract class ReflectKit {
         }
     }
 
+	public static boolean hasInterface(Class<?> type, Class<?> interfaceType) {
+		if(null != type && null != interfaceType){
+			Class<?>[] interfaces = type.getInterfaces();
+			if(null != interfaces && interfaces.length > 0){
+				for(Class<?> inte : interfaces){
+					if(inte == interfaceType){
+						return true;
+					}
+				}
+			}
+		}
+		return false;
+	}
+
 }
