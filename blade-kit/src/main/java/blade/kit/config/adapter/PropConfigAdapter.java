@@ -32,24 +32,24 @@ public class PropConfigAdapter extends ConfigAdapter {
 			in = Thread.currentThread().getContextClassLoader().getResourceAsStream(prop_file);
 			if (in != null) {
 				props.load(in);
-			}
-			// 解析properties文件
-			Set<Entry<Object, Object>> set = props.entrySet();
-			if(CollectionKit.isNotEmpty(set)){
-				Iterator<Map.Entry<Object, Object>> it = set.iterator();
-				while (it.hasNext()) {
-					Entry<Object, Object> entry = it.next();
-					String key = entry.getKey().toString();
-					String value = entry.getValue().toString();
-					String fuKey = getWildcard(value);
-					if(null != fuKey && null != props.get(fuKey)){
-						String fuValue = props.get(fuKey).toString();
-						value = value.replaceAll("\\$\\{" + fuKey + "\\}", fuValue);
+				// 解析properties文件
+				Set<Entry<Object, Object>> set = props.entrySet();
+				if(CollectionKit.isNotEmpty(set)){
+					Iterator<Map.Entry<Object, Object>> it = set.iterator();
+					while (it.hasNext()) {
+						Entry<Object, Object> entry = it.next();
+						String key = entry.getKey().toString();
+						String value = entry.getValue().toString();
+						String fuKey = getWildcard(value);
+						if(null != fuKey && null != props.get(fuKey)){
+							String fuValue = props.get(fuKey).toString();
+							value = value.replaceAll("\\$\\{" + fuKey + "\\}", fuValue);
+						}
+						configMap.put(key, value);
 					}
-					configMap.put(key, value);
+					LOGGER.info("Loading config file [classpath:/" + prop_file + "]");
+					return this;
 				}
-				LOGGER.info("Loading config file [classpath:/" + prop_file + "]");
-				return this;
 			}
 			return null;
 		} catch (IOException e) {
