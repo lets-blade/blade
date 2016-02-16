@@ -35,7 +35,6 @@ import com.blade.route.loader.ClassPathRouteLoader;
 import com.blade.server.Server;
 import com.blade.view.template.JspEngine;
 import com.blade.view.template.TemplateEngine;
-import com.blade.web.BladeBanner;
 import com.blade.web.http.HttpMethod;
 
 import blade.kit.Assert;
@@ -123,10 +122,9 @@ public class Blade {
 	 * Set Blade initialize
 	 * @param isInit	initialize
 	 */
-	public synchronized void init() {
+	public void init() {
 		if(!this.isInit){
 			this.isInit = true;
-			new BladeBanner().print(System.out);
 		}
 	}
 	

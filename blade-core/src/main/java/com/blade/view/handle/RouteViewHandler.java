@@ -100,6 +100,9 @@ public class RouteViewHandler {
 					return (Boolean) returnParam;
 				}
 			}
+			
+			return true;
+			
 		} catch (Exception e) {
 			request.abort();
 			DispatchKit.printError(e, 500, response.raw());

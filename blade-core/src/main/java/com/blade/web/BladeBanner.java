@@ -13,12 +13,11 @@ public class BladeBanner {
 			" ~   ~~~ ~ ~ ~   ~~~"
 			};
 	
-	public void print(final PrintStream printStream){
-		synchronized (BladeBanner.class) {
-			for (String s : banner) {
-				printStream.println('\t' + s);
-			}
-			printStream.println("\t :: Blade :: (v" + Const.BLADE_VERSION + ")\r\n");
+	public void print(final PrintStream printStream) {
+		for (String s : banner) {
+			printStream.println('\t' + s);
 		}
+		printStream.println("\t :: Blade :: (v" + Const.BLADE_VERSION + ")");
+		printStream.println();
 	}
 }

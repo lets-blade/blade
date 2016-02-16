@@ -113,6 +113,8 @@ public class DispatcherServlet extends HttpServlet {
 		    blade.init();
 		    
 		    LOGGER.info("DispatcherServlet initialize successfully, Time elapsed: {} ms.", System.currentTimeMillis() - initStart);
+		    
+		    new BladeBanner().print(System.out);
 		}
 	}
 
