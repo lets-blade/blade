@@ -1,4 +1,4 @@
-package com.blade.jdbc;
+package com.blade.jdbc.annotation;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;

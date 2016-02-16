@@ -17,6 +17,7 @@
 		<servlet.version>3.0.1</servlet.version>
 		<blade.version>1.6.0-alpha</blade.version>
 		<junit.version>4.12</junit.version>
+		<slf4j-api.version>1.7.16</slf4j-api.version>
 	</properties>
 
 	<modules>
@@ -50,6 +51,11 @@
 				<artifactId>junit</artifactId>
 				<version>${junit.version}</version>
 				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>slf4j-api</artifactId>
+				<version>${slf4j-api.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
