@@ -23,7 +23,6 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.blade.ioc.Ioc;
 import com.blade.web.http.HttpMethod;
 import com.blade.web.http.Request;
 import com.blade.web.http.Response;
@@ -40,16 +39,13 @@ public class Routers {
 	
 	private Logger LOGGER = LoggerFactory.getLogger(Routers.class);
 	
-	private Ioc ioc = null;
-	
 	private Map<String, Route> routes = null;
 	
 	private Map<String, Route> interceptors = null;
 	
 	private static final String METHOD_NAME = "handle";
 	
-	public Routers(Ioc ioc) {
-		this.ioc = ioc;
+	public Routers() {
 		this.routes = new HashMap<String, Route>();
 		this.interceptors = new HashMap<String, Route>();
 	}
@@ -164,19 +160,13 @@ public class Routers {
 			httpMethod = HttpMethod.valueOf(methodArr[0].toUpperCase());
 			methodName = methodArr[1];
 		}
-		Object controller = ioc.getBean(clazz);
-//		if(null == controller){
-//			ioc.addBean(clazz);
-//			controller = ioc.getBean(clazz);
-//		}
 		try {	
 			Method method = clazz.getMethod(methodName, Request.class, Response.class);
-			
-			addRoute(httpMethod, path, controller, clazz, method);
+			addRoute(httpMethod, path, null, clazz, method);
 		} catch (NoSuchMethodException e) {
 			try {
 				Method method = clazz.getMethod(methodName, Response.class, Request.class);
-				addRoute(httpMethod, path, controller, clazz, method);
+				addRoute(httpMethod, path, null, clazz, method);
 			} catch (NoSuchMethodException e1) {
 				e1.printStackTrace();
 			} catch (SecurityException e1) {
@@ -193,7 +183,6 @@ public class Routers {
 			Assert.notNull(clazz, "Class Type not is null!");
 			Assert.notNull(methodName, "Method name not is null");
 			Assert.notNull(httpMethod, "Request Method not is null");
-			
 			Method method = clazz.getMethod(methodName, Request.class, Response.class);
 			addRoute(httpMethod, path, null, clazz, method);
 		} catch (NoSuchMethodException e) {
@@ -204,28 +193,7 @@ public class Routers {
 	}
 	
 	public void buildRoute(String path, Class<?> clazz, Method method, HttpMethod httpMethod) {
-		try {
-			Object controller = ioc.getBean(clazz);
-//			if(null == controller){
-//				ioc.addBean(clazz);
-//				controller = ioc.getBean(clazz);
-//			}
-			addRoute(httpMethod, path, controller, clazz, method);
-		} catch (SecurityException e) {
-			e.printStackTrace();
-		}
+		addRoute(httpMethod, path, null, clazz, method);
 	}
 	
-	public void route(String path, Object target, String methodName, HttpMethod httpMethod) {
-		try {
-			Class<?> clazz = target.getClass();
-			ioc.addBean(target);
-			Method method = clazz.getMethod(methodName, Request.class, Response.class);
-			addRoute(httpMethod, path, target, target.getClass(), method);
-		} catch (NoSuchMethodException e) {
-			e.printStackTrace();
-		} catch (SecurityException e) {
-			e.printStackTrace();
-		}
-	}
 }

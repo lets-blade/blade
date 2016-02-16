@@ -99,7 +99,7 @@ public class Blade {
 	private Blade() {
 		this.bladeConfig = new BladeConfig();
 		this.ioc = new SampleIoc();
-		this.routers = new Routers(ioc);
+		this.routers = new Routers();
 		this.templateEngine = new JspEngine();
 		this.plugins = new HashSet<Class<? extends Plugin>>();
 	}
