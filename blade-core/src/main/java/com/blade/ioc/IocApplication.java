@@ -110,7 +110,7 @@ public class IocApplication {
 			if(CollectionKit.isNotEmpty(routesList)){
 				for(Route route : routesList){
 					Class<?> type = route.getTargetType();
-					if(null != type && type != RouteHandler.class && null == ioc.getBean(type)){
+					if(null != type && null == route.getTarget() && type != RouteHandler.class && null == ioc.getBean(type)){
 						ioc.addBean(type);
 					}
 				}
@@ -123,7 +123,7 @@ public class IocApplication {
 			if(CollectionKit.isNotEmpty(routesList)){
 				for(Route route : routesList){
 					Class<?> type = route.getTargetType();
-					if(null != type && type != RouteHandler.class && null == ioc.getBean(type)){
+					if(null != type && null == route.getTarget() && type != RouteHandler.class && null == ioc.getBean(type)){
 						ioc.addBean(type);
 					}
 				}
