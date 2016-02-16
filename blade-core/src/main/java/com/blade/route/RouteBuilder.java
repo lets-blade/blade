@@ -188,7 +188,7 @@ public class RouteBuilder {
     		return;
     	}
     	
-    	ioc.addBean(router);
+//    	ioc.addBean(router);
     	
 		final String nameSpace = router.getAnnotation(Path.class).value();
 		

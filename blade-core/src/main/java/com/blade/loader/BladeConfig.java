@@ -16,10 +16,10 @@
 package com.blade.loader;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import blade.kit.CollectionKit;
 import blade.kit.PatternKit;
 import blade.kit.config.Config;
 import blade.kit.config.loader.ConfigLoader;
@@ -37,13 +37,13 @@ public class BladeConfig {
 	private Map<String, String> configMap;
 	
 	// Storage of all routing packets 
-	private Set<String> routePackages = CollectionKit.newHashSet();
+	private Set<String> routePackages = new HashSet<String>();
 	
 	// Store all IOC packages 
-	private Set<String> iocPackages = CollectionKit.newHashSet();
+	private Set<String> iocPackages = new HashSet<String>();
 	
 	// Store all filter directories 
-	private Set<String> staticFolders = CollectionKit.newHashSet();
+	private Set<String> staticFolders = new HashSet<String>();
 	
 	// Base package
 	private String basePackage;
@@ -64,7 +64,7 @@ public class BladeConfig {
 	private String view500;
 	
 	// Is dev mode
-	private boolean isDev = false;
+	private boolean isDev = true;
 	
 	// Enabled XSS
 	private boolean httpXss = false;
@@ -74,16 +74,15 @@ public class BladeConfig {
 	private boolean configInit = false;
 	
 	public BladeConfig() {
+		staticFolders.add("/public");
+		staticFolders.add("/assets");
+		staticFolders.add("/static");
 	}
 	
 	public void init(){
 		if(!configInit){
 			try {
-				Config config = ConfigLoader.load("default.properties");
-				if(null != config){
-					Configurator.init(this, config);
-				}
-				config = ConfigLoader.load("blade.properties");
+				Config config = ConfigLoader.load("blade.properties");
 				if(null != config){
 					Configurator.init(this, config);
 				}

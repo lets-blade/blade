@@ -15,16 +15,23 @@
  */
 package com.blade.ioc;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.blade.Blade;
 import com.blade.Bootstrap;
+import com.blade.ioc.annotation.Component;
 import com.blade.plugin.Plugin;
+import com.blade.route.Route;
+import com.blade.route.RouteHandler;
+import com.blade.route.Routers;
 
+import blade.kit.CollectionKit;
 import blade.kit.resource.ClassPathClassReader;
 import blade.kit.resource.ClassReader;
 
@@ -48,15 +55,26 @@ public class IocApplication {
 	 */
 	private ClassReader classReader = null;
 	
+	private String[] iocs;
+	private Bootstrap bootstrap;
+	
 	/**
 	 * Plugin List
 	 */
 	private List<Plugin> plugins = null;
 	
-	public IocApplication(Ioc ioc) {
+	private Set<Class<? extends Plugin>> pluginTypes;
+	
+	private Blade blade;
+	
+	public IocApplication(Blade blade) {
+		this.blade = blade;
 		this.classReader = new ClassPathClassReader();
-		this.plugins = new ArrayList<Plugin>();
-		this.ioc = ioc;
+		this.plugins = CollectionKit.newArrayList();
+		this.pluginTypes = blade.plugins();
+		this.ioc = blade.ioc();
+		this.iocs = blade.iocs();
+		this.bootstrap = blade.bootstrap();
 	}
 	
 	/**
@@ -64,7 +82,7 @@ public class IocApplication {
 	 * @param iocs		ioc packages
 	 * @param bootstrap	bootstrap object
 	 */
-	public void init(String[] iocs, Bootstrap bootstrap){
+	public void init(){
 		
 		// Initialize the global configuration class
 		if(null == ioc.getBean(Bootstrap.class)){
@@ -78,22 +96,41 @@ public class IocApplication {
 			}
 		}
 		
-		LOGGER.info("Add Object: {}", ioc.getBeans());
-		
-	}
-	
-	public <T extends Plugin> T registerPlugin(Class<T> plugin){
-		ioc.addBean(plugin);
-		T t = ioc.getBean(plugin);
-		plugins.add(t);
-		return t;
-	}
-
-	public <T extends Plugin> T getPlugin(Class<T> plugin){
-		if(null != plugin && null != ioc){
-			return ioc.getBean(plugin);
+		for(Class<? extends Plugin> type : pluginTypes){
+			ioc.addBean(type);
+			Plugin plugin = ioc.getBean(type);
+			plugins.add(plugin);
 		}
-		return null;
+		
+		// init controllers
+		Routers routers = blade.routers();
+		Map<String, Route> routes = routers.getRoutes();
+		if(CollectionKit.isNotEmpty(routes)){
+			Collection<Route> routesList = routes.values();
+			if(CollectionKit.isNotEmpty(routesList)){
+				for(Route route : routesList){
+					Class<?> type = route.getTargetType();
+					if(null != type && type != RouteHandler.class && null == ioc.getBean(type)){
+						ioc.addBean(type);
+					}
+				}
+			}
+		}
+		
+		Map<String, Route> interceptors = routers.getInterceptors();
+		if(CollectionKit.isNotEmpty(interceptors)){
+			Collection<Route> routesList = interceptors.values();
+			if(CollectionKit.isNotEmpty(routesList)){
+				for(Route route : routesList){
+					Class<?> type = route.getTargetType();
+					if(null != type && type != RouteHandler.class && null == ioc.getBean(type)){
+						ioc.addBean(type);
+					}
+				}
+			}
+		}
+		
+		LOGGER.info("Add Object: {}", ioc.getBeans());
 	}
 	
 	/**
@@ -113,15 +150,18 @@ public class IocApplication {
 		// Scan package all class
 		Set<Class<?>> classes = classReader.getClass(packageName, recursive);
 		for (Class<?> clazz : classes) {
-			// Register classes
-			ioc.addBean(clazz);
+			Component component = clazz.getAnnotation(Component.class);
+			if(null != component){
+				// Register classes
+				ioc.addBean(clazz);
+			}
 		}
 	}
 	
 	public List<Plugin> getPlugins() {
 		return plugins;
 	}
-
+	
 	/**
 	 * destroy
 	 */

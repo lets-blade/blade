@@ -159,7 +159,8 @@ public class SampleIoc implements Ioc {
     
     @Override
 	public <T> T getBean(Class<T> type) {
-		return type.cast(getBean(type.getName()));
+    	Object bean = this.getBean(type.getName());
+		return type.cast(bean);
 	}
 
 	@Override

@@ -94,7 +94,7 @@ public class Routers {
 	public void addRoute(HttpMethod httpMethod, String path, RouteHandler handler, String methodName) throws NoSuchMethodException {
 		Class<?> handleType = handler.getClass();
 		Method method = handleType.getMethod(methodName, Request.class, Response.class);
-		addRoute(httpMethod, path, handler, handleType, method);
+		addRoute(httpMethod, path, handler, RouteHandler.class, method);
 	}
 	
 	public void addRoute(HttpMethod httpMethod, String path, Object controller, Class<?> controllerType, Method method) {
@@ -165,10 +165,10 @@ public class Routers {
 			methodName = methodArr[1];
 		}
 		Object controller = ioc.getBean(clazz);
-		if(null == controller){
-			ioc.addBean(clazz);
-			controller = ioc.getBean(clazz);
-		}
+//		if(null == controller){
+//			ioc.addBean(clazz);
+//			controller = ioc.getBean(clazz);
+//		}
 		try {	
 			Method method = clazz.getMethod(methodName, Request.class, Response.class);
 			
@@ -194,13 +194,8 @@ public class Routers {
 			Assert.notNull(methodName, "Method name not is null");
 			Assert.notNull(httpMethod, "Request Method not is null");
 			
-			Object controller = ioc.getBean(clazz);
-			if(null == controller){
-				ioc.addBean(clazz);
-				controller = ioc.getBean(clazz);
-			}
 			Method method = clazz.getMethod(methodName, Request.class, Response.class);
-			addRoute(httpMethod, path, controller, clazz, method);
+			addRoute(httpMethod, path, null, clazz, method);
 		} catch (NoSuchMethodException e) {
 			e.printStackTrace();
 		} catch (SecurityException e) {
@@ -211,10 +206,10 @@ public class Routers {
 	public void buildRoute(String path, Class<?> clazz, Method method, HttpMethod httpMethod) {
 		try {
 			Object controller = ioc.getBean(clazz);
-			if(null == controller){
-				ioc.addBean(clazz);
-				controller = ioc.getBean(clazz);
-			}
+//			if(null == controller){
+//				ioc.addBean(clazz);
+//				controller = ioc.getBean(clazz);
+//			}
 			addRoute(httpMethod, path, controller, clazz, method);
 		} catch (SecurityException e) {
 			e.printStackTrace();

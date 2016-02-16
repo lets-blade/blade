@@ -17,11 +17,11 @@ package com.blade;
 
 import java.io.InputStream;
 import java.text.ParseException;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import com.blade.ioc.Ioc;
-import com.blade.ioc.IocApplication;
 import com.blade.ioc.SampleIoc;
 import com.blade.loader.BladeConfig;
 import com.blade.loader.Configurator;
@@ -75,11 +75,6 @@ public class Blade {
     private Ioc ioc = null;
     
     /**
-	 * ioc application object
-	 */
-	private IocApplication iocApplication = null;
-    
-    /**
      * default render is jspRender
      */
     private TemplateEngine templateEngine = null;
@@ -99,15 +94,17 @@ public class Blade {
      */
     private Server bladeServer;
     
+    private Set<Class<? extends Plugin>> plugins;
+    
 	private Blade() {
 		this.bladeConfig = new BladeConfig();
 		this.ioc = new SampleIoc();
-		this.iocApplication = new IocApplication(ioc);
 		this.routers = new Routers(ioc);
 		this.templateEngine = new JspEngine();
+		this.plugins = new HashSet<Class<? extends Plugin>>();
 	}
 	
-	public static final class BladeHolder {
+	static final class BladeHolder {
 		private static final Blade ME = new Blade();
 	}
 	
@@ -222,33 +219,6 @@ public class Blade {
     	return this;
     }
     
-    /**
-     * Add a route
-     * 
-     * @param path		route path
-     * @param target	Target object for routing
-     * @param method	The method name of the route (at the same time, the HttpMethod is specified: post:saveUser, if not specified, HttpMethod.ALL)
-     * @return			return blade
-     */
-	public Blade route(String path, Object target, String method){
-		routers.route(path, target, method);
-		return this;
-	}
-	
-	/**
-     * Add a route
-     * 
-     * @param path			route path
-     * @param target		Target object for routing
-     * @param method		The method name of the route (at the same time, the HttpMethod is specified: post:saveUser, if not specified, HttpMethod.ALL)
-     * @param httpMethod 	HTTPMethod
-     * @return				return blade
-     */
-	public Blade route(String path, Object target, String method, HttpMethod httpMethod){
-		routers.route(path, target, method, httpMethod);
-		return this;
-	}
-	
 	/**
      * Add a route
      * 
@@ -640,7 +610,7 @@ public class Blade {
 	 * @return	Return bootstrap object
 	 */
 	public Bootstrap bootstrap(){
-		return ioc.getBean(Bootstrap.class); 
+		return this.bootstrap;
 	}
 	
 	/**
@@ -661,17 +631,12 @@ public class Blade {
 	 * return register plugin object
 	 * 
 	 * @param plugin		plugin class
-	 * @param <T>			generic
-	 * @return				return plugin object
+	 * @return				return blade
 	 */
-	@SuppressWarnings("unchecked")
-	public <T> T plugin(Class<? extends Plugin> plugin){
+	public Blade plugin(Class<? extends Plugin> plugin){
 		Assert.notNull(plugin);
-		Object object = iocApplication.getPlugin(plugin);
-		if(null == object){
-			object = iocApplication.registerPlugin(plugin);
-		}
-		return (T) object;
+		plugins.add(plugin);
+		return this;
 	}
 
 	/**
@@ -709,21 +674,6 @@ public class Blade {
 	}
 	
 	/**
-	 * @return	Return IocApplication object
-	 */
-	public IocApplication iocApplication(){
-		return iocApplication;
-	}
-	
-	/**
-	 * @return	Initialize ioc application and return blade
-	 */
-	public Blade iocInit(){
-		iocApplication.init(iocs(), bootstrap);
-		return this;
-	}
-
-	/**
 	 * @return	Return blade is initialize 
 	 */
 	public boolean isInit() {
@@ -732,6 +682,10 @@ public class Blade {
 	
 	public boolean httpCache() {
 		return bladeConfig.isHttpCache();
+	}
+	
+	public Set<Class<? extends Plugin>> plugins() {
+		return this.plugins;
 	}
 	
 }

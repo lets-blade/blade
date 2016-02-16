@@ -1,10 +1,13 @@
 package com.blade.web;
 
-import java.io.PrintStream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.blade.Const;
 
 public class BladeBanner {
+	
+	private static final Logger LOGGER = LoggerFactory.getLogger(BladeBanner.class);
 	
 	private static final String[] banner = {
 			" __, _,   _, __, __,",
@@ -13,11 +16,10 @@ public class BladeBanner {
 			" ~   ~~~ ~ ~ ~   ~~~"
 			};
 	
-	public void print(final PrintStream printStream) {
+	public void print() {
 		for (String s : banner) {
-			printStream.println('\t' + s);
+			LOGGER.info('\t' + s);
 		}
-		printStream.println("\t :: Blade :: (v" + Const.BLADE_VERSION + ")");
-		printStream.println();
+		LOGGER.info("\t :: Blade :: (v" + Const.BLADE_VERSION + ")\r\n");
 	}
 }

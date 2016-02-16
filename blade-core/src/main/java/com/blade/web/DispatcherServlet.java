@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 
 import com.blade.Blade;
 import com.blade.Bootstrap;
+import com.blade.ioc.IocApplication;
 import com.blade.route.RouteBuilder;
 
 import blade.kit.StringKit;
@@ -49,6 +50,8 @@ public class DispatcherServlet extends HttpServlet {
 	private Blade blade = Blade.me();
 	
 	private Bootstrap bootstrap; 
+	
+	private IocApplication iocApplication;
 	
 	private ServletContext servletContext;
 	
@@ -79,7 +82,6 @@ public class DispatcherServlet extends HttpServlet {
 		    blade.webRoot(DispatchKit.getWebroot(servletContext).getPath());
 		    
 		    LOGGER.info("blade.webroot = {}", blade.webRoot());
-		    LOGGER.info("blade.isDev = {}", blade.isDev());
 		    
 		    blade.config().init();
 		    
@@ -100,21 +102,25 @@ public class DispatcherServlet extends HttpServlet {
 			
 			this.bootstrap.init(blade);
 			
+			LOGGER.info("blade.isDev = {}", blade.isDev());
+			
 		    // buiding route
 			new RouteBuilder(blade).building();
 			
 			// initialization ioc
-			blade.iocInit();
+			iocApplication = new IocApplication(blade);
+			
+			iocApplication.init();
 			
 			this.bootstrap.contextInitialized(blade);
-		    
-			dispatcherHandler = new DispatcherHandler(servletContext, blade.routers());
-		    
+			
 		    blade.init();
 		    
-		    LOGGER.info("DispatcherServlet initialize successfully, Time elapsed: {} ms.", System.currentTimeMillis() - initStart);
+		    dispatcherHandler = new DispatcherHandler(servletContext, blade.routers());
 		    
-		    new BladeBanner().print(System.out);
+		    new BladeBanner().print();
+		    
+		    LOGGER.info("DispatcherServlet initialize successfully, Time elapsed: {} ms.", System.currentTimeMillis() - initStart);
 		}
 	}
 
@@ -126,6 +132,14 @@ public class DispatcherServlet extends HttpServlet {
 			DispatchKit.setNoCache(httpResponse);
 		}
 		dispatcherHandler.handle(httpRequest, httpResponse);
+	}
+	
+	@Override
+	public void destroy() {
+		super.destroy();
+		if(null != iocApplication){
+			iocApplication.destroy();
+		}
 	}
 	
 	/**
