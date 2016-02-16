@@ -37,12 +37,6 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.sql2o</groupId>
-			<artifactId>sql2o</artifactId>
-			<version>1.5.4</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-server</artifactId>
 			<version>${jetty.version}</version>
