@@ -37,6 +37,15 @@
 </dependency>
 ```
 
+## [blade-jdbc](http://search.maven.org/#search%7Cga%7C1%7Cblade-jdbc)
+```xml
+<dependency>
+    <groupId>com.bladejava</groupId>
+    <artifactId>blade-jdbc</artifactId>
+    <version>0.0.1</version>
+</dependency>
+```
+
 ## [blade-cache](http://search.maven.org/#search%7Cga%7C1%7Cblade-cache)
 ```xml
 <dependency>
