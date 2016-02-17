@@ -31,13 +31,12 @@ import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import blade.kit.Emptys;
 import blade.kit.ExceptionKit;
 import blade.kit.StringKit;
 import blade.kit.SystemKit;
+import blade.kit.logging.Logger;
+import blade.kit.logging.LoggerFactory;
 
 /**
  * 有关 Reflection处理的工具类。

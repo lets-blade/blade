@@ -24,11 +24,10 @@ import java.net.URLDecoder;
 import java.util.Enumeration;
 import java.util.Set;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import blade.kit.Assert;
 import blade.kit.CollectionKit;
+import blade.kit.logging.Logger;
+import blade.kit.logging.LoggerFactory;
 
 /**
  * 抽象类读取器

@@ -8,13 +8,12 @@ import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import blade.kit.CollectionKit;
 import blade.kit.IOKit;
 import blade.kit.config.Config;
 import blade.kit.config.exception.ConfigAdapterException;
+import blade.kit.logging.Logger;
+import blade.kit.logging.LoggerFactory;
 
 /**
  * 解析Properties配置文件
