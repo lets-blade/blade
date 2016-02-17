@@ -15,15 +15,14 @@
  */
 package com.blade.web.verify;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.blade.web.http.Request;
 import com.blade.web.http.Response;
 import com.blade.web.http.wrapper.Session;
 
 import blade.kit.HashidKit;
 import blade.kit.StringKit;
+import blade.kit.logging.Logger;
+import blade.kit.logging.LoggerFactory;
 
 /**
  * CSRF token Manager

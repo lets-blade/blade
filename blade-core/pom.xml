@@ -17,18 +17,11 @@
 
 	<properties>
 		<jetty.version>9.2.12.v20150709</jetty.version>
-		<jetbrick.version>2.0.12</jetbrick.version>
-		<beetl.version>2.2.3</beetl.version>
-		<velocity.version>1.7</velocity.version>
 		<httpclient.version>4.3.5</httpclient.version>
 		<slf4j.version>1.7.7</slf4j.version>
 	</properties>
 
 	<dependencies>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-		</dependency>
 		<dependency>
 			<groupId>com.bladejava</groupId>
 			<artifactId>blade-kit</artifactId>

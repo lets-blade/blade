@@ -1,9 +1,9 @@
 package com.blade.web;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.blade.Const;
+
+import blade.kit.logging.Logger;
+import blade.kit.logging.LoggerFactory;
 
 public class BladeBanner {
 	

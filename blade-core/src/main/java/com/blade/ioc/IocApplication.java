@@ -20,9 +20,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.blade.Blade;
 import com.blade.Bootstrap;
 import com.blade.ioc.annotation.Component;
@@ -32,6 +29,8 @@ import com.blade.route.RouteHandler;
 import com.blade.route.Routers;
 
 import blade.kit.CollectionKit;
+import blade.kit.logging.Logger;
+import blade.kit.logging.LoggerFactory;
 import blade.kit.resource.ClassPathClassReader;
 import blade.kit.resource.ClassReader;
 

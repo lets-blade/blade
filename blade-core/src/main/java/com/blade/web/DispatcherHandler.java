@@ -21,9 +21,6 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.blade.Blade;
 import com.blade.Const;
 import com.blade.context.BladeWebContext;
@@ -42,6 +39,8 @@ import com.blade.web.http.wrapper.ServletRequest;
 import com.blade.web.http.wrapper.ServletResponse;
 
 import blade.kit.StringKit;
+import blade.kit.logging.Logger;
+import blade.kit.logging.LoggerFactory;
 
 /**
  * Synchronous request processor
@@ -86,9 +85,7 @@ public class DispatcherHandler {
         
         // If it is static, the resource is handed over to the filter
     	if(staticFileFilter.isStatic(uri)){
-    		if(LOGGER.isDebugEnabled()){
-            	LOGGER.debug("Request : {}\t{}", method, uri);
-            }
+            LOGGER.debug("Request : {}\t{}", method, uri);
     		String realpath = httpRequest.getServletContext().getRealPath(uri);
     		DispatchKit.printStatic(uri, realpath, httpResponse);
 			return;
