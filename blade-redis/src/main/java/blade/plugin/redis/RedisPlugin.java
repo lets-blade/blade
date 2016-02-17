@@ -3,11 +3,10 @@ package blade.plugin.redis;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.blade.plugin.Plugin;
 
+import blade.kit.logging.Logger;
+import blade.kit.logging.LoggerFactory;
 import redis.clients.jedis.JedisShardInfo;
 
 /**
