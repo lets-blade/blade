@@ -14,11 +14,12 @@ import org.patchca.service.ConfigurableCaptchaService;
 import org.patchca.utils.encoder.EncoderHelper;
 import org.patchca.word.RandomWordFactory;
 import org.patchca.word.WordFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.blade.web.http.Response;
 import com.blade.web.http.wrapper.Session;
+
+import blade.kit.logging.Logger;
+import blade.kit.logging.LoggerFactory;
 
 /**
  * PatchcaService
