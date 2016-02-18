@@ -102,7 +102,7 @@ public static void main(String[] args) {
 }
 ```
 
-## Form URL参数获取
+## 表单参数获取
 
 ```java
 public static void main(String[] args) {
@@ -119,8 +119,6 @@ public static void main(String[] args) {
 
 ```java
 public void upload_img(Request request, Response response){
-		
-	JsonObject jsonObject = new JsonObject();
 
 	FileItem[] fileItems = request.files();
 	if(null != fileItems && fileItems.length > 0){
