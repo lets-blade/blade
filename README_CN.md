@@ -160,32 +160,25 @@ public static void main(String[] args) {
 ## DSL数据库操作
 
 ```java
-// 保存操作
-public boolean save(Integer cid, Integer tid, Integer fuid, Integer tuid) {
-    return model.insert().param("cid", cid)
-    .param("tid", tid)
-    .param("fuid", fuid)
-    .param("tuid", tuid)
-    .param("addtime", new Date())
-    .param("ntype", 0).executeAndCommit() > 0;
-}
+// query
+List<Post> posts =
+	AR.find("where title like ? order by id desc limit ?,?", title, page, count).list(Post.class);
 
-// 登录操作
-public User signin(String username, String password) {
-    String pwd = EncrypKit.md5(username + password);
-    return model.select().eq("username", username)
-    .eq("password", pwd).fetchOne();
-}
+// save
+String insertSql = "insert into t_post (title, content, view_count, create_time) values (?,?,?,?)";
+AR.update(insertSql, title, content, 0, new Date()).commit();
 
-// 查询条数
-public Long getUserCount(String email){
-    return model.count().eq("email", email).fetchCount();
-}
+// update
+AR.update("update t_post set title = ? and content = ? where id = ?",title, content, id).commit();
+
+// delete
+AR.update("delete from t_post where id = ?",id).commit()
 ```
 
 OK，这一切看起来多么的简单，查阅使用指南更多现成的例子供你参考:
 
 + [hello工程](https://github.com/blade-samples/hello)
++ [博客例子](https://github.com/blade-samples/blog)
 + [API文档](http://bladejava.com/apidocs)
 + [使用指南](http://bladejava.com/docs)
 + [相关案例](https://github.com/blade-samples)

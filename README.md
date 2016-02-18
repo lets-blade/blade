@@ -161,32 +161,25 @@ public static void main(String[] args) {
 ## DSL DB Operation
 
 ```java
+// query
+List<Post> posts =
+	AR.find("where title like ? order by id desc limit ?,?", title, page, count).list(Post.class);
+
 // save
-public boolean save(Integer cid, Integer tid, Integer fuid, Integer tuid) {
-    return model.insert().param("cid", cid)
-    .param("tid", tid)
-    .param("fuid", fuid)
-    .param("tuid", tuid)
-    .param("addtime", new Date())
-    .param("ntype", 0).executeAndCommit() > 0;
-}
+String insertSql = "insert into t_post (title, content, view_count, create_time) values (?,?,?,?)";
+AR.update(insertSql, title, content, 0, new Date()).commit();
 
-// signin
-public User signin(String username, String password) {
-    String pwd = EncrypKit.md5(username + password);
-    return model.select().eq("username", username)
-    .eq("password", pwd).fetchOne();
-}
+// update
+AR.update("update t_post set title = ? and content = ? where id = ?",title, content, id).commit();
 
-// search count
-public Long getUserCount(String email){
-    return model.count().eq("email", email).fetchCount();
-}
+// delete
+AR.update("delete from t_post where id = ?",id).commit()
 ```
 
 You may refer to these examples for additional guidance:
 
 + [Hello Blade](https://github.com/blade-samples/hello)
++ [Blog Example](https://github.com/blade-samples/blog)
 + [API Doc](http://bladejava.com/apidocs)
 + [User Guide](http://bladejava.com/docs)
 + [Version Changes](LAST_VERSION.md)
