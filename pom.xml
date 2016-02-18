@@ -23,11 +23,7 @@
 	<modules>
 		<module>blade-kit</module>
 		<module>blade-core</module>
-		<module>blade-cache</module>
-		<module>blade-redis</module>
 		<module>blade-startup</module>
-    	<module>blade-oauth2</module>
-    	<module>blade-patchca</module>
   </modules>
 
 	<repositories>
@@ -55,6 +51,7 @@
 				<groupId>org.slf4j</groupId>
 				<artifactId>slf4j-api</artifactId>
 				<version>${slf4j-api.version}</version>
+				<scope>provided</scope>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
