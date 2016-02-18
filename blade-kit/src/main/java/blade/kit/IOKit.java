@@ -109,7 +109,7 @@ public final class IOKit {
     public static long copyLarge(final InputStream input, final OutputStream output)
         throws IOException {
         byte[] buffer = new byte[DEFAULT_BUFFER_SIZE];
-        long count = 0;
+        long count = 0L;
         int n = 0;
         while (EOF != (n = input.read(buffer))) {
             output.write(buffer, 0, n);
@@ -126,7 +126,7 @@ public final class IOKit {
 
     public static long copyLarge(Reader input, Writer output) throws IOException {
         char[] buffer = new char[DEFAULT_BUFFER_SIZE];
-        long count = 0;
+        long count = 0L;
         int n = 0;
         while (EOF != (n = input.read(buffer))) {
             output.write(buffer, 0, n);
@@ -179,38 +179,32 @@ public final class IOKit {
 		}
 	}
 
-	public static long copy(InputStream input, OutputStream output)
+	public static int copy(InputStream input, OutputStream output)
 			throws IOException {
-		byte[] buffer = new byte[DEFAULT_BUFFER_SIZE];
-		long count = 0L;
-		int n = 0;
-		while (EOF != (n = input.read(buffer))) {
-			output.write(buffer, 0, n);
-			count += n;
-		}
-		return count;
+        long count = copyLarge(input, output);
+        if (count > Integer.MAX_VALUE) {
+          return -1;
+        }
+        return (int) count;
 	}
 
-	public static long copy(InputStream input, Writer output, String charsetName)
+	public static int copy(InputStream input, Writer output, String charsetName)
 			throws IOException {
 		return copy(new InputStreamReader(input, Charset.forName(charsetName)),
 				output);
 	}
 
-	public static long copy(InputStream input, Writer output, Charset charset)
+	public static int copy(InputStream input, Writer output, Charset charset)
 			throws IOException {
 		return copy(new InputStreamReader(input, charset), output);
 	}
 
-	public static long copy(Reader input, Writer output) throws IOException {
-		char[] buffer = new char[DEFAULT_BUFFER_SIZE];
-		long count = 0L;
-		int n = 0;
-		while (EOF != (n = input.read(buffer))) {
-			output.write(buffer, 0, n);
-			count += n;
-		}
-		return count;
+	public static int copy(Reader input, Writer output) throws IOException {
+	    long count = copyLarge(input, output);
+	    if (count > Integer.MAX_VALUE) {
+	      return -1;
+	    }
+	    return (int) count;
 	}
 
 	public static void closeQuietly(ZipFile obj) {
