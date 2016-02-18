@@ -77,11 +77,11 @@ public class PrettyPrint extends WriterConfig {
   }
 
   @Override
-  protected JsonWriter createWriter(Writer writer) {
+  protected JSONWriter createWriter(Writer writer) {
     return new PrettyPrintWriter(writer, indentChars);
   }
 
-  private static class PrettyPrintWriter extends JsonWriter {
+  private static class PrettyPrintWriter extends JSONWriter {
 
     private final char[] indentChars;
     private int indent;

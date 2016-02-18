@@ -126,7 +126,7 @@ public class ServletRequest implements Request {
 		List<String> variables = getPathParam(routePath);
 		String regexPath = routePath.replaceAll(Path.VAR_REGEXP, Path.VAR_REPLACE);
 
-		Matcher matcher = Pattern.compile("(?i)" + regexPath).matcher(path());
+		Matcher matcher = Pattern.compile("(?i)" + regexPath).matcher(uri());
 		matcher.matches();
 		
 		// start index at 1 as group(0) always stands for the entire expression
@@ -161,7 +161,7 @@ public class ServletRequest implements Request {
 	}
 
 	@Override
-	public String path() {
+	public String uri() {
 		return Path.fixPath(request.getRequestURI());
 	}
 	

@@ -25,7 +25,8 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import blade.kit.log.Logger;
+import blade.kit.logging.Logger;
+import blade.kit.logging.LoggerFactory;
 
 /**
  * 定时任务
@@ -35,7 +36,7 @@ import blade.kit.log.Logger;
  */
 public abstract class TaskKit {
 
-    private static Logger logger = Logger.getLogger(TaskKit.class);
+    private static Logger logger = LoggerFactory.getLogger(TaskKit.class);
 
     private static ScheduledThreadPoolExecutor taskScheduler = new ScheduledThreadPoolExecutor(getBestPoolSize());
     private static List<Timer> timerList = new ArrayList<Timer>();
@@ -174,7 +175,7 @@ public abstract class TaskKit {
     	}
     	
         List<Runnable> awaitingExecution = taskScheduler.shutdownNow();
-        logger.info("Tasks stopping. Tasks awaiting execution: %d", timerNum + awaitingExecution.size());
+        logger.info("Tasks stopping. Tasks awaiting execution: {}", timerNum + awaitingExecution.size());
     }
 
     /**

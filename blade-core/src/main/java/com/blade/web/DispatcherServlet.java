@@ -17,7 +17,6 @@ package com.blade.web;
 
 import java.io.IOException;
 
-import javax.servlet.AsyncContext;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -25,14 +24,15 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import blade.kit.StringKit;
-import blade.kit.log.Logger;
-
-import com.blade.Aop;
 import com.blade.Blade;
 import com.blade.Bootstrap;
+import com.blade.ioc.IocApplication;
 import com.blade.route.RouteBuilder;
-import com.blade.route.RouteMatcher;
+
+import blade.kit.StringKit;
+import blade.kit.SystemKit;
+import blade.kit.logging.Logger;
+import blade.kit.logging.LoggerFactory;
 
 /**
  * Blade Core DispatcherServlet
@@ -44,58 +44,82 @@ public class DispatcherServlet extends HttpServlet {
 	
 	private static final long serialVersionUID = -2607425162473178733L;
 	
-	private static final Logger LOGGER = Logger.getLogger(DispatcherServlet.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(DispatcherServlet.class);
 	
 	private Blade blade = Blade.me();
 	
 	private Bootstrap bootstrap; 
 	
+	private IocApplication iocApplication;
+	
 	private ServletContext servletContext;
 	
-	private SyncRequestHandler syncRequestHandler;
+	private DispatcherHandler dispatcherHandler;
 	
 	public DispatcherServlet() {
 	}
 	
 	public DispatcherServlet(Bootstrap bootstrap) {
 		this.bootstrap = bootstrap;
-		blade.setInit(true);
+		blade.init();
 	}
 	
 	@Override
 	public void init(ServletConfig config) throws ServletException {
 		servletContext = config.getServletContext();
 		if(!blade.isInit()){
-		    blade.webRoot(servletContext.getRealPath("/"));
+			
+			LOGGER.info("DispatcherServlet start ...");
+			LOGGER.info("jdk.version = {}", SystemKit.getJavaInfo().getVersion());
+			LOGGER.info("user.dir = {}", System.getProperty("user.dir"));
+			LOGGER.info("java.io.tmpdir = {}", System.getProperty("java.io.tmpdir"));
+			LOGGER.info("user.timezone = {}", System.getProperty("user.timezone"));
+			LOGGER.info("file.encoding = {}", System.getProperty("file.encoding"));
+			
+			long initStart = System.currentTimeMillis();
+			
+		    blade.webRoot(DispatchKit.getWebroot(servletContext).getPath());
+		    
+		    LOGGER.info("blade.webroot = {}", blade.webRoot());
+		    
+		    blade.config().init();
+		    
 			this.bootstrap = blade.bootstrap();
 			if(null == bootstrap){
 				String bootStrapClassName = config.getInitParameter("bootstrap");
 				if(StringKit.isNotBlank(bootStrapClassName)){
-					bootstrap = getBootstrap(bootStrapClassName);
+					this.bootstrap = getBootstrap(bootStrapClassName);
 				} else {
-					bootstrap = new Bootstrap() {
+					this.bootstrap = new Bootstrap() {
 						@Override
 						public void init(Blade blade) {
 						}
 					}; 
 				}
-				blade.app(bootstrap);
+				blade.app(this.bootstrap);
 			}
-			blade.bootstrap().init(blade);
+			
+			this.bootstrap.init(blade);
+			
+			LOGGER.info("blade.isDev = {}", blade.isDev());
 			
 		    // buiding route
 			new RouteBuilder(blade).building();
 			
 			// initialization ioc
-			blade.iocInit();
+			iocApplication = new IocApplication(blade);
 			
-		    blade.bootstrap().contextInitialized(blade);
+			iocApplication.init();
+			
+			this.bootstrap.contextInitialized(blade);
+			
+		    blade.init();
 		    
-		    syncRequestHandler = new SyncRequestHandler(servletContext, blade.routers());
-		    AsynRequestHandler.routeMatcher = new RouteMatcher(blade.routers());
+		    dispatcherHandler = new DispatcherHandler(servletContext, blade.routers());
 		    
-		    blade.setInit(true);
-		    LOGGER.info("blade init complete!");
+		    new BladeBanner().print();
+		    
+		    LOGGER.info("DispatcherServlet initialize successfully, Time elapsed: {} ms.", System.currentTimeMillis() - initStart);
 		}
 	}
 
@@ -103,15 +127,17 @@ public class DispatcherServlet extends HttpServlet {
 	protected void service(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws ServletException, IOException {
 		httpRequest.setCharacterEncoding(blade.encoding());
 		httpResponse.setCharacterEncoding(blade.encoding());
-		
-		boolean isAsync = httpRequest.isAsyncSupported();
-		if (isAsync) {
-			AsyncContext asyncCtx = httpRequest.startAsync();
-			asyncCtx.addListener(new AppAsyncListener());
-			asyncCtx.setTimeout(10000L);
-			asyncCtx.start(new AsynRequestHandler(servletContext, asyncCtx));
-		} else {
-			syncRequestHandler.handle(httpRequest, httpResponse);
+		if(!blade.httpCache()){
+			DispatchKit.setNoCache(httpResponse);
+		}
+		dispatcherHandler.handle(httpRequest, httpResponse);
+	}
+	
+	@Override
+	public void destroy() {
+		super.destroy();
+		if(null != iocApplication){
+			iocApplication.destroy();
 		}
 	}
 	
@@ -129,7 +155,7 @@ public class DispatcherServlet extends HttpServlet {
         	if(null != botstrapClassName){
             	Class<Bootstrap> applicationClass = (Class<Bootstrap>) Class.forName(botstrapClassName);
                 if(null != applicationClass){
-                	bootstrapClass = Aop.createT(applicationClass);
+                	bootstrapClass = applicationClass.newInstance();
                 }
         	} else {
         		throw new ServletException("bootstrapClass is null !");

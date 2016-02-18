@@ -17,9 +17,6 @@
 
 	<properties>
 		<jetty.version>9.2.12.v20150709</jetty.version>
-		<jetbrick.version>2.0.12</jetbrick.version>
-		<beetl.version>2.2.3</beetl.version>
-		<velocity.version>1.7</velocity.version>
 		<httpclient.version>4.3.5</httpclient.version>
 		<slf4j.version>1.7.7</slf4j.version>
 	</properties>
@@ -28,36 +25,12 @@
 		<dependency>
 			<groupId>com.bladejava</groupId>
 			<artifactId>blade-kit</artifactId>
-			<version>1.2.8</version>
-		</dependency>
-		<dependency>
-			<groupId>com.bladejava</groupId>
-			<artifactId>blade-aop</artifactId>
-			<version>1.0.0</version>
-			<scope>provided</scope>
+			<version>1.2.9-alpha</version>
 		</dependency>
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
 			<version>3.1.0</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.github.subchen</groupId>
-			<artifactId>jetbrick-template</artifactId>
-			<version>${jetbrick.version}</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.beetl</groupId>
-			<artifactId>beetl-core</artifactId>
-			<version>${beetl.version}</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.velocity</groupId>
-			<artifactId>velocity</artifactId>
-			<version>${velocity.version}</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -71,6 +44,11 @@
 			<artifactId>jetty-webapp</artifactId>
 			<version>${jetty.version}</version>
 			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
 		</dependency>
 
 	</dependencies>

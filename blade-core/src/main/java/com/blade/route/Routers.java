@@ -20,15 +20,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import blade.kit.Assert;
-import blade.kit.log.Logger;
-
-import com.blade.Aop;
-import com.blade.ioc.Container;
-import com.blade.ioc.Scope;
 import com.blade.web.http.HttpMethod;
 import com.blade.web.http.Request;
 import com.blade.web.http.Response;
+
+import blade.kit.Assert;
+import blade.kit.logging.Logger;
+import blade.kit.logging.LoggerFactory;
 
 /**
  * Registration, management route
@@ -38,9 +36,7 @@ import com.blade.web.http.Response;
  */
 public class Routers {
 	
-	private Logger LOGGER = Logger.getLogger(Routers.class);
-	
-	private Container container = null;
+	private Logger LOGGER = LoggerFactory.getLogger(Routers.class);
 	
 	private Map<String, Route> routes = null;
 	
@@ -48,8 +44,7 @@ public class Routers {
 	
 	private static final String METHOD_NAME = "handle";
 	
-	public Routers(Container container) {
-		this.container = container;
+	public Routers() {
 		this.routes = new HashMap<String, Route>();
 		this.interceptors = new HashMap<String, Route>();
 	}
@@ -69,18 +64,18 @@ public class Routers {
 		
 		// existent
 		if (null != this.routes.get(key)) {
-			LOGGER.warn("\tRoute "+ path + " -> " + httpMethod.toString() +" has exist");
+			LOGGER.warn("\tRoute {} -> {} has exist", path, httpMethod.toString());
 		}
 		
 		if(httpMethod == HttpMethod.BEFORE || httpMethod == HttpMethod.AFTER){
 			if (null != this.interceptors.get(key)) {
-				LOGGER.warn("\tInterceptor "+ path + " -> " + httpMethod.toString() +" has exist");
+				LOGGER.warn("\tInterceptor {} -> {} has exist", path, httpMethod.toString());
 			}
 			this.interceptors.put(key, route);
-			LOGGER.debug("Add Interceptor：" + route);
+			LOGGER.debug("Add Interceptor: {}", route);
 		} else {
 			this.routes.put(key, route);
-			LOGGER.debug("Add Route：" + route);
+			LOGGER.debug("Add Route: {}", route);
 		}
 	}
 	
@@ -92,11 +87,12 @@ public class Routers {
 	}
 	
 	public void addRoute(HttpMethod httpMethod, String path, RouteHandler handler, String methodName) throws NoSuchMethodException {
-		Method method = handler.getClass().getMethod(methodName, Request.class, Response.class);
-		addRoute(httpMethod, path, handler, method);
+		Class<?> handleType = handler.getClass();
+		Method method = handleType.getMethod(methodName, Request.class, Response.class);
+		addRoute(httpMethod, path, handler, RouteHandler.class, method);
 	}
 	
-	public void addRoute(HttpMethod httpMethod, String path, Object controller, Method method) {
+	public void addRoute(HttpMethod httpMethod, String path, Object controller, Class<?> controllerType, Method method) {
 		
 		Assert.notNull(httpMethod);
 		Assert.notBlank(path);
@@ -105,19 +101,19 @@ public class Routers {
 		String key = path + "#" + httpMethod.toString();
 		// existent
 		if (null != this.routes.get(key)) {
-			LOGGER.warn("\tRoute "+ path + " -> " + httpMethod.toString() +" has exist");
+			LOGGER.warn("\tRoute {} -> {} has exist", path, httpMethod.toString());
 		}
 		
-		Route route = new Route(httpMethod, path, controller, method);
+		Route route = new Route(httpMethod, path, controller, controllerType, method);
 		if(httpMethod == HttpMethod.BEFORE || httpMethod == HttpMethod.AFTER){
 			if (null != this.interceptors.get(key)) {
-				LOGGER.warn("\tInterceptor "+ path + " -> " + httpMethod.toString() +" has exist");
+				LOGGER.warn("\tInterceptor {} -> {} has exist", path, httpMethod.toString());
 			}
 			this.interceptors.put(key, route);
-			LOGGER.debug("Add Interceptor：" + route);
+			LOGGER.info("Add Interceptor: {}", route);
 		} else {
 			this.routes.put(key, route);
-			LOGGER.debug("Add Route：" + route);
+			LOGGER.info("Add Route: {}", route);
 		}
 		
 	}
@@ -138,8 +134,12 @@ public class Routers {
 	
 	public void route(String path, Object target, String methodName) {
 		try {
+			Assert.notNull(path, "Route path not is null!");
+			Assert.notNull(target, "Target Controller not is null!");
+			Assert.notNull(methodName, "Method name not is null");
+			
 			Method method = target.getClass().getMethod(methodName, Request.class, Response.class);
-			addRoute(HttpMethod.ALL, path, target, method);
+			addRoute(HttpMethod.ALL, path, target, target.getClass(), method);
 		} catch (NoSuchMethodException e) {
 			e.printStackTrace();
 		} catch (SecurityException e) {
@@ -149,25 +149,23 @@ public class Routers {
 
 	public void route(String path, Class<?> clazz, String methodName) {
 		
+		Assert.notNull(path, "Route path not is null!");
+		Assert.notNull(clazz, "Class Type not is null!");
+		Assert.notNull(methodName, "Method name not is null");
+		
 		HttpMethod httpMethod = HttpMethod.ALL;
 		if(methodName.indexOf(":") != -1){
 			String[] methodArr = methodName.split(":");
 			httpMethod = HttpMethod.valueOf(methodArr[0].toUpperCase());
 			methodName = methodArr[1];
 		}
-		Object controller = container.getBean(clazz, Scope.SINGLE);
-		if(null == controller){
-			controller = Aop.create(clazz);
-			container.registerBean(controller);
-		}
 		try {	
 			Method method = clazz.getMethod(methodName, Request.class, Response.class);
-			
-			addRoute(httpMethod, path, controller, method);
+			addRoute(httpMethod, path, null, clazz, method);
 		} catch (NoSuchMethodException e) {
 			try {
 				Method method = clazz.getMethod(methodName, Response.class, Request.class);
-				addRoute(httpMethod, path, controller, method);
+				addRoute(httpMethod, path, null, clazz, method);
 			} catch (NoSuchMethodException e1) {
 				e1.printStackTrace();
 			} catch (SecurityException e1) {
@@ -180,13 +178,12 @@ public class Routers {
 	
 	public void route(String path, Class<?> clazz, String methodName, HttpMethod httpMethod) {
 		try {
-			Object controller = container.getBean(clazz, Scope.SINGLE);
-			if(null == controller){
-				controller = Aop.create(clazz);
-				container.registerBean(controller);
-			}
+			Assert.notNull(path, "Route path not is null!");
+			Assert.notNull(clazz, "Class Type not is null!");
+			Assert.notNull(methodName, "Method name not is null");
+			Assert.notNull(httpMethod, "Request Method not is null");
 			Method method = clazz.getMethod(methodName, Request.class, Response.class);
-			addRoute(httpMethod, path, controller, method);
+			addRoute(httpMethod, path, null, clazz, method);
 		} catch (NoSuchMethodException e) {
 			e.printStackTrace();
 		} catch (SecurityException e) {
@@ -195,28 +192,7 @@ public class Routers {
 	}
 	
 	public void buildRoute(String path, Class<?> clazz, Method method, HttpMethod httpMethod) {
-		try {
-			Object controller = container.getBean(clazz, Scope.SINGLE);
-			if(null == controller){
-				controller = Aop.create(clazz);
-				container.registerBean(controller);
-			}
-			addRoute(httpMethod, path, null, method);
-		} catch (SecurityException e) {
-			e.printStackTrace();
-		}
+		addRoute(httpMethod, path, null, clazz, method);
 	}
 	
-	public void route(String path, Object target, String methodName, HttpMethod httpMethod) {
-		try {
-			Class<?> clazz = target.getClass();
-			container.registerBean(target);
-			Method method = clazz.getMethod(methodName, Request.class, Response.class);
-			addRoute(httpMethod, path, target, method);
-		} catch (NoSuchMethodException e) {
-			e.printStackTrace();
-		} catch (SecurityException e) {
-			e.printStackTrace();
-		}
-	}
 }

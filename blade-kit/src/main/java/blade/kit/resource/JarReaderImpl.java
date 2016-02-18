@@ -27,7 +27,8 @@ import java.util.jar.JarFile;
 import blade.kit.Assert;
 import blade.kit.CollectionKit;
 import blade.kit.exception.ClassReaderException;
-import blade.kit.log.Logger;
+import blade.kit.logging.Logger;
+import blade.kit.logging.LoggerFactory;
 
 /**
  * 根据jar文件读取类
@@ -37,7 +38,7 @@ import blade.kit.log.Logger;
  */
 public class JarReaderImpl extends AbstractClassReader implements ClassReader {
 	
-	private static final Logger LOGGER = Logger.getLogger(JarReaderImpl.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(JarReaderImpl.class);
 	
 	@Override
 	public Set<Class<?>> getClass(String packageName, boolean recursive) {
@@ -74,7 +75,7 @@ public class JarReaderImpl extends AbstractClassReader implements ClassReader {
 				}
             }
         } catch (IOException e) {
-        	LOGGER.error(e.getMessage());
+        	LOGGER.error(e.getMessage(), e);
         }
         return classes;
 	}
@@ -138,7 +139,7 @@ public class JarReaderImpl extends AbstractClassReader implements ClassReader {
 			                    	}
 			                        classes.add(clazz);
 								} catch (ClassNotFoundException e) {
-									LOGGER.error("添加用户自定义视图类错误 找不到此类的.class文件");
+									LOGGER.error("Add user custom view class error Can't find such Class files.");
 									throw new ClassReaderException(e);
 								}
 							}
@@ -147,7 +148,7 @@ public class JarReaderImpl extends AbstractClassReader implements ClassReader {
 				}
 		    }
 		} catch (IOException e) {
-			LOGGER.error("在扫描用户定义视图时从jar包获取文件出错：{}", e.getMessage());
+			LOGGER.error("The scan error when the user to define the view from a jar package file.", e);
 		}
 		return classes;
 	}

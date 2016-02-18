@@ -26,7 +26,7 @@ public interface Const {
 	/**
 	 * Current version
 	 */
-	String BLADE_VERSION = "1.5.2-alpha";
+	String BLADE_VERSION = "1.6.0-alpha";
 	
 	/**
      * Server 500 error HTML
@@ -49,4 +49,11 @@ public interface Const {
 	 * Request ThreadPoll context key
 	 */
 	String BLADE_EXECUTOR = "blade-req-executor";
+	
+	String BLADE_ROUTE = "blade.route";
+	String BLADE_IOC = "blade.ioc";
+	String BLADE_VIEW_404 = "blade.view404";
+	String BLADE_VIEW_500 = "blade.view500";
+	String BLADE_DEV = "blade.dev";
+	
 }

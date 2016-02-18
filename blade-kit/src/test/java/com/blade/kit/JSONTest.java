@@ -5,11 +5,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import blade.kit.json.JSONArray;
 import blade.kit.json.JSONKit;
-import blade.kit.json.Json;
-import blade.kit.json.JsonArray;
-import blade.kit.json.JsonObject;
-import blade.kit.json.JsonValue;
+import blade.kit.json.JSONObject;
+import blade.kit.json.JSONValue;
 
 public class JSONTest {
 
@@ -33,15 +32,15 @@ public class JSONTest {
         String string = JSONKit.toJSONString(list);
         System.out.println(string);
         
-		List<JsonValue> list2 = Json.parse(json).asArray().values();
+		List<JSONValue> list2 = JSONKit.parse(json).asArray().values();
 		System.out.println(list2);
         
-        JsonObject obj1 = new JsonObject();
-        obj1.add("name", "jack");
+        JSONObject obj1 = new JSONObject();
+        obj1.put("name", "jack");
         
         System.out.println(obj1);
         
-        JsonArray obj2 = new JsonArray();
+        JSONArray obj2 = new JSONArray();
         obj2.add("123");
         
         System.out.println(obj2);

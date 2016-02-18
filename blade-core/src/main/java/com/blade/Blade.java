@@ -15,31 +15,31 @@
  */
 package com.blade;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.text.ParseException;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
-import blade.kit.Assert;
-import blade.kit.IOKit;
-import blade.kit.PropertyKit;
-import blade.kit.json.JSONKit;
-
-import com.blade.ioc.Container;
-import com.blade.ioc.SampleContainer;
-import com.blade.loader.ClassPathRouteLoader;
-import com.blade.loader.Config;
+import com.blade.ioc.Ioc;
+import com.blade.ioc.SampleIoc;
+import com.blade.loader.BladeConfig;
 import com.blade.loader.Configurator;
 import com.blade.plugin.Plugin;
-import com.blade.render.JspRender;
-import com.blade.render.Render;
 import com.blade.route.Route;
 import com.blade.route.RouteException;
+import com.blade.route.RouteGroup;
 import com.blade.route.RouteHandler;
 import com.blade.route.Routers;
+import com.blade.route.loader.ClassPathRouteLoader;
 import com.blade.server.Server;
+import com.blade.view.template.JspEngine;
+import com.blade.view.template.TemplateEngine;
 import com.blade.web.http.HttpMethod;
+
+import blade.kit.Assert;
+import blade.kit.config.loader.ConfigLoader;
+import blade.kit.reflect.ReflectKit;
 
 /**
  * Blade Core Class
@@ -67,22 +67,17 @@ public class Blade {
     /**
 	 * Global configuration Object
 	 */
-	private Config config = null;
+	private BladeConfig bladeConfig = null;
 	
     /**
      * IOC Container, save javabean
      */
-    private Container container = null;
-    
-    /**
-	 * ioc application object
-	 */
-	private IocApplication iocApplication = null;
+    private Ioc ioc = null;
     
     /**
      * default render is jspRender
      */
-    private Render render = null;
+    private TemplateEngine templateEngine = null;
     
     /**
      * manage route
@@ -99,15 +94,17 @@ public class Blade {
      */
     private Server bladeServer;
     
+    private Set<Class<? extends Plugin>> plugins;
+    
 	private Blade() {
-		this.config = new Config();
-		this.container = new SampleContainer();
-		this.iocApplication = new IocApplication(container);
-		this.routers = new Routers(container);
-		this.render = new JspRender();
+		this.bladeConfig = new BladeConfig();
+		this.ioc = new SampleIoc();
+		this.routers = new Routers();
+		this.templateEngine = new JspEngine();
+		this.plugins = new HashSet<Class<? extends Plugin>>();
 	}
 	
-	public static final class BladeHolder {
+	static final class BladeHolder {
 		private static final Blade ME = new Blade();
 	}
 	
@@ -122,8 +119,10 @@ public class Blade {
 	 * Set Blade initialize
 	 * @param isInit	initialize
 	 */
-	public void setInit(boolean isInit) {
-		this.isInit = isInit;
+	public void init() {
+		if(!this.isInit){
+			this.isInit = true;
+		}
 	}
 	
 	/**
@@ -145,8 +144,8 @@ public class Blade {
 	/**
 	 * @return	return blade ioc container
 	 */
-	public Container container(){
-		return container;
+	public Ioc ioc(){
+		return ioc;
 	}
 	
 	/**
@@ -154,24 +153,9 @@ public class Blade {
 	 * @param container	ioc object
 	 * @return			return blade
 	 */
-	public Blade container(Container container){
-		Assert.notNull(container);
-		this.container = container;
-		return this;
-	}
-	
-	/**
-	 * Setting Properties configuration file
-	 * File path based on classpath
-	 * 
-	 * @param confName		properties file name
-	 * @return				return blade
-	 */
-	@Deprecated
-	public Blade config(String confName){
-		Assert.notBlank(confName);
-		Map<String, String> configMap = PropertyKit.getPropertyMap(confName);
-		configuration(configMap);
+	public Blade container(Ioc ioc){
+		Assert.notNull(ioc);
+		this.ioc = ioc;
 		return this;
 	}
 	
@@ -184,53 +168,9 @@ public class Blade {
 	 */
 	public Blade setAppConf(String confName){
 		Assert.notBlank(confName);
-		Map<String, String> configMap = PropertyKit.getPropertyMap(confName);
-		configuration(configMap);
+		blade.kit.config.Config config = ConfigLoader.load(confName);
+		Configurator.init(bladeConfig, config);
 		return this;
-	}
-	
-	/**
-	 * Setting JSON file configuration
-	 * File path based on classpath
-	 * 
-	 * @param fileName		json file name
-	 * @return				return blade
-	 */
-	public Blade setJsonConf(String fileName){
-		Assert.notBlank(fileName);
-		InputStream inputStream = Blade.class.getResourceAsStream(fileName);
-		if(null != inputStream){
-			try {
-				String json = IOKit.toString(inputStream);
-				Map<String, String> configMap = JSONKit.toMap(json);
-				configuration(configMap);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-		return this;
-	}
-	
-	/**
-	 * Setting json character config, Not recommended
-	 * 
-	 * @param json	json character
-	 * @return		return blade
-	 */
-	public Blade setAppJson(String json){
-		Assert.notBlank(json);
-		Map<String, String> configMap = JSONKit.toMap(json);
-		configuration(configMap);
-		return this;
-	}
-	
-	/**
-	 * Setting Map config
-	 * @param configMap	set config map	
-	 */
-	private void configuration(Map<String, String> configMap){
-		Assert.notEmpty(configMap);
-		new Configurator(config, configMap).run();
 	}
 	
 	/**
@@ -242,20 +182,16 @@ public class Blade {
      */
     public Blade routes(String...packages){
     	Assert.notNull(packages);
-    	config.setRoutePackages(packages);
+    	bladeConfig.addRoutePackages(packages);
     	return this;
     }
     
-    /**
-     * Setting top package frame automatically for routing packets and packet interceptor, e.g:com.bladejava
-     * As above, it will be over:com.bladejava.route、com.bladejava.interceptor Routing and interceptor inside
-     * 
-     * @param basePackage 	default package path
-     * @return				return blade
-     */
-    public Blade defaultRoute(String basePackage){
+    public Blade basePackage(String basePackage){
     	Assert.notBlank(basePackage);
-   		config.setBasePackage(basePackage);
+    	bladeConfig.setBasePackage(basePackage);
+    	bladeConfig.addIocPackages(basePackage + ".service.*");
+    	bladeConfig.addRoutePackages(basePackage + ".controller");
+    	bladeConfig.setInterceptorPackage(basePackage + ".interceptor");
     	return this;
     }
     
@@ -267,7 +203,7 @@ public class Blade {
      */
 	public Blade interceptor(String packageName) {
 		Assert.notBlank(packageName);
-		config.setInterceptorPackage(packageName);
+		bladeConfig.setInterceptorPackage(packageName);
 		return this;
 	}
 	
@@ -279,39 +215,10 @@ public class Blade {
      */
     public Blade ioc(String...packages){
     	Assert.notNull(packages);
-    	if(packages.length >0){
-    		config.setIocPackages(packages);
-    	}
+    	bladeConfig.addIocPackages(packages);
     	return this;
     }
     
-    /**
-     * Add a route
-     * 
-     * @param path		route path
-     * @param target	Target object for routing
-     * @param method	The method name of the route (at the same time, the HttpMethod is specified: post:saveUser, if not specified, HttpMethod.ALL)
-     * @return			return blade
-     */
-	public Blade route(String path, Object target, String method){
-		routers.route(path, target, method);
-		return this;
-	}
-	
-	/**
-     * Add a route
-     * 
-     * @param path			route path
-     * @param target		Target object for routing
-     * @param method		The method name of the route (at the same time, the HttpMethod is specified: post:saveUser, if not specified, HttpMethod.ALL)
-     * @param httpMethod 	HTTPMethod
-     * @return				return blade
-     */
-	public Blade route(String path, Object target, String method, HttpMethod httpMethod){
-		routers.route(path, target, method, httpMethod);
-		return this;
-	}
-	
 	/**
      * Add a route
      * 
@@ -345,6 +252,7 @@ public class Blade {
 	 * @return			return blade
 	 */
 	public Blade routes(List<Route> routes){
+		Assert.notEmpty(routes, "Routes not is empty!");
 		routers.addRoutes(routes);
 		return this;
 	}
@@ -422,6 +330,16 @@ public class Blade {
 	}
 	
 	/**
+	 * Route Group. e.g blade.group('/users').get().post()
+	 * @param g
+	 * @return
+	 */
+	public RouteGroup group(String prefix){
+		Assert.notNull(prefix, "Route group prefix not is null");
+		return new RouteGroup(this, prefix);
+	}
+	
+	/**
 	 * Register a pre routing request interceptor
 	 * 
 	 * @param path		route path, request url
@@ -448,55 +366,12 @@ public class Blade {
 	/**
 	 * Setting Render Engin, Default is JspRender
 	 * 
-	 * @param render 	Render engine object
-	 * @return			return blade
+	 * @param templateEngine 	Render engine object
+	 * @return					return blade
 	 */
-	public Blade viewEngin(Render render) {
-		Assert.notNull(render);
-		this.render = render;
-		return this;
-	}
-	
-	/**
-	 * Setting default view prefix, default is WEBROOT/WEB-INF/
-	 * 
-	 * @param prefix 	views path, e.g:/WEB-INF/views/
-	 * @return			return blade
-	 */
-	public Blade viewPrefix(final String prefix) {
-		Assert.notBlank(prefix);
-		if(prefix.startsWith("/")){
-			config.setViewPrefix(prefix);
-		}
-		return this;
-	}
-	
-	/**
-	 * Setting view default suffix, default is .jsp
-	 * 
-	 * @param suffix	view suffix, e.g:.html .vm
-	 * @return			return blade
-	 */
-	public Blade viewSuffix(final String suffix) {
-		Assert.notBlank(suffix);
-		if(suffix.startsWith(".")){
-			config.setViewSuffix(suffix);
-		}
-		return this;
-	}
-	
-	/**
-	 * Also set the view's directory and view the suffix name
-	 * 
-	 * @param viewPath	views path, e.g:/WEB-INF/views
-	 * @param viewExt	view suffix, e.g:.html .vm
-	 * @return			return blade
-	 */
-	public Blade view(final String viewPath, final String viewExt) {
-		Assert.notBlank(viewPath);
-		Assert.notBlank(viewExt);
-		viewPrefix(viewPath);
-		viewSuffix(viewExt);
+	public Blade viewEngin(TemplateEngine templateEngine) {
+		Assert.notNull(templateEngine);
+		this.templateEngine = templateEngine;
 		return this;
 	}
 	
@@ -508,7 +383,7 @@ public class Blade {
 	 */
 	public Blade staticFolder(final String ... folders) {
 		Assert.notNull(folders);
-		config.setStaticFolders(folders);
+		bladeConfig.setStaticFolders(folders);
 		return this;
 	}
 	
@@ -518,8 +393,8 @@ public class Blade {
 	 * @param enableXSS	enable XSS, default is false
 	 * @return			return blade
 	 */
-	public Blade enableXSS(boolean enableXSS){
-		config.setEnableXSS(enableXSS);
+	public Blade enableXSS(boolean httpXss){
+		bladeConfig.setHttpXss(httpXss);
 		return this; 
 	}
 	
@@ -543,8 +418,11 @@ public class Blade {
      */
     public Blade app(Class<? extends Bootstrap> bootstrap){
     	Assert.notNull(bootstrap);
-    	Object object = container.registerBean(Aop.create(bootstrap));
-    	this.bootstrap = (Bootstrap) object;
+    	try {
+			ioc.addBean(Bootstrap.class.getName(), ReflectKit.newInstance(bootstrap));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
     	return this;
     }
     
@@ -554,9 +432,9 @@ public class Blade {
      * @param view404	404 view page
      * @return			return blade
      */
-    public Blade setView404(final String view404){
+    public Blade view404(final String view404){
     	Assert.notBlank(view404);
-    	config.setView404(view404);
+    	bladeConfig.setView404(view404);
     	return this;
     }
     
@@ -566,9 +444,9 @@ public class Blade {
      * @param view500	500 view page
      * @return			return blade
      */
-    public Blade setView500(final String view500){
+    public Blade view500(final String view500){
     	Assert.notBlank(view500);
-    	config.setView500(view500);
+    	bladeConfig.setView500(view500);
     	return this;
     }
 
@@ -580,7 +458,7 @@ public class Blade {
      */
     public Blade webRoot(final String webRoot){
     	Assert.notBlank(webRoot);
-    	config.setWebRoot(webRoot);
+    	bladeConfig.setWebRoot(webRoot);
     	return this;
     }
     
@@ -591,7 +469,7 @@ public class Blade {
 	 * @return			return blade
 	 */
 	public Blade isDev(boolean isDev){
-		config.setDev(isDev);
+		bladeConfig.setDev(isDev);
 		return this;
 	}
 	
@@ -661,133 +539,116 @@ public class Blade {
 	/**
 	 * @return	Return blade config object
 	 */
-	public Config config(){
-    	return config;
+	public BladeConfig config(){
+    	return bladeConfig;
     }
 	
-    /**
-     * @return	Return blade scan base package
-     */
-    public String basePackage(){
-    	return config.getBasePackage();
-    }
-    
 	/**
      * @return	Return route packages
      */
     public String[] routePackages(){
-    	return config.getRoutePackages();
+    	return bladeConfig.getRoutePackages();
     }
     
     /**
      * @return	Return ioc packages
      */
     public String[] iocs(){
-    	return config.getIocPackages();
+    	return bladeConfig.getIocPackages();
     }
     
     /**
      * @return	Returns the interceptor array, only one element here use String[]
      */
     public String interceptorPackage(){
-    	return config.getInterceptorPackage();
-    }
-    
-    
-    /**
-     * @return	Return views prefix
-     */
-    public String viewPrefix(){
-    	return config.getViewPrefix();
+    	return bladeConfig.getInterceptorPackage();
     }
     
     /**
      * @return	Return blade encoding, default is UTF-8
      */
     public String encoding(){
-    	return config.getEncoding();
-    }
-    
-    /**
-     * @return	Return view suffix
-     */
-    public String viewSuffix(){
-    	return config.getViewSuffix();
+    	return bladeConfig.getEncoding();
     }
     
     /**
      * @return	Return 404 view
      */
     public String view404(){
-    	return config.getView404();
+    	return bladeConfig.getView404();
     }
     
     /**
      * @return	Return 500 view
      */
     public String view500(){
-    	return config.getView500();
+    	return bladeConfig.getView500();
     }
     
     /**
      * @return	Return blade web root path
      */
     public String webRoot(){
-    	return config.getWebRoot();
+    	return bladeConfig.getWebRoot();
     }
     
     /**
 	 * @return	Return is dev mode
 	 */
 	public boolean isDev(){
-		return config.isDev();
+		return bladeConfig.isDev();
 	}
 	
 	/**
 	 * @return	Return static resource directory
 	 */
-	public String[] staticFolder(){
-		return config.getStaticFolders();
+	public Set<String> staticFolder(){
+		return bladeConfig.getStaticFolders();
 	}
 	
 	/**
 	 * @return	Return bootstrap object
 	 */
 	public Bootstrap bootstrap(){
-		return bootstrap; 
+		return this.bootstrap;
 	}
 	
 	/**
-	 * @return	Return current render engine
+	 * @return	Return current templateEngine
 	 */
-	public Render render() {
-		return this.render;
+	public TemplateEngine templateEngine() {
+		return this.templateEngine;
 	}
 
 	/**
 	 * @return	Return XSS is enabled
 	 */
 	public boolean enableXSS(){
-		return config.isEnableXSS(); 
+		return bladeConfig.isHttpXss(); 
 	}
 	
 	/**
 	 * return register plugin object
 	 * 
 	 * @param plugin		plugin class
-	 * @param <T>			generic
-	 * @return				return plugin object
+	 * @return				return blade
 	 */
-	@SuppressWarnings("unchecked")
-	public <T> T plugin(Class<? extends Plugin> plugin){
+	public Blade plugin(Class<? extends Plugin> plugin){
 		Assert.notNull(plugin);
-		Object object = iocApplication.getPlugin(plugin);
-		if(null == object){
-			object = iocApplication.registerPlugin(plugin);
-		}
-		return (T) object;
+		plugins.add(plugin);
+		return this;
 	}
 
+	/**
+	 * Registration of a configuration file, e.g: "com.xxx.route","route.conf"
+	 * 
+	 * @param basePackage	controller package name
+	 * @return				return blade
+	 */
+	public Blade routeConf(String basePackage) {
+		return routeConf(basePackage, "route.conf");
+	}
+	
 	/**
 	 * Registration of a configuration file, e.g: "com.xxx.route","route.conf"
 	 * 
@@ -813,25 +674,18 @@ public class Blade {
 	}
 	
 	/**
-	 * @return	Return IocApplication object
-	 */
-	public IocApplication iocApplication(){
-		return iocApplication;
-	}
-	
-	/**
-	 * @return	Initialize ioc application and return blade
-	 */
-	public Blade iocInit(){
-		iocApplication.init(iocs(), bootstrap);
-		return this;
-	}
-
-	/**
 	 * @return	Return blade is initialize 
 	 */
 	public boolean isInit() {
 		return isInit;
+	}
+	
+	public boolean httpCache() {
+		return bladeConfig.isHttpCache();
+	}
+	
+	public Set<Class<? extends Plugin>> plugins() {
+		return this.plugins;
 	}
 	
 }

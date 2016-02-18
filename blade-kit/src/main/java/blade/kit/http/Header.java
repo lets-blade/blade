@@ -64,6 +64,16 @@ public class Header {
 	 * 'Content-Type' header name
 	 */
 	public static final String HEADER_CONTENT_TYPE = "Content-Type";
+	
+	/**
+	 * 'Cookie' header name
+	 */
+	public static final String HEADER_COOKIE = "Cookie";
+	
+	/**
+	 * 'Set-Cookie' header name
+	 */
+	public static final String HEADER_SET_COOKIE = "Set-Cookie";
 
 	/**
 	 * 'Date' header name

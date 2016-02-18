@@ -60,7 +60,7 @@ public interface Request {
 	/**
 	 * @return	Return request URI
 	 */
-	String path();
+	String uri();
 	
 	/**
 	 * @return	Return UA
@@ -358,5 +358,5 @@ public interface Request {
 		InputStream asInputStream();
 		byte[] asByte();
 	}
-	
+
 }

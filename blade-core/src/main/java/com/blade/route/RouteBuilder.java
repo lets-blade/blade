@@ -18,19 +18,20 @@ package com.blade.route;
 import java.lang.reflect.Method;
 import java.util.Set;
 
+import com.blade.Blade;
+import com.blade.interceptor.Interceptor;
+import com.blade.interceptor.annotation.Intercept;
+import com.blade.ioc.Ioc;
+import com.blade.route.annotation.Path;
+import com.blade.route.annotation.Route;
+import com.blade.web.http.HttpMethod;
+import com.blade.web.http.Request;
+import com.blade.web.http.Response;
+
 import blade.kit.StringKit;
+import blade.kit.reflect.ReflectKit;
 import blade.kit.resource.ClassPathClassReader;
 import blade.kit.resource.ClassReader;
-
-import com.blade.Aop;
-import com.blade.Blade;
-import com.blade.annotation.After;
-import com.blade.annotation.Before;
-import com.blade.annotation.Interceptor;
-import com.blade.annotation.Path;
-import com.blade.annotation.Route;
-import com.blade.ioc.Container;
-import com.blade.web.http.HttpMethod;
 
 /**
  * Route builder
@@ -41,24 +42,14 @@ import com.blade.web.http.HttpMethod;
 public class RouteBuilder {
     
     /**
-	 * Default route suffix package, the user scan route location, the default is route, users can customize
-	 */
-    private String pkgRoute = "route";
-	
-	/**
-	 * Default interceptor suffix package, the user scans the interceptor location, the default is interceptor, users can customize
-	 */
-    private String pkgInterceptor = "interceptor";
-	
-    /**
      * Class reader, used to scan the class specified in the rules
      */
-    private ClassReader classReader = new ClassPathClassReader();
+    private ClassReader classReader;
     
     /**
      * IOC container, storage route to IOC
      */
-    private Container container = null;
+    private Ioc ioc;
     
     private Blade blade;
     
@@ -67,40 +58,27 @@ public class RouteBuilder {
     public RouteBuilder(Blade blade) {
     	this.blade = blade;
     	this.routers = blade.routers();
-    	this.container = blade.container();
+    	this.ioc = blade.ioc();
+    	this.classReader = new ClassPathClassReader();
     }
     
     /**
      * Start building route
      */
     public void building() {
-        String basePackage = blade.basePackage();
-        
-        if(StringKit.isNotBlank(basePackage)){
-        	
-        	// Processing e.g: com.xxx.* representation of recursive scanning package
-        	String suffix = basePackage.endsWith(".*") ? ".*" : "";
-        	basePackage = basePackage.endsWith(".*") ? basePackage.substring(0, basePackage.length() - 2) : basePackage;
-        	
-			String routePackage = basePackage + "." + pkgRoute + suffix;
-			String interceptorPackage = basePackage + "." + pkgInterceptor + suffix;
-			
-        	buildRoute(routePackage);
-        	buildInterceptor(interceptorPackage);
-        	
-        } else {
-        	// Route
-        	String[] routePackages = blade.routePackages();
-        	if(null != routePackages && routePackages.length > 0){
-        		buildRoute(routePackages);
-        	}
-        	
-    		// Inteceptor
-        	String interceptorPackage = blade.interceptorPackage();
-        	if(StringKit.isNotBlank(interceptorPackage)){
-        		buildInterceptor(interceptorPackage);
-        	}
-		}
+    	
+    	// Route
+    	String[] routePackages = blade.routePackages();
+    	if(null != routePackages && routePackages.length > 0){
+    		this.buildRoute(routePackages);
+    	}
+    	
+		// Inteceptor
+    	String interceptorPackage = blade.interceptorPackage();
+    	if(StringKit.isNotBlank(interceptorPackage)){
+    		this.buildInterceptor(interceptorPackage);
+    	}
+    	
     }
     
     /**
@@ -124,7 +102,8 @@ public class RouteBuilder {
 			}
 			
     		// Scan all Interceptor
-    		classes = classReader.getClassByAnnotation(packageName, Interceptor.class, recursive);
+			classes = classReader.getClass(packageName, Interceptor.class, recursive);
+//    		classes = classReader.getClassByAnnotation(packageName, Intercept.class, recursive);
     		
     		if(null != classes && classes.size() > 0){
     			for(Class<?> interceptorClazz : classes){
@@ -170,52 +149,31 @@ public class RouteBuilder {
      */
     private void parseInterceptor(final Class<?> interceptor){
     	
-    	Method[] methods = interceptor.getMethods();
-    	if(null == methods || methods.length == 0){
+    	boolean hasInterface = ReflectKit.hasInterface(interceptor, Interceptor.class);
+    	
+    	if(null == interceptor || !hasInterface){
     		return;
     	}
     	
-    	container.registerBean(Aop.create(interceptor));
+    	ioc.addBean(interceptor);
     	
-    	for (Method method : methods) {
-			
-			Before before = method.getAnnotation(Before.class);
-			After after = method.getAnnotation(After.class);
-			
-			if (null != before) {
-				
-				String suffix = before.suffix();
-				
-				String path = getRoutePath(before.value(), "", suffix);
-				
-				buildInterceptor(path, interceptor, method, HttpMethod.BEFORE);
-				
-				String[] paths = before.values();
-				if(null != paths && paths.length > 0){
-					for(String value : paths){
-						String pathV = getRoutePath(value, "", suffix);
-						buildInterceptor(pathV, interceptor, method, HttpMethod.BEFORE);
-					}
-				}
-			}
-			
-			if (null != after) {
-				
-				String suffix = after.suffix();
-				
-				String path = getRoutePath(after.value(), "", suffix);
-				
-				buildInterceptor(path, interceptor, method, HttpMethod.AFTER);
-				
-				String[] paths = after.values();
-				if(null != paths && paths.length > 0){
-					for(String value : paths){
-						String pathV = getRoutePath(value, "", suffix);
-						buildInterceptor(pathV, interceptor, method, HttpMethod.AFTER);
-					}
-				}
-			}
+    	Intercept intercept = interceptor.getAnnotation(Intercept.class);
+    	String partten = "/.*";
+    	if(null != intercept){
+    		partten = intercept.value();
+    	}
+    	
+    	try {
+			Method before = interceptor.getMethod("before", Request.class, Response.class);
+			Method after = interceptor.getMethod("after", Request.class, Response.class);
+			buildInterceptor(partten, interceptor, before, HttpMethod.BEFORE);
+			buildInterceptor(partten, interceptor, after, HttpMethod.AFTER);
+		} catch (NoSuchMethodException e) {
+			e.printStackTrace();
+		} catch (SecurityException e) {
+			e.printStackTrace();
 		}
+    	
     }
     
     /**
@@ -230,7 +188,7 @@ public class RouteBuilder {
     		return;
     	}
     	
-    	container.registerBean(Aop.create(router));
+//    	ioc.addBean(router);
     	
 		final String nameSpace = router.getAnnotation(Path.class).value();
 		
