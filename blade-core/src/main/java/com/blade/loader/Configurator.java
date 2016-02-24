@@ -38,6 +38,7 @@ public final class Configurator {
 		
 		String httpEncoding = config.getString("blade.http.encoding");
 		String httpFilters = config.getString("blade.http.filters");
+		String basePackage = config.getString("blade.basepackage");
 		
 		if(null != dev){
 			bladeConfig.setDev(dev);
@@ -57,6 +58,10 @@ public final class Configurator {
 		
 		if(StringKit.isNotBlank(httpFilters)){
 			bladeConfig.setStaticFolders(httpFilters.split(","));
+		}
+		
+		if(StringKit.isNotBlank(basePackage)){
+			bladeConfig.setBasePackage(basePackage);
 		}
 	}
 	
