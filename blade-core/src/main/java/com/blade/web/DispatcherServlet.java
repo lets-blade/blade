@@ -111,10 +111,10 @@ public class DispatcherServlet extends HttpServlet {
 			
 			iocApplication.init();
 			
+			blade.init();
+			
 			this.bootstrap.contextInitialized(blade);
 			
-		    blade.init();
-		    
 		    dispatcherHandler = new DispatcherHandler(servletContext, blade.routers());
 		    
 		    new BladeBanner().print();

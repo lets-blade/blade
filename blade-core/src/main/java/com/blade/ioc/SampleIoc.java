@@ -81,7 +81,22 @@ public class SampleIoc implements Ioc {
 	    	}
 	    }
     }
-
+    
+    /**
+     * Update BeanDefine
+     */
+    public void setBean(Class<?> type, Object proxyBean) {
+    	Assert.notNull(proxyBean);
+    	
+    	BeanDefine beanDefine = pool.get(type.getName());
+    	if(beanDefine != null){
+    		beanDefine.setBean(proxyBean);
+    	} else {
+    		beanDefine = new BeanDefine(proxyBean, type);
+		}
+    	pool.put(type.getName(), beanDefine);
+    }
+    
     /**
 	 * Add user-defined objects
 	 */

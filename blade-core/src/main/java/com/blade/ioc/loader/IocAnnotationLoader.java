@@ -52,14 +52,14 @@ public final class IocAnnotationLoader implements IocLoader {
     public IocAnnotationLoader(Collection<Class<?>> classes) {
         this.classes = classes;
     }
-
+    
     @Override
     public void load(SampleIoc ioc) {
         for (Class<?> cls : classes) {
             Component anno = cls.getAnnotation(Component.class);
             if (anno != null) {
 				String name = anno.value().equals("") ? cls.getName() : anno.value();
-                ioc.addBean(name, cls, anno.singleton());
+                ioc.addBean(name, cls, true);
             }
         }
         // free

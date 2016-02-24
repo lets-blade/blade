@@ -36,6 +36,8 @@ public interface Ioc {
 	
 	void addBean(String name, Object bean);
 	
+	void setBean(Class<?> type, Object proxyBean);
+	
 	Object getBean(String name);
 	
     <T> T getBean(Class<T> type);
@@ -45,4 +47,5 @@ public interface Ioc {
     Set<String> getBeanNames();
     
 	void clearAll();
+	
 }
