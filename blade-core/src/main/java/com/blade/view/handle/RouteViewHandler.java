@@ -2,6 +2,7 @@ package com.blade.view.handle;
 
 import java.lang.reflect.Method;
 
+import com.blade.ioc.Ioc;
 import com.blade.route.Route;
 import com.blade.view.template.ModelAndView;
 import com.blade.web.DispatchKit;
@@ -14,7 +15,13 @@ import blade.kit.reflect.ConvertKit;
 import blade.kit.reflect.ReflectKit;
 
 public class RouteViewHandler {
-
+	
+	private Ioc ioc;
+	
+	public RouteViewHandler(Ioc ioc) {
+		this.ioc = ioc;
+	}
+	
 	/**
 	 * Parameters in the method
 	 * 
@@ -81,6 +88,12 @@ public class RouteViewHandler {
 	public boolean intercept(Request request, Response response, Route route){
 		Method actionMethod = route.getAction();
 		Object target = route.getTarget();
+		
+		if(null == target){
+			Class<?> clazz = route.getAction().getDeclaringClass();
+			target = ioc.getBean(clazz);
+			route.setTarget(target);
+		}
 		
 		// execute
 		int len = actionMethod.getParameterTypes().length;

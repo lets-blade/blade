@@ -70,7 +70,7 @@ public class DispatcherHandler {
 		this.ioc = blade.ioc();
 		this.routeMatcher = new RouteMatcher(routers);
 		this.staticFileFilter = new StaticFileFilter(blade.staticFolder());
-		this.routeViewHandler = new RouteViewHandler();
+		this.routeViewHandler = new RouteViewHandler(this.ioc);
 	}
 	
 	public void handle(HttpServletRequest httpRequest, HttpServletResponse httpResponse){
@@ -108,11 +108,12 @@ public class DispatcherHandler {
 			// If find it
 			if (route != null) {
 				request.setRoute(route);
-				boolean result = false;
+				
 				// before inteceptor
 				List<Route> befores = routeMatcher.getBefore(uri);
-				result = invokeInterceptor(request, response, befores);
+				boolean result = invokeInterceptor(request, response, befores);
 				if(result){
+					
 					// execute
 					this.routeHandle(request, response, route);
 					if(!request.isAbort()){

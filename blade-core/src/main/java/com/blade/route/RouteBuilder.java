@@ -21,7 +21,6 @@ import java.util.Set;
 import com.blade.Blade;
 import com.blade.interceptor.Interceptor;
 import com.blade.interceptor.annotation.Intercept;
-import com.blade.ioc.Ioc;
 import com.blade.route.annotation.Path;
 import com.blade.route.annotation.Route;
 import com.blade.web.http.HttpMethod;
@@ -46,19 +45,16 @@ public class RouteBuilder {
      */
     private ClassReader classReader;
     
-    /**
-     * IOC container, storage route to IOC
-     */
-    private Ioc ioc;
-    
-    private Blade blade;
-    
     private Routers routers;
     
+    private String[] routePackages;
+    
+    private String interceptorPackage;
+    
     public RouteBuilder(Blade blade) {
-    	this.blade = blade;
     	this.routers = blade.routers();
-    	this.ioc = blade.ioc();
+    	this.routePackages = blade.routePackages();
+    	this.interceptorPackage = blade.interceptorPackage();
     	this.classReader = new ClassPathClassReader();
     }
     
@@ -68,13 +64,11 @@ public class RouteBuilder {
     public void building() {
     	
     	// Route
-    	String[] routePackages = blade.routePackages();
     	if(null != routePackages && routePackages.length > 0){
     		this.buildRoute(routePackages);
     	}
     	
 		// Inteceptor
-    	String interceptorPackage = blade.interceptorPackage();
     	if(StringKit.isNotBlank(interceptorPackage)){
     		this.buildInterceptor(interceptorPackage);
     	}
@@ -103,8 +97,7 @@ public class RouteBuilder {
 			
     		// Scan all Interceptor
 			classes = classReader.getClass(packageName, Interceptor.class, recursive);
-//    		classes = classReader.getClassByAnnotation(packageName, Intercept.class, recursive);
-    		
+			
     		if(null != classes && classes.size() > 0){
     			for(Class<?> interceptorClazz : classes){
     				parseInterceptor(interceptorClazz);
@@ -155,7 +148,7 @@ public class RouteBuilder {
     		return;
     	}
     	
-    	ioc.addBean(interceptor);
+//    	ioc.addBean(interceptor);
     	
     	Intercept intercept = interceptor.getAnnotation(Intercept.class);
     	String partten = "/.*";
