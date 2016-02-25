@@ -125,14 +125,17 @@ public class ServletRequest implements Request {
 		
 		List<String> variables = getPathParam(routePath);
 		String regexPath = routePath.replaceAll(Path.VAR_REGEXP, Path.VAR_REPLACE);
-
-		Matcher matcher = Pattern.compile("(?i)" + regexPath).matcher(uri());
-		matcher.matches();
 		
-		// start index at 1 as group(0) always stands for the entire expression
-		for (int i=1; i <= variables.size(); i++) {
-			String value = matcher.group(i);
-			pathParams.put(variables.get(i-1), value);
+		String uri = Path.getRelativePath(uri(), contextPath());
+		
+		Matcher matcher = Pattern.compile("(?i)" + regexPath).matcher(uri);
+		
+		if(matcher.matches()){
+			// start index at 1 as group(0) always stands for the entire expression
+			for (int i=1, len = variables.size(); i <= len; i++) {
+				String value = matcher.group(i);
+				pathParams.put(variables.get(i-1), value);
+			}
 		}
 	}
 	
