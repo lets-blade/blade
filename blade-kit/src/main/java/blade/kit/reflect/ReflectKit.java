@@ -74,6 +74,46 @@ public abstract class ReflectKit {
     }
     
     /**
+     * 根据类名获取Class对象
+     * 
+     * @param className	类名称
+     * @return			返回Class对象
+     */
+    public static Class<?> newClass(String className){
+    	try {
+    		return Class.forName(className);
+		} catch (ClassNotFoundException e) {
+		}
+    	return null;
+    }
+    
+    /**
+     * 获取包是否存在
+     * 
+     * @param packageName	包名称
+     * @return				返回包是否存在
+     */
+    public static boolean isPackage(String packageName){
+    	if(StringKit.isNotBlank(packageName)){
+    		Package temp = Package.getPackage(packageName);
+    		return null != temp;
+    	}
+    	return false;
+    }
+    
+    public static boolean isClass(String className){
+    	if(StringKit.isNotBlank(className)){
+    		try {
+				Class.forName(className);
+				return true;
+			} catch (ClassNotFoundException e) {
+			}
+    	}
+    	return false;
+    }
+    
+    
+    /**
      * 创建一个实例对象
      * @param clazz class对象
      * @return

@@ -212,12 +212,15 @@ public class SimpleLogger implements Logger {
 			String msg = String.format(message, args);
 			if(msg.indexOf("{}") != -1){
 				for(Object arg : args){
-					String arg_str = arg.toString();
-					if(arg_str.indexOf("\\") != -1){
-						arg_str = arg_str.replaceAll("\\\\","/");
-					}
-					if(arg_str.indexOf("$") != -1){
-						arg_str = arg_str.replaceAll("\\$","_");
+					String arg_str = "";
+					if(null != arg){
+						arg_str = arg.toString();
+						if(arg_str.indexOf("\\") != -1){
+							arg_str = arg_str.replaceAll("\\\\","/");
+						}
+						if(arg_str.indexOf("$") != -1){
+							arg_str = arg_str.replaceAll("\\$","_");
+						}
 					}
 					msg = msg.replaceFirst("\\{\\}", arg_str);
 				}
