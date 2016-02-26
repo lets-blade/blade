@@ -207,25 +207,15 @@ public class SimpleLogger implements Logger {
 			return null;
 		}
 		if (args == null || args.length == 0){
+			if(message.indexOf("{}") != -1){
+				message = message.replaceAll("\\{\\}", "");
+			}
 			return message.toString();
 		} else {
-			String msg = String.format(message, args);
-			if(msg.indexOf("{}") != -1){
-				for(Object arg : args){
-					String arg_str = "";
-					if(null != arg){
-						arg_str = arg.toString();
-						if(arg_str.indexOf("\\") != -1){
-							arg_str = arg_str.replaceAll("\\\\","/");
-						}
-						if(arg_str.indexOf("$") != -1){
-							arg_str = arg_str.replaceAll("\\$","_");
-						}
-					}
-					msg = msg.replaceFirst("\\{\\}", arg_str);
-				}
+			if(message.indexOf("{}") != -1){
+				message = message.replaceAll("\\{\\}", "%s");
 			}
-			return msg;
+			return String.format(message.toString(), args);
 		}
 	}
 	
