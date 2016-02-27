@@ -16,7 +16,7 @@
 package com.blade.plugin;
 
 /**
- * 插件顶层接口
+ * Plugin Interface
  *
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since	1.0
@@ -24,12 +24,12 @@ package com.blade.plugin;
 public interface Plugin {
 
 	/**
-	 * 要执行的方法
+	 * Run Plugin
 	 */
 	void run();
 	
 	/**
-	 * 销毁，释放资源
+	 * Destroy, release resources 
 	 */
 	void destroy();
 }

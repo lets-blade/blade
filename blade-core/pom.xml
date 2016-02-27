@@ -17,9 +17,6 @@
 
 	<properties>
 		<jetty.version>9.2.12.v20150709</jetty.version>
-		<jetbrick.version>2.0.12</jetbrick.version>
-		<beetl.version>2.2.3</beetl.version>
-		<velocity.version>1.7</velocity.version>
 		<httpclient.version>4.3.5</httpclient.version>
 		<slf4j.version>1.7.7</slf4j.version>
 	</properties>
@@ -28,32 +25,21 @@
 		<dependency>
 			<groupId>com.bladejava</groupId>
 			<artifactId>blade-kit</artifactId>
-			<version>1.2.8-alpha</version>
+			<version>1.2.9-beta</version>
 		</dependency>
+		<!-- <dependency>
+			<groupId>com.bladejava</groupId>
+			<artifactId>blade-aop</artifactId>
+			<version>0.0.1</version>
+			<scope>provided</scope>
+		</dependency> -->
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
 			<version>3.1.0</version>
 			<scope>provided</scope>
 		</dependency>
-		<dependency>
-			<groupId>com.github.subchen</groupId>
-			<artifactId>jetbrick-template</artifactId>
-			<version>${jetbrick.version}</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.beetl</groupId>
-			<artifactId>beetl-core</artifactId>
-			<version>${beetl.version}</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.velocity</groupId>
-			<artifactId>velocity</artifactId>
-			<version>${velocity.version}</version>
-			<scope>provided</scope>
-		</dependency>
+						
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-server</artifactId>
@@ -67,31 +53,8 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-				<groupId>junit</groupId>
-				<artifactId>junit</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.mockito</groupId>
-			<artifactId>mockito-all</artifactId>
-			<version>1.9.5</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.httpcomponents</groupId>
-			<artifactId>httpclient</artifactId>
-			<version>${httpclient.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.httpcomponents</groupId>
-			<artifactId>fluent-hc</artifactId>
-			<version>${httpclient.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>${slf4j.version}</version>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
 			<scope>test</scope>
 		</dependency>
 

@@ -15,18 +15,15 @@
 		<maven.compiler.target>1.6</maven.compiler.target>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<servlet.version>3.0.1</servlet.version>
-		<blade.version>1.4.1</blade.version>
+		<blade.version>1.6.0-beta1</blade.version>
 		<junit.version>4.12</junit.version>
+		<slf4j-api.version>1.7.16</slf4j-api.version>
 	</properties>
 
 	<modules>
 		<module>blade-kit</module>
 		<module>blade-core</module>
-		<module>blade-cache</module>
-		<module>blade-sql2o</module>
-		<module>blade-redis</module>
 		<module>blade-startup</module>
-    <module>blade-sample</module>
   </modules>
 
 	<repositories>
@@ -49,6 +46,12 @@
 				<artifactId>junit</artifactId>
 				<version>${junit.version}</version>
 				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>slf4j-api</artifactId>
+				<version>${slf4j-api.version}</version>
+				<scope>provided</scope>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

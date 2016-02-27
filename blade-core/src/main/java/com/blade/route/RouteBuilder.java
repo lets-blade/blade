@@ -19,24 +19,21 @@ import java.lang.reflect.Method;
 import java.util.Set;
 
 import com.blade.Blade;
-import com.blade.annotation.After;
-import com.blade.annotation.Before;
-import com.blade.annotation.Interceptor;
-import com.blade.annotation.Path;
-import com.blade.annotation.Route;
-import com.blade.http.HttpMethod;
-import com.blade.ioc.Container;
-import com.blade.ioc.SampleContainer;
+import com.blade.interceptor.Interceptor;
+import com.blade.interceptor.annotation.Intercept;
+import com.blade.route.annotation.Path;
+import com.blade.route.annotation.Route;
+import com.blade.web.http.HttpMethod;
+import com.blade.web.http.Request;
+import com.blade.web.http.Response;
 
 import blade.kit.StringKit;
+import blade.kit.reflect.ReflectKit;
 import blade.kit.resource.ClassPathClassReader;
 import blade.kit.resource.ClassReader;
 
 /**
- * 
- * <p>
- * 路由构造器
- * </p>
+ * Route builder
  *
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since	1.0
@@ -44,78 +41,51 @@ import blade.kit.resource.ClassReader;
 public class RouteBuilder {
     
     /**
-	 * 默认路由后缀包，用户扫描路由所在位置，默认为route，用户可自定义
-	 */
-    private String PACKAGE_ROUTE = "route";
-	
-	/**
-	 * 默认拦截器后缀包，用户扫描拦截器所在位置，默认为interceptor，用户可自定义
-	 */
-    private String PACKAGE_INTERCEPTOR = "interceptor";
-	
-    /**
-     * 类读取器,用于在指定规则中扫描类
+     * Class reader, used to scan the class specified in the rules
      */
-    private ClassReader classReader = new ClassPathClassReader();
+    private ClassReader classReader;
     
-    /**
-     * IOC容器，存储路由到ioc中
-     */
-    private Container container = SampleContainer.single();
+    private Routers routers;
     
-    private Blade blade;
+    private String[] routePackages;
     
-    private Router router;
+    private String interceptorPackage;
     
     public RouteBuilder(Blade blade) {
-    	this.blade = blade;
-    	this.router = blade.router();
+    	this.routers = blade.routers();
+    	this.routePackages = blade.routePackages();
+    	this.interceptorPackage = blade.interceptorPackage();
+    	this.classReader = new ClassPathClassReader();
     }
     
     /**
-     * 开始构建路由
+     * Start building route
      */
     public void building() {
-        String basePackage = blade.basePackage();
-        
-        if(StringKit.isNotBlank(basePackage)){
-        	
-        	// 处理如：com.xxx.* 表示递归扫描包
-        	String suffix = basePackage.endsWith(".*") ? ".*" : "";
-        	basePackage = basePackage.endsWith(".*") ? basePackage.substring(0, basePackage.length() - 2) : basePackage;
-        	
-			String routePackage = basePackage + "." + PACKAGE_ROUTE + suffix;
-			String interceptorPackage = basePackage + "." + PACKAGE_INTERCEPTOR + suffix;
-			
-        	buildRoute(routePackage);
-        	buildInterceptor(interceptorPackage);
-        	
-        } else {
-        	// 路由
-        	String[] routePackages = blade.routePackages();
-        	if(null != routePackages && routePackages.length > 0){
-        		buildRoute(routePackages);
-        	}
-        	
-    		// 拦截器
-        	String interceptorPackage = blade.interceptorPackage();
-        	if(StringKit.isNotBlank(interceptorPackage)){
-        		buildInterceptor(interceptorPackage);
-        	}
-		}
+    	
+    	// Route
+    	if(null != routePackages && routePackages.length > 0){
+    		this.buildRoute(routePackages);
+    	}
+    	
+		// Inteceptor
+    	if(StringKit.isNotBlank(interceptorPackage)){
+    		this.buildInterceptor(interceptorPackage);
+    	}
+    	
     }
     
     /**
-     * 构建拦截器
+     * Build interceptor
      * 
-     * @param interceptorPackages	要添加的拦截器包
+     * @param interceptorPackages	add the interceptor package
      */
     private void buildInterceptor(String... interceptorPackages){
     	
-    	// 扫描所有的Interceptor
+    	// Scan all Interceptor
 		Set<Class<?>> classes = null;
 		
-    	// 拦截器
+    	// Traversal Interceptor
 		for(String packageName : interceptorPackages){
 			
 			boolean recursive = false;
@@ -125,9 +95,9 @@ public class RouteBuilder {
 				recursive = true;
 			}
 			
-    		// 扫描所有的Interceptor
-    		classes = classReader.getClassByAnnotation(packageName, Interceptor.class, recursive);
-    		
+    		// Scan all Interceptor
+			classes = classReader.getClass(packageName, Interceptor.class, recursive);
+			
     		if(null != classes && classes.size() > 0){
     			for(Class<?> interceptorClazz : classes){
     				parseInterceptor(interceptorClazz);
@@ -137,13 +107,13 @@ public class RouteBuilder {
     }
     
     /**
-     * 构建路由
+     * Build Route
      * 
-     * @param routePackages		要添加的路由包
+     * @param routePackages		route packets to add
      */
     private void buildRoute(String... routePackages){
     	Set<Class<?>> classes = null;
-    	// 路由
+    	// Traverse route
 		for(String packageName : routePackages){
 			
 			boolean recursive = false;
@@ -153,7 +123,7 @@ public class RouteBuilder {
 				recursive = true;
 			}
 			
-    		// 扫描所有的Controoler
+    		// Scan all Controoler
     		classes = classReader.getClassByAnnotation(packageName, Path.class, recursive);
     		
     		if(null != classes && classes.size() > 0){
@@ -166,64 +136,43 @@ public class RouteBuilder {
     }
     
     /**
-     * 解析拦截器
+     * Parse Interceptor
      * 
-     * @param interceptor		要解析的拦截器class
+     * @param interceptor	resolve the interceptor class
      */
     private void parseInterceptor(final Class<?> interceptor){
     	
-    	Method[] methods = interceptor.getMethods();
-    	if(null == methods || methods.length == 0){
+    	boolean hasInterface = ReflectKit.hasInterface(interceptor, Interceptor.class);
+    	
+    	if(null == interceptor || !hasInterface){
     		return;
     	}
     	
-    	container.registBean(interceptor);
+//    	ioc.addBean(interceptor);
     	
-    	for (Method method : methods) {
-			
-			Before before = method.getAnnotation(Before.class);
-			After after = method.getAnnotation(After.class);
-			
-			if (null != before) {
-				
-				String suffix = before.suffix();
-				
-				String path = getRoutePath(before.value(), "", suffix);
-				
-				buildInterceptor(path, interceptor, method, HttpMethod.BEFORE);
-				
-				String[] paths = before.values();
-				if(null != paths && paths.length > 0){
-					for(String value : paths){
-						String pathV = getRoutePath(value, "", suffix);
-						buildInterceptor(pathV, interceptor, method, HttpMethod.BEFORE);
-					}
-				}
-			}
-			
-			if (null != after) {
-				
-				String suffix = after.suffix();
-				
-				String path = getRoutePath(after.value(), "", suffix);
-				
-				buildInterceptor(path, interceptor, method, HttpMethod.AFTER);
-				
-				String[] paths = after.values();
-				if(null != paths && paths.length > 0){
-					for(String value : paths){
-						String pathV = getRoutePath(value, "", suffix);
-						buildInterceptor(pathV, interceptor, method, HttpMethod.AFTER);
-					}
-				}
-			}
+    	Intercept intercept = interceptor.getAnnotation(Intercept.class);
+    	String partten = "/.*";
+    	if(null != intercept){
+    		partten = intercept.value();
+    	}
+    	
+    	try {
+			Method before = interceptor.getMethod("before", Request.class, Response.class);
+			Method after = interceptor.getMethod("after", Request.class, Response.class);
+			buildInterceptor(partten, interceptor, before, HttpMethod.BEFORE);
+			buildInterceptor(partten, interceptor, after, HttpMethod.AFTER);
+		} catch (NoSuchMethodException e) {
+			e.printStackTrace();
+		} catch (SecurityException e) {
+			e.printStackTrace();
 		}
+    	
     }
     
     /**
-     * 解析一个控制器中的所有路由
+     * Parse all routing in a controller
      * 
-     * @param controller		要解析的路由class
+     * @param controller	resolve the routing class
      */
     private void parseRouter(final Class<?> router){
     	
@@ -232,7 +181,7 @@ public class RouteBuilder {
     		return;
     	}
     	
-    	container.registBean(router);
+//    	ioc.addBean(router);
     	
 		final String nameSpace = router.getAnnotation(Path.class).value();
 		
@@ -242,17 +191,17 @@ public class RouteBuilder {
 			
 			Route mapping = method.getAnnotation(Route.class);
 			
-			//route方法
+			//route method
 			if (null != mapping) {
 				
-				////构建路由
+				// build 
 				String path = getRoutePath(mapping.value(), nameSpace, suffix);
 				
 				HttpMethod methodType = mapping.method();
 				
 				buildRoute(router, method, path, methodType);
 				
-				// 构建多个路由
+				// build multiple route
 				String[] paths = mapping.values();
 				if(null != paths && paths.length > 0){
 					for(String value : paths){
@@ -277,27 +226,27 @@ public class RouteBuilder {
     }
     
     /**
-     * 构建一个路由
+     * Build a route
      * 
-     * @param target		路由目标执行的class
-     * @param execMethod	路由执行方法
-     * @param path			路由url
-     * @param method		路由http方法
+     * @param target		route target execution class 
+     * @param execMethod	route execution method 
+     * @param path			route path
+     * @param method		route httpmethod
      */
     private void buildRoute(Class<?> clazz, Method execMethod, String path, HttpMethod method){
-    	this.router.route(path, clazz, execMethod, method);
+    	routers.buildRoute(path, clazz, execMethod, method);
     }
     
     /**
-     * 构建一个路由
+     * Build a route
      * 
-     * @param path			路由url
-     * @param target		路由目标执行的class
-     * @param execMethod	路由执行方法
-     * @param method		路由http方法
+     * @param path			route path
+     * @param target		route target execution class 
+     * @param execMethod	route execution method 
+     * @param method		route httpmethod
      */
     private void buildInterceptor(String path, Class<?> clazz, Method execMethod, HttpMethod method){
-    	this.router.route(path, clazz, execMethod, method);
+    	routers.buildRoute(path, clazz, execMethod, method);
     }
     
 }

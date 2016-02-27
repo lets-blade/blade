@@ -15,28 +15,23 @@
  */
 package com.blade.server;
 
-import java.util.EnumSet;
-
-import javax.servlet.DispatcherType;
-
 import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.servlet.ServletHolder;
 
-import com.blade.CoreFilter;
+import com.blade.web.DispatcherServlet;
 
-import blade.kit.log.Logger;
+import blade.kit.logging.Logger;
+import blade.kit.logging.LoggerFactory;
 
 /**
- * 
- * <p>
- * Jetty服务
- * </p>
+ * Jetty Server
  *
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since	1.0
  */
 public class Server {
 	
-	private static final Logger LOGGER = Logger.getLogger(Server.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(Server.class);
 	
 	private int port = 9000;
 	
@@ -44,7 +39,7 @@ public class Server {
 	
 	private ServletContextHandler context;
 	
-	public Server(int port) {
+	public Server(int port, boolean async) {
 		this.port = port;
 	}
 	
@@ -55,15 +50,25 @@ public class Server {
 	public void start(String contextPath) throws Exception{
 		
 		server = new org.eclipse.jetty.server.Server(this.port);
-		
+		// 设置在JVM退出时关闭Jetty的钩子。
+        server.setStopAtShutdown(true);
+        
 	    context = new ServletContextHandler(ServletContextHandler.SESSIONS);
 	    context.setContextPath(contextPath);
-	    context.setResourceBase(System.getProperty("java.io.tmpdir"));
-	    context.addFilter(CoreFilter.class, "/*", EnumSet.of(DispatcherType.REQUEST));
 	    
+	    context.setResourceBase(Thread.currentThread().getContextClassLoader()  
+                .getResource("").getPath());
+	    
+	    ServletHolder servletHolder = new ServletHolder(DispatcherServlet.class);
+	    servletHolder.setAsyncSupported(false);
+	    servletHolder.setInitOrder(1);
+	    
+	    context.addServlet(servletHolder, "/");
         server.setHandler(this.context);
 	    server.start();
-	    LOGGER.info("Blade Server Listen on 0.0.0.0:" + this.port);
+	    
+//	    server.dump(System.err);
+	    LOGGER.info("Blade Server Listen on http://127.0.0.1:{}", this.port);
 	}
 	
 	public void join() throws InterruptedException {

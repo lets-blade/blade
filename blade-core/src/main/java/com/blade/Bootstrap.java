@@ -16,7 +16,7 @@
 package com.blade;
 
 /**
- * Blade全局初始化类，可以在应用启动的时候做一些操作
+ * Blade global initialization class, you can do some operations at the start of the application
  * 
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since	1.0
@@ -24,12 +24,14 @@ package com.blade;
 public abstract class Bootstrap {
 	
 	/**
-	 * 初始化方法，在应用启动的时候做一些初始化操作
+	 * Initialization method, do some initialization operation when the application starts
+	 * @param blade	blade global object
 	 */
-	public abstract void init();
+	public abstract void init(Blade blade);
 	
 	/**
-	 * 初始化配置后执行
+	 * After initialization configuration
+	 * @param blade	blade global object
 	 */
 	public void contextInitialized(Blade blade){
 		//

@@ -29,7 +29,7 @@ import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import blade.exception.IllegalPathException;
+import blade.kit.exception.IllegalPathException;
 
 /**
  * 有关文件处理的工具类。
@@ -41,14 +41,6 @@ import blade.exception.IllegalPathException;
  * @since	1.0
  */
 public abstract class FileKit {
-
-    /*
-     * ========================================================================== ==
-     */
-    /* 常量和singleton。 */
-    /*
-     * ========================================================================== ==
-     */
 
     private static final char COLON_CHAR = ':';
     private static final String UNC_PREFIX = "//";
@@ -111,7 +103,7 @@ public abstract class FileKit {
     public static boolean exist(String path) {
         return (path == null) ? false : new File(path).exists();
     }
-
+    
     /**
      * 判断文件是否存在，如果file为null，则返回false
      * 

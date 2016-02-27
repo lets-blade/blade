@@ -1513,7 +1513,7 @@ public abstract class SystemKit {
      * 
      * @return 属性值或<code>null</code>
      */
-    private static String getSystemProperty(String name, boolean quiet) {
+    public static String getSystemProperty(String name, boolean quiet) {
         try {
             return System.getProperty(name);
         } catch (SecurityException e) {
@@ -1521,7 +1521,6 @@ public abstract class SystemKit {
                 System.err.println("Caught a SecurityException reading the system property '" + name
                         + "'; the SystemUtil property value will default to null.");
             }
-
             return null;
         }
     }

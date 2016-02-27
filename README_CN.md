@@ -10,7 +10,7 @@
 
 ## Blade是什么?
 
-`blade` 是一个轻量级的MVC框架. 它拥有简洁的代码，优雅的设计。
+Blade 是一个轻量级的MVC框架. 它拥有简洁的代码，优雅的设计。
 如果你喜欢,欢迎 [Star and Fork](https://github.com/biezhi/blade), 谢谢!
 
 ## 特性
@@ -34,45 +34,161 @@
 
 `Maven` 配置：
 
-```sh
+```xml
 <dependency>
 	<groupId>com.bladejava</groupId>
 	<artifactId>blade-core</artifactId>
-	<version>最终版本</version>
+	<version>1.6.0-beta1</version>
 </dependency>
+<dependency>
+    <groupId>com.bladejava</groupId>
+    <artifactId>blade-startup</artifactId>
+    <version>1.0.1</version>
+</dependency>
+```
+
+或者  `Gradle`:
+
+```sh
+compile 'com.bladejava:blade-core:1.6.0-beta1'
+compile 'com.bladejava:blade-startup:1.0.1'
 ```
 
 编写 `Main`函数：
 
 ```java
-public class App {
-		
-	public static void main(String[] args) {
-		Blade blade = Blade.me();
-		blade.get("/", (request, response) -> {
-			response.html("<h1>Hello blade!</h1>");
-		});
-		blade.listen(9001).start();
-	}
+public static void main(String[] args) {
+	Blade blade = me();
+	blade.get("/", (request, response) -> {
+		response.html("<h1>Hello blade!</h1>");
+	});
+	blade.listen(9001).start();
 }
 ```
 
 用浏览器打开 http://localhost:9001 这样就可以看到第一个Blade应用了！
 
+## API示例
+
+```java
+public static void main(String[] args) {
+	Blade blade = me();
+	blade.get("/user/21", getxxx);
+	blade.post("/save", postxxx);
+	blade.delete("/del/21", deletexxx);
+	blade.put("/put", putxxx);
+	blade.listen(9001).start();
+}
+```
+
+## REST URL参数获取
+
+```java
+public static void main(String[] args) {
+	Blade blade = me();
+	blade.get("/user/:uid", (request, response) -> {
+		Integer uid = request.paramAsInt("uid");
+		response.text("uid : " + uid);
+	});
+	
+	blade.get("/users/:uid/post/:pid", (request, response) -> {
+		Integer uid = request.paramAsInt("uid");
+		Integer pid = request.paramAsInt("pid");
+		String msg = "uid = " + uid + ", pid = " + pid;
+		response.text(msg);
+	});
+	
+	blade.listen(9001).start();
+}
+```
+
+## 表单参数获取
+
+```java
+public static void main(String[] args) {
+	Blade blade = me();
+	blade.get("/user", (request, response) -> {
+		Integer uid = request.queryAsInt("uid");
+		response.text("uid : " + uid);
+	});
+	blade.listen(9001).start();
+}
+```
+
+## 上传文件
+
+```java
+public void upload_img(Request request, Response response){
+
+	FileItem[] fileItems = request.files();
+	if(null != fileItems && fileItems.length > 0){
+		
+		FileItem fileItem = fileItems[0];
+		File file = fileItem.getFile();
+
+		String fileRealPath = "your upload file path!";
+		
+		nioTransferCopy(file, fileRealPath);
+	}
+}
+```
+
+## 配置文件路由
+
+`route.conf`
+
+```sh
+GET		/					IndexRoute.home
+GET		/signin				IndexRoute.show_signin
+POST	/signin				IndexRoute.signin
+GET		/signout			IndexRoute.signout
+POST	/upload_img			UploadRoute.upload_img
+```
+
+## 路由拦截
+
+```java
+public static void main(String[] args) {
+	Blade blade = me();
+	blade.before("/.*", (request, response) -> {
+		System.out.println("before...");
+	});
+	blade.listen(9001).start();
+}
+```
+
+## DSL数据库操作
+
+```java
+// query
+List<Post> posts =
+	AR.find("where title like ? order by id desc limit ?,?", title, page, count).list(Post.class);
+
+// save
+String insertSql = "insert into t_post (title, content, view_count, create_time) values (?,?,?,?)";
+AR.update(insertSql, title, content, 0, new Date()).commit();
+
+// update
+AR.update("update t_post set title = ? and content = ? where id = ?",title, content, id).commit();
+
+// delete
+AR.update("delete from t_post where id = ?",id).commit()
+```
+
 OK，这一切看起来多么的简单，查阅使用指南更多现成的例子供你参考:
 
-+ [hello工程](https://github.com/bladejava/hello)
-+ [API文档](http://bladejava.com/apidocs/)
-+ [使用指南](https://github.com/biezhi/blade/wiki)
-+ [相关案例](https://github.com/bladejava)
++ [hello工程](https://github.com/blade-samples/hello)
++ [博客例子](https://github.com/blade-samples/blog)
++ [API文档](http://bladejava.com/apidocs)
++ [使用指南](http://bladejava.com/docs)
++ [相关案例](https://github.com/blade-samples)
 + [版本查询](LAST_VERSION.md)
 
 ### 计划
 
-- 1. 开发社交应用平台
-- 2. 添加测试代码
-- 3. 优化基础代码
-- 4. 优化并发能力
+- 1. 添加测试代码
+- 2. 优化基础代码
+- 3. 优化并发能力
 
 ## 更新日志
 
@@ -84,20 +200,21 @@ OK，这一切看起来多么的简单，查阅使用指南更多现成的例子
 - Mail: biezhi.me#gmail.com
 - Java交流群: [1013565](http://shang.qq.com/wpa/qunwpa?idkey=932642920a5c0ef5f1ae902723c4f168c58ea63f3cef1139e30d68145d3b5b2f)
 
+## 贡献
+
+非常感谢下面的开发者朋友对本项目的帮助，如果你也愿意提交PR，欢迎你！
+
+- [mfarid](https://github.com/mfarid)
+- [daimajia](https://github.com/daimajia)
+- [shenjie1993](https://github.com/shenjie1993)
+- [sumory](https://github.com/sumory)
+- [udaykadaboina](https://github.com/udaykadaboina)
+- [SyedWasiHaider](https://github.com/SyedWasiHaider)
+- [Awakens](https://github.com/Awakens)
+- [shellac](https://github.com/shellac)
+- [SudarAbisheck](https://github.com/SudarAbisheck)
+
 ## 开源协议
 
-```
-Copyright 2015 biezhi
+请查看 [Apache License](LICENSE)
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-   http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-```

@@ -17,14 +17,11 @@ package com.blade.route;
 
 import java.lang.reflect.Method;
 
-import com.blade.http.HttpMethod;
-import com.blade.http.Path;
+import com.blade.web.http.HttpMethod;
+import com.blade.web.http.Path;
 
 /**
- * 
- * <p>
- * 路由对象
- * </p>
+ * Route Bean
  *
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since	1.0
@@ -32,33 +29,39 @@ import com.blade.http.Path;
 public class Route {
 	
 	/**
-	 * HTTP请求方法
+	 * HTTP Request Method
 	 */
 	private HttpMethod httpMethod;
 
 	/**
-	 * 路由路径
+	 * Route path
 	 */
 	private String path;
 	
 	/**
-	 * 执行逻辑的目标对象
+	 * Logical controller object 
 	 */
 	private Object target;
-
+	
 	/**
-	 * 执行逻辑的目标方法
+	 * Controller Class Type
+	 */
+	private Class<?> targetType;
+	
+	/**
+	 * Implementation logic controller method 
 	 */
 	private Method action;
 	
 	public Route() {
 	}
 
-	public Route(HttpMethod httpMethod, String path, Object target, Method action) {
+	public Route(HttpMethod httpMethod, String path, Object target, Class<?> targetType, Method action) {
 		super();
 		this.httpMethod = httpMethod;
 		this.path = Path.fixPath(path);
 		this.target = target;
+		this.targetType = targetType;
 		this.action = action;
 	}
 	
@@ -94,6 +97,10 @@ public class Route {
 		this.action = action;
 	}
 	
+	public Class<?> getTargetType() {
+		return targetType;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;

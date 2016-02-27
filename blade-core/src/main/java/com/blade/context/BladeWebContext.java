@@ -17,42 +17,42 @@ package com.blade.context;
 
 import javax.servlet.ServletContext;
 
-import com.blade.http.Request;
-import com.blade.http.Response;
-import com.blade.servlet.Session;
+import com.blade.web.http.Request;
+import com.blade.web.http.Response;
+import com.blade.web.http.wrapper.Session;
 
 /**
- * 全局的WeContext
+ * BladeWebContext
  *
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since	1.0
  */
-public final class BladeWebContext {
+public class BladeWebContext {
 	
 	/**
-	 * 当前线程的Request对象
+	 * BladeWebContext object for the current thread
 	 */
-    private static final ThreadLocal<BladeWebContext> BLADE_WEB_CONTEXT = new ThreadLocal<BladeWebContext>();
+    private static ThreadLocal<BladeWebContext> ctx = new ThreadLocal<BladeWebContext>();
     
     /**
-     * ServletContext对象，在应用初始化时创建
+     * ServletContext Object that is created when the application is initialized
      */
     private ServletContext context; 
     
     /**
-     * Request对象
+     * Request
      */
     private Request request;
     
     /**
-     * Response对象
+     * Response
      */
     private Response response;
     
     private BladeWebContext(){}
     
     public static BladeWebContext me(){
-    	return BLADE_WEB_CONTEXT.get();
+    	return ctx.get();
     }
     
     public static void setContext(ServletContext context, Request request, Response response) {
@@ -60,22 +60,22 @@ public final class BladeWebContext {
     	bladeWebContext.context = context;
     	bladeWebContext.request = request;
     	bladeWebContext.response = response;
-    	BLADE_WEB_CONTEXT.set(bladeWebContext);
+    	ctx.set(bladeWebContext);
     }
     
     /**
      * 移除当前线程的Request、Response对象
      */
     public static void remove(){
-    	BLADE_WEB_CONTEXT.remove();
+    	ctx.remove();
     }
     
     public static Request request() {
-        return BladeWebContext.me().request;
+        return me().request;
     }
     
     public static Response response() {
-        return BladeWebContext.me().response;
+        return me().response;
     }
     
     public static Session session() {
@@ -83,13 +83,13 @@ public final class BladeWebContext {
     }
     
 	public static ServletContext servletContext() {
-		return BladeWebContext.me().context;
+		return me().context;
 	}
 	
 	public ServletContext getContext() {
 		return context;
 	}
-
+	
 	public Request getRequest() {
 		return request;
 	}

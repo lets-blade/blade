@@ -792,5 +792,42 @@ public class DateKit {
 	public static String formatDateByUnixTime(long unixTime, String dateFormat) {
 		return dateFormat(new Date(unixTime * 1000), dateFormat);
 	}
+	
+	private static List<SimpleDateFormat> dateFormats = new ArrayList<SimpleDateFormat>(12) {
+		private static final long serialVersionUID = 2249396579858199535L;
+		{
+			add(new SimpleDateFormat("yyyy-MM-dd"));
+			add(new SimpleDateFormat("yyyy/MM/dd"));
+			add(new SimpleDateFormat("yyyy.MM.dd"));
+			add(new SimpleDateFormat("yyyy-MM-dd HH:24:mm:ss"));
+			add(new SimpleDateFormat("yyyy/MM/dd HH:24:mm:ss"));
+			add(new SimpleDateFormat("yyyy.MM.dd HH:24:mm:ss"));
+		    add(new SimpleDateFormat("M/dd/yyyy"));
+		    add(new SimpleDateFormat("dd.M.yyyy"));
+		    add(new SimpleDateFormat("M/dd/yyyy hh:mm:ss a"));
+		    add(new SimpleDateFormat("dd.M.yyyy hh:mm:ss a"));
+		    add(new SimpleDateFormat("dd.MMM.yyyy"));
+		    add(new SimpleDateFormat("dd-MMM-yyyy"));
+		}
+	};
+	
+	public static Date convertToDate(String input) {
+	    Date date = null;
+	    if(null == input) {
+	        return null;
+	    }
+	    for (SimpleDateFormat format : dateFormats) {
+	        try {
+	            format.setLenient(false);
+	            date = format.parse(input);
+	        } catch (ParseException e) {
+	            //Shhh.. try other formats
+	        }
+	        if (date != null) {
+	            break;
+	        }
+	    }
+	    return date;
+	}
 
 }

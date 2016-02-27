@@ -1,4 +1,4 @@
 /**
- * Blade依赖注入包
+ * Blade IOC
  */
 package com.blade.ioc;
