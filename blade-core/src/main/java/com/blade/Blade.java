@@ -180,7 +180,18 @@ public class Blade {
      * @param packages 	route package path, is your package name
      * @return			return blade
      */
-    public Blade routes(String...packages){
+    public Blade addRoutePackage(String packageName){
+    	return this.addRoutePackages(packageName);
+    }
+    
+	/**
+     * Setting route package，e.g：com.baldejava.route
+     * Can be introduced into multiple packages, all of which are in the package.
+     * 
+     * @param packages 	route package path, is your package name
+     * @return			return blade
+     */
+    public Blade addRoutePackages(String...packages){
     	Assert.notNull(packages);
     	bladeConfig.addRoutePackages(packages);
     	return this;
