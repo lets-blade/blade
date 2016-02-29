@@ -62,6 +62,9 @@ public final class Configurator {
 		
 		if(StringKit.isNotBlank(basePackage)){
 			bladeConfig.setBasePackage(basePackage);
+	    	bladeConfig.addIocPackages(basePackage + ".service.*");
+	    	bladeConfig.addRoutePackages(basePackage + ".controller");
+	    	bladeConfig.setInterceptorPackage(basePackage + ".interceptor");
 		}
 	}
 	
