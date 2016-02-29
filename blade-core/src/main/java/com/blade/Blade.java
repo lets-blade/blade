@@ -197,6 +197,11 @@ public class Blade {
     	return this;
     }
     
+    /**
+     * 
+     * @param basePackage
+     * @return
+     */
     public Blade basePackage(String basePackage){
     	Assert.notBlank(basePackage);
     	bladeConfig.setBasePackage(basePackage);

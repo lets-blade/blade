@@ -15,7 +15,7 @@
 		<maven.compiler.target>1.6</maven.compiler.target>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<servlet.version>3.0.1</servlet.version>
-		<blade.version>1.6.0-beta1</blade.version>
+		<blade.version>1.6.0-beta2</blade.version>
 		<junit.version>4.12</junit.version>
 		<slf4j-api.version>1.7.16</slf4j-api.version>
 	</properties>

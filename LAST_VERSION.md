@@ -33,7 +33,7 @@
 <dependency>
     <groupId>com.bladejava</groupId>
     <artifactId>blade-core</artifactId>
-    <version>1.6.0-beta1</version>
+    <version>1.6.0M1</version>
 </dependency>
 ```
 
@@ -42,7 +42,7 @@
 <dependency>
     <groupId>com.bladejava</groupId>
     <artifactId>blade-jdbc</artifactId>
-    <version>0.0.1</version>
+    <version>0.0.2</version>
 </dependency>
 ```
 
@@ -78,7 +78,7 @@
 <dependency>
     <groupId>com.bladejava</groupId>
     <artifactId>blade-patchca</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
 </dependency>
 ```
 
