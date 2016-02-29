@@ -27,6 +27,7 @@ import com.blade.web.http.HttpMethod;
 import com.blade.web.http.Request;
 import com.blade.web.http.Response;
 
+import blade.kit.CollectionKit;
 import blade.kit.StringKit;
 import blade.kit.reflect.ReflectKit;
 import blade.kit.resource.ClassPathClassReader;
@@ -88,17 +89,9 @@ public class RouteBuilder {
     	// Traversal Interceptor
 		for(String packageName : interceptorPackages){
 			
-			boolean recursive = false;
-			
-			if (packageName.endsWith(".*")) {
-				packageName = packageName.substring(0, packageName.length() - 2);
-				recursive = true;
-			}
-			
     		// Scan all Interceptor
-			classes = classReader.getClass(packageName, Interceptor.class, recursive);
-			
-    		if(null != classes && classes.size() > 0){
+			classes = classReader.getClass(packageName, Interceptor.class, false);
+    		if(CollectionKit.isNotEmpty(classes)){
     			for(Class<?> interceptorClazz : classes){
     				parseInterceptor(interceptorClazz);
     			}
@@ -115,18 +108,9 @@ public class RouteBuilder {
     	Set<Class<?>> classes = null;
     	// Traverse route
 		for(String packageName : routePackages){
-			
-			boolean recursive = false;
-			
-			if (packageName.endsWith(".*")) {
-				packageName = packageName.substring(0, packageName.length() - 2);
-				recursive = true;
-			}
-			
-    		// Scan all Controoler
-    		classes = classReader.getClassByAnnotation(packageName, Path.class, recursive);
-    		
-    		if(null != classes && classes.size() > 0){
+			// Scan all Controoler
+    		classes = classReader.getClassByAnnotation(packageName, Path.class, true);
+    		if(CollectionKit.isNotEmpty(classes)){
     			for(Class<?> pathClazz : classes){
     				parseRouter(pathClazz);
     			}
