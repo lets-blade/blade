@@ -26,6 +26,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.blade.Blade;
 import com.blade.Bootstrap;
+import com.blade.context.BladeWebContext;
 import com.blade.ioc.IocApplication;
 import com.blade.route.RouteBuilder;
 
@@ -79,6 +80,8 @@ public class DispatcherServlet extends HttpServlet {
 			long initStart = System.currentTimeMillis();
 			
 		    blade.webRoot(DispatchKit.getWebroot(servletContext).getPath());
+		    
+		    BladeWebContext.setContext(servletContext);
 		    
 		    LOGGER.info("blade.webroot = {}", blade.webRoot());
 		    

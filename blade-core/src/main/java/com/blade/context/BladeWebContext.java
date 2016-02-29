@@ -55,6 +55,12 @@ public class BladeWebContext {
     	return ctx.get();
     }
     
+    public static void setContext(ServletContext context) {
+    	BladeWebContext bladeWebContext = new BladeWebContext();
+    	bladeWebContext.context = context;
+    	ctx.set(bladeWebContext);
+    }
+    
     public static void setContext(ServletContext context, Request request, Response response) {
     	BladeWebContext bladeWebContext = new BladeWebContext();
     	bladeWebContext.context = context;
