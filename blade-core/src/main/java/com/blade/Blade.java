@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.blade.ioc.Ioc;
-import com.blade.ioc.SampleIoc;
+import com.blade.ioc.SimpleIoc;
 import com.blade.loader.BladeConfig;
 import com.blade.loader.Configurator;
 import com.blade.plugin.Plugin;
@@ -98,7 +98,7 @@ public class Blade {
     
 	private Blade() {
 		this.bladeConfig = new BladeConfig();
-		this.ioc = new SampleIoc();
+		this.ioc = new SimpleIoc();
 		this.routers = new Routers();
 		this.templateEngine = new JspEngine();
 		this.plugins = new HashSet<Class<? extends Plugin>>();

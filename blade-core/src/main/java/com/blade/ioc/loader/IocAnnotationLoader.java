@@ -21,7 +21,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import com.blade.ioc.SampleIoc;
+import com.blade.ioc.SimpleIoc;
 import com.blade.ioc.annotation.Component;
 
 import blade.kit.resource.ClassPathClassReader;
@@ -54,7 +54,7 @@ public final class IocAnnotationLoader implements IocLoader {
     }
     
     @Override
-    public void load(SampleIoc ioc) {
+    public void load(SimpleIoc ioc) {
         for (Class<?> cls : classes) {
             Component anno = cls.getAnnotation(Component.class);
             if (anno != null) {

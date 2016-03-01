@@ -6,7 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.blade.ioc.Ioc;
-import com.blade.ioc.SampleIoc;
+import com.blade.ioc.SimpleIoc;
 import com.blade.ioc.loader.IocAnnotationLoader;
 import com.blade.ioc.service.test.UserService;
 import com.blade.ioc.service.test.UserServiceImpl;
@@ -17,7 +17,7 @@ public class IocTest {
 	
 	@Before
 	public void before(){
-		ioc = new SampleIoc();
+		ioc = new SimpleIoc();
 	}
 	
 	@Test

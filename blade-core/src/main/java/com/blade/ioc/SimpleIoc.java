@@ -34,7 +34,7 @@ import blade.kit.logging.LoggerFactory;
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since	1.0
  */
-public class SampleIoc implements Ioc {
+public class SimpleIoc implements Ioc {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(Ioc.class);
 	

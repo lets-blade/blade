@@ -15,10 +15,10 @@
  */
 package com.blade.ioc.loader;
 
-import com.blade.ioc.SampleIoc;
+import com.blade.ioc.SimpleIoc;
 
 public interface IocLoader {
 
-    void load(SampleIoc ioc);
+    void load(SimpleIoc ioc);
 
 }
