@@ -132,21 +132,6 @@ public class Routers {
 		}
 	}
 	
-	public void route(String path, Object target, String methodName) {
-		try {
-			Assert.notNull(path, "Route path not is null!");
-			Assert.notNull(target, "Target Controller not is null!");
-			Assert.notNull(methodName, "Method name not is null");
-			
-			Method method = target.getClass().getMethod(methodName, Request.class, Response.class);
-			addRoute(HttpMethod.ALL, path, target, target.getClass(), method);
-		} catch (NoSuchMethodException e) {
-			e.printStackTrace();
-		} catch (SecurityException e) {
-			e.printStackTrace();
-		}
-	}
-
 	public void route(String path, Class<?> clazz, String methodName) {
 		
 		Assert.notNull(path, "Route path not is null!");

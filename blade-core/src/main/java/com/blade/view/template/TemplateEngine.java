@@ -17,6 +17,8 @@ package com.blade.view.template;
 
 import java.io.Writer;
 
+import com.blade.view.ModelAndView;
+
 /**
  * TemplateEngine Interface, For view layer to display data 
  *

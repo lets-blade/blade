@@ -21,7 +21,7 @@ import java.io.OutputStream;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 
-import com.blade.view.template.ModelAndView;
+import com.blade.view.ModelAndView;
 
 /**
  * HTTP Response

@@ -2,7 +2,7 @@ package com.blade.route;
 
 import java.util.Map;
 
-import com.blade.view.template.ModelAndView;
+import com.blade.view.ModelAndView;
 
 public class C {
 	

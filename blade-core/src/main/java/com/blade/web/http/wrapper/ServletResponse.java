@@ -24,7 +24,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 
 import com.blade.context.BladeWebContext;
-import com.blade.view.template.ModelAndView;
+import com.blade.view.ModelAndView;
 import com.blade.view.template.TemplateEngine;
 import com.blade.web.http.HttpStatus;
 import com.blade.web.http.Path;

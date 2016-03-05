@@ -165,8 +165,6 @@ public class RouteBuilder {
     		return;
     	}
     	
-//    	ioc.addBean(router);
-    	
 		final String nameSpace = router.getAnnotation(Path.class).value();
 		
 		final String suffix = router.getAnnotation(Path.class).suffix();
