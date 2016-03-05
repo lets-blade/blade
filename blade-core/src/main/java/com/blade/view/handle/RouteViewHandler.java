@@ -17,6 +17,7 @@ import com.blade.web.DispatchKit;
 import com.blade.web.http.Request;
 import com.blade.web.http.Response;
 import com.blade.web.http.wrapper.Session;
+import com.blade.web.multipart.FileItem;
 
 import blade.kit.reflect.ReflectKit;
 
@@ -129,6 +130,11 @@ public class RouteViewHandler {
 				args[i] = response.raw();
 			} else if(paramTypeClazz.equals(HttpSession.class)){
 				args[i] = request.raw().getSession();
+			} else if(paramTypeClazz.equals(FileItem.class)){
+				FileItem[] fileItems = request.files();
+				if(null != fileItems && fileItems.length > 0){
+					args[i] = fileItems[0];
+				}
 			}
 		}
 		return args;
