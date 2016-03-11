@@ -33,7 +33,7 @@
 <dependency>
     <groupId>com.bladejava</groupId>
     <artifactId>blade-core</artifactId>
-    <version>1.6.0M2</version>
+    <version>1.6.0</version>
 </dependency>
 ```
 
