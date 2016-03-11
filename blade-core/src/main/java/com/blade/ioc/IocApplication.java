@@ -15,6 +15,7 @@
  */
 package com.blade.ioc;
 
+import java.lang.reflect.Modifier;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +24,7 @@ import java.util.Set;
 import com.blade.Blade;
 import com.blade.Bootstrap;
 import com.blade.ioc.annotation.Component;
+import com.blade.ioc.annotation.Service;
 import com.blade.plugin.Plugin;
 import com.blade.route.Route;
 import com.blade.route.RouteHandler;
@@ -149,10 +151,13 @@ public class IocApplication {
 		// Scan package all class
 		Set<Class<?>> classes = classReader.getClass(packageName, recursive);
 		for (Class<?> clazz : classes) {
-			Component component = clazz.getAnnotation(Component.class);
-			if(null != component){
-				// Register classes
-				ioc.addBean(clazz);
+			if(!clazz.isInterface() && !Modifier.isAbstract(clazz.getModifiers())){
+				Component component = clazz.getAnnotation(Component.class);
+				Service service = clazz.getAnnotation(Service.class);
+				if(null != component || null != service){
+					// Register classes
+					ioc.addBean(clazz);
+				}
 			}
 		}
 	}

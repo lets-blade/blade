@@ -15,7 +15,10 @@
  */
 package com.blade.loader;
 
+import java.util.Map;
+
 import blade.kit.Assert;
+import blade.kit.CollectionKit;
 import blade.kit.StringKit;
 import blade.kit.config.Config;
 
@@ -65,6 +68,11 @@ public final class Configurator {
 	    	bladeConfig.addIocPackages(basePackage + ".service.*");
 	    	bladeConfig.addRoutePackages(basePackage + ".controller");
 	    	bladeConfig.setInterceptorPackage(basePackage + ".interceptor");
+		}
+		
+		Map<String, String> configMap = config.getConfigMap();
+		if(CollectionKit.isNotEmpty(configMap)){
+			bladeConfig.setConfigMap(configMap);
 		}
 	}
 	
