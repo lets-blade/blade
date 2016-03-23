@@ -630,6 +630,10 @@ public class DateKit {
 		return new Date(unixTime * 1000L);
 	}
 
+	public static long getUnixTimeLong() {
+		return getUnixTimeByDate(new Date());
+	}
+	
 	public static int getCurrentUnixTime() {
 		return getUnixTimeByDate(new Date());
 	}
@@ -644,12 +648,9 @@ public class DateKit {
 	public static int getUnixTimeByDate(Date date) {
 		return (int) (date.getTime() / 1000);
 	}
-
-	public static void main(String[] args) {
-		Date date1 = dateFormat("1981-01-01 00:00:00");
-		Date date2 = dateFormat("1900-12-31 00:00:00");
-		System.out.println(birthdayFormat(date1));
-		System.out.println(birthdayFormat(date2));
+	
+	public static long getUnixTimeLong(Date date) {
+		return (date.getTime() / 1000);
 	}
 
 	public static Date getNextDay(Date date) {
@@ -830,4 +831,28 @@ public class DateKit {
 	    return date;
 	}
 
+	public static Long getTodayTime() {
+		Calendar today = Calendar.getInstance();
+		today.set(Calendar.HOUR_OF_DAY, 0);
+		today.set(Calendar.MINUTE, 0);
+		today.set(Calendar.SECOND, 0);
+		return Long.valueOf(String.valueOf(today.getTimeInMillis()).substring(0, 10));
+	}
+	
+	public static Long getYesterdayTime() {
+		Calendar today = Calendar.getInstance();
+		today.set(Calendar.HOUR_OF_DAY, -24);
+		today.set(Calendar.MINUTE, 0);
+		today.set(Calendar.SECOND, 0);
+		return Long.valueOf(String.valueOf(today.getTimeInMillis()).substring(0, 10));
+	}
+
+	public static Long getTomorrowTime() {
+		Calendar tomorrow = Calendar.getInstance();
+		tomorrow.set(Calendar.HOUR_OF_DAY, 24);
+		tomorrow.set(Calendar.MINUTE, 0);
+		tomorrow.set(Calendar.SECOND, 0);
+		return Long.valueOf(String.valueOf(tomorrow.getTimeInMillis()).substring(0, 10));
+	}
+	
 }
