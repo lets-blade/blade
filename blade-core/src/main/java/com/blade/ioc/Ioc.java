@@ -42,6 +42,8 @@ public interface Ioc {
 	
     <T> T getBean(Class<T> type);
     
+    List<BeanDefine> getBeanDefines();
+    
     List<Object> getBeans();
     
     Set<String> getBeanNames();

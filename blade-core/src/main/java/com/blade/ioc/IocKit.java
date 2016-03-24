@@ -64,7 +64,28 @@ public class IocKit {
      * @param beanDefine	beandefine object
      * @return				bean object
      */
-    public static Object getBean(Ioc ioc, BeanDefine beanDefine) {
+    public static Object getBean(BeanDefine beanDefine) {
+		Object bean = beanDefine.getBean();
+		return bean;
+    }
+    
+    public static void injection(Ioc ioc, BeanDefine beanDefine) {
+    	ClassDefine classDefine = ClassDefine.create(beanDefine.getType());
+		List<FieldInjector> fieldInjectors = IocKit.getInjectFields(ioc, classDefine);
+		Object bean = beanDefine.getBean();
+		for (FieldInjector fieldInjector : fieldInjectors) {
+			fieldInjector.injection(bean);
+		}
+    }
+    
+    /**
+     * Get bean according to BeanDefine
+     * 
+     * @param ioc			ioc container
+     * @param beanDefine	beandefine object
+     * @return				bean object
+     */
+    /*public static Object getBean(Ioc ioc, BeanDefine beanDefine) {
     	ClassDefine classDefine = ClassDefine.create(beanDefine.getType());
 		List<FieldInjector> fieldInjectors = IocKit.getInjectFields(ioc, classDefine);
 		Object bean = beanDefine.getBean();
@@ -72,6 +93,6 @@ public class IocKit {
 			fieldInjector.injection(bean);
 		}
 		return bean;
-    }
+    }*/
 	
 }

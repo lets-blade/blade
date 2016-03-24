@@ -183,9 +183,14 @@ public class SimpleIoc implements Ioc {
         if (beanDefine == null) {
             return null;
         }
-        return IocKit.getBean(this, beanDefine);
+        return IocKit.getBean(beanDefine);
 	}
 
+	@Override
+	public List<BeanDefine> getBeanDefines() {
+		return new ArrayList<BeanDefine>(pool.values());
+	}
+	
 	@Override
 	public List<Object> getBeans() {
 		Set<String> beanNames = this.getBeanNames();

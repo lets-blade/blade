@@ -37,13 +37,6 @@ public class FieldInjector implements Injector {
 			Object value = ioc.getBean(fieldType);
 			if (value == null) {
 				throw new IllegalStateException("Can't inject bean: " + fieldType.getName() + " for field: " + field);
-				
-				/*Component component = fieldType.getAnnotation(Component.class);
-				if(null == component){
-					throw new IllegalStateException("Can't inject bean: " + fieldType.getName() + " for field: " + field);
-				}
-				ioc.addBean(fieldType);
-				value = ioc.getBean(fieldType);*/
 			}
 			field.setAccessible(true);
 			field.set(bean, value);

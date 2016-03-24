@@ -132,6 +132,12 @@ public class IocApplication {
 		}
 		
 		LOGGER.info("Add Object: {}", ioc.getBeans());
+		
+		// injection
+		List<BeanDefine> beanDefines = ioc.getBeanDefines();
+		for(BeanDefine beanDefine : beanDefines){
+			IocKit.injection(ioc, beanDefine);
+		}
 	}
 	
 	/**
