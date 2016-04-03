@@ -217,3 +217,7 @@ Thank you very much for the developers to help in the project, if you are willin
 ## Licenses
 
 Please see [Apache License](LICENSE)
+
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/biezhi/blade/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
