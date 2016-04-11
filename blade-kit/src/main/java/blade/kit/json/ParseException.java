@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2015 EclipseSource.
+ * Copyright (c) 2013, 2016 EclipseSource.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,44 +27,55 @@ package blade.kit.json;
 @SuppressWarnings("serial") // use default serial UID
 public class ParseException extends RuntimeException {
 
-  private final int offset;
-  private final int line;
-  private final int column;
+  private final Location location;
 
-  ParseException(String message, int offset, int line, int column) {
-    super(message + " at " + line + ":" + column);
-    this.offset = offset;
-    this.line = line;
-    this.column = column;
+  ParseException(String message, Location location) {
+    super(message + " at " + location);
+    this.location = location;
   }
 
   /**
-   * Returns the absolute index of the character at which the error occurred. The index of the first
+   * Returns the location at which the error occurred.
+   *
+   * @return the error location
+   */
+  public Location getLocation() {
+    return location;
+  }
+
+  /**
+   * Returns the absolute character index at which the error occurred. The offset of the first
    * character of a document is 0.
    *
    * @return the character offset at which the error occurred, will be &gt;= 0
+   * @deprecated Use {@link #getLocation()} instead
    */
+  @Deprecated
   public int getOffset() {
-    return offset;
+    return location.offset;
   }
 
   /**
-   * Returns the number of the line in which the error occurred. The first line counts as 1.
+   * Returns the line number in which the error occurred. The number of the first line is 1.
    *
    * @return the line in which the error occurred, will be &gt;= 1
+   * @deprecated Use {@link #getLocation()} instead
    */
+  @Deprecated
   public int getLine() {
-    return line;
+    return location.line;
   }
 
   /**
-   * Returns the index of the character at which the error occurred, relative to the line. The index
-   * of the first character of a line is 0.
+   * Returns the column number at which the error occurred, i.e. the number of the character in its
+   * line. The number of the first character of a line is 1.
    *
-   * @return the column in which the error occurred, will be &gt;= 0
+   * @return the column in which the error occurred, will be &gt;= 1
+   * @deprecated Use {@link #getLocation()} instead
    */
+  @Deprecated
   public int getColumn() {
-    return column;
+    return location.column;
   }
 
 }

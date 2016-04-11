@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 EclipseSource.
+ * Copyright (c) 2016 EclipseSource.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,30 +21,56 @@
  ******************************************************************************/
 package blade.kit.json;
 
-import java.io.Writer;
-
 
 /**
- * Controls the formatting of the JSON output. Use one of the available constants.
+ * An immutable object that represents a location in the parsed text.
  */
-public abstract class WriterConfig {
+public class Location {
 
   /**
-   * Write JSON in its minimal form, without any additional whitespace. This is the default.
+   * The absolute character index, starting at 0.
    */
-  public static WriterConfig MINIMAL = new WriterConfig() {
-    @Override
-    JSONWriter createWriter(Writer writer) {
-      return new JSONWriter(writer);
+  public final int offset;
+
+  /**
+   * The line number, starting at 1.
+   */
+  public final int line;
+
+  /**
+   * The column number, starting at 1.
+   */
+  public final int column;
+
+  Location(int offset, int line, int column) {
+    this.offset = offset;
+    this.column = column;
+    this.line = line;
+  }
+
+  @Override
+  public String toString() {
+    return line + ":" + column;
+  }
+
+  @Override
+  public int hashCode() {
+    return offset;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
     }
-  };
-
-  /**
-   * Write JSON in pretty-print, with each value on a separate line and an indentation of two
-   * spaces.
-   */
-  public static WriterConfig PRETTY_PRINT = PrettyPrint.indentWithSpaces(2);
-
-  abstract JSONWriter createWriter(Writer writer);
+    if (obj == null) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+    Location other = (Location)obj;
+    return offset == other.offset && column == other.column && line == other.line;
+  }
 
 }

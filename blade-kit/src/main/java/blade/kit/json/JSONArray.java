@@ -22,7 +22,6 @@
 package blade.kit.json;
 
 import java.io.IOException;
-import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -94,50 +93,7 @@ public class JSONArray extends JSONValue implements Iterable<JSONValue> {
 			values = new ArrayList<JSONValue>(array.values);
 		}
 	}
-
-	/**
-	 * Reads a JSON array from the given reader.
-	 * <p>
-	 * Characters are read in chunks and buffered internally, therefore wrapping
-	 * an existing reader in an additional <code>BufferedReader</code> does
-	 * <strong>not</strong> improve reading performance.
-	 * </p>
-	 *
-	 * @param reader
-	 *            the reader to read the JSON array from
-	 * @return the JSON array that has been read
-	 * @throws IOException
-	 *             if an I/O error occurs in the reader
-	 * @throws ParseException
-	 *             if the input is not valid JSON
-	 * @throws UnsupportedOperationException
-	 *             if the input does not contain a JSON array
-	 * @deprecated Use {@link JSON#parse(Reader)}{@link JSONValue#asArray()
-	 *             .asArray()} instead
-	 */
-	@Deprecated
-	public static JSONArray readFrom(Reader reader) throws IOException {
-		return JSONValue.readFrom(reader).asArray();
-	}
-
-	/**
-	 * Reads a JSON array from the given string.
-	 *
-	 * @param string
-	 *            the string that contains the JSON array
-	 * @return the JSON array that has been read
-	 * @throws ParseException
-	 *             if the input is not valid JSON
-	 * @throws UnsupportedOperationException
-	 *             if the input does not contain a JSON array
-	 * @deprecated Use {@link JSON#parse(String)}{@link JSONValue#asArray()
-	 *             .asArray()} instead
-	 */
-	@Deprecated
-	public static JSONArray readFrom(String string) {
-		return JSONValue.readFrom(string).asArray();
-	}
-
+	
 	/**
 	 * Returns an unmodifiable wrapper for the specified JsonArray. This method
 	 * allows to provide read-only access to a JsonArray.
@@ -233,7 +189,12 @@ public class JSONArray extends JSONValue implements Iterable<JSONValue> {
 		values.add(JSON.value(value));
 		return this;
 	}
-
+	
+	public JSONArray add(Object value) {
+		values.add(JSON.value(value));
+		return this;
+	}
+	
 	/**
 	 * Appends the specified JSON value to the end of this array.
 	 *
@@ -425,54 +386,6 @@ public class JSONArray extends JSONValue implements Iterable<JSONValue> {
 	 */
 	public JSONValue get(int index) {
 		return values.get(index);
-	}
-
-	public JSONObject getJSONObject(int index) {
-		JSONValue jsonValue = values.get(index);
-		if (null != jsonValue) {
-			return jsonValue.asObject();
-		}
-		return null;
-	}
-
-	public String getString(int index) {
-		JSONValue jsonValue = values.get(index);
-		if (null != jsonValue) {
-			return jsonValue.asString();
-		}
-		return null;
-	}
-	
-	public Integer getInt(int index) {
-		JSONValue jsonValue = values.get(index);
-		if (null != jsonValue) {
-			return jsonValue.asInt();
-		}
-		return null;
-	}
-	
-	public Long getLong(int index) {
-		JSONValue jsonValue = values.get(index);
-		if (null != jsonValue) {
-			return jsonValue.asLong();
-		}
-		return null;
-	}
-	
-	public Double getDouble(int index) {
-		JSONValue jsonValue = values.get(index);
-		if (null != jsonValue) {
-			return jsonValue.asDouble();
-		}
-		return null;
-	}
-	
-	public Boolean getBoolean(int index) {
-		JSONValue jsonValue = values.get(index);
-		if (null != jsonValue) {
-			return jsonValue.asBoolean();
-		}
-		return null;
 	}
 
 	/**

@@ -5,7 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import blade.kit.json.JSON;
 import blade.kit.json.JSONArray;
+import blade.kit.json.JSONHelper;
 import blade.kit.json.JSONKit;
 import blade.kit.json.JSONObject;
 import blade.kit.json.JSONValue;
@@ -32,7 +34,7 @@ public class JSONTest {
         String string = JSONKit.toJSONString(list);
         System.out.println(string);
         
-		List<JSONValue> list2 = JSONKit.parse(json).asArray().values();
+		List<JSONValue> list2 = JSON.parse(json).asArray().values();
 		System.out.println(list2);
         
         JSONObject obj1 = new JSONObject();
@@ -47,12 +49,11 @@ public class JSONTest {
         
         User u1 = new User();
         u1.setAge(22);
-        u1.setName("rose");
+//        u1.setName("rose");
         
-        System.out.println(JSONKit.toJSONString(u1));
+        System.out.println(JSONHelper.toJSONValue(u1).toString());
         
-//        User u = JSONKit.parse("{\"name\":\"jack\",\"age\":20}", User.class);
-//        System.out.println(u);
+//        System.out.println(JSONKit.toJSONString(u1));
 	}
 	
 }

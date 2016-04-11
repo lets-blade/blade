@@ -23,72 +23,75 @@ package blade.kit.json;
 
 import java.io.IOException;
 
-
 @SuppressWarnings("serial") // use default serial UID
 class JSONNumber extends JSONValue {
 
-  private final String string;
+	private final String string;
 
-  JSONNumber(String string) {
-    if (string == null) {
-      throw new NullPointerException("string is null");
-    }
-    this.string = string;
-  }
+	JSONNumber(String string) {
+		if (string == null) {
+			throw new NullPointerException("string is null");
+		}
+		this.string = string;
+	}
 
-  @Override
-  public String toString() {
-    return string;
-  }
+	@Override
+	public String toString() {
+		return string;
+	}
 
-  @Override
-  void write(JSONWriter writer) throws IOException {
-    writer.writeNumber(string);
-  }
+	@Override
+	void write(JSONWriter writer) throws IOException {
+		writer.writeNumber(string);
+	}
 
-  @Override
-  public boolean isNumber() {
-    return true;
-  }
+	@Override
+	public boolean isNumber() {
+		return true;
+	}
 
-  @Override
-  public int asInt() {
-    return Integer.parseInt(string, 10);
-  }
+	@Override
+	public Integer asInt() {
+		return Integer.parseInt(string, 10);
+	}
 
-  @Override
-  public long asLong() {
-    return Long.parseLong(string, 10);
-  }
+	@Override
+	public Long asLong() {
+		return Long.parseLong(string, 10);
+	}
 
-  @Override
-  public float asFloat() {
-    return Float.parseFloat(string);
-  }
+	@Override
+	public Float asFloat() {
+		return Float.parseFloat(string);
+	}
 
-  @Override
-  public double asDouble() {
-    return Double.parseDouble(string);
-  }
+	@Override
+	public Double asDouble() {
+		return Double.parseDouble(string);
+	}
+	
+	public Byte asByte() {
+		return Byte.parseByte(string);
+	}
+	
+	@Override
+	public int hashCode() {
+		return string.hashCode();
+	}
 
-  @Override
-  public int hashCode() {
-    return string.hashCode();
-  }
-
-  @Override
-  public boolean equals(Object object) {
-    if (this == object) {
-      return true;
-    }
-    if (object == null) {
-      return false;
-    }
-    if (getClass() != object.getClass()) {
-      return false;
-    }
-    JSONNumber other = (JSONNumber)object;
-    return string.equals(other.string);
-  }
+	@Override
+	public boolean equals(Object object) {
+		if (this == object) {
+			return true;
+		}
+		if (object == null) {
+			return false;
+		}
+		if (getClass() != object.getClass()) {
+			return false;
+		}
+		JSONNumber other = (JSONNumber) object;
+		return string.equals(other.string);
+	}
 
 }

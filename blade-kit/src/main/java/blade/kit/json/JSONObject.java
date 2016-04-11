@@ -23,7 +23,6 @@ package blade.kit.json;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -89,7 +88,7 @@ public class JSONObject extends JSONValue implements Iterable<Member> {
 		values = new ArrayList<JSONValue>();
 		table = new HashIndexTable();
 	}
-
+	
 	/**
 	 * Creates a new JsonObject, initialized with the contents of the specified
 	 * JSON object.
@@ -116,50 +115,7 @@ public class JSONObject extends JSONValue implements Iterable<Member> {
 		table = new HashIndexTable();
 		updateHashIndex();
 	}
-
-	/**
-	 * Reads a JSON object from the given reader.
-	 * <p>
-	 * Characters are read in chunks and buffered internally, therefore wrapping
-	 * an existing reader in an additional <code>BufferedReader</code> does
-	 * <strong>not</strong> improve reading performance.
-	 * </p>
-	 *
-	 * @param reader
-	 *            the reader to read the JSON object from
-	 * @return the JSON object that has been read
-	 * @throws IOException
-	 *             if an I/O error occurs in the reader
-	 * @throws ParseException
-	 *             if the input is not valid JSON
-	 * @throws UnsupportedOperationException
-	 *             if the input does not contain a JSON object
-	 * @deprecated Use {@link JSON#parse(Reader)}{@link JSONValue#asObject()
-	 *             .asObject()} instead
-	 */
-	@Deprecated
-	public static JSONObject readFrom(Reader reader) throws IOException {
-		return JSONValue.readFrom(reader).asObject();
-	}
-
-	/**
-	 * Reads a JSON object from the given string.
-	 *
-	 * @param string
-	 *            the string that contains the JSON object
-	 * @return the JSON object that has been read
-	 * @throws ParseException
-	 *             if the input is not valid JSON
-	 * @throws UnsupportedOperationException
-	 *             if the input does not contain a JSON object
-	 * @deprecated Use {@link JSON#parse(String)}{@link JSONValue#asObject()
-	 *             .asObject()} instead
-	 */
-	@Deprecated
-	public static JSONObject readFrom(String string) {
-		return JSONValue.readFrom(string).asObject();
-	}
-
+	
 	/**
 	 * Returns an unmodifiable JsonObject for the specified one. This method
 	 * allows to provide read-only access to a JsonObject.
@@ -198,6 +154,11 @@ public class JSONObject extends JSONValue implements Iterable<Member> {
 	 * @return the object itself, to enable method chaining
 	 */
 	public JSONObject put(String name, int value) {
+		put(name, JSON.value(value));
+		return this;
+	}
+
+	public JSONObject put(String name, Object value) {
 		put(name, JSON.value(value));
 		return this;
 	}
@@ -319,58 +280,6 @@ public class JSONObject extends JSONValue implements Iterable<Member> {
 	 */
 	public JSONObject put(String name, String value) {
 		put(name, JSON.value(value));
-		return this;
-	}
-	
-	public JSONObject put(String name, Object value) {
-		if (value instanceof String) {
-			put(name, JSON.value((String) value));
-		}
-
-		if (value instanceof Integer) {
-			put(name, JSON.value((Integer) value));
-		}
-
-		if (value instanceof Long) {
-			put(name, JSON.value((Long) value));
-		}
-
-		if (value instanceof JSONValue) {
-			put(name, (JSONValue) value);
-		}
-
-		if (value instanceof JSONObject) {
-			put(name, (JSONObject) value);
-		}
-
-		if (value instanceof JSONArray) {
-			put(name, (JSONArray) value);
-		}
-
-		if (value instanceof Boolean) {
-			put(name, JSON.value((Boolean) value));
-		}
-
-		if (value instanceof Byte) {
-			put(name, JSON.value((Byte) value));
-		}
-
-		if (value instanceof Character) {
-			put(name, JSON.value((Character) value));
-		}
-
-		if (value instanceof Short) {
-			put(name, JSON.value((Short) value));
-		}
-
-		if (value instanceof Float) {
-			put(name, JSON.value((Float) value));
-		}
-
-		if (value instanceof Double) {
-			put(name, JSON.value((Double) value));
-		}
-
 		return this;
 	}
 
@@ -648,21 +557,14 @@ public class JSONObject extends JSONValue implements Iterable<Member> {
 		return index != -1 ? values.get(index) : null;
 	}
 	
-	public JSONObject getJSONObject(String name) {
-		JSONValue jsonValue = this.get(name);
-		if(null != jsonValue){
-			return jsonValue.asObject();
+	public boolean contains(String name) {
+		if (name == null) {
+			throw new NullPointerException("name is null");
 		}
-		return null;
+		int index = indexOf(name);
+		return index != -1;
 	}
-	
-	public JSONArray getJSONArray(String name) {
-		JSONValue jsonValue = this.get(name);
-		if(null != jsonValue){
-			return jsonValue.asArray();
-		}
-		return null;
-	}
+
 
 	/**
 	 * Returns the <code>int</code> value of the member with the specified name
@@ -680,11 +582,15 @@ public class JSONObject extends JSONValue implements Iterable<Member> {
 	 *         given default value if this object does not contain a member with
 	 *         that name
 	 */
-	public int getInt(String name, int defaultValue) {
+	public Integer getInt(String name, Integer defaultValue) {
 		JSONValue value = get(name);
 		return value != null ? value.asInt() : defaultValue;
 	}
 	
+	public Integer getInt(String name) {
+		return getInt(name, null);
+	}
+
 	/**
 	 * Returns the <code>long</code> value of the member with the specified name
 	 * in this object. If this object does not contain a member with this name,
@@ -701,11 +607,15 @@ public class JSONObject extends JSONValue implements Iterable<Member> {
 	 *         given default value if this object does not contain a member with
 	 *         that name
 	 */
-	public long getLong(String name, long defaultValue) {
+	public Long getLong(String name, Long defaultValue) {
 		JSONValue value = get(name);
 		return value != null ? value.asLong() : defaultValue;
 	}
 
+	public Long getLong(String name) {
+		return getLong(name, null);
+	}
+	
 	/**
 	 * Returns the <code>float</code> value of the member with the specified
 	 * name in this object. If this object does not contain a member with this
@@ -722,11 +632,15 @@ public class JSONObject extends JSONValue implements Iterable<Member> {
 	 *         given default value if this object does not contain a member with
 	 *         that name
 	 */
-	public float getFloat(String name, float defaultValue) {
+	public Float getFloat(String name, Float defaultValue) {
 		JSONValue value = get(name);
 		return value != null ? value.asFloat() : defaultValue;
 	}
 
+	public Float getFloat(String name) {
+		return getFloat(name, null);
+	}
+	
 	/**
 	 * Returns the <code>double</code> value of the member with the specified
 	 * name in this object. If this object does not contain a member with this
@@ -743,11 +657,15 @@ public class JSONObject extends JSONValue implements Iterable<Member> {
 	 *         given default value if this object does not contain a member with
 	 *         that name
 	 */
-	public double getDouble(String name, double defaultValue) {
+	public Double getDouble(String name, Double defaultValue) {
 		JSONValue value = get(name);
 		return value != null ? value.asDouble() : defaultValue;
 	}
 
+	public Double getDouble(String name) {
+		return getDouble(name, null);
+	}
+	
 	/**
 	 * Returns the <code>boolean</code> value of the member with the specified
 	 * name in this object. If this object does not contain a member with this
@@ -764,9 +682,13 @@ public class JSONObject extends JSONValue implements Iterable<Member> {
 	 *         given default value if this object does not contain a member with
 	 *         that name
 	 */
-	public boolean getBoolean(String name, boolean defaultValue) {
+	public Boolean getBoolean(String name, Boolean defaultValue) {
 		JSONValue value = get(name);
 		return value != null ? value.asBoolean() : defaultValue;
+	}
+	
+	public boolean getBoolean(String name) {
+		return getBoolean(name, null);
 	}
 
 	/**
@@ -788,10 +710,9 @@ public class JSONObject extends JSONValue implements Iterable<Member> {
 		JSONValue value = get(name);
 		return value != null ? value.asString() : defaultValue;
 	}
-
+	
 	public String getString(String name) {
-		JSONValue value = get(name);
-		return value != null ? value.asString() : null;
+		return getString(name, null);
 	}
 
 	/**
@@ -874,12 +795,12 @@ public class JSONObject extends JSONValue implements Iterable<Member> {
 	public boolean isObject() {
 		return true;
 	}
-
+	
 	@Override
-	public JSONObject asObject() {
+	public JSONObject asJSONObject() {
 		return this;
 	}
-
+	
 	@Override
 	public int hashCode() {
 		int result = 1;
@@ -1022,5 +943,5 @@ public class JSONObject extends JSONValue implements Iterable<Member> {
 		}
 
 	}
-
+	
 }

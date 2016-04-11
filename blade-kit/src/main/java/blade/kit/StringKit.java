@@ -1620,6 +1620,134 @@ public abstract class StringKit {
 		return (stringConnect(str_arr, "")).trim();
 	}
 
+	public static String escapeJavaScript(String value) {
+        return escapeJava(value);
+    }
+
+    public static String unescapeJavaScript(String value) {
+        return unescapeJava(value);
+    }
+    
+    public static String escapeJava(String value) {
+        if (value == null || value.length() == 0) {
+            return value;
+        }
+        int len = value.length();
+        StringBuilder buf = null;
+        for (int i = 0; i < len; i++) {
+            char ch = value.charAt(i);
+            String rep;
+            switch (ch) {
+            case '\\':
+                rep = "\\\\";
+                break;
+            case '\"':
+                rep = "\\\"";
+                break;
+            case '\'':
+                rep = "\\\'";
+                break;
+            case '\t':
+                rep = "\\t";
+                break;
+            case '\n':
+                rep = "\\n";
+                break;
+            case '\r':
+                rep = "\\r";
+                break;
+            case '\b':
+                rep = "\\b";
+                break;
+            case '\f':
+                rep = "\\f";
+                break;
+            default:
+                rep = null;
+                break;
+            }
+            if (rep != null) {
+                if (buf == null) {
+                    buf = new StringBuilder(len * 2);
+                    if (i > 0) {
+                        buf.append(value.substring(0, i));
+                    }
+                }
+                buf.append(rep);
+            } else {
+                if (buf != null) {
+                    buf.append(ch);
+                }
+            }
+        }
+        if (buf != null) {
+            return buf.toString();
+        }
+        return value;
+    }
+    
+    public static String unescapeJava(String value) {
+        if (value == null || value.length() == 0) {
+            return value;
+        }
+        StringBuilder buf = null;
+        int len = value.length();
+        int len1 = len - 1;
+        for (int i = 0; i < len; i++) {
+            char ch = value.charAt(i);
+            if (ch == '\\' && i < len1) {
+                int j = i;
+                i++;
+                ch = value.charAt(i);
+                switch (ch) {
+                case '\\':
+                    ch = '\\';
+                    break;
+                case '\"':
+                    ch = '\"';
+                    break;
+                case '\'':
+                    ch = '\'';
+                    break;
+                case 't':
+                    ch = '\t';
+                    break;
+                case 'n':
+                    ch = '\n';
+                    break;
+                case 'r':
+                    ch = '\r';
+                    break;
+                case 'b':
+                    ch = '\b';
+                    break;
+                case 'f':
+                    ch = '\f';
+                    break;
+                case 'u':
+                    ch = (char) Integer.parseInt(value.substring(i + 1, i + 5), 16);
+                    i = i + 4;
+                    break;
+                default:
+                    j--;
+                }
+                if (buf == null) {
+                    buf = new StringBuilder(len);
+                    if (j > 0) {
+                        buf.append(value.substring(0, j));
+                    }
+                }
+                buf.append(ch);
+            } else if (buf != null) {
+                buf.append(ch);
+            }
+        }
+        if (buf != null) {
+            return buf.toString();
+        }
+        return value;
+    }
+    
 	// ----------- 切割合并 ---------- //
 	/**
 	 * 分割字符串
