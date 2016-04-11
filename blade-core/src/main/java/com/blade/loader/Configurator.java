@@ -42,6 +42,8 @@ public final class Configurator {
 		String httpEncoding = config.getString("blade.http.encoding");
 		String httpFilters = config.getString("blade.http.filters");
 		String basePackage = config.getString("blade.basepackage");
+		String view500 = config.getString("blade.view.500");
+		String view404 = config.getString("blade.view.404");
 		
 		if(null != dev){
 			bladeConfig.setDev(dev);
@@ -61,6 +63,14 @@ public final class Configurator {
 		
 		if(StringKit.isNotBlank(httpFilters)){
 			bladeConfig.setStaticFolders(httpFilters.split(","));
+		}
+		
+		if(StringKit.isNotBlank(view404)){
+			bladeConfig.setView404(view404);
+		}
+		
+		if(StringKit.isNotBlank(view500)){
+			bladeConfig.setView500(view500);
 		}
 		
 		if(StringKit.isNotBlank(basePackage)){

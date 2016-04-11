@@ -166,7 +166,7 @@ public class RouteViewHandler {
 			}
 		} catch (Exception e) {
 			request.abort();
-			DispatchKit.printError(e, 500, response.raw());
+			DispatchKit.printError(e, 500, response);
 		}
 		
 	}
@@ -204,7 +204,7 @@ public class RouteViewHandler {
 			
 		} catch (Exception e) {
 			request.abort();
-			DispatchKit.printError(e, 500, response.raw());
+			DispatchKit.printError(e, 500, response);
 		}
 		return false;
 	}

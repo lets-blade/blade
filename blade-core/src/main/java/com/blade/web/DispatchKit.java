@@ -19,9 +19,11 @@ import javax.servlet.http.HttpServletResponse;
 import com.blade.Blade;
 import com.blade.Const;
 import com.blade.web.http.HttpException;
+import com.blade.web.http.Response;
 
 import blade.kit.FileKit;
 import blade.kit.StreamKit;
+import blade.kit.StringKit;
 
 public class DispatchKit {
 
@@ -64,7 +66,7 @@ public class DispatchKit {
 		}
 	}
 	
-	private static boolean isDev = Blade.me().isDev();
+	private static Boolean isDev = null;
 	
 	/**
 	 * Print Error Message
@@ -72,7 +74,10 @@ public class DispatchKit {
 	 * @param code
 	 * @param response
 	 */
-	public static void printError(Throwable err, int code, HttpServletResponse response){
+	public static void printError(Throwable err, int code, Response response){
+		if(null == isDev){
+			isDev = Blade.me().isDev();
+		}
 		err.printStackTrace();
 		try {
 			final ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -86,15 +91,27 @@ public class DispatchKit {
 				writer.println(END);
 			} else {
 				if(code == 404){
-					writer.write(err.getMessage());
+					String view404 = Blade.me().view404();
+					if(StringKit.isNotBlank(view404)){
+						response.render(view404);
+						return;
+					} else {
+						writer.write(err.getMessage());
+					}
 				} else {
-					writer.write(Const.INTERNAL_ERROR);
+					String view500 = Blade.me().view500();
+					if(StringKit.isNotBlank(view500)){
+						response.render(view500);
+						return;
+					} else {
+						writer.write(Const.INTERNAL_ERROR);
+					}
 				}
 			}
 			writer.close();
-	        response.setStatus(code);
+	        response.status(code);
 	        InputStream body = new ByteArrayInputStream(baos.toByteArray());
-			print(body, response.getOutputStream());
+			print(body, response.outputStream());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -127,20 +144,20 @@ public class DispatchKit {
 	 * @param realpath
 	 * @param httpResponse
 	 */
-	public static void printStatic(String uri, String realpath, HttpServletResponse httpResponse) {
+	public static void printStatic(String uri, String realpath, Response response) {
 		try {
 			File file = new File(realpath);
     		if(FileKit.exist(file)){
     			FileInputStream in = new FileInputStream(file);
-    			print(in, httpResponse.getOutputStream());
+    			print(in, response.outputStream());
     		} else {
     			HttpException httpException = new HttpException(404, uri + " not found");
-    			DispatchKit.printError(httpException, 404, httpResponse);
+    			DispatchKit.printError(httpException, 404, response);
 			}
 		} catch (FileNotFoundException e) {
-			DispatchKit.printError(e, 404, httpResponse);
+			DispatchKit.printError(e, 404, response);
 		} catch (IOException e) {
-			DispatchKit.printError(e, 500, httpResponse);
+			DispatchKit.printError(e, 500, response);
 		}
 	}
     

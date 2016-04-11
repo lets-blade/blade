@@ -304,7 +304,7 @@ public class ServletRequest implements Request {
 	@Override
 	public Integer queryAsInt(String name) {
 		String value = query(name);
-		if (StringKit.isNotBlank(value)) {
+		if (StringKit.isNotBlank(value) && StringKit.isNumber(value)) {
 			return Integer.parseInt(value);
 		}
 		return null;
@@ -313,7 +313,7 @@ public class ServletRequest implements Request {
 	@Override
 	public Long queryAsLong(String name) {
 		String value = query(name);
-		if (StringKit.isNotBlank(value)) {
+		if (StringKit.isNotBlank(value) && StringKit.isNumber(value)) {
 			return Long.parseLong(value);
 		}
 		return null;
@@ -322,7 +322,7 @@ public class ServletRequest implements Request {
 	@Override
 	public Boolean queryAsBool(String name) {
 		String value = query(name);
-		if (StringKit.isNotBlank(value)) {
+		if (StringKit.isNotBlank(value) && StringKit.isBoolean(value)) {
 			return Boolean.parseBoolean(value);
 		}
 		return null;
@@ -332,7 +332,10 @@ public class ServletRequest implements Request {
 	public Float queryAsFloat(String name) {
 		String value = query(name);
 		if (StringKit.isNotBlank(value)) {
-			return Float.parseFloat(value);
+			try {
+				return Float.parseFloat(value);
+			} catch (NumberFormatException e) {
+			}
 		}
 		return null;
 	}
@@ -341,7 +344,10 @@ public class ServletRequest implements Request {
 	public Double queryAsDouble(String name) {
 		String value = query(name);
 		if (StringKit.isNotBlank(value)) {
-			return Double.parseDouble(value);
+			try {
+				return Double.parseDouble(value);
+			} catch (NumberFormatException e) {
+			}
 		}
 		return null;
 	}

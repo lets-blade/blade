@@ -75,31 +75,30 @@ public class DispatcherHandler {
 	
 	public void handle(HttpServletRequest httpRequest, HttpServletResponse httpResponse){
 		
-		Response response = null;
-		
 		// http method, GET/POST ...
         String method = httpRequest.getMethod();
         
         // reuqest uri
         String uri = Path.getRelativePath(httpRequest.getRequestURI(), servletContext.getContextPath());
         
+ 		// Create Response
+ 		Response response = new ServletResponse(httpResponse, blade.templateEngine());;
+ 		
         // If it is static, the resource is handed over to the filter
     	if(staticFileFilter.isStatic(uri)){
             LOGGER.debug("Request : {}\t{}", method, uri);
     		String realpath = httpRequest.getServletContext().getRealPath(uri);
-    		DispatchKit.printStatic(uri, realpath, httpResponse);
+    		DispatchKit.printStatic(uri, realpath, response);
 			return;
     	}
         
         LOGGER.info("Request : {}\t{}", method, uri);
         
         try {
-            // Create Request
-    		Request request = new ServletRequest(httpRequest);
-            
-    		// Create Response
-            response = new ServletResponse(httpResponse, blade.templateEngine());
-            
+        	
+        	// Create Request
+     		Request request = new ServletRequest(httpRequest);
+     		
             // Init Context
          	BladeWebContext.setContext(servletContext, request, response);
          	
@@ -128,7 +127,7 @@ public class DispatcherHandler {
 			}
 			return;
 		} catch (Exception e) {
-			DispatchKit.printError(e, 500, httpResponse);
+			DispatchKit.printError(e, 500, response);
         }
         return;
 	}

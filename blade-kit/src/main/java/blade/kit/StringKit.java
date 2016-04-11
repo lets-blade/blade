@@ -1397,7 +1397,17 @@ public abstract class StringKit {
 
 		return false;
 	}
-
+	
+	public static boolean isBoolean(String value) {
+		if(null != value){
+			String val = value.toLowerCase();
+			if(val.equals("true") || val.equals("false")){
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	/**
 	 * 将阿拉伯数字转为中文数字
 	 * 
@@ -2727,5 +2737,6 @@ public abstract class StringKit {
         builder.setLength(builder.length() - split.length());
         return builder.toString();
     }
+    
   
 }
