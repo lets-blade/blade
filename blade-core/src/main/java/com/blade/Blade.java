@@ -36,6 +36,7 @@ import com.blade.server.Server;
 import com.blade.view.template.JspEngine;
 import com.blade.view.template.TemplateEngine;
 import com.blade.web.http.HttpMethod;
+import com.blade.web.verify.Xss;
 
 import blade.kit.Assert;
 import blade.kit.config.loader.ConfigLoader;
@@ -94,6 +95,11 @@ public class Blade {
      */
     private Server bladeServer;
     
+    /**
+     * Xss defense
+     */
+    private Xss xss;
+    
     private Set<Class<? extends Plugin>> plugins;
     
 	private Blade() {
@@ -101,6 +107,7 @@ public class Blade {
 		this.ioc = new SimpleIoc();
 		this.routers = new Routers();
 		this.templateEngine = new JspEngine();
+		this.xss = new Xss();
 		this.plugins = new HashSet<Class<? extends Plugin>>();
 	}
 	
@@ -348,12 +355,27 @@ public class Blade {
 	/**
 	 * Route Group. e.g blade.group('/users').get().post()
 	 * @param g
-	 * @return
+	 * @return		return blade
 	 */
 	public RouteGroup group(String prefix){
 		Assert.notNull(prefix, "Route group prefix not is null");
 		return new RouteGroup(this, prefix);
 	}
+	
+	/**
+	 * Setting default xss filter
+	 * @param xss	xss filter implement
+	 * @return		return blade
+	 */
+	public Blade xss(final Xss xss){
+    	Assert.notNull(xss);
+    	this.xss = xss;
+    	return this;
+    }
+	
+	public Xss xss(){
+    	return this.xss;
+    }
 	
 	/**
 	 * Register a pre routing request interceptor

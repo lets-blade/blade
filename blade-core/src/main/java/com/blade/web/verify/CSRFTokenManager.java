@@ -58,11 +58,31 @@ public class CSRFTokenManager {
         synchronized (request) {
         	Session session = request.session();
             String objToken = session.attribute(config.session);
-            if (null == objToken) {
-            	token = HASHID.encode( System.currentTimeMillis() );
+            
+            if(StringKit.isBlank(objToken)){
+            	token = createNewToken(request, response);
+            	LOGGER.debug("create csrf_token：{}", token);
             } else {
-            	token = objToken.toString();
+            	token = objToken;
+            	session.attribute(config.session, token);
 			}
+        }
+        return token;
+    }
+    
+    /**
+	 * Create a token
+	 * 
+	 * @param request		request object
+	 * @param response		response object
+	 * @return				return token
+	 */
+    public static String createNewToken(Request request, Response response) {
+        String token = null;
+        synchronized (request) {
+        	Session session = request.session();
+            session.removeAttribute(config.session);
+            token = HASHID.encode( System.currentTimeMillis() );
             session.attribute(config.session, token);
         	if(config.setHeader){
         		response.header(config.header, token);
@@ -74,6 +94,29 @@ public class CSRFTokenManager {
         }
         return token;
     }
+    
+    public static boolean verify(Request request, Response response) {
+		// csrftoken attribute from session
+		String sToken = request.session().attribute(config.session);
+		if (sToken == null) {
+			// Generate new token into session
+			sToken = CSRFTokenManager.createToken(request, response);
+			return true;
+		} else {
+			String pToken = request.query(config.form);
+			if(config.setHeader){
+				pToken = request.header(config.form);
+			}
+			if(config.setCookie){
+				pToken = request.cookie(config.form);
+			}
+			if (StringKit.isNotBlank(pToken) && sToken.equals(pToken)) {
+				return true;
+			}
+		}
+		
+		return false;
+	}
     
     /**
      * According to form parameter verification
@@ -91,6 +134,12 @@ public class CSRFTokenManager {
 			return true;
 		} else {
 			String pToken = request.query(config.form);
+			if(config.setHeader){
+				pToken = request.header(config.form);
+			}
+			if(config.setCookie){
+				pToken = request.cookie(config.form);
+			}
 			if (StringKit.isNotBlank(pToken) && sToken.equals(pToken)) {
 				return true;
 			}

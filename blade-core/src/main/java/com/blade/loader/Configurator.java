@@ -42,6 +42,7 @@ public final class Configurator {
 		String httpEncoding = config.getString("blade.http.encoding");
 		String httpFilters = config.getString("blade.http.filters");
 		String basePackage = config.getString("blade.basepackage");
+		String iocPackage = config.getString("blade.ioc");
 		String view500 = config.getString("blade.view.500");
 		String view404 = config.getString("blade.view.404");
 		
@@ -55,6 +56,10 @@ public final class Configurator {
 		
 		if(StringKit.isNotBlank(httpEncoding)){
 			bladeConfig.setEncoding(httpEncoding);
+		}
+		
+		if(StringKit.isNotBlank(iocPackage)){
+			bladeConfig.addIocPackages(iocPackage);
 		}
 		
 		if(null != httpXss){

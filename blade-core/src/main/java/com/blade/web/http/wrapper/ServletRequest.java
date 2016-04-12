@@ -37,11 +37,6 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import blade.kit.IOKit;
-import blade.kit.ObjectKit;
-import blade.kit.StringKit;
-import blade.kit.text.HTMLFilter;
-
 import com.blade.Blade;
 import com.blade.route.Route;
 import com.blade.web.http.HttpMethod;
@@ -51,6 +46,10 @@ import com.blade.web.multipart.FileItem;
 import com.blade.web.multipart.Multipart;
 import com.blade.web.multipart.MultipartException;
 import com.blade.web.multipart.MultipartHandler;
+
+import blade.kit.IOKit;
+import blade.kit.ObjectKit;
+import blade.kit.StringKit;
 
 /**
  * ServletRequest
@@ -207,7 +206,7 @@ public class ServletRequest implements Request {
 	public String param(String name) {
 		String val = pathParams.get(name);
 		if(null != val && blade.enableXSS()){
-			return HTMLFilter.htmlSpecialChars(val);
+			return blade.xss().filter(val);
 		}
 		return val;
 	}
@@ -219,7 +218,7 @@ public class ServletRequest implements Request {
 			val = defaultValue;
 		}
 		if (null != val && blade.enableXSS()) {
-			return HTMLFilter.htmlSpecialChars(val);
+			return blade.xss().filter(val);
 		}
 		return val;
 	}
@@ -278,7 +277,7 @@ public class ServletRequest implements Request {
 			val = multipartParams.get(name);
 		}
 		if(null != val && blade.enableXSS()){
-			return HTMLFilter.htmlSpecialChars(val);
+			return blade.xss().filter(val);
 		}
 		return val;
 	}
@@ -296,7 +295,7 @@ public class ServletRequest implements Request {
 			val = defaultValue;
 		}
 		if(blade.enableXSS()){
-			return HTMLFilter.htmlSpecialChars(val);
+			return blade.xss().filter(val);
 		}
 		return val;
 	}
