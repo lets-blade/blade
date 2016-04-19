@@ -179,7 +179,7 @@ AR.update("delete from t_post where id = ?",id).commit()
 You may refer to these examples for additional guidance:
 
 + [Hello Blade](https://github.com/blade-samples/hello)
-+ [Blog Example](https://github.com/blade-samples/blog)
++ [BBS WebSite](http://java-china.org)
 + [API Doc](http://bladejava.com/apidocs)
 + [User Guide](http://bladejava.com/docs)
 + [Version Changes](LAST_VERSION.md)
