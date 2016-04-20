@@ -206,7 +206,7 @@ OK，这一切看起来多么的简单，查阅使用指南更多现成的例子
 
 - [mfarid](https://github.com/mfarid)
 - [daimajia](https://github.com/daimajia)
-- [shenjie1993](https://github.com/shenjie1993)
+- [drfish](https://github.com/gavinfish)
 - [sumory](https://github.com/sumory)
 - [udaykadaboina](https://github.com/udaykadaboina)
 - [SyedWasiHaider](https://github.com/SyedWasiHaider)
