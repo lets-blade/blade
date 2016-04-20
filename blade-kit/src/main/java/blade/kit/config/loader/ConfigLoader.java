@@ -1,5 +1,6 @@
 package blade.kit.config.loader;
 
+import blade.kit.StringKit;
 import blade.kit.config.Config;
 import blade.kit.config.adapter.ConfigAdapter;
 import blade.kit.config.adapter.PropConfigAdapter;
@@ -17,7 +18,7 @@ public class ConfigLoader {
 	
 	public static Config load(String conf, Class<? extends ConfigAdapter> adapter){
 		
-		if(null == conf || conf.equals("")){
+		if(StringKit.isEmpty(conf)){
 			throw new LoadException("the config file name is null");
 		}
 		
