@@ -87,6 +87,7 @@ import javax.net.ssl.X509TrustManager;
 
 import blade.kit.Assert;
 import blade.kit.Base64;
+import blade.kit.StringKit;
 
 /**
  * Http请求类
@@ -1803,7 +1804,7 @@ public class HttpRequest {
 	 * @return parameter value or null if none
 	 */
 	protected Map<String, String> getParams(final String header) {
-		if (header == null || header.length() == 0)
+		if (StringKit.isEmpty(header))
 			return Collections.emptyMap();
 
 		final int headerLength = header.length();
@@ -1848,7 +1849,7 @@ public class HttpRequest {
 	 * @return parameter value or null if none
 	 */
 	protected String getParam(final String value, final String paramName) {
-		if (value == null || value.length() == 0)
+		if (StringKit.isEmpty(value))
 			return null;
 
 		final int length = value.length();

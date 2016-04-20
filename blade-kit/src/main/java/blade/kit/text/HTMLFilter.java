@@ -11,6 +11,8 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import blade.kit.StringKit;
+
 /**
 *
 * HTML filtering utility for protecting against XSS (Cross Site Scripting).
@@ -399,7 +401,7 @@ public final class HTMLFilter {
                     ending = "";
                 }
 
-                if (ending == null || ending.length() < 1) {
+                if (StringKit.isEmpty(ending)) {
                     if (vTagCounts.containsKey(name)) {
                         vTagCounts.put(name, vTagCounts.get(name) + 1);
                     } else {

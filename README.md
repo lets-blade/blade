@@ -206,7 +206,7 @@ Thank you very much for the developers to help in the project, if you are willin
 
 - [mfarid](https://github.com/mfarid)
 - [daimajia](https://github.com/daimajia)
-- [shenjie1993](https://github.com/shenjie1993)
+- [drfish](https://github.com/gavinfish)
 - [sumory](https://github.com/sumory)
 - [udaykadaboina](https://github.com/udaykadaboina)
 - [SyedWasiHaider](https://github.com/SyedWasiHaider)
