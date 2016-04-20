@@ -444,7 +444,7 @@ public abstract class StringKit {
     public static String trimToNull(String str, String stripChars) {
         String result = trim(str, stripChars);
 
-        if ((result == null) || (result.length() == 0)) {
+        if (isEmpty(result)) {
             return null;
         }
 
@@ -543,7 +543,7 @@ public abstract class StringKit {
             } else if (stripChars.length() == 0) {
                 return str;
             } else {
-                while ((start < end) && (str.startsWith(stripChars) && stripChars.indexOf(str.charAt(start)) != -1)) {
+                while ((start < end) && stripChars.indexOf(str.charAt(start)) != -1) {
                     start++;
                 }
             }
@@ -558,7 +558,7 @@ public abstract class StringKit {
             } else if (stripChars.length() == 0) {
                 return str;
             } else {
-                while ((start < end) && (str.endsWith(stripChars) && stripChars.indexOf(str.charAt(end - 1)) != -1)) {
+                while ((start < end) && stripChars.indexOf(str.charAt(end - 1)) != -1) {
                     end--;
                 }
             }
@@ -632,14 +632,23 @@ public abstract class StringKit {
     /**
      * Compares string with at least one from the provided array. If at least one equal string is found, returns its
      * index. Otherwise, <code>-1</code> is returned.
+     * 
+     * <pre>
+     * 	StringKit.equalsOne(null, (String[]) null) = -1;
+	 *	StringKit.equalsOne(null, new String[] { null, null }) = 0;
+	 *	StringKit.equalsOne(null, new String[] { "foo", "bar" }) = -1;
+	 *	StringKit.equalsOne("foo", new String[] { null, "bar" }) = -1;
+	 *	StringKit.equalsOne("foo", new String[] { "foo", "bar" }) = 0;
+	 *	StringKit.equalsOne("foo", new String[] { "FOO", "bar" }) = -1;
+     * </pre>
      */
     public static int equalsOne(String src, String[] dest) {
-        if (src == null || dest == null) {
+        if (dest == null) {
             return -1;
         }
 
         for (int i = 0; i < dest.length; i++) {
-            if (src.equals(dest[i])) {
+            if (equals(src, dest[i])) {
                 return i;
             }
         }
@@ -651,12 +660,12 @@ public abstract class StringKit {
      * it returns its index. Otherwise, <code>-1</code> is returned.
      */
     public static int equalsOneIgnoreCase(String src, String[] dest) {
-        if (src == null || dest == null) {
+        if (dest == null) {
             return -1;
         }
 
         for (int i = 0; i < dest.length; i++) {
-            if (src.equalsIgnoreCase(dest[i])) {
+            if (equalsIgnoreCase(src, dest[i])) {
                 return i;
             }
         }
@@ -682,7 +691,7 @@ public abstract class StringKit {
             return false;
         }
         for (int i = 0; i < as.length; i++) {
-            if (!as[i].equalsIgnoreCase(as1[i])) {
+            if (!equalsIgnoreCase(as[i], as1[i])) {
                 return false;
             }
         }
@@ -1095,7 +1104,7 @@ public abstract class StringKit {
      * @return 首字符为小写的字符串，如果原字符串为<code>null</code>，则返回<code>null</code>
      */
     public static String decapitalize(String str) {
-        if ((str == null) || str.length() == 0) {
+        if (isEmpty(str)) {
             return str;
         }
         if (str.length() > 1 && Character.isUpperCase(str.charAt(1)) && Character.isUpperCase(str.charAt(0))) {
@@ -1158,6 +1167,26 @@ public abstract class StringKit {
         return builder.toString();
     }
 
+    /**
+     * 将符合驼峰命名法规则的字符串分割成单个的单词。
+     * 
+     * <p>
+     * 如果字符串是<code>null</code>则返回<code>null</code>，如果是空字符串则返回空字符串。
+     * 
+     * <pre>
+     * StringKit.fromCamelCase(null, &apos;-&apos;)                       = null;
+     * StringKit.fromCamelCase(&quot;&quot;, &apos;-&apos;)               = &quot;&quot;
+     * StringKit.fromCamelCase(&quot;camelCase&quot;, &apos;-&apos;)      = &quot;camel-case&quot;
+     * StringKit.fromCamelCase(&quot;camelCASE&quot;, &apos;-&apos;)      = &quot;camel-case&quot;
+     * StringKit.fromCamelCase(&quot;camelCASEWord&quot;, &apos;-&apos;)  = &quot;camel-case-word&quot;
+     * </pre>
+     * 
+     * </p>
+     * 
+     * @param str 要进行转化的驼峰字符串
+     * @param separator 分割后单词间的分隔符
+     * @return 用分隔符连接的单词组，所有字母小写
+     */
     public static String fromCamelCase(String str, char separator) {
         int strLen;
 
@@ -1167,11 +1196,15 @@ public abstract class StringKit {
         StringBuilder result = new StringBuilder(strLen * 2);
         int resultLength = 0;
         boolean prevTranslated = false;
+        boolean nextUpperCase = true;
         for (int i = 0; i < strLen; i++) {
             char c = str.charAt(i);
+            if(i < strLen - 1) {
+            	nextUpperCase = Character.isUpperCase(str.charAt(i + 1));
+            }
             if (i > 0 || c != separator) {// skip first starting separator
                 if (Character.isUpperCase(c)) {
-                    if (!prevTranslated && resultLength > 0 && result.charAt(resultLength - 1) != separator) {
+                    if ((!prevTranslated || !nextUpperCase) && resultLength > 0 && result.charAt(resultLength - 1) != separator) {
                         result.append(separator);
                         resultLength++;
                     }
@@ -1279,7 +1312,7 @@ public abstract class StringKit {
 	
 	// ----------- 字符串截取 ----------- //
 	/**
-	 * 截取 float/double 类型 一位小数
+	 * 截取 float/double 类型 一位小数，注意不是四舍五入，采用的银行家舍入法
 	 * 
 	 * @param f
 	 * @return
@@ -1290,7 +1323,7 @@ public abstract class StringKit {
 	}
 
 	/**
-	 * 截取 float/double 类型 两位小数
+	 * 截取 float/double 类型 ，注意不是四舍五入，采用的银行家舍入法
 	 * 
 	 * @param f
 	 * @return
@@ -1301,7 +1334,7 @@ public abstract class StringKit {
 	}
 
 	/**
-	 * 截取三位
+	 * 截取三位，注意不是四舍五入，采用的银行家舍入法
 	 * 
 	 * @param f
 	 * @return
@@ -1321,8 +1354,11 @@ public abstract class StringKit {
 	 * @return
 	 */
 	public static String getStringsubstr(String source, int len) {
-		if (null == source || "".equals(source)) {
+		if (isEmpty(source)) {
 			return "";
+		}
+		if (len < 0) {
+			len = 0;
 		}
 		if (source.length() > len) {
 			return source.substring(0, len) + "...";
@@ -1413,7 +1449,21 @@ public abstract class StringKit {
 	 * 
 	 * @return
 	 */
-	public static String toChineseNumber(int number, int depth) {
+	public static String toChineseNumber(int number) {
+		String chinese = "";
+		if (number == 0) {
+			return NUMBER[0];
+		}
+		long num = number;
+		if (number < 0) {
+			num = -num;
+			chinese = "负";
+		}
+		chinese += toChineseNumber(num,0);
+		return chinese;
+	}
+	
+	private static String toChineseNumber(long number, int depth) {
 		if (depth < 0)
 			depth = 0;
 		if (number <= 0 && depth == 0)
@@ -1421,9 +1471,6 @@ public abstract class StringKit {
 
 		String chinese = "";
 		String src = number + "";
-		if (src.charAt(src.length() - 1) == 'l' || src.charAt(src.length() - 1) == 'L') {
-			src = src.substring(0, src.length() - 1);
-		}
 
 		if (src.length() > 4)
 			chinese = toChineseNumber(Integer.parseInt(src.substring(0, src.length() - 4)), depth + 1)
@@ -1484,8 +1531,11 @@ public abstract class StringKit {
 		}
 		while (chinese.length() > 0 && chinese.lastIndexOf(NUMBER[0]) == chinese.length() - 1)
 			chinese = chinese.substring(0, chinese.length() - 1);
-		if (depth == 1)
-			chinese += NUMBER[13];
+		if (depth == 1){
+			if (chinese.lastIndexOf(NUMBER[14]) != chinese.length()-1) {
+				chinese += NUMBER[13];
+			}			
+		}
 		if (depth == 2)
 			chinese += NUMBER[14];
 		return chinese;
@@ -1499,6 +1549,9 @@ public abstract class StringKit {
 	 * @return
 	 */
 	public static boolean checkIsEnglish(String s) {
+		if (isEmpty(s)) {
+			return true;
+		}
 		String Letters = "(){}[]\",.<>\\/~!@#$%^&*;': ";
 		int i;
 		int c;
@@ -1525,7 +1578,16 @@ public abstract class StringKit {
 		return true;
 	}
 
+	/**
+	 * 判断字符串中是否有中文字符
+	 * 
+	 * @param pValue
+	 * @return
+	 */
 	public static boolean isChineseStr(String pValue) {
+		if (isEmpty(pValue)) {
+			return false;
+		}
 		for (int i = 0; i < pValue.length(); i++) {
 			if ((int) pValue.charAt(i) > 256)
 				return true;
@@ -1549,22 +1611,12 @@ public abstract class StringKit {
 	/**
 	 * 格式化数据
 	 * 
-	 * @param decima
-	 *            l3453454
+	 * @param decimal 3453454
 	 * @return 3,453,454
 	 */
-	public final static String FormatDecimalString(String decimal) {
-		double dValue = Double.valueOf(decimal).doubleValue();
-		DecimalFormat df = new DecimalFormat();
-		String positivePattern = " ,000";
-		String negativePattern = " ,000";
-		if (dValue < 0) {
-			df.applyPattern(negativePattern);
-			return df.format(dValue).replace(',', ',');
-		} else {
-			df.applyPattern(positivePattern);
-			return df.format(dValue).replace(',', ',');
-		}
+	public final static String formatDecimalString(String decimal) {
+		long lValue = Long.valueOf(decimal).longValue();
+		return getNumberFormat(lValue);
 	}
 
 	/**
@@ -1588,6 +1640,9 @@ public abstract class StringKit {
 	 * @return 过滤后的字符串
 	 */
 	public static String stringFilter(String str) {
+		if (isEmpty(str)) {
+			return str;
+		}
 		// 过滤通过页面表单提交的字符
 		String[][] FilterChars = { { "<", "&lt;" }, { ">", "&gt;" }, { " ", "&nbsp;" }, { "\"", "&quot;" }, { "&", "&amp;" },
 				{ "/", "&#47;" }, { "\\", "&#92;" }, { "'", "\\'" }, { "%", "%" } };
@@ -1600,11 +1655,14 @@ public abstract class StringKit {
 					str_arr[i] = FilterChars[j][1];
 			}
 		}
-		return (stringConnect(str_arr, "")).trim();
+		return (join(str_arr, "")).trim();
 	}
 
 	// 关健字过滤
-	public static String stringKeyWorldFilter(String str) {
+	public static String stringKeyWordFilter(String str) {
+		if (isEmpty(str)) {
+			return str;
+		}
 		// 过滤通过页面表单提交的字符
 		String[][] FilterChars = { { "<", "" }, { ">", "" }, { "\"", "" }, { "&", "" }, { "/", "" }, { "\\", "" }, { "'", "" },
 				{ "%", "" } };
@@ -1617,7 +1675,7 @@ public abstract class StringKit {
 					str_arr[i] = FilterChars[j][1];
 			}
 		}
-		return (stringConnect(str_arr, "")).trim();
+		return (join(str_arr, "")).trim();
 	}
 
 	public static String escapeJavaScript(String value) {
@@ -1772,6 +1830,8 @@ public abstract class StringKit {
 	/**
 	 * 用特殊的字符连接字符串
 	 * 
+	 * @deprecated 使用join(Object[],String)代替
+	 * 
 	 * @param strings
 	 *            要连接的字符串数组
 	 * @param spilit_sign
@@ -1864,11 +1924,16 @@ public abstract class StringKit {
 	/**
 	 * 提取字符串中的中文字符
 	 * 
+	 * 注意：无法提取中文符号
+	 * 
 	 * @param str
 	 * @return
 	 */
 	public static String getChineseByStr(String str) {
-
+		if (isEmpty(str)) {
+			return str;
+		}
+		
 		StringBuilder resultStr = new StringBuilder("");
 
 		Pattern pcn = Pattern.compile("[\u4e00-\u9fa5]");
@@ -2119,27 +2184,6 @@ public abstract class StringKit {
     public static String firstUpperCase(String str) {
 		return str.substring(0, 1).toUpperCase() + str.substring(1);
 	}
-    
-    public static String join(final String[] array, final String separator) {
-        if (array == null) {
-            return null;
-        }
-        final int noOfItems = array.length;
-        if (noOfItems <= 0) {
-            return null;
-        }
-        if (noOfItems == 1) {
-            return array[0].toString();
-        }
-        final StringBuilder buf = new StringBuilder(noOfItems * 16);
-        for (int i = 0; i < noOfItems; i++) {
-            buf.append(separator);
-            if (array[i] != null) {
-                buf.append(array[i]);
-            }
-        }
-        return buf.toString();
-    }
 
     public static String join(final Object[] array, final String separator) {
         if (array == null) {
@@ -2147,14 +2191,14 @@ public abstract class StringKit {
         }
         final int noOfItems = array.length;
         if (noOfItems <= 0) {
-            return null;
+            return Emptys.EMPTY_STRING;
         }
-        if (noOfItems == 1) {
-            return array[0].toString();
-        }
+		String innerSeparator = separator != null ? separator : Emptys.EMPTY_STRING;
         final StringBuilder buf = new StringBuilder(noOfItems * 16);
         for (int i = 0; i < noOfItems; i++) {
-            buf.append(separator);
+        	if(i > 0) {
+                buf.append(innerSeparator);
+        	}
             if (array[i] != null) {
                 buf.append(array[i]);
             }
@@ -2162,45 +2206,32 @@ public abstract class StringKit {
         return buf.toString();
     }
 
-    public static <T> String join(final List<T> array, final String separator) {
-        if (array == null) {
-            return null;
-        }
-        final int noOfItems = array.size();
-        if (noOfItems <= 0) {
-            return null;
-        }
-        if (noOfItems == 1) {
-            return array.get(0).toString();
-        }
-        final StringBuilder buf = new StringBuilder(noOfItems * 16);
-        for (int i = 0; i < noOfItems; i++) {
-            buf.append(separator);
-            if (array.get(i) != null) {
-                buf.append(array.get(i));
-            }
-        }
-        return buf.toString();
-    }
-    
     public static String join(String... parts) {
+    	if (parts == null) {
+    		return null;
+    	}
         StringBuilder sb = new StringBuilder(parts.length);
         for (String part : parts) {
-            sb.append(part);
+        	if (part != null) {
+        		sb.append(part);
+        	}
         }
         return sb.toString();
     }
 
     public static String join(Iterable<?> elements, String separator) {
         if (elements == null) {
-            return "";
+            return null;
         }
         return join(elements.iterator(), separator);
     }
 
     public static String join(Iterator<?> elements, String separator) {
         if (elements == null) {
-            return "";
+            return null;
+        }
+        if (!elements.hasNext()) {
+        	return Emptys.EMPTY_STRING;
         }
         StringBuilder sb = new StringBuilder();
         while (elements.hasNext()) {
@@ -2208,7 +2239,9 @@ public abstract class StringKit {
             if (sb.length() > 0 && separator != null) {
                 sb.append(separator);
             }
-            sb.append(o);
+            if (o != null) {
+            	sb.append(o);
+            }
         }
         return sb.toString();
     }
@@ -2252,13 +2285,16 @@ public abstract class StringKit {
 	 * @return 			字符串集合
 	 */
 	public static List<String> split(String str, int length) {
+		if (str == null || length <= 0) {
+			return null;
+		}
 		List<String> list = new ArrayList<String>();
 		for (int i = 0; i < str.length(); i += length) {
 			int endIndex = i + length;
 			if (endIndex <= str.length()) {
 				list.add(str.substring(i, i + length));
 			} else {
-				list.add(str.substring(i, str.length() - 1));
+				list.add(str.substring(i, str.length()));
 			}
 		}
 		return list;
@@ -2291,10 +2327,13 @@ public abstract class StringKit {
     /**
      * 将String to long list
      * 
+     * @deprecated it wired to put this single method here
+     * 
      * @param source
      * @param token
      * @return
      */
+    @Deprecated
     public static List<Long> parseStringToLongList(String source, String token) {
 
         if (isBlank(source) || isEmpty(token)) {
@@ -2327,6 +2366,12 @@ public abstract class StringKit {
         if (src == null || delimiter == null) {
             return null;
         }
+        if(src.length() == 0) {
+			return Emptys.EMPTY_STRING_ARRAY;
+        }
+        if(delimiter.length() == 0) {
+			return new String[] { src };
+        }
         int maxparts = (src.length() / delimiter.length()) + 2; // one more for
                                                                 // the last
         int[] positions = new int[maxparts];
@@ -2352,7 +2397,10 @@ public abstract class StringKit {
     }
 
     public static String[] splitc(String src, String d) {
-        if (isAnyEmpty(src, d)) {
+    	if(src == null) {
+    		return null;
+    	}
+        if (src.length() == 0 || isEmpty(d)) {
             return new String[] { src };
         }
         char[] delimiters = d.toCharArray();
@@ -2402,8 +2450,11 @@ public abstract class StringKit {
     }
 
     public static String[] splitc(String src, char delimiter) {
-        if (isEmpty(src)) {
-            return new String[] { "" };
+    	if (src == null) {
+    		return null;
+    	}
+        if (src.length() == 0) {
+            return new String[] { src };
         }
         char[] srcc = src.toCharArray();
 
@@ -2450,7 +2501,10 @@ public abstract class StringKit {
     }
 
     public static String[] splitc(String src, char[] delimiters) {
-        if (isEmpty(src) || null == delimiters || delimiters.length == 0) {
+    	if(src == null) {
+    		return null;
+    	}
+        if (src.length() == 0 || null == delimiters || delimiters.length == 0) {
             return new String[] { src };
         }
         char[] srcc = src.toCharArray();
@@ -2833,11 +2887,17 @@ public abstract class StringKit {
 	 * @return 转化后的字符串
 	 */
 	public static String toString(List<String> list, String separator) {
+		if (list == null) {
+			return null;
+		}
+		String innerSeparator = separator != null ? separator : Emptys.EMPTY_STRING;
 		StringBuffer stringBuffer = new StringBuffer();
 		for (String str : list) {
-			stringBuffer.append(separator + str);
+			if (str != null) {
+				stringBuffer.append(innerSeparator + str);
+			}
 		}
-		stringBuffer.deleteCharAt(0);
+		stringBuffer.delete(0, innerSeparator.length());
 		return stringBuffer.toString();
 	}
 	
@@ -2853,16 +2913,18 @@ public abstract class StringKit {
     }
 
     public static String toString(Collection<String> collection, String split) {
-        if (collection == null || split == null) {
+        if (collection == null) {
             return null;
         }
-
+		String innerSplit = split != null ? split : Emptys.EMPTY_STRING;
         StringBuilder builder = new StringBuilder();
         for (Object object : collection) {
-            builder.append(object).append(split);
+        	if(object != null) {
+        		builder.append(object).append(innerSplit);
+        	}
         }
-
-        builder.setLength(builder.length() - split.length());
+        int length = Math.max(0, builder.length() - innerSplit.length());
+        builder.setLength(length);
         return builder.toString();
     }
     
