@@ -210,8 +210,7 @@ public abstract class StringKit {
      * </pre>
      * 
      * @param str 要转换的字符串
-     * @param defaultStr 默认字符串
-     * 
+     *
      * @return 字符串本身或指定的默认字符串
      */
     public static String defaultIfNull(String str) {
@@ -1354,20 +1353,27 @@ public abstract class StringKit {
 	 * @return
 	 */
 	public static String getStringsubstr(String source, int len) {
-		if (isEmpty(source)) {
-			return "";
-		}
-		if (len < 0) {
-			len = 0;
-		}
-		if (source.length() > len) {
-			return source.substring(0, len) + "...";
-		}
+        return getStringsubstr(source, len, "...");
+    }
 
-		return source;
-	}
-	
-	// ----------- 随机数 ----------- //
+    public static String getStringsubstr(String source, int len, String ellipsis) {
+        if (isEmpty(source)) {
+            return "";
+        }
+        if (len < 0) {
+            len = 0;
+        }
+        if (ellipsis == null) {
+            ellipsis = Emptys.EMPTY_STRING;
+        }
+        if (source.length() > len) {
+            return source.substring(0, len) + ellipsis;
+        }
+
+        return source;
+    }
+
+    // ----------- 随机数 ----------- //
 	/**
 	 * 获得0-max的随机数
 	 * 
@@ -1376,12 +1382,12 @@ public abstract class StringKit {
 	 */
 	public static String getRandomNumber(int length, int max) {
 		Random random = new Random();
-		StringBuffer buffer = new StringBuffer();
+		StringBuilder builder = new StringBuilder();
 
 		for (int i = 0; i < length; i++) {
-			buffer.append(random.nextInt(max));
+			builder.append(random.nextInt(max));
 		}
-		return buffer.toString();
+		return builder.toString();
 	}
 
 	/**
@@ -1435,13 +1441,10 @@ public abstract class StringKit {
 	}
 	
 	public static boolean isBoolean(String value) {
-		if(null != value){
-			String val = value.toLowerCase();
-			if(val.equals("true") || val.equals("false")){
-				return true;
-			}
-		}
-		return false;
+        if ("true".equalsIgnoreCase(value) || "false".equalsIgnoreCase(value)) {
+            return true;
+        }
+        return false;
 	}
 	
 	/**
@@ -1469,51 +1472,26 @@ public abstract class StringKit {
 		if (number <= 0 && depth == 0)
 			return NUMBER[0];
 
-		String chinese = "";
-		String src = number + "";
+		String chinese = Emptys.EMPTY_STRING;
+		String src = String.valueOf(number);
+        final int length = src.length();
 
-		if (src.length() > 4)
+		if (length > 4)
 			chinese = toChineseNumber(Integer.parseInt(src.substring(0, src.length() - 4)), depth + 1)
 					+ toChineseNumber(Integer.parseInt(src.substring(src.length() - 4, src.length())), depth - 1);
 		else {
 			char prv = 0;
-			for (int i = 0; i < src.length(); i++) {
-				switch (src.charAt(i)) {
-				case '0':
-					if (prv != '0')
-						chinese = chinese + NUMBER[0];
-					break;
-				case '1':
-					chinese = chinese + NUMBER[1];
-					break;
-				case '2':
-					chinese = chinese + NUMBER[2];
-					break;
-				case '3':
-					chinese = chinese + NUMBER[3];
-					break;
-				case '4':
-					chinese = chinese + NUMBER[4];
-					break;
-				case '5':
-					chinese = chinese + NUMBER[5];
-					break;
-				case '6':
-					chinese = chinese + NUMBER[6];
-					break;
-				case '7':
-					chinese = chinese + NUMBER[7];
-					break;
-				case '8':
-					chinese = chinese + NUMBER[8];
-					break;
-				case '9':
-					chinese = chinese + NUMBER[9];
-					break;
-				}
-				prv = src.charAt(i);
+			for (int i = 0; i < length; i++) {
+                char c = src.charAt(i);
+                if (c >= '1' && c <= '9') {
+                    chinese += NUMBER[c - '0'];
+                } else if (c == '0') {
+                    if (prv != '0')
+                        chinese = chinese + NUMBER[0];
+                }
+                prv = src.charAt(i);
 
-				switch (src.length() - 1 - i) {
+				switch (length - 1 - i) {
 				case 1:// 十
 					if (prv != '0')
 						chinese = chinese + NUMBER[10];
@@ -2182,7 +2160,7 @@ public abstract class StringKit {
     }
 
     public static String firstUpperCase(String str) {
-		return str.substring(0, 1).toUpperCase() + str.substring(1);
+		return Character.toUpperCase(str.charAt(0)) + str.substring(1);
 	}
 
     public static String join(final Object[] array, final String separator) {
@@ -2207,16 +2185,10 @@ public abstract class StringKit {
     }
 
     public static String join(String... parts) {
-    	if (parts == null) {
-    		return null;
-    	}
-        StringBuilder sb = new StringBuilder(parts.length);
-        for (String part : parts) {
-        	if (part != null) {
-        		sb.append(part);
-        	}
+        if (parts == null) {
+            return null;
         }
-        return sb.toString();
+        return join(parts, null);
     }
 
     public static String join(Iterable<?> elements, String separator) {
