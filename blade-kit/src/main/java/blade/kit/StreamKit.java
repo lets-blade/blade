@@ -16,10 +16,6 @@
 package blade.kit;
 
 
-import blade.kit.io.ByteArray;
-import blade.kit.io.ByteArrayOutputStream;
-import blade.kit.io.FastByteArrayOutputStream;
-
 import java.io.BufferedOutputStream;
 import java.io.BufferedWriter;
 import java.io.Closeable;
@@ -35,6 +31,10 @@ import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
+
+import blade.kit.io.ByteArray;
+import blade.kit.io.ByteArrayOutputStream;
+import blade.kit.io.FastByteArrayOutputStream;
 
 /**
  * 基于流的工具类
