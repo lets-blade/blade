@@ -15,6 +15,13 @@
  */
 package blade.kit;
 
+
+import blade.kit.io.ByteArray;
+import blade.kit.io.ByteArrayOutputStream;
+import blade.kit.io.FastByteArrayOutputStream;
+
+import java.io.BufferedOutputStream;
+import java.io.BufferedWriter;
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
@@ -28,10 +35,6 @@ import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
-
-import blade.kit.io.ByteArray;
-import blade.kit.io.ByteArrayOutputStream;
-import blade.kit.io.FastByteArrayOutputStream;
 
 /**
  * 基于流的工具类
@@ -63,7 +66,7 @@ public abstract class StreamKit {
      * @throws IOException 输入输出异常
      */
     public static void io(InputStream in, OutputStream out, int bufferSize) throws IOException {
-        if (bufferSize == -1) {
+        if (bufferSize <= -1) {
             bufferSize = IOKit.DEFAULT_BUFFER_SIZE;
         }
 
@@ -99,7 +102,7 @@ public abstract class StreamKit {
      * @throws IOException 输入输出异常
      */
     public static void io(Reader in, Writer out, int bufferSize) throws IOException {
-        if (bufferSize == -1) {
+        if (bufferSize <= -1) {
             bufferSize = IOKit.DEFAULT_BUFFER_SIZE >> 1;
         }
 
@@ -168,84 +171,44 @@ public abstract class StreamKit {
 
     /** 从输入流读取内容, 写入到目标文件 */
     public static void io(InputStream in, File dest, boolean closeIn, boolean closeOut) throws IOException {
-        OutputStream out = new FileOutputStream(dest);
-        try {
-            io(in, out);
-        } finally {
-            if (closeIn) {
-                close(in);
-            }
-
-            if (closeOut) {
-                close(out);
-            }
-        }
+        OutputStream out = new BufferedOutputStream(new FileOutputStream(dest), IOKit.DEFAULT_BUFFER_SIZE);
+        io(in, out, closeIn, closeOut);
     }
 
     /** 从输入流读取内容, 写入到目标文件 */
     public static void io(InputStream in, String dest) throws IOException {
-        OutputStream out = new FileOutputStream(dest);
+        OutputStream out = new BufferedOutputStream(new FileOutputStream(dest), IOKit.DEFAULT_BUFFER_SIZE);
         io(in, out);
     }
 
     /** 从输入流读取内容, 写入到目标文件 */
     public static void io(InputStream in, String dest, boolean closeIn, boolean closeOut) throws IOException {
-        OutputStream out = new FileOutputStream(dest);
-        try {
-            io(in, out);
-        } finally {
-            if (closeIn) {
-                close(in);
-            }
-
-            if (closeOut) {
-                close(out);
-            }
-        }
+        OutputStream out = new BufferedOutputStream(new FileOutputStream(dest), IOKit.DEFAULT_BUFFER_SIZE);
+        io(in, out, closeIn, closeOut);
     }
 
     /** 从输入流读取内容, 写入到目标文件 */
     public static void io(Reader in, File dest) throws IOException {
-        Writer out = new FileWriter(dest);
+        Writer out = new BufferedWriter(new FileWriter(dest), IOKit.DEFAULT_BUFFER_SIZE >> 1);
         io(in, out);
     }
 
     /** 从输入流读取内容, 写入到目标文件 */
     public static void io(Reader in, File dest, boolean closeIn, boolean closeOut) throws IOException {
-        Writer out = new FileWriter(dest);
-        try {
-            io(in, out);
-        } finally {
-            if (closeIn) {
-                close(in);
-            }
-
-            if (closeOut) {
-                close(out);
-            }
-        }
+        Writer out = new BufferedWriter(new FileWriter(dest), IOKit.DEFAULT_BUFFER_SIZE >> 1);
+        io(in, out, closeIn, closeOut);
     }
 
     /** 从输入流读取内容, 写入到目标文件 */
     public static void io(Reader in, String dest) throws IOException {
-        Writer out = new FileWriter(dest);
+        Writer out = new BufferedWriter(new FileWriter(dest), IOKit.DEFAULT_BUFFER_SIZE >> 1);
         io(in, out);
     }
 
     /** 从输入流读取内容, 写入到目标文件 */
     public static void io(Reader in, String dest, boolean closeIn, boolean closeOut) throws IOException {
-        Writer out = new FileWriter(dest);
-        try {
-            io(in, out);
-        } finally {
-            if (closeIn) {
-                close(in);
-            }
-
-            if (closeOut) {
-                close(out);
-            }
-        }
+        Writer out = new BufferedWriter(new FileWriter(dest), IOKit.DEFAULT_BUFFER_SIZE >> 1);
+        io(in, out, closeIn, closeOut);
     }
 
     /**
