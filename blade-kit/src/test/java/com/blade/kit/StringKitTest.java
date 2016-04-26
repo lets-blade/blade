@@ -730,6 +730,15 @@ public class StringKitTest {
 	}
 
 	@Test
+	public void testIsBoolean(){
+		assertFalse(StringKit.isBoolean(null));
+		assertFalse(StringKit.isBoolean(""));
+		assertFalse(StringKit.isBoolean(" true "));
+		assertTrue(StringKit.isBoolean("true"));
+		assertTrue(StringKit.isBoolean("false"));
+	}
+
+	@Test
 	public void testToChineseNumber() {
 		assertEquals("零", StringKit.toChineseNumber(0));
 
