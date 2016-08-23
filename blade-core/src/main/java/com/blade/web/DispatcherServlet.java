@@ -83,7 +83,7 @@ public class DispatcherServlet extends HttpServlet {
 			
 			long initStart = System.currentTimeMillis();
 			
-		    blade.webRoot(DispatchKit.getWebroot(servletContext).getPath());
+		    blade.webRoot(DispatchKit.getWebRoot(servletContext).getPath());
 		    
 		    BladeWebContext.setContext(servletContext);
 		    

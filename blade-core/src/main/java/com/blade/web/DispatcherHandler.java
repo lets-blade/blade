@@ -87,8 +87,7 @@ public class DispatcherHandler {
         // If it is static, the resource is handed over to the filter
     	if(staticFileFilter.isStatic(uri)){
             LOGGER.debug("Request : {}\t{}", method, uri);
-    		String realpath = httpRequest.getServletContext().getRealPath(uri);
-    		DispatchKit.printStatic(uri, realpath, response);
+    		DispatchKit.printStatic(uri, httpRequest, response);
 			return;
     	}
         

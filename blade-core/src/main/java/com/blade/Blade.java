@@ -76,6 +76,9 @@ public class Blade {
     // Xss defense
     private Xss xss;
     
+    // enableServer
+    private boolean enableServer = false;
+    
     private Set<Class<? extends Plugin>> plugins;
     
 	private Blade() {
@@ -650,6 +653,15 @@ public class Blade {
 		return isInit;
 	}
 	
+	public Blade enableServer(boolean enableServer) {
+		this.enableServer = enableServer;
+		return this;
+	}
+	
+	public boolean enableServer() {
+		return this.enableServer;
+	}
+	
 	public boolean httpCache() {
 		return bladeConfig.isHttpCache();
 	}
@@ -660,10 +672,12 @@ public class Blade {
 	
 	public void start(Class<? extends EmbedServer> embedServer) throws Exception {
 		embedServer.newInstance().startup(port, contextPath);
+		this.enableServer = true;
 	}
 	
 	public void start(EmbedServer embedServer) throws Exception {
 		embedServer.startup(port, contextPath);
 	}
+
 	
 }

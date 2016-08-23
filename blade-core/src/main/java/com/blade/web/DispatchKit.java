@@ -14,6 +14,7 @@ import java.net.URL;
 import java.net.URLDecoder;
 
 import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.blade.Blade;
@@ -26,8 +27,12 @@ import blade.kit.StreamKit;
 import blade.kit.StringKit;
 
 public class DispatchKit {
-
-	public static File getWebroot(ServletContext sc) {
+	
+	static final boolean isWeb = Blade.me().enableServer();
+	
+	private static Boolean isDev = null;
+	
+	public static File getWebRoot(ServletContext sc) {
 		String dir = sc.getRealPath("/");
 		if (dir == null) {
 			try {
@@ -65,8 +70,6 @@ public class DispatchKit {
 		} catch (UnsupportedEncodingException e) {
 		}
 	}
-	
-	private static Boolean isDev = null;
 	
 	/**
 	 * Print Error Message
@@ -137,15 +140,21 @@ public class DispatchKit {
         }*/
 	}
 	
-	
 	/**
 	 * Print static file
 	 * @param uri
 	 * @param realpath
 	 * @param httpResponse
 	 */
-	public static void printStatic(String uri, String realpath, Response response) {
+	public static void printStatic(String uri, HttpServletRequest request, Response response) {
 		try {
+			String realpath = "";
+			if(isWeb){
+				realpath = request.getServletContext().getRealPath(uri);
+			} else{
+				realpath = DispatchKit.class.getResource(uri).getPath();
+			}
+			
 			File file = new File(realpath);
     		if(FileKit.exist(file)){
     			FileInputStream in = new FileInputStream(file);
