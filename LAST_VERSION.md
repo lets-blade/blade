@@ -37,6 +37,15 @@
 </dependency>
 ```
 
+## [blade-embed-jetty](http://search.maven.org/#search%7Cga%7C1%7Cblade-embed-jetty)
+```xml
+<dependency>
+    <groupId>com.bladejava</groupId>
+    <artifactId>blade-embed-jetty</artifactId>
+    <version>0.0.1</version>
+</dependency>
+```
+
 ## [blade-jdbc](http://search.maven.org/#search%7Cga%7C1%7Cblade-jdbc)
 ```xml
 <dependency>
@@ -61,15 +70,6 @@
     <groupId>com.bladejava</groupId>
     <artifactId>blade-redis</artifactId>
     <version>1.2.3</version>
-</dependency>
-```
-
-## [blade-startup](http://search.maven.org/#search%7Cga%7C1%7Cblade-startup)
-```xml
-<dependency>
-    <groupId>com.bladejava</groupId>
-    <artifactId>blade-startup</artifactId>
-    <version>1.0.1</version>
 </dependency>
 ```
 

@@ -30,6 +30,7 @@ import com.blade.context.BladeWebContext;
 import com.blade.ioc.IocApplication;
 import com.blade.route.RouteBuilder;
 
+import blade.kit.Environment;
 import blade.kit.StringKit;
 import blade.kit.SystemKit;
 import blade.kit.logging.Logger;
@@ -123,7 +124,11 @@ public class DispatcherServlet extends HttpServlet {
 		    
 		    new BladeBanner().print();
 		    
-		    String appName = blade.environment().getString("app.name", "Blade");
+		    Environment environment = blade.environment();
+		    String appName = "Blade";
+		    if(null != environment){
+		    	appName = environment.getString("app.name", "Blade");
+		    }
 		    
 		    LOGGER.info(appName + " initialize successfully, Time elapsed: {} ms.", System.currentTimeMillis() - initStart);
 		}

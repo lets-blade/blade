@@ -25,9 +25,15 @@ public class EmbedJettyServer implements EmbedServer {
 	
 	private ServletContextHandler context;
 	
-	private Environment environment = Blade.me().environment().add("jetty.properties");
+	private Environment environment = null;
     
 	public EmbedJettyServer() {
+		Environment bladeEnv = Blade.me().environment();
+		if(null != bladeEnv){
+			environment = bladeEnv.add("jetty.properties");
+		} else{
+			environment = Environment.load("jetty.properties");
+		}
 	}
 	
 	@Override
