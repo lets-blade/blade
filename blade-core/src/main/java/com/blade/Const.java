@@ -23,37 +23,31 @@ package com.blade;
  */
 public interface Const {
 
-	/**
-	 * Current version
-	 */
-	String BLADE_VERSION = "1.6.2";
+	// current blade version
+	String BLADE_VERSION = "1.6.3";
 	
-	/**
-     * Server 500 error HTML
-     */
-	String INTERNAL_ERROR = "<html><head><title>500 Internal Error</title></head><body bgcolor=\"white\"><center><h1>500 Internal Error</h1></center><hr><center>blade "
-			+ BLADE_VERSION +"</center></body></html>";
+	// default embedd server context path
+	String DEFAULT_CONTEXTPATH = "/";
+	
+	// Server 500 error HTML
+	String INTERNAL_ERROR = "<html><head><title>500 Internal Error</title></head><body bgcolor=\"white\"><center><h1>500 Internal Error</h1></center><hr><center>blade " + BLADE_VERSION +"</center></body></html>";
     
-	/**
-	 * Server 404 error HTML
-	 */
-	String VIEW_NOTFOUND = "<html><head><title>404 Not Found</title></head><body bgcolor=\"white\"><center><h1>[ %s ] Not Found</h1></center><hr><center>blade "
-			+ BLADE_VERSION +"</center></body></html>";
+	// Server 404 error HTML
+	String VIEW_NOTFOUND = "<html><head><title>404 Not Found</title></head><body bgcolor=\"white\"><center><h1>[ %s ] Not Found</h1></center><hr><center>blade " + BLADE_VERSION +"</center></body></html>";
 	
-	/**
-	 * Default jetty server port
-	 */
+	// Default jetty server port
 	int DEFAULT_PORT = 9000;
 	
-	/**
-	 * Request ThreadPoll context key
-	 */
+	// Request ThreadPoll context key
 	String BLADE_EXECUTOR = "blade-req-executor";
 	
-	String BLADE_ROUTE = "blade.route";
-	String BLADE_IOC = "blade.ioc";
-	String BLADE_VIEW_404 = "blade.view404";
-	String BLADE_VIEW_500 = "blade.view500";
-	String BLADE_DEV = "blade.dev";
+	/****************
+	 * blade properties 
+	 * **************/
+	String BLADE_ROUTE		= "blade.route";
+	String BLADE_IOC 		= "blade.ioc";
+	String BLADE_VIEW_404 	= "blade.view404";
+	String BLADE_VIEW_500 	= "blade.view500";
+	String BLADE_DEV 		= "blade.dev";
 	
 }

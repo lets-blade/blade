@@ -64,7 +64,7 @@ public class JarReaderImpl extends AbstractClassReader implements ClassReader {
         // 定义一个枚举的集合 并进行循环来处理这个目录下的URL
         Enumeration<URL> dirs;
         try {
-            dirs = Thread.currentThread().getContextClassLoader().getResources(packageDirName);
+            dirs = getClass().getClassLoader().getResources(packageDirName);
             // 循环迭代下去
             while (dirs.hasMoreElements()) {
                 // 获取下一个元素
@@ -91,7 +91,7 @@ public class JarReaderImpl extends AbstractClassReader implements ClassReader {
 		        // 从此jar包 得到一个枚举类
 		        Enumeration<JarEntry> eje = jarFile.entries( );
 
-		     // 同样的进行循环迭代
+		        // 同样的进行循环迭代
 				while (eje.hasMoreElements()) {
 					// 获取jar里的一个实体 可以是目录 和一些jar包里的其他文件 如META-INF等文件
 					JarEntry entry = eje.nextElement();

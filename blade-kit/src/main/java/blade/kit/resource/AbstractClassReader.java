@@ -144,7 +144,7 @@ public abstract class AbstractClassReader implements ClassReader {
         // 定义一个枚举的集合 并进行循环来处理这个目录下的URL
         Enumeration<URL> dirs;
         try {
-            dirs = Thread.currentThread().getContextClassLoader().getResources(packageDirName);
+            dirs = getClass().getClassLoader().getResources(packageDirName);
             // 循环迭代下去
             while (dirs.hasMoreElements()) {
                 // 获取下一个元素

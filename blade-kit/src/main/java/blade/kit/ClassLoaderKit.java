@@ -15,7 +15,7 @@ public class ClassLoaderKit {
     public static ClassLoader getDefault() {
         ClassLoader loader = null;
         try {
-            loader = Thread.currentThread().getContextClassLoader();
+            loader = ClassLoader.class.getClassLoader();
         } catch (Exception e) {
         }
         if (loader == null) {

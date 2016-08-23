@@ -38,18 +38,18 @@ Grab via `Maven`：
 <dependency>
 	<groupId>com.bladejava</groupId>
 	<artifactId>blade-core</artifactId>
-	<version>1.6.2</version>
+	<version>1.6.3</version>
 </dependency>
 <dependency>
 	<groupId>com.bladejava</groupId>
-	<artifactId>blade-startup</artifactId>
-	<version>1.0.1</version>
+	<artifactId>blade-embed-jetty</artifactId>
+	<version>0.0.1</version>
 </dependency>
 ```
 or `Gradle`:
 ```sh
-compile 'com.bladejava:blade-core:1.6.2'
-compile 'com.bladejava:blade-startup:1.0.1'
+compile 'com.bladejava:blade-core:1.6.3'
+compile 'com.bladejava:blade-embed-jetty:0.0.1'
 ```
 
 Create `Main` method like this：
@@ -62,12 +62,12 @@ public class App {
 		blade.get("/", (request, response) -> {
 			response.html("<h1>Hello blade!</h1>");
 		});
-		blade.listen(9001).start();
+		blade.start(EmbedJettyServer.class);
 	}
 }
 ```
 
-Run it and point your browser to [http://localhost:9001](http://localhost:9001). There you go, you've just created your first Blade app!
+Run it and point your browser to [http://localhost:9000](http://localhost:9000). There you go, you've just created your first Blade app!
 
 ## API Example
 
@@ -78,7 +78,7 @@ public static void main(String[] args) {
 	blade.post("/save", postxxx);
 	blade.delete("/del/21", deletexxx);
 	blade.put("/put", putxxx);
-	blade.listen(9001).start();
+	blade.start(EmbedJettyServer.class);
 }
 ```
 
@@ -99,7 +99,7 @@ public static void main(String[] args) {
 		response.text(msg);
 	});
 	
-	blade.listen(9001).start();
+	blade.start(EmbedJettyServer.class);
 }
 ```
 
@@ -112,7 +112,7 @@ public static void main(String[] args) {
 		Integer uid = request.queryAsInt("uid");
 		response.text("uid : " + uid);
 	});
-	blade.listen(9001).start();
+	blade.start(EmbedJettyServer.class);
 }
 ```
 
@@ -154,7 +154,7 @@ public static void main(String[] args) {
 	blade.before("/.*", (request, response) -> {
 		System.out.println("before...");
 	});
-	blade.listen(9001).start();
+	blade.start(EmbedJettyServer.class);
 }
 ```
 

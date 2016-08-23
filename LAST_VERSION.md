@@ -24,7 +24,7 @@
 <dependency>
     <groupId>com.bladejava</groupId>
     <artifactId>blade-kit</artifactId>
-    <version>1.3.0M1</version>
+    <version>1.3.0</version>
 </dependency>
 ```
 

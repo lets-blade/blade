@@ -24,14 +24,14 @@ import java.util.List;
 import com.blade.ioc.SimpleIoc;
 import com.blade.ioc.annotation.Component;
 
-import blade.kit.resource.ClassPathClassReader;
 import blade.kit.resource.ClassReader;
+import blade.kit.resource.DynamicClassReader;
 
 public final class IocAnnotationLoader implements IocLoader {
 	
     private Collection<Class<?>> classes;
     
-    private ClassReader classReader = new ClassPathClassReader();
+    private ClassReader classReader = DynamicClassReader.getClassReader();
     	
     public IocAnnotationLoader(String... packageNames) {
         List<Class<? extends Annotation>> annotations = new ArrayList<Class<? extends Annotation>>(1);

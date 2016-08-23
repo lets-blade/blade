@@ -1,4 +1,4 @@
-package com.blade.route.annotation;
+package com.blade.annotation;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -9,8 +9,12 @@ import java.lang.annotation.Target;
 @Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface PathVariable {
+public @interface RequestParam {
 
 	String value();
+
+	boolean required() default true;
 	
+	String defaultValue() default "";
+
 }

@@ -1,5 +1,13 @@
 # Blade 更新日志
 
+### v1.6.3
+	1. 简化`blade-kit`配置类
+	2. 修改 `@Path` 为 `@Controller`
+	3. 去除无用类和注解
+	4. 支持 `java -jar xxx.jar` 方式执行
+	5. 分离内置Server实现
+	6. 修复类加载不到bug
+
 ### v1.6.1
 	1. 优化csrf防御代码
 	2. 可自定义xss防御实现

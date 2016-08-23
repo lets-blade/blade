@@ -34,6 +34,7 @@ import blade.kit.StringKit;
 import blade.kit.SystemKit;
 import blade.kit.logging.Logger;
 import blade.kit.logging.LoggerFactory;
+import blade.kit.resource.DynamicClassReader;
 
 /**
  * Blade Core DispatcherServlet
@@ -77,6 +78,8 @@ public class DispatcherServlet extends HttpServlet {
 			LOGGER.info("user.timezone = {}", System.getProperty("user.timezone"));
 			LOGGER.info("file.encoding = {}", System.getProperty("file.encoding"));
 			
+			DynamicClassReader.init();
+			
 			long initStart = System.currentTimeMillis();
 			
 		    blade.webRoot(DispatchKit.getWebroot(servletContext).getPath());
@@ -84,8 +87,6 @@ public class DispatcherServlet extends HttpServlet {
 		    BladeWebContext.setContext(servletContext);
 		    
 		    LOGGER.info("blade.webroot = {}", blade.webRoot());
-		    
-		    blade.config().init();
 		    
 			this.bootstrap = blade.bootstrap();
 			if(null == bootstrap){
@@ -122,7 +123,9 @@ public class DispatcherServlet extends HttpServlet {
 		    
 		    new BladeBanner().print();
 		    
-		    LOGGER.info("DispatcherServlet initialize successfully, Time elapsed: {} ms.", System.currentTimeMillis() - initStart);
+		    String appName = blade.environment().getString("app.name", "Blade");
+		    
+		    LOGGER.info(appName + " initialize successfully, Time elapsed: {} ms.", System.currentTimeMillis() - initStart);
 		}
 	}
 

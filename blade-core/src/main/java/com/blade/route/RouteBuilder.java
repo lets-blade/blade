@@ -19,10 +19,10 @@ import java.lang.reflect.Method;
 import java.util.Set;
 
 import com.blade.Blade;
+import com.blade.annotation.Intercept;
+import com.blade.annotation.Controller;
+import com.blade.annotation.Route;
 import com.blade.interceptor.Interceptor;
-import com.blade.interceptor.annotation.Intercept;
-import com.blade.route.annotation.Path;
-import com.blade.route.annotation.Route;
 import com.blade.web.http.HttpMethod;
 import com.blade.web.http.Request;
 import com.blade.web.http.Response;
@@ -30,8 +30,8 @@ import com.blade.web.http.Response;
 import blade.kit.CollectionKit;
 import blade.kit.StringKit;
 import blade.kit.reflect.ReflectKit;
-import blade.kit.resource.ClassPathClassReader;
 import blade.kit.resource.ClassReader;
+import blade.kit.resource.DynamicClassReader;
 
 /**
  * Route builder
@@ -56,7 +56,7 @@ public class RouteBuilder {
     	this.routers = blade.routers();
     	this.routePackages = blade.routePackages();
     	this.interceptorPackage = blade.interceptorPackage();
-    	this.classReader = new ClassPathClassReader();
+    	this.classReader = DynamicClassReader.getClassReader();
     }
     
     /**
@@ -109,7 +109,7 @@ public class RouteBuilder {
     	// Traverse route
 		for(String packageName : routePackages){
 			// Scan all Controoler
-    		classes = classReader.getClassByAnnotation(packageName, Path.class, true);
+    		classes = classReader.getClassByAnnotation(packageName, Controller.class, true);
     		if(CollectionKit.isNotEmpty(classes)){
     			for(Class<?> pathClazz : classes){
     				parseRouter(pathClazz);
@@ -165,9 +165,9 @@ public class RouteBuilder {
     		return;
     	}
     	
-		final String nameSpace = router.getAnnotation(Path.class).value();
+		final String nameSpace = router.getAnnotation(Controller.class).value();
 		
-		final String suffix = router.getAnnotation(Path.class).suffix();
+		final String suffix = router.getAnnotation(Controller.class).suffix();
 		
 		for (Method method : methods) {
 			

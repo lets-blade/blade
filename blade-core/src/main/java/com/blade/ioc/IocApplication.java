@@ -31,10 +31,11 @@ import com.blade.route.RouteHandler;
 import com.blade.route.Routers;
 
 import blade.kit.CollectionKit;
+import blade.kit.StringKit;
 import blade.kit.logging.Logger;
 import blade.kit.logging.LoggerFactory;
-import blade.kit.resource.ClassPathClassReader;
 import blade.kit.resource.ClassReader;
+import blade.kit.resource.DynamicClassReader;
 
 /**
  * IOC container, used to initialize the IOC object
@@ -70,7 +71,7 @@ public class IocApplication {
 	
 	public IocApplication(Blade blade) {
 		this.blade = blade;
-		this.classReader = new ClassPathClassReader();
+		this.classReader = DynamicClassReader.getClassReader();
 		this.plugins = CollectionKit.newArrayList();
 		this.pluginTypes = blade.plugins();
 		this.ioc = blade.ioc();
@@ -146,7 +147,9 @@ public class IocApplication {
 	 * @param packageName package name
 	 */
 	private void registerBean(String packageName) {
-		
+		if(StringKit.isBlank(packageName)){
+			return;
+		}
 		// Recursive scan
 		boolean recursive = false; 
 		if (packageName.endsWith(".*")) {

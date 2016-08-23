@@ -276,7 +276,7 @@ public abstract class ReflectKit {
 	public static List<String> scanPackageClass(String rootPackageName) {
 		List<String> classNames = new ArrayList<String>();
 		try {
-			ClassLoader loader = Thread.currentThread().getContextClassLoader();
+			ClassLoader loader = ReflectKit.class.getClassLoader();
 			URL url = loader.getResource(rootPackageName.replace('.', '/'));
 
 			ExceptionKit.makeRunTimeWhen(url == null, "package[%s] not found!", rootPackageName);

@@ -21,10 +21,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.blade.context.BladeConfig;
+import com.blade.embedd.EmbedServer;
 import com.blade.ioc.Ioc;
 import com.blade.ioc.SimpleIoc;
-import com.blade.loader.BladeConfig;
-import com.blade.loader.Configurator;
 import com.blade.plugin.Plugin;
 import com.blade.route.Route;
 import com.blade.route.RouteException;
@@ -32,14 +32,13 @@ import com.blade.route.RouteGroup;
 import com.blade.route.RouteHandler;
 import com.blade.route.Routers;
 import com.blade.route.loader.ClassPathRouteLoader;
-import com.blade.server.Server;
 import com.blade.view.template.JspEngine;
 import com.blade.view.template.TemplateEngine;
 import com.blade.web.http.HttpMethod;
 import com.blade.web.verify.Xss;
 
 import blade.kit.Assert;
-import blade.kit.config.loader.ConfigLoader;
+import blade.kit.Environment;
 import blade.kit.reflect.ReflectKit;
 
 /**
@@ -50,54 +49,31 @@ import blade.kit.reflect.ReflectKit;
  */
 public class Blade {
 	
-	/**
-     * Blade initialize
-     */
+	// Blade initialize
     private boolean isInit = false;
     
-    /**
-     * Servlet asynchronous
-     */
-    private boolean isAsyn = false;
-    
-    /**
-     * Blade initialize config class
-     */
+    // Blade initialize config class
     private Bootstrap bootstrap = null;
     
-    /**
-	 * Global configuration Object
-	 */
+    // Global configuration Object
 	private BladeConfig bladeConfig = null;
 	
-    /**
-     * IOC Container, save javabean
-     */
+    // IOC Container
     private Ioc ioc = null;
     
-    /**
-     * default render is jspRender
-     */
+    // default render is jspRender
     private TemplateEngine templateEngine = null;
     
-    /**
-     * manage route
-     */
+    // routes
     private Routers routers = null;
     
-    /**
-     * jetty start port
-     */
+    // jetty start port
     private int port = Const.DEFAULT_PORT;
     
-    /**
-     * jetty server
-     */
-    private Server bladeServer;
+    // default context path
+    private String contextPath = Const.DEFAULT_CONTEXTPATH;
     
-    /**
-     * Xss defense
-     */
+    // Xss defense
     private Xss xss;
     
     private Set<Class<? extends Plugin>> plugins;
@@ -123,6 +99,17 @@ public class Blade {
 	}
 	
 	/**
+	 * 
+	 * @param appConf
+	 * @return
+	 */
+	public static final Blade me(String appConf){
+		Blade blade = BladeHolder.ME;
+		blade.bladeConfig.load(appConf);
+		return blade;
+	}
+	
+	/**
 	 * Set Blade initialize
 	 * @param isInit	initialize
 	 */
@@ -130,15 +117,6 @@ public class Blade {
 		if(!this.isInit){
 			this.isInit = true;
 		}
-	}
-	
-	/**
-	 * create a jetty server
-	 * @param port	server port
-	 * @return		return server object
-	 */
-	public Server createServer(int port){
-		return new Server(port, isAsyn);
 	}
 	
 	/**
@@ -173,10 +151,9 @@ public class Blade {
 	 * @param confName		properties file name
 	 * @return				return blade
 	 */
-	public Blade setAppConf(String confName){
+	public Blade loadAppConf(String confName){
 		Assert.notBlank(confName);
-		blade.kit.config.Config config = ConfigLoader.load(confName);
-		Configurator.init(bladeConfig, config);
+		bladeConfig.load(confName);
 		return this;
 	}
 	
@@ -523,63 +500,18 @@ public class Blade {
 	}
 	
 	/**
-	 * Setting servlet asynchronous
-	 * @param isAsyn	is asynchronous
-	 * @return			return blade
-	 */
-	public Blade isAsyn(boolean isAsyn){
-		this.isAsyn = isAsyn;
-		return this;
-	}
-	
-	/**
-	 * Setting jetty context
-	 * 
-	 * @param contextPath	context path, default is /
-	 */
-	public void start(String contextPath) {
-		try {
-			Assert.notBlank(contextPath);
-			bladeServer = new Server(this.port, this.isAsyn);
-			bladeServer.start(contextPath);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}	    
-	}
-	
-	/**
-	 * Start jetty server
-	 */
-	public void start() {
-		this.start("/");
-	}
-	
-	/**
-	 * Jetty sever shutdown
-	 */
-	public void stop() {
-		try {
-			bladeServer.stop();
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
-	
-	/**
-	 * Join in server
-	 * 
-	 * @throws InterruptedException join exception
-	 */
-	public void join() throws InterruptedException {
-		bladeServer.join();
-	}
-	
-	/**
 	 * @return	Return blade config object
 	 */
 	public BladeConfig config(){
     	return bladeConfig;
     }
+	
+	/**
+	 * @return	Return Blade Environment
+	 */
+	public Environment environment(){
+		return bladeConfig.environment();
+	}
 	
 	/**
      * @return	Return route packages
@@ -724,6 +656,14 @@ public class Blade {
 	
 	public Set<Class<? extends Plugin>> plugins() {
 		return this.plugins;
+	}
+	
+	public void start(Class<? extends EmbedServer> embedServer) throws Exception {
+		embedServer.newInstance().startup(port, contextPath);
+	}
+	
+	public void start(EmbedServer embedServer) throws Exception {
+		embedServer.startup(port, contextPath);
 	}
 	
 }

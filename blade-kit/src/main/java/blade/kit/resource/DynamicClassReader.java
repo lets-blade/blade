@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015, biezhi 王爵 (biezhi.me@gmail.com)
+ * Copyright (c) 2016, biezhi 王爵 (biezhi.me@gmail.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,32 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.blade.route.annotation;
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+package blade.kit.resource;
 
 /**
- * Route class notes, identifying whether a class is routed
+ * 动态根据环境获取ClassReader
  *
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since	1.0
  */
-@Target(ElementType.TYPE)
-@Retention(RetentionPolicy.RUNTIME)
-@Documented
-public @interface Path{
+public class DynamicClassReader {
 
-	/**
-	 * @return	namespace
-	 */
-	String value() default "/";
+	private static boolean IS_JAR_CONTEXT = false;
 	
-	/**
-	 * @return	route suffix
-	 */
-	String suffix() default "";
+	private DynamicClassReader() {
+	}
+	
+	public static void init(){
+		String rs = DynamicClassReader.class.getResource("").toString();
+		if(rs.indexOf(".jar!") != -1){
+			IS_JAR_CONTEXT = true;
+		}
+	}
+	
+	public static ClassReader getClassReader(){
+		if(IS_JAR_CONTEXT){
+			return new JarReaderImpl();
+		}
+		return new ClassPathClassReader();
+	}
 	
 }

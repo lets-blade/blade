@@ -38,20 +38,20 @@ Blade 是一个轻量级的MVC框架. 它拥有简洁的代码，优雅的设计
 <dependency>
 	<groupId>com.bladejava</groupId>
 	<artifactId>blade-core</artifactId>
-	<version>1.6.2</version>
+	<version>1.6.3</version>
 </dependency>
 <dependency>
-    <groupId>com.bladejava</groupId>
-    <artifactId>blade-startup</artifactId>
-    <version>1.0.1</version>
+	<groupId>com.bladejava</groupId>
+	<artifactId>blade-embed-jetty</artifactId>
+	<version>0.0.1</version>
 </dependency>
 ```
 
 或者  `Gradle`:
 
 ```sh
-compile 'com.bladejava:blade-core:1.6.2'
-compile 'com.bladejava:blade-startup:1.0.1'
+compile 'com.bladejava:blade-core:1.6.3'
+compile 'com.bladejava:blade-startup:0.0.1'
 ```
 
 编写 `Main`函数：
@@ -62,7 +62,7 @@ public static void main(String[] args) {
 	blade.get("/", (request, response) -> {
 		response.html("<h1>Hello blade!</h1>");
 	});
-	blade.listen(9001).start();
+	blade.start(EmbedJettyServer.class);
 }
 ```
 
@@ -77,7 +77,7 @@ public static void main(String[] args) {
 	blade.post("/save", postxxx);
 	blade.delete("/del/21", deletexxx);
 	blade.put("/put", putxxx);
-	blade.listen(9001).start();
+	blade.start(EmbedJettyServer.class);
 }
 ```
 
@@ -98,7 +98,7 @@ public static void main(String[] args) {
 		response.text(msg);
 	});
 	
-	blade.listen(9001).start();
+	blade.start(EmbedJettyServer.class);
 }
 ```
 
@@ -111,7 +111,7 @@ public static void main(String[] args) {
 		Integer uid = request.queryAsInt("uid");
 		response.text("uid : " + uid);
 	});
-	blade.listen(9001).start();
+	blade.start(EmbedJettyServer.class);
 }
 ```
 
@@ -153,7 +153,7 @@ public static void main(String[] args) {
 	blade.before("/.*", (request, response) -> {
 		System.out.println("before...");
 	});
-	blade.listen(9001).start();
+	blade.start(EmbedJettyServer.class);
 }
 ```
 
