@@ -17,7 +17,7 @@ package com.blade.view;
 
 import java.util.Map;
 
-import blade.kit.CollectionKit;
+import com.blade.kit.CollectionKit;
 
 /**
  * ModelAndView, Using templates and data 

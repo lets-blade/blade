@@ -5,12 +5,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import blade.kit.json.JSON;
-import blade.kit.json.JSONArray;
-import blade.kit.json.JSONHelper;
-import blade.kit.json.JSONKit;
-import blade.kit.json.JSONObject;
-import blade.kit.json.JSONValue;
+import com.blade.kit.json.JSON;
+import com.blade.kit.json.JSONArray;
+import com.blade.kit.json.JSONHelper;
+import com.blade.kit.json.JSONKit;
+import com.blade.kit.json.JSONObject;
+import com.blade.kit.json.JSONValue;
 
 public class JSONTest {
 

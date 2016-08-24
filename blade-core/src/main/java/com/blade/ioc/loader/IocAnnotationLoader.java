@@ -23,9 +23,8 @@ import java.util.List;
 
 import com.blade.ioc.SimpleIoc;
 import com.blade.ioc.annotation.Component;
-
-import blade.kit.resource.ClassReader;
-import blade.kit.resource.DynamicClassReader;
+import com.blade.kit.resource.ClassReader;
+import com.blade.kit.resource.DynamicClassReader;
 
 public final class IocAnnotationLoader implements IocLoader {
 	

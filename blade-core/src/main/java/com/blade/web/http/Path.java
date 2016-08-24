@@ -19,8 +19,8 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.List;
 
-import blade.kit.CollectionKit;
-import blade.kit.StringKit;
+import com.blade.kit.CollectionKit;
+import com.blade.kit.StringKit;
 
 /**
  * Path URL

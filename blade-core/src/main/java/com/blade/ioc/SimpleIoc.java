@@ -22,11 +22,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.blade.ioc.loader.IocLoader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import blade.kit.Assert;
-import blade.kit.logging.Logger;
-import blade.kit.logging.LoggerFactory;
+import com.blade.ioc.loader.IocLoader;
+import com.blade.kit.Assert;
 
 /**
  * The default IOC container implementation

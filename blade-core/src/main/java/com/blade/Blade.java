@@ -25,6 +25,9 @@ import com.blade.context.BladeConfig;
 import com.blade.embedd.EmbedServer;
 import com.blade.ioc.Ioc;
 import com.blade.ioc.SimpleIoc;
+import com.blade.kit.Assert;
+import com.blade.kit.Environment;
+import com.blade.kit.reflect.ReflectKit;
 import com.blade.plugin.Plugin;
 import com.blade.route.Route;
 import com.blade.route.RouteException;
@@ -35,11 +38,6 @@ import com.blade.route.loader.ClassPathRouteLoader;
 import com.blade.view.template.JspEngine;
 import com.blade.view.template.TemplateEngine;
 import com.blade.web.http.HttpMethod;
-import com.blade.web.verify.Xss;
-
-import blade.kit.Assert;
-import blade.kit.Environment;
-import blade.kit.reflect.ReflectKit;
 
 /**
  * Blade Core Class
@@ -73,9 +71,6 @@ public class Blade {
     // default context path
     private String contextPath = Const.DEFAULT_CONTEXTPATH;
     
-    // Xss defense
-    private Xss xss;
-    
     // enableServer
     private boolean enableServer = false;
     
@@ -86,7 +81,6 @@ public class Blade {
 		this.ioc = new SimpleIoc();
 		this.routers = new Routers();
 		this.templateEngine = new JspEngine();
-		this.xss = new Xss();
 		this.plugins = new HashSet<Class<? extends Plugin>>();
 	}
 	
@@ -341,21 +335,6 @@ public class Blade {
 		Assert.notNull(prefix, "Route group prefix not is null");
 		return new RouteGroup(this, prefix);
 	}
-	
-	/**
-	 * Setting default xss filter
-	 * @param xss	xss filter implement
-	 * @return		return blade
-	 */
-	public Blade xss(final Xss xss){
-    	Assert.notNull(xss);
-    	this.xss = xss;
-    	return this;
-    }
-	
-	public Xss xss(){
-    	return this.xss;
-    }
 	
 	/**
 	 * Register a pre routing request interceptor

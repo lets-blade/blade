@@ -24,18 +24,18 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.blade.Blade;
 import com.blade.Bootstrap;
 import com.blade.context.BladeWebContext;
 import com.blade.ioc.IocApplication;
+import com.blade.kit.Environment;
+import com.blade.kit.StringKit;
+import com.blade.kit.SystemKit;
+import com.blade.kit.resource.DynamicClassReader;
 import com.blade.route.RouteBuilder;
-
-import blade.kit.Environment;
-import blade.kit.StringKit;
-import blade.kit.SystemKit;
-import blade.kit.logging.Logger;
-import blade.kit.logging.LoggerFactory;
-import blade.kit.resource.DynamicClassReader;
 
 /**
  * Blade Core DispatcherServlet
@@ -113,7 +113,6 @@ public class DispatcherServlet extends HttpServlet {
 			
 			// initialization ioc
 			iocApplication = new IocApplication(blade);
-			
 			iocApplication.init();
 			
 			blade.init();

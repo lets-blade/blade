@@ -24,7 +24,7 @@
 <dependency>
     <groupId>com.bladejava</groupId>
     <artifactId>blade-kit</artifactId>
-    <version>1.3.0</version>
+    <version>1.3.1</version>
 </dependency>
 ```
 
@@ -33,7 +33,7 @@
 <dependency>
     <groupId>com.bladejava</groupId>
     <artifactId>blade-core</artifactId>
-    <version>1.6.2</version>
+    <version>1.6.4</version>
 </dependency>
 ```
 
@@ -42,7 +42,7 @@
 <dependency>
     <groupId>com.bladejava</groupId>
     <artifactId>blade-embed-jetty</artifactId>
-    <version>0.0.1</version>
+    <version>0.0.2</version>
 </dependency>
 ```
 
@@ -51,7 +51,7 @@
 <dependency>
     <groupId>com.bladejava</groupId>
     <artifactId>blade-jdbc</artifactId>
-    <version>0.0.8</version>
+    <version>0.1.2</version>
 </dependency>
 ```
 
@@ -82,11 +82,3 @@
 </dependency>
 ```
 
-## [blade-oauth2](http://search.maven.org/#search%7Cga%7C1%7Cblade-oauth2)
-```xml
-<dependency>
-    <groupId>com.bladejava</groupId>
-    <artifactId>blade-oauth2</artifactId>
-    <version>1.0.2</version>
-</dependency>
-```

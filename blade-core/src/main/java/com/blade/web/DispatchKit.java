@@ -17,16 +17,20 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.blade.Blade;
 import com.blade.Const;
+import com.blade.kit.FileKit;
+import com.blade.kit.StreamKit;
+import com.blade.kit.StringKit;
 import com.blade.web.http.HttpException;
 import com.blade.web.http.Response;
 
-import blade.kit.FileKit;
-import blade.kit.StreamKit;
-import blade.kit.StringKit;
-
 public class DispatchKit {
+	
+	private static final Logger LOGGER = LoggerFactory.getLogger(DispatchKit.class);
 	
 	static final boolean isWeb = Blade.me().enableServer();
 	
@@ -128,16 +132,6 @@ public class DispatchKit {
 	 */
 	public static void print(InputStream body, OutputStream out) throws IOException {
 		StreamKit.io(body, out, true, true);
-		/*
-		try {
-			int size = in.available();
-			byte[] content = new byte[size];
-			in.read(content);
-			out.write(content);
-        } finally {
-        	in.close();
-    		out.close();
-        }*/
 	}
 	
 	/**
@@ -149,17 +143,21 @@ public class DispatchKit {
 	public static void printStatic(String uri, HttpServletRequest request, Response response) {
 		try {
 			String realpath = "";
+			InputStream ins = null;
 			if(isWeb){
 				realpath = request.getServletContext().getRealPath(uri);
+				File file = new File(realpath);
+	    		if(FileKit.exist(file)){
+	    			ins = new FileInputStream(file);
+	    		}
 			} else{
-				realpath = DispatchKit.class.getResource(uri).getPath();
+				ins = DispatchKit.class.getResourceAsStream(uri);
 			}
 			
-			File file = new File(realpath);
-    		if(FileKit.exist(file)){
-    			FileInputStream in = new FileInputStream(file);
-    			print(in, response.outputStream());
+    		if(null != ins){
+    			print(ins, response.outputStream());
     		} else {
+    			LOGGER.debug("request realpath is [{}]", realpath);
     			HttpException httpException = new HttpException(404, uri + " not found");
     			DispatchKit.printError(httpException, 404, response);
 			}

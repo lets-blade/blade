@@ -20,9 +20,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.blade.Blade;
-
-import blade.kit.Environment;
-import blade.kit.StringKit;
+import com.blade.kit.Environment;
+import com.blade.kit.StringKit;
 
 /**
  * Blade Config Class

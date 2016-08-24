@@ -6,14 +6,13 @@ import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.blade.Blade;
 import com.blade.Const;
+import com.blade.kit.Environment;
 import com.blade.web.DispatcherServlet;
-
-import blade.kit.Environment;
-import blade.kit.logging.Logger;
-import blade.kit.logging.LoggerFactory;
 
 public class EmbedJettyServer implements EmbedServer {
 
@@ -34,6 +33,7 @@ public class EmbedJettyServer implements EmbedServer {
 		} else{
 			environment = Environment.load("jetty.properties");
 		}
+		Blade.me().enableServer(true);
 	}
 	
 	@Override

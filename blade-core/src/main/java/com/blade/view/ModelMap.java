@@ -1,7 +1,7 @@
 package com.blade.view;
 
+import com.blade.kit.Assert;
 import com.blade.web.http.Request;
-import blade.kit.Assert;
 
 public class ModelMap {
 	

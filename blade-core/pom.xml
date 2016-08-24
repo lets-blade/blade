@@ -3,25 +3,36 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
 	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<modelVersion>4.0.0</modelVersion>
+	
 	<parent>
 		<groupId>com.bladejava</groupId>
-		<artifactId>blade-root</artifactId>
+		<artifactId>blade</artifactId>
 		<version>1.0</version>
 	</parent>
 
 	<artifactId>blade-core</artifactId>
 	<packaging>jar</packaging>
-	<version>${blade.version}</version>
+	<version>${blade-core.version}</version>
 	<name>blade-core</name>
 	<url>https://github.com/biezhi/blade/blade-core</url>
 	
 	<dependencies>
 		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+		</dependency>
+		
+		<dependency>
+		    <groupId>org.slf4j</groupId>
+		    <artifactId>slf4j-log4j12</artifactId>
+		</dependency>
+		
+		<dependency>
 			<groupId>com.bladejava</groupId>
 			<artifactId>blade-kit</artifactId>
-			<version>1.3.0</version>
+			<version>${blade-kit.version}</version>
 		</dependency>
-
+		
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>

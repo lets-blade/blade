@@ -5,26 +5,30 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>com.bladejava</groupId>
-		<artifactId>blade-root</artifactId>
+		<artifactId>blade</artifactId>
 		<version>1.0</version>
 	</parent>
+	
 	<artifactId>blade-embed-jetty</artifactId>
-	<version>0.0.1</version>
+	<version>${blade-embed-jetty.version}</version>
 	<name>blade-embed-jetty</name>
 	<url>http://maven.apache.org</url>
 	
 	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<servlet.version>3.1.0</servlet.version>
 		<jetty.version>9.2.12.v20150709</jetty.version>
 	</properties>
-
+	
 	<dependencies>
-		
+
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+		</dependency>
+
 		<dependency>
 			<groupId>com.bladejava</groupId>
 			<artifactId>blade-core</artifactId>
-			<version>${blade.version}</version>
+			<version>${blade-core.version}</version>
 		</dependency>
 
 		<dependency>
@@ -44,6 +48,7 @@
 			<artifactId>jetty-webapp</artifactId>
 			<version>${jetty.version}</version>
 		</dependency>
+
 	</dependencies>
 
 </project>

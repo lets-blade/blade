@@ -3,7 +3,7 @@ package com.blade.kit;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
-import blade.kit.TaskKit;
+import com.blade.kit.TaskKit;
 
 
 public class TaskTest {

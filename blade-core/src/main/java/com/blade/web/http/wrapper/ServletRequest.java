@@ -37,7 +37,9 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import com.blade.Blade;
+import com.blade.kit.IOKit;
+import com.blade.kit.ObjectKit;
+import com.blade.kit.StringKit;
 import com.blade.route.Route;
 import com.blade.web.http.HttpMethod;
 import com.blade.web.http.Path;
@@ -46,10 +48,6 @@ import com.blade.web.multipart.FileItem;
 import com.blade.web.multipart.Multipart;
 import com.blade.web.multipart.MultipartException;
 import com.blade.web.multipart.MultipartHandler;
-
-import blade.kit.IOKit;
-import blade.kit.ObjectKit;
-import blade.kit.StringKit;
 
 /**
  * ServletRequest
@@ -73,8 +71,6 @@ public class ServletRequest implements Request {
 	
 	private Session session = null;
 	
-	private Blade blade = null;
-	
 	private boolean isAbort = false;
 	
 	public ServletRequest(HttpServletRequest request) throws MultipartException, IOException {
@@ -82,7 +78,6 @@ public class ServletRequest implements Request {
 		this.pathParams = new HashMap<String,String>();
 		this.multipartParams = new HashMap<String,String>();
 		this.files = new ArrayList<FileItem>();
-		this.blade = Blade.me();
 		init();
 	}
 	
@@ -204,11 +199,7 @@ public class ServletRequest implements Request {
 
 	@Override
 	public String param(String name) {
-		String val = pathParams.get(name);
-		if(null != val && blade.enableXSS()){
-			return blade.xss().filter(val);
-		}
-		return val;
+		return pathParams.get(name);
 	}
 	
 	@Override
@@ -216,9 +207,6 @@ public class ServletRequest implements Request {
 		String val = pathParams.get(name);
 		if(null == val){
 			val = defaultValue;
-		}
-		if (null != val && blade.enableXSS()) {
-			return blade.xss().filter(val);
 		}
 		return val;
 	}
@@ -276,9 +264,6 @@ public class ServletRequest implements Request {
 		} else {
 			val = multipartParams.get(name);
 		}
-		if(null != val && blade.enableXSS()){
-			return blade.xss().filter(val);
-		}
 		return val;
 	}
 	
@@ -293,9 +278,6 @@ public class ServletRequest implements Request {
 		}
 		if(null == val){
 			val = defaultValue;
-		}
-		if(blade.enableXSS()){
-			return blade.xss().filter(val);
 		}
 		return val;
 	}

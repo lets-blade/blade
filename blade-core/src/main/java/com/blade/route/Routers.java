@@ -20,13 +20,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.blade.kit.Assert;
 import com.blade.web.http.HttpMethod;
 import com.blade.web.http.Request;
 import com.blade.web.http.Response;
-
-import blade.kit.Assert;
-import blade.kit.logging.Logger;
-import blade.kit.logging.LoggerFactory;
 
 /**
  * Registration, management route

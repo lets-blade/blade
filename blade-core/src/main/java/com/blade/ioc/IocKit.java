@@ -23,8 +23,7 @@ import java.util.List;
 
 import com.blade.ioc.annotation.InjectWith;
 import com.blade.ioc.injector.FieldInjector;
-
-import blade.kit.reflect.ClassDefine;
+import com.blade.kit.reflect.ClassDefine;
 
 /**
  * IocKit, get Bean

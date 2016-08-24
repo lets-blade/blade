@@ -2,7 +2,7 @@ package com.blade.kit;
 
 import java.io.File;
 
-import blade.kit.http.HttpRequest;
+import com.blade.kit.http.HttpRequest;
 
 public class HttpRequestTest {
 	
