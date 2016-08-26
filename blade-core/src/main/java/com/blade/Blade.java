@@ -416,7 +416,9 @@ public class Blade {
     public Blade app(Class<? extends Bootstrap> bootstrap){
     	Assert.notNull(bootstrap);
     	try {
-			ioc.addBean(Bootstrap.class.getName(), ReflectKit.newInstance(bootstrap));
+    		Bootstrap object = (Bootstrap) ReflectKit.newInstance(bootstrap);
+			ioc.addBean(Bootstrap.class.getName(), object);
+			this.bootstrap = object;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

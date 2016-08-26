@@ -10,6 +10,7 @@ import javax.servlet.http.HttpSession;
 import com.blade.annotation.PathVariable;
 import com.blade.annotation.RequestParam;
 import com.blade.ioc.Ioc;
+import com.blade.kit.StringKit;
 import com.blade.kit.reflect.ReflectKit;
 import com.blade.route.Route;
 import com.blade.view.ModelAndView;
@@ -46,28 +47,28 @@ public class RouteViewHandler {
 		Object result = null;
 		if(parameterType.equals(String.class)){
 			String value = request.query(val);
-			if(null == value){
+			if(null == value && null != defaultValue){
 				result = defaultValue;
 			} else {
 				result = value;
 			}
 		} else if(parameterType.equals(Integer.class) || parameterType.equals(int.class)){
 			Integer value = request.queryAsInt(val);
-			if(null == value){
+			if(null == value && StringKit.isNotBlank(defaultValue)){
 				result = Integer.valueOf(defaultValue);
 			} else {
 				result = value;
 			}
 		} else if(parameterType.equals(Boolean.class) || parameterType.equals(boolean.class)){
 			Boolean value = request.queryAsBool(val);
-			if(null == value){
+			if(null == value && StringKit.isNotBlank(defaultValue)){
 				result = Boolean.valueOf(defaultValue);
 			} else {
 				result = value;
 			}
 		} else if(parameterType.equals(Long.class) || parameterType.equals(long.class)){
 			Long value = request.queryAsLong(val);
-			if(null == value){
+			if(null == value && StringKit.isNotBlank(defaultValue)){
 				result = Long.valueOf(defaultValue);
 			} else {
 				result = value;
