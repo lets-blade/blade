@@ -29,13 +29,13 @@ import org.slf4j.LoggerFactory;
 
 import com.blade.Blade;
 import com.blade.Bootstrap;
-import com.blade.context.BladeWebContext;
+import com.blade.Const;
+import com.blade.context.ApplicationWebContext;
 import com.blade.ioc.IocApplication;
 import com.blade.kit.Environment;
 import com.blade.kit.StringKit;
 import com.blade.kit.SystemKit;
 import com.blade.kit.resource.DynamicClassReader;
-import com.blade.route.RouteBuilder;
 
 /**
  * Blade Core DispatcherServlet
@@ -49,7 +49,7 @@ public class DispatcherServlet extends HttpServlet {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(DispatcherServlet.class);
 	
-	private Blade blade = Blade.me();
+	private Blade blade = Blade.$();
 	
 	private Bootstrap bootstrap; 
 	
@@ -72,7 +72,6 @@ public class DispatcherServlet extends HttpServlet {
 		servletContext = config.getServletContext();
 		if(!blade.isInit()){
 			
-			LOGGER.info("DispatcherServlet start ...");
 			LOGGER.info("jdk.version = {}", SystemKit.getJavaInfo().getVersion());
 			LOGGER.info("user.dir = {}", System.getProperty("user.dir"));
 			LOGGER.info("java.io.tmpdir = {}", System.getProperty("java.io.tmpdir"));
@@ -85,11 +84,17 @@ public class DispatcherServlet extends HttpServlet {
 			
 		    blade.webRoot(DispatchKit.getWebRoot(servletContext).getPath());
 		    
-		    BladeWebContext.setContext(servletContext);
+		    ApplicationWebContext.init(servletContext);
 		    
 		    LOGGER.info("blade.webroot = {}", blade.webRoot());
 		    
-			this.bootstrap = blade.bootstrap();
+		    this.bootstrap = blade.bootstrap();
+		    
+		    if(!blade.config().isInit()){
+			    blade.loadAppConf(Const.APP_PROPERTIES);
+				blade.config().setEnv(blade.environment());
+		    }
+		    
 			if(null == bootstrap){
 				String bootStrapClassName = config.getInitParameter("bootstrap");
 				if(StringKit.isNotBlank(bootStrapClassName)){
@@ -103,21 +108,24 @@ public class DispatcherServlet extends HttpServlet {
 				}
 				blade.app(this.bootstrap);
 			}
+
+			// load config
+			blade.configLoader().loadConfig();
 			
 			this.bootstrap.init(blade);
 			
 			LOGGER.info("blade.isDev = {}", blade.isDev());
 			
 		    // buiding route
-			new RouteBuilder(blade).building();
+			blade.routeBuilder().building();
 			
 			// initialization ioc
-			iocApplication = new IocApplication(blade);
+			iocApplication = new IocApplication();
 			iocApplication.init();
 			
 			blade.init();
 			
-			this.bootstrap.contextInitialized(blade);
+			this.bootstrap.contextInitialized();
 			
 		    dispatcherHandler = new DispatcherHandler(servletContext, blade.routers());
 		    
@@ -137,9 +145,6 @@ public class DispatcherServlet extends HttpServlet {
 	protected void service(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws ServletException, IOException {
 		httpRequest.setCharacterEncoding(blade.encoding());
 		httpResponse.setCharacterEncoding(blade.encoding());
-		if(!blade.httpCache()){
-			DispatchKit.setNoCache(httpResponse);
-		}
 		dispatcherHandler.handle(httpRequest, httpResponse);
 	}
 	

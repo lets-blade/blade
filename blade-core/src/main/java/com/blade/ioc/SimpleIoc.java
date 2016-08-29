@@ -105,7 +105,7 @@ public class SimpleIoc implements Ioc {
     	Assert.notNull(name);
     	Assert.notNull(beanDefine);
         
-    	LOGGER.debug("addBean: {}", name);
+//    	LOGGER.debug("addBean: {}", name);
 
         if (pool.put(name, beanDefine) != null) {
         	LOGGER.warn("Duplicated Bean: {}", name);
@@ -139,7 +139,7 @@ public class SimpleIoc implements Ioc {
     	Assert.isFalse(beanClass.isInterface(), "Must not be interface: %s", beanClass.getName());
     	Assert.isFalse(Modifier.isAbstract(beanClass.getModifiers()), "Must not be abstract class: %s", beanClass.getName());
     	
-        LOGGER.debug("addBean: {} = {}", name, beanClass.getName());
+//        LOGGER.debug("addBean: {} = {}", name, beanClass.getName());
         
         BeanDefine beanDefine = this.getBeanDefine(beanClass, singleton);
         

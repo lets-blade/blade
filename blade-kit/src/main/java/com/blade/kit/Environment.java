@@ -40,6 +40,10 @@ public class Environment {
 
 	private Map<String, String> envMap = new HashMap<String, String>(20);
 	
+	public Environment() {
+		
+	}
+	
 	public Environment(String confPath){
 		this.envMap = loadMap(confPath);
 	}

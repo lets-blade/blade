@@ -33,7 +33,7 @@ public abstract class Bootstrap {
 	 * After initialization configuration
 	 * @param blade	blade global object
 	 */
-	public void contextInitialized(Blade blade){
+	public void contextInitialized(){
 		//
 	}
 }

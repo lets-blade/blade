@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.blade.context;
+package com.blade.config;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -30,107 +30,91 @@ import com.blade.kit.StringKit;
  * @since 1.0
  *
  */
-public class BladeConfig {
+public class ApplicationConfig {
 	
-	// Storage of all routing packets 
+	// Storage of all routing packets
 	private Set<String> routePackages = new HashSet<String>();
-	
-	// Store all IOC packages 
+
+	// Store all IOC packages
 	private Set<String> iocPackages = new HashSet<String>();
-	
-	// Store all filter directories 
+
+	// Strore all config packages
+	private Set<String> configPackages = new HashSet<String>();
+
+	// Store all filter directories
 	private Set<String> staticFolders = new HashSet<String>();
-	
+
 	// Base package
 	private String basePackage;
 	
 	// Interceptor package
 	private String interceptorPackage;
-	
+
 	// Encoding
 	private String encoding = "utf-8";
-	
+
 	// web root path
 	private String webRoot;
-	
+
 	// 404 view page
 	private String view404;
-	
+
 	// 500 view page
 	private String view500;
-	
+
 	// Is dev mode
 	private boolean isDev = true;
 	
-	// Enabled XSS
-	private boolean httpXss = false;
-	
-	private boolean httpCache = false;
-	
-	private boolean configInit = false;
-	
-	private Environment environment;
-	
-	public BladeConfig() {
+	private boolean isInit  = false;
+
+	public ApplicationConfig() {
 		staticFolders.add("/public");
 		staticFolders.add("/assets");
 		staticFolders.add("/static");
 	}
-	
-	public void load(String confPath){
-		if(!configInit){
-			try {
-				Environment environment = Environment.load(confPath);
-				if(null != environment){
-					this.environment = environment;
-					this.isDev = environment.getBoolean("app.dev", true);
-					this.httpCache = environment.getBoolean("http.cache", false);
-					this.httpXss = environment.getBoolean("http.xss", false);
-					this.encoding = environment.getString("http.encoding", "UTF-8");
-					this.addIocPackages(environment.getString("app.ioc"));
-					this.view500 = environment.getString("app.view.500");
-					this.view404 = environment.getString("app.view.404");
-					
-					String httpFilters = environment.getString("http.filters");
-					String basePackage = environment.getString("app.base-package");
-					Integer port = environment.getInt("server.port");
-					
-					if(null != port){
-						Blade.me().listen(port);
-					}
-					
-					if(StringKit.isNotBlank(httpFilters)){
-						this.setStaticFolders(httpFilters.split(","));
-					}
-					
-					if(StringKit.isNotBlank(basePackage)){
-						this.setBasePackage(basePackage);
-						this.addIocPackages(basePackage + ".service.*");
-				    	this.addRoutePackages(basePackage + ".controller");
-				    	this.setInterceptorPackage(basePackage + ".interceptor");
-					}
-					
-				}
-			} catch (Exception e) {
+
+	public void setEnv(Environment environment) {
+		if (null != environment && !isInit) {
+			this.isDev = environment.getBoolean("app.dev", true);
+			this.encoding = environment.getString("http.encoding", "UTF-8");
+			this.addIocPackages(environment.getString("app.ioc"));
+			this.view500 = environment.getString("app.view.500");
+			this.view404 = environment.getString("app.view.404");
+
+			String httpFilters = environment.getString("http.filters");
+			String basePackage = environment.getString("app.base-package");
+			Integer port = environment.getInt("server.port");
+
+			if (null != port) {
+				Blade.$().listen(port);
 			}
+
+			if (StringKit.isNotBlank(httpFilters)) {
+				this.setStaticFolders(httpFilters.split(","));
+			}
+
+			if (StringKit.isNotBlank(basePackage)) {
+				this.setBasePackage(basePackage);
+				this.addConfigPackages(basePackage + ".config");
+				this.addIocPackages(basePackage + ".service.*");
+				this.addRoutePackages(basePackage + ".controller");
+				this.setInterceptorPackage(basePackage + ".interceptor");
+			}
+			isInit = true;
 		}
 	}
-	
-	public Environment environment(){
-		return this.environment;
-	}
-	
+
 	public String[] getRoutePackages() {
 		String[] routeArr = new String[routePackages.size()];
 		return routePackages.toArray(routeArr);
 	}
-	
-	public void addRoutePackages(String ... packages) {
-		if(null != packages && packages.length > 0){
+
+	public void addRoutePackages(String... packages) {
+		if (null != packages && packages.length > 0) {
 			routePackages.addAll(Arrays.asList(packages));
 		}
 	}
-	
+
 	public String getBasePackage() {
 		return basePackage;
 	}
@@ -144,9 +128,20 @@ public class BladeConfig {
 		return iocPackages.toArray(iocArr);
 	}
 
-	public void addIocPackages(String ... packages) {
-		if(null != packages && packages.length > 0){
+	public String[] getConfigPackages() {
+		String[] configArr = new String[configPackages.size()];
+		return configPackages.toArray(configArr);
+	}
+
+	public void addIocPackages(String... packages) {
+		if (null != packages && packages.length > 0) {
 			iocPackages.addAll(Arrays.asList(packages));
+		}
+	}
+
+	public void addConfigPackages(String... packages) {
+		if (null != packages && packages.length > 0) {
+			configPackages.addAll(Arrays.asList(packages));
 		}
 	}
 
@@ -161,8 +156,8 @@ public class BladeConfig {
 	public Set<String> getStaticFolders() {
 		return staticFolders;
 	}
-	
-	public void setStaticFolders(String ... packages) {
+
+	public void setStaticFolders(String... packages) {
 		staticFolders.addAll(Arrays.asList(packages));
 	}
 
@@ -206,20 +201,7 @@ public class BladeConfig {
 		this.encoding = encoding;
 	}
 
-	public boolean isHttpXss() {
-		return httpXss;
+	public boolean isInit(){
+		return this.isInit;
 	}
-
-	public void setHttpXss(boolean httpXss) {
-		this.httpXss = httpXss;
-	}
-
-	public boolean isHttpCache() {
-		return httpCache;
-	}
-
-	public void setHttpCache(boolean httpCache) {
-		this.httpCache = httpCache;
-	}
-	
 }

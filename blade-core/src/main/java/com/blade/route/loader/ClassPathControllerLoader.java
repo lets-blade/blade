@@ -31,7 +31,7 @@ public class ClassPathControllerLoader implements ControllerLoader {
 
 	private ClassLoader classLoader = ClassPathControllerLoader.class.getClassLoader();
 
-	private Ioc ioc = Blade.me().ioc();
+	private Ioc ioc = Blade.$().ioc();
 	
 	public ClassPathControllerLoader() {
 		this("");

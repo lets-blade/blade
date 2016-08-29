@@ -32,7 +32,7 @@ public class DispatchKit {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(DispatchKit.class);
 	
-	static final boolean isWeb = Blade.me().enableServer();
+	static final boolean isWeb = Blade.$().enableServer();
 	
 	private static Boolean isDev = null;
 	
@@ -83,9 +83,8 @@ public class DispatchKit {
 	 */
 	public static void printError(Throwable err, int code, Response response){
 		if(null == isDev){
-			isDev = Blade.me().isDev();
+			isDev = Blade.$().isDev();
 		}
-		err.printStackTrace();
 		try {
 			final ByteArrayOutputStream baos = new ByteArrayOutputStream();
 	        final PrintWriter writer = new PrintWriter(baos);
@@ -98,7 +97,7 @@ public class DispatchKit {
 				writer.println(END);
 			} else {
 				if(code == 404){
-					String view404 = Blade.me().view404();
+					String view404 = Blade.$().view404();
 					if(StringKit.isNotBlank(view404)){
 						response.render(view404);
 						return;
@@ -106,7 +105,7 @@ public class DispatchKit {
 						writer.write(err.getMessage());
 					}
 				} else {
-					String view500 = Blade.me().view500();
+					String view500 = Blade.$().view500();
 					if(StringKit.isNotBlank(view500)){
 						response.render(view500);
 						return;

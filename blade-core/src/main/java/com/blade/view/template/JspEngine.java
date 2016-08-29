@@ -27,7 +27,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.blade.context.BladeWebContext;
+import com.blade.context.ApplicationWebContext;
 import com.blade.view.ModelAndView;
 
 
@@ -52,8 +52,8 @@ public final class JspEngine implements TemplateEngine {
 	
 	@Override
 	public void render(ModelAndView modelAndView, Writer writer) {
-		HttpServletRequest servletRequest = BladeWebContext.request().raw();
-		HttpServletResponse servletResponse = BladeWebContext.response().raw();
+		HttpServletRequest servletRequest = ApplicationWebContext.request().raw();
+		HttpServletResponse servletResponse = ApplicationWebContext.response().raw();
 		
 		try {
 			Map<String, Object> model = modelAndView.getModel();

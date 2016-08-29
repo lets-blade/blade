@@ -23,7 +23,7 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 
-import com.blade.context.BladeWebContext;
+import com.blade.context.ApplicationWebContext;
 import com.blade.kit.Assert;
 import com.blade.view.ModelAndView;
 import com.blade.view.template.TemplateEngine;
@@ -214,7 +214,7 @@ public class ServletResponse implements Response {
 
 	@Override
 	public Response json(String json) {
-		Request request = BladeWebContext.request();
+		Request request = ApplicationWebContext.request();
 		String userAgent = request.userAgent();
 		if (userAgent.contains("MSIE")) {
 			response.setContentType("text/html;charset=utf-8");
@@ -309,7 +309,7 @@ public class ServletResponse implements Response {
 	@Override
 	public void go(String path) {
 		try {
-			String ctx = BladeWebContext.servletContext().getContextPath();
+			String ctx = ApplicationWebContext.servletContext().getContextPath();
         	String location = Path.fixPath(ctx + path);
 			response.sendRedirect(location);
 		} catch (IOException e) {

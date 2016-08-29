@@ -51,10 +51,8 @@ public class RouteBuilder {
     
     private String interceptorPackage;
     
-    public RouteBuilder(Blade blade) {
-    	this.routers = blade.routers();
-    	this.routePackages = blade.routePackages();
-    	this.interceptorPackage = blade.interceptorPackage();
+    public RouteBuilder(Routers routers) {
+    	this.routers = routers;
     	this.classReader = DynamicClassReader.getClassReader();
     }
     
@@ -62,6 +60,9 @@ public class RouteBuilder {
      * Start building route
      */
     public void building() {
+    	
+    	this.routePackages = Blade.$().config().getRoutePackages();
+    	this.interceptorPackage = Blade.$().config().getInterceptorPackage();
     	
     	// Route
     	if(null != routePackages && routePackages.length > 0){
@@ -92,7 +93,7 @@ public class RouteBuilder {
 			classes = classReader.getClass(packageName, Interceptor.class, false);
     		if(CollectionKit.isNotEmpty(classes)){
     			for(Class<?> interceptorClazz : classes){
-    				parseInterceptor(interceptorClazz);
+    				addInterceptor(interceptorClazz);
     			}
     		}
     	}
@@ -111,7 +112,7 @@ public class RouteBuilder {
     		classes = classReader.getClassByAnnotation(packageName, Controller.class, true);
     		if(CollectionKit.isNotEmpty(classes)){
     			for(Class<?> pathClazz : classes){
-    				parseRouter(pathClazz);
+    				addRouter(pathClazz);
     			}
     		}
     	}
@@ -123,7 +124,7 @@ public class RouteBuilder {
      * 
      * @param interceptor	resolve the interceptor class
      */
-    private void parseInterceptor(final Class<?> interceptor){
+    public void addInterceptor(final Class<?> interceptor){
     	
     	boolean hasInterface = ReflectKit.hasInterface(interceptor, Interceptor.class);
     	
@@ -157,7 +158,7 @@ public class RouteBuilder {
      * 
      * @param controller	resolve the routing class
      */
-    private void parseRouter(final Class<?> router){
+    public void addRouter(final Class<?> router){
     	
     	Method[] methods = router.getMethods();
     	if(null == methods || methods.length == 0){
@@ -196,7 +197,10 @@ public class RouteBuilder {
     
     private String getRoutePath(String value, String nameSpace, String suffix){
     	String path = value.startsWith("/") ? value : "/" + value;
+    	
+    	nameSpace = nameSpace.startsWith("/") ? nameSpace : "/" + nameSpace;
 		path = nameSpace + path;
+		
 		path = path.replaceAll("[/]+", "/");
 		
 		path = path.length() > 1 && path.endsWith("/") ? path.substring(0, path.length() - 1) : path;

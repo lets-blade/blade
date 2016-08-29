@@ -26,7 +26,9 @@ import org.slf4j.LoggerFactory;
 
 import com.blade.Blade;
 import com.blade.Const;
-import com.blade.context.BladeWebContext;
+import com.blade.context.ApplicationWebContext;
+import com.blade.exception.BladeException;
+import com.blade.exception.NotFoundException;
 import com.blade.ioc.Ioc;
 import com.blade.kit.StringKit;
 import com.blade.route.Route;
@@ -66,7 +68,7 @@ public class DispatcherHandler {
 	
 	public DispatcherHandler(ServletContext servletContext, Routers routers) {
 		this.servletContext = servletContext;
-		this.blade = Blade.me();
+		this.blade = Blade.$();
 		this.ioc = blade.ioc();
 		this.routeMatcher = new RouteMatcher(routers);
 		this.staticFileFilter = new StaticFileFilter(blade.staticFolder());
@@ -99,7 +101,7 @@ public class DispatcherHandler {
      		Request request = new ServletRequest(httpRequest);
      		
             // Init Context
-         	BladeWebContext.setContext(servletContext, request, response);
+         	ApplicationWebContext.init(servletContext, request, response);
          	
 			Route route = routeMatcher.getRoute(method, uri);
 			
@@ -111,7 +113,6 @@ public class DispatcherHandler {
 				List<Route> befores = routeMatcher.getBefore(uri);
 				boolean result = invokeInterceptor(request, response, befores);
 				if(result){
-					
 					// execute
 					this.routeHandle(request, response, route);
 					if(!request.isAbort()){
@@ -125,7 +126,13 @@ public class DispatcherHandler {
 				render404(response, uri);
 			}
 			return;
-		} catch (Exception e) {
+		} catch (NotFoundException e) {
+			LOGGER.warn(e.getMessage());
+			DispatchKit.printError(e, 404, response);
+        } catch (BladeException e) {
+			LOGGER.error(e.getMessage());
+			DispatchKit.printError(e, 500, response);
+        } catch (Exception e) {
 			DispatchKit.printError(e, 500, response);
         }
         return;
@@ -186,7 +193,7 @@ public class DispatcherHandler {
 		request.initPathParams(route.getPath());
 		
 		// Init context
-		BladeWebContext.setContext(servletContext, request, response);
+		ApplicationWebContext.init(servletContext, request, response);
 		if(route.getTargetType() == RouteHandler.class){
 			RouteHandler routeHandler = (RouteHandler) target;
 			routeHandler.handle(request, response);

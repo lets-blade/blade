@@ -69,13 +69,13 @@ public class IocApplication {
 	
 	private Blade blade;
 	
-	public IocApplication(Blade blade) {
-		this.blade = blade;
+	public IocApplication() {
+		this.blade = Blade.$();
 		this.classReader = DynamicClassReader.getClassReader();
 		this.plugins = CollectionKit.newArrayList();
 		this.pluginTypes = blade.plugins();
 		this.ioc = blade.ioc();
-		this.iocs = blade.iocs();
+		this.iocs = blade.config().getIocPackages();
 		this.bootstrap = blade.bootstrap();
 	}
 	
