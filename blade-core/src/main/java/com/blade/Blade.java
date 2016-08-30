@@ -21,6 +21,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.blade.aop.Aop;
 import com.blade.config.ApplicationConfig;
 import com.blade.config.BaseConfig;
 import com.blade.config.ConfigLoader;
@@ -39,7 +40,7 @@ import com.blade.route.RouteGroup;
 import com.blade.route.RouteHandler;
 import com.blade.route.Routers;
 import com.blade.route.loader.ClassPathRouteLoader;
-import com.blade.view.template.JspEngine;
+import com.blade.view.template.DefaultEngine;
 import com.blade.view.template.TemplateEngine;
 import com.blade.web.http.HttpMethod;
 
@@ -49,7 +50,7 @@ import com.blade.web.http.HttpMethod;
  * @author <a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since 1.0
  */
-public class Blade {
+public final class Blade {
 
 	// blade initialize
 	private boolean isInit = false;
@@ -89,14 +90,17 @@ public class Blade {
 
 	// config loader
 	private ConfigLoader configLoader;
+	
+	private Aop aop;
 
 	private Blade() {
 		this.environment = new Environment();
 		this.applicationConfig = new ApplicationConfig();
-		this.templateEngine = new JspEngine();
+		this.templateEngine = new DefaultEngine();
 		this.plugins = new HashSet<Class<? extends Plugin>>();
 		this.routeBuilder = new RouteBuilder(this.routers);
 		this.configLoader = new ConfigLoader(this.ioc, this.applicationConfig);
+		this.aop = new Aop();
 	}
 
 	static final class BladeHolder {
@@ -151,7 +155,11 @@ public class Blade {
 			this.isInit = true;
 		}
 	}
-
+	
+	public Aop aop(){
+		return this.aop;
+	}
+	
 	/**
 	 * @return return route manager
 	 */

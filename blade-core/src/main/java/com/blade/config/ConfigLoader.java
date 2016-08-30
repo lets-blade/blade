@@ -75,15 +75,9 @@ public class ConfigLoader {
 	
 	public void addConfig(Class<? extends BaseConfig> clazz) throws ConfigException {
 		if (!Modifier.isAbstract(clazz.getModifiers())) {
-			try {
-				BaseConfig baseConfig = (BaseConfig) ReflectKit.newInstance(clazz);
-				baseConfig.config(applicationConfig);
-				ioc.addBean(baseConfig);
-			} catch (InstantiationException e) {
-				throw new ConfigException(e);
-			} catch (IllegalAccessException e) {
-				throw new ConfigException(e);
-			}
+			Object bean = ioc.addBean(clazz);
+			BaseConfig baseConfig = (BaseConfig) bean;
+			baseConfig.config(applicationConfig);
 		}
 	}
 

@@ -170,21 +170,12 @@ public class RouteBuilder {
 		final String suffix = router.getAnnotation(Controller.class).suffix();
 		
 		for (Method method : methods) {
-			
 			Route mapping = method.getAnnotation(Route.class);
-			
 			//route method
 			if (null != mapping) {
-				
-				// build 
-				String path = getRoutePath(mapping.value(), nameSpace, suffix);
-				
-				HttpMethod methodType = mapping.method();
-				
-				buildRoute(router, method, path, methodType);
-				
 				// build multiple route
-				String[] paths = mapping.values();
+				HttpMethod methodType = mapping.method();
+				String[] paths = mapping.value();
 				if(null != paths && paths.length > 0){
 					for(String value : paths){
 						String pathV = getRoutePath(value, nameSpace, suffix);

@@ -37,6 +37,10 @@ public class ModelAndView {
 	 */
     private String view;
 
+    public ModelAndView() {
+    	
+    }
+    
     /**
      * Create an empty view 
      * 

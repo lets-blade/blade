@@ -32,7 +32,7 @@ public interface Ioc {
 	
 	void addBean(Object bean);
 	
-	void addBean(Class<?> type);
+	Object addBean(Class<?> type);
 	
 	void addBean(String name, Object bean);
 	

@@ -117,22 +117,22 @@ public class SimpleIoc implements Ioc {
      * Register @Component marked objects
      */
     @Override
-    public void addBean(Class<?> type) {
-        addBean(type, true);
+    public Object addBean(Class<?> type) {
+        return addBean(type, true);
     }
 
     /**
      * Register @Component marked objects
      */
-    public void addBean(Class<?> type, boolean singleton) {
+    public Object addBean(Class<?> type, boolean singleton) {
     	Assert.notNull(type);
-        addBean(type.getName(), type, singleton);
+        return addBean(type.getName(), type, singleton);
     }
     
     /**
      * Register @Component marked objects
      */
-    public void addBean(String name, Class<?> beanClass, boolean singleton) {
+    public Object addBean(String name, Class<?> beanClass, boolean singleton) {
     	
     	Assert.notNull(name);
     	Assert.notNull(beanClass);
@@ -157,9 +157,13 @@ public class SimpleIoc implements Ioc {
 	    		this.addBean(interfaceClazz.getName(), beanDefine);
 	    	}
 	    }
+	    
+	    return beanDefine.getBean();
     }
     
     private BeanDefine getBeanDefine(Class<?> beanClass, boolean singleton) {
+//    	Object object = Blade.$().aop().createBean(beanClass);
+//		return new BeanDefine(object, beanClass, singleton);
     	try {
 			Object object = beanClass.newInstance();
 			return new BeanDefine(object, beanClass, singleton);
@@ -174,7 +178,12 @@ public class SimpleIoc implements Ioc {
     @Override
 	public <T> T getBean(Class<T> type) {
     	Object bean = this.getBean(type.getName());
-		return type.cast(bean);
+		try {
+			return type.cast(bean);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	@Override

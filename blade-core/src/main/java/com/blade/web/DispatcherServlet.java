@@ -108,7 +108,7 @@ public class DispatcherServlet extends HttpServlet {
 				}
 				blade.app(this.bootstrap);
 			}
-
+			
 			// load config
 			blade.configLoader().loadConfig();
 			
