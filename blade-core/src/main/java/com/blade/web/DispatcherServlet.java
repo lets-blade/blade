@@ -29,10 +29,8 @@ import org.slf4j.LoggerFactory;
 
 import com.blade.Blade;
 import com.blade.Bootstrap;
-import com.blade.Const;
+import com.blade.context.ApplicationContext;
 import com.blade.context.ApplicationWebContext;
-import com.blade.ioc.IocApplication;
-import com.blade.kit.Environment;
 import com.blade.kit.StringKit;
 import com.blade.kit.SystemKit;
 import com.blade.kit.resource.DynamicClassReader;
@@ -52,8 +50,6 @@ public class DispatcherServlet extends HttpServlet {
 	private Blade blade = Blade.$();
 	
 	private Bootstrap bootstrap; 
-	
-	private IocApplication iocApplication;
 	
 	private ServletContext servletContext;
 	
@@ -90,11 +86,6 @@ public class DispatcherServlet extends HttpServlet {
 		    
 		    this.bootstrap = blade.bootstrap();
 		    
-		    if(!blade.config().isInit()){
-			    blade.loadAppConf(Const.APP_PROPERTIES);
-				blade.config().setEnv(blade.environment());
-		    }
-		    
 			if(null == bootstrap){
 				String bootStrapClassName = config.getInitParameter("bootstrap");
 				if(StringKit.isNotBlank(bootStrapClassName)){
@@ -109,38 +100,20 @@ public class DispatcherServlet extends HttpServlet {
 				blade.app(this.bootstrap);
 			}
 			
-			// load config
-			blade.configLoader().loadConfig();
-			
-			this.bootstrap.init(blade);
+			ApplicationContext.init(blade);
 			
 			LOGGER.info("blade.isDev = {}", blade.isDev());
-			
-		    // buiding route
-			blade.routeBuilder().building();
-			
-			// initialization ioc
-			iocApplication = new IocApplication();
-			iocApplication.init();
-			
-			blade.init();
-			
-			this.bootstrap.contextInitialized();
 			
 		    dispatcherHandler = new DispatcherHandler(servletContext, blade.routers());
 		    
 		    new BladeBanner().print();
 		    
-		    Environment environment = blade.environment();
-		    String appName = "Blade";
-		    if(null != environment){
-		    	appName = environment.getString("app.name", "Blade");
-		    }
+		    String appName = blade.environment().getString("app.name", "Blade");
 		    
 		    LOGGER.info(appName + " initialize successfully, Time elapsed: {} ms.", System.currentTimeMillis() - initStart);
 		}
 	}
-
+	
 	@Override
 	protected void service(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws ServletException, IOException {
 		httpRequest.setCharacterEncoding(blade.encoding());
@@ -151,9 +124,6 @@ public class DispatcherServlet extends HttpServlet {
 	@Override
 	public void destroy() {
 		super.destroy();
-		if(null != iocApplication){
-			iocApplication.destroy();
-		}
 	}
 	
 	/**
