@@ -23,4 +23,8 @@ package com.blade.kit.resource;
  */
 public class ClassPathClassReader extends AbstractClassReader implements ClassReader {
 
+	public ClassPathClassReader(BladeClassLoader classLoader) {
+		super(classLoader);
+	}
+
 }

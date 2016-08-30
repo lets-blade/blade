@@ -22,13 +22,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.blade.Blade;
+import com.blade.context.DynamicClassReader;
 import com.blade.exception.ConfigException;
 import com.blade.ioc.Ioc;
 import com.blade.ioc.annotation.Component;
 import com.blade.kit.CollectionKit;
 import com.blade.kit.reflect.ReflectKit;
+import com.blade.kit.resource.ClassInfo;
 import com.blade.kit.resource.ClassReader;
-import com.blade.kit.resource.DynamicClassReader;
 
 /**
  * ConfigLoader
@@ -49,7 +50,7 @@ public class ConfigLoader {
 		this.classReader = DynamicClassReader.getClassReader();
 		this.applicationConfig = applicationConfig;
 	}
-
+	
 	@SuppressWarnings("unchecked")
 	public void loadConfig() {
 		String[] configPackages = Blade.$().config().getConfigPackages();
@@ -57,12 +58,12 @@ public class ConfigLoader {
 			// Scan package all class
 			try {
 				for (String packageName : configPackages) {
-					Set<Class<?>> classes = classReader.getClassByAnnotation(packageName, Component.class, false);
+					Set<ClassInfo> classes = classReader.getClassByAnnotation(packageName, Component.class, false);
 					if (CollectionKit.isNotEmpty(classes)) {
-						for (Class<?> clazz : classes) {
-							boolean hasInterface = ReflectKit.hasInterface(clazz, BaseConfig.class);
+						for (ClassInfo classInfo : classes) {
+							boolean hasInterface = ReflectKit.hasInterface(classInfo.getClazz(), BaseConfig.class);
 							if(hasInterface){
-								addConfig((Class<? extends BaseConfig>) clazz);
+								addConfig((Class<? extends BaseConfig>) classInfo.getClazz());
 							}
 						}
 					}

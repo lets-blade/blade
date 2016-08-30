@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 
 import com.blade.kit.Assert;
 import com.blade.kit.CollectionKit;
+import com.blade.kit.exception.ClassReaderException;
 
 /**
  * 抽象类读取器
@@ -40,8 +41,23 @@ public abstract class AbstractClassReader implements ClassReader {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(AbstractClassReader.class);
 	
+	protected BladeClassLoader classLoader;
+	
 	@Override
-	public Set<Class<?>> getClass(String packageName, boolean recursive) {
+	public BladeClassLoader getClassLoader() {
+		return classLoader;
+	}
+	
+	public AbstractClassReader(BladeClassLoader classLoader) {
+		if(null == classLoader){
+			this.classLoader = this.getClassLoader();	
+		} else{
+			this.classLoader = classLoader;
+		}
+	}
+	
+	@Override
+	public Set<ClassInfo> getClass(String packageName, boolean recursive) {
 		return this.getClassByAnnotation(packageName, null, null, recursive);
 	}
 
@@ -49,7 +65,7 @@ public abstract class AbstractClassReader implements ClassReader {
 	 * 默认实现以文件形式的读取
 	 */
 	@Override
-	public Set<Class<?>> getClass(String packageName, Class<?> parent, boolean recursive) {
+	public Set<ClassInfo> getClass(String packageName, Class<?> parent, boolean recursive) {
         return this.getClassByAnnotation(packageName, parent,  null, recursive);
 	}
 	
@@ -62,7 +78,10 @@ public abstract class AbstractClassReader implements ClassReader {
 	 * @param recursive
 	 * @return
 	 */
-	private Set<Class<?>> findClassByPackage(final String packageName, final String packagePath, final Class<?> parent, final Class<? extends Annotation> annotation, final boolean recursive, Set<Class<?>> classes) {
+	private Set<ClassInfo> findClassByPackage(final String packageName, final String packagePath, 
+			final Class<?> parent,  final Class<? extends Annotation> annotation, 
+			final boolean recursive, Set<ClassInfo> classes) throws ClassNotFoundException {
+		
 		// 获取此包的目录 建立一个File
         File dir = new File(packagePath);
         // 如果不存在或者 也不是目录就直接返回
@@ -80,35 +99,32 @@ public abstract class AbstractClassReader implements ClassReader {
                 } else {
                     // 如果是java类文件 去掉后面的.class 只留下类名
                     String className = file.getName().substring(0, file.getName().length() - 6);
-                    try {
-                    	Class<?> clazz = Class.forName(packageName + '.' + className);
-                    	if(null != parent && null != annotation){
-                    		if(null != clazz.getSuperclass() && clazz.getSuperclass().equals(parent) && 
-                    				null != clazz.getAnnotation(annotation)){
-                    			classes.add(clazz);
-                    		}
-                    		continue;
-                    	}
-                    	if(null != parent){
-                    		if(null != clazz.getSuperclass() && clazz.getSuperclass().equals(parent)){
-                    			classes.add(clazz);
-                    		} else {
-                    			if(null != clazz.getInterfaces() && clazz.getInterfaces().length > 0 && clazz.getInterfaces()[0].equals(parent)){
-                        			classes.add(clazz);
-                        		}
+                    Class<?> clazz = classLoader.defineClassByName(packageName + '.' + className);
+//                    	Class<?> clazz = Class.forName(packageName + '.' + className);
+					if(null != parent && null != annotation){
+						if(null != clazz.getSuperclass() && clazz.getSuperclass().equals(parent) && 
+								null != clazz.getAnnotation(annotation)){
+							classes.add(new ClassInfo(clazz));
+						}
+						continue;
+					}
+					if(null != parent){
+						if(null != clazz.getSuperclass() && clazz.getSuperclass().equals(parent)){
+							classes.add(new ClassInfo(clazz));
+						} else {
+							if(null != clazz.getInterfaces() && clazz.getInterfaces().length > 0 && clazz.getInterfaces()[0].equals(parent)){
+								classes.add(new ClassInfo(clazz));
 							}
-                    		continue;
-                    	}
-                    	if(null != annotation){
-                    		if(null != clazz.getAnnotation(annotation)){
-                    			classes.add(clazz);
-                    		}
-                    		continue;
-                    	}
-                        classes.add(clazz);
-                    } catch (ClassNotFoundException e) {
-                    	LOGGER.error("在扫描用户定义视图时从jar包获取文件出错，找不到.class类文件：" + e.getMessage());
-                    }
+						}
+						continue;
+					}
+					if(null != annotation){
+						if(null != clazz.getAnnotation(annotation)){
+							classes.add(new ClassInfo(clazz));
+						}
+						continue;
+					}
+					classes.add(new ClassInfo(clazz));
                 }
             }
         }
@@ -132,34 +148,37 @@ public abstract class AbstractClassReader implements ClassReader {
 	}
 	
 	@Override
-	public Set<Class<?>> getClassByAnnotation(String packageName, Class<? extends Annotation> annotation, boolean recursive) {
+	public Set<ClassInfo> getClassByAnnotation(String packageName, Class<? extends Annotation> annotation, boolean recursive) {
 		return this.getClassByAnnotation(packageName, null, annotation, recursive);
 	}
-
+	
 	@Override
-	public Set<Class<?>> getClassByAnnotation(String packageName, Class<?> parent, Class<? extends Annotation> annotation, boolean recursive) {
+	public Set<ClassInfo> getClassByAnnotation(String packageName, Class<?> parent, Class<? extends Annotation> annotation, boolean recursive) {
 		Assert.notBlank(packageName);
-		Set<Class<?>> classes = CollectionKit.newHashSet();
+		Set<ClassInfo> classes = CollectionKit.newHashSet();
         // 获取包的名字 并进行替换
         String packageDirName = packageName.replace('.', '/');
         // 定义一个枚举的集合 并进行循环来处理这个目录下的URL
         Enumeration<URL> dirs;
         try {
-            dirs = getClass().getClassLoader().getResources(packageDirName);
+            dirs = classLoader.getResources(packageDirName);
             // 循环迭代下去
             while (dirs.hasMoreElements()) {
                 // 获取下一个元素
                 URL url = dirs.nextElement();
 				// 获取包的物理路径
 				String filePath = URLDecoder.decode(url.getFile(), "UTF-8");
-				Set<Class<?>> subClasses = findClassByPackage(packageName, filePath, parent, annotation, recursive, classes);
+				Set<ClassInfo> subClasses = findClassByPackage(packageName, filePath, parent, annotation, recursive, classes);
 				if(subClasses.size() > 0){
 					classes.addAll(subClasses);
 				}
             }
         } catch (IOException e) {
         	LOGGER.error(e.getMessage(), e);
-        }
+        } catch (ClassNotFoundException e) {
+        	LOGGER.error("Add user custom view class error Can't find such Class files.");
+			throw new ClassReaderException(e);
+		}
         return classes;
 	}
 

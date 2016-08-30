@@ -31,9 +31,9 @@ import com.blade.Blade;
 import com.blade.Bootstrap;
 import com.blade.context.ApplicationContext;
 import com.blade.context.ApplicationWebContext;
+import com.blade.context.DynamicClassReader;
 import com.blade.kit.StringKit;
 import com.blade.kit.SystemKit;
-import com.blade.kit.resource.DynamicClassReader;
 
 /**
  * Blade Core DispatcherServlet

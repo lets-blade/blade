@@ -29,7 +29,6 @@ import org.slf4j.LoggerFactory;
 
 import com.blade.kit.Assert;
 import com.blade.kit.CollectionKit;
-import com.blade.kit.exception.ClassReaderException;
 
 /**
  * 根据jar文件读取类
@@ -41,36 +40,40 @@ public class JarReaderImpl extends AbstractClassReader implements ClassReader {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(JarReaderImpl.class);
 	
+	public JarReaderImpl(BladeClassLoader classLoader) {
+		super(classLoader);
+	}
+	
 	@Override
-	public Set<Class<?>> getClass(String packageName, boolean recursive) {
+	public Set<ClassInfo> getClass(String packageName, boolean recursive) {
 		return this.getClassByAnnotation(packageName, null, null, recursive);
 	}
 
 	@Override
-	public Set<Class<?>> getClass(String packageName, Class<?> parent, boolean recursive) {
+	public Set<ClassInfo> getClass(String packageName, Class<?> parent, boolean recursive) {
 		return this.getClassByAnnotation(packageName, parent, null, recursive);
 	}
 
 	@Override
-	public Set<Class<?>> getClassByAnnotation(String packageName, Class<? extends Annotation> annotation, boolean recursive) {
+	public Set<ClassInfo> getClassByAnnotation(String packageName, Class<? extends Annotation> annotation, boolean recursive) {
 		return this.getClassByAnnotation(packageName, null, annotation, recursive);
 	}
 
 	@Override
-	public Set<Class<?>> getClassByAnnotation(String packageName, Class<?> parent, Class<? extends Annotation> annotation, boolean recursive) {
+	public Set<ClassInfo> getClassByAnnotation(String packageName, Class<?> parent, Class<? extends Annotation> annotation, boolean recursive) {
 		Assert.notBlank(packageName);
-		Set<Class<?>> classes = CollectionKit.newHashSet();
+		Set<ClassInfo> classes = CollectionKit.newHashSet();
         // 获取包的名字 并进行替换
         String packageDirName = packageName.replace('.', '/');
         // 定义一个枚举的集合 并进行循环来处理这个目录下的URL
         Enumeration<URL> dirs;
         try {
-            dirs = getClass().getClassLoader().getResources(packageDirName);
+            dirs = classLoader.getResources(packageDirName);
             // 循环迭代下去
             while (dirs.hasMoreElements()) {
                 // 获取下一个元素
                 URL url = dirs.nextElement();
-				Set<Class<?>> subClasses = this.getClasses(url, packageDirName, packageName, parent, annotation, recursive, classes);
+				Set<ClassInfo> subClasses = this.getClasses(url, packageDirName, packageName, parent, annotation, recursive, classes);
 				if(subClasses.size() > 0){
 					classes.addAll(subClasses);
 				}
@@ -81,16 +84,16 @@ public class JarReaderImpl extends AbstractClassReader implements ClassReader {
         return classes;
 	}
 	
-	private Set<Class<?>> getClasses(final URL url, final String packageDirName, String packageName, final Class<?> parent, 
-			final Class<? extends Annotation> annotation, final boolean recursive, Set<Class<?>> classes){
+	private Set<ClassInfo> getClasses(final URL url, final String packageDirName, String packageName, final Class<?> parent, 
+			final Class<? extends Annotation> annotation, final boolean recursive, Set<ClassInfo> classes){
 		try {
-			if( url.toString( ).startsWith( "jar:file:" ) || url.toString( ).startsWith( "wsjar:file:" ) ) {
+			if( url.toString().startsWith( "jar:file:" ) || url.toString().startsWith( "wsjar:file:" ) ) {
 				
 				// 获取jar
-		        JarFile jarFile = ( (JarURLConnection)url.openConnection() ).getJarFile( );
+		        JarFile jarFile = ( (JarURLConnection)url.openConnection() ).getJarFile();
 
 		        // 从此jar包 得到一个枚举类
-		        Enumeration<JarEntry> eje = jarFile.entries( );
+		        Enumeration<JarEntry> eje = jarFile.entries();
 
 		        // 同样的进行循环迭代
 				while (eje.hasMoreElements()) {
@@ -116,33 +119,29 @@ public class JarReaderImpl extends AbstractClassReader implements ClassReader {
 							if (name.endsWith(".class") && !entry.isDirectory()) {
 								// 去掉后面的".class" 获取真正的类名
 								String className = name.substring(packageName.length() + 1, name.length() - 6);
-								try {
-									// 添加到classes
-									Class<?> clazz = Class.forName(packageName + '.' + className);
-									if(null != parent && null != annotation){
-			                    		if(null != clazz.getSuperclass() && 
-			                    			clazz.getSuperclass().equals(parent) && null != clazz.getAnnotation(annotation)){
-			                    			classes.add(clazz);
-			                    		}
-			                    		continue;
-			                    	}
-			                    	if(null != parent){
-			                    		if(null != clazz.getSuperclass() && clazz.getSuperclass().equals(parent)){
-			                    			classes.add(clazz);
-			                    		}
-			                    		continue;
-			                    	}
-			                    	if(null != annotation){
-			                    		if(null != clazz.getAnnotation(annotation)){
-			                    			classes.add(clazz);
-			                    		}
-			                    		continue;
-			                    	}
-			                        classes.add(clazz);
-								} catch (ClassNotFoundException e) {
-									LOGGER.error("Add user custom view class error Can't find such Class files.");
-									throw new ClassReaderException(e);
+								// 添加到classes
+//									Class<?> clazz = Class.forName(packageName + '.' + className);
+								Class<?> clazz = classLoader.defineClassByName(packageName + '.' + className);
+								if(null != parent && null != annotation){
+									if(null != clazz.getSuperclass() && 
+										clazz.getSuperclass().equals(parent) && null != clazz.getAnnotation(annotation)){
+										classes.add(new ClassInfo(clazz));
+									}
+									continue;
 								}
+								if(null != parent){
+									if(null != clazz.getSuperclass() && clazz.getSuperclass().equals(parent)){
+										classes.add(new ClassInfo(clazz));
+									}
+									continue;
+								}
+								if(null != annotation){
+									if(null != clazz.getAnnotation(annotation)){
+										classes.add(new ClassInfo(clazz));
+									}
+									continue;
+								}
+								classes.add(new ClassInfo(clazz));
 							}
 						}
 					}
@@ -150,6 +149,9 @@ public class JarReaderImpl extends AbstractClassReader implements ClassReader {
 		    }
 		} catch (IOException e) {
 			LOGGER.error("The scan error when the user to define the view from a jar package file.", e);
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		return classes;
 	}

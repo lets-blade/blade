@@ -26,12 +26,13 @@ import org.slf4j.LoggerFactory;
 
 import com.blade.Blade;
 import com.blade.Bootstrap;
+import com.blade.context.DynamicClassReader;
 import com.blade.ioc.annotation.Component;
 import com.blade.ioc.annotation.Service;
 import com.blade.kit.CollectionKit;
 import com.blade.kit.StringKit;
+import com.blade.kit.resource.ClassInfo;
 import com.blade.kit.resource.ClassReader;
-import com.blade.kit.resource.DynamicClassReader;
 import com.blade.plugin.Plugin;
 import com.blade.route.Route;
 import com.blade.route.RouteHandler;
@@ -56,7 +57,6 @@ public class IocApplication {
 	 * Class to read object, load class
 	 */
 	private ClassReader classReader = null;
-	
 	private String[] iocs;
 	private Bootstrap bootstrap;
 	
@@ -158,8 +158,9 @@ public class IocApplication {
 		}
 		
 		// Scan package all class
-		Set<Class<?>> classes = classReader.getClass(packageName, recursive);
-		for (Class<?> clazz : classes) {
+		Set<ClassInfo> classes = classReader.getClass(packageName, recursive);
+		for (ClassInfo classInfo : classes) {
+			Class<?> clazz = classInfo.getClazz();
 			if(!clazz.isInterface() && !Modifier.isAbstract(clazz.getModifiers())){
 				Component component = clazz.getAnnotation(Component.class);
 				Service service = clazz.getAnnotation(Service.class);

@@ -22,12 +22,13 @@ import com.blade.Blade;
 import com.blade.annotation.Controller;
 import com.blade.annotation.Intercept;
 import com.blade.annotation.Route;
+import com.blade.context.DynamicClassReader;
 import com.blade.interceptor.Interceptor;
 import com.blade.kit.CollectionKit;
 import com.blade.kit.StringKit;
 import com.blade.kit.reflect.ReflectKit;
+import com.blade.kit.resource.ClassInfo;
 import com.blade.kit.resource.ClassReader;
-import com.blade.kit.resource.DynamicClassReader;
 import com.blade.web.http.HttpMethod;
 import com.blade.web.http.Request;
 import com.blade.web.http.Response;
@@ -84,7 +85,7 @@ public class RouteBuilder {
     private void buildInterceptor(String... interceptorPackages){
     	
     	// Scan all Interceptor
-		Set<Class<?>> classes = null;
+		Set<ClassInfo> classes = null;
 		
     	// Traversal Interceptor
 		for(String packageName : interceptorPackages){
@@ -92,7 +93,8 @@ public class RouteBuilder {
     		// Scan all Interceptor
 			classes = classReader.getClass(packageName, Interceptor.class, false);
     		if(CollectionKit.isNotEmpty(classes)){
-    			for(Class<?> interceptorClazz : classes){
+    			for(ClassInfo classInfo : classes){
+    				Class<?> interceptorClazz = classInfo.getClazz();
     				addInterceptor(interceptorClazz);
     			}
     		}
@@ -105,13 +107,14 @@ public class RouteBuilder {
      * @param routePackages		route packets to add
      */
     private void buildRoute(String... routePackages){
-    	Set<Class<?>> classes = null;
+    	Set<ClassInfo> classes = null;
     	// Traverse route
 		for(String packageName : routePackages){
 			// Scan all Controoler
     		classes = classReader.getClassByAnnotation(packageName, Controller.class, true);
     		if(CollectionKit.isNotEmpty(classes)){
-    			for(Class<?> pathClazz : classes){
+    			for(ClassInfo classInfo : classes){
+    				Class<?> pathClazz = classInfo.getClazz(); 
     				addRouter(pathClazz);
     			}
     		}

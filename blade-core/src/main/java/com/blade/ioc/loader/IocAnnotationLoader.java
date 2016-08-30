@@ -21,25 +21,29 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import com.blade.context.DynamicClassReader;
 import com.blade.ioc.SimpleIoc;
 import com.blade.ioc.annotation.Component;
+import com.blade.kit.CollectionKit;
+import com.blade.kit.resource.ClassInfo;
 import com.blade.kit.resource.ClassReader;
-import com.blade.kit.resource.DynamicClassReader;
 
 public final class IocAnnotationLoader implements IocLoader {
 	
-    private Collection<Class<?>> classes;
+    private Collection<ClassInfo> classes;
     
     private ClassReader classReader = DynamicClassReader.getClassReader();
-    	
+    
+    
+    
     public IocAnnotationLoader(String... packageNames) {
         List<Class<? extends Annotation>> annotations = new ArrayList<Class<? extends Annotation>>(1);
         annotations.add(Component.class);        
         this.classes = finder(Arrays.asList(packageNames), annotations, true);
     }
 
-    private Collection<Class<?>> finder(List<String> packageNames, List<Class<? extends Annotation>> annotations, boolean recursive){
-    	Collection<Class<?>> classes = new ArrayList<Class<?>>();
+    private Collection<ClassInfo> finder(List<String> packageNames, List<Class<? extends Annotation>> annotations, boolean recursive){
+    	Collection<ClassInfo> classes = CollectionKit.newArrayList();
     	for(String packageName : packageNames){
     		for(Class<? extends Annotation> annotation : annotations){
     			classes.addAll(classReader.getClassByAnnotation(packageName, annotation, recursive));
@@ -48,13 +52,14 @@ public final class IocAnnotationLoader implements IocLoader {
     	return classes;
     }
     
-    public IocAnnotationLoader(Collection<Class<?>> classes) {
+    public IocAnnotationLoader(Collection<ClassInfo> classes) {
         this.classes = classes;
     }
     
     @Override
     public void load(SimpleIoc ioc) {
-        for (Class<?> cls : classes) {
+        for (ClassInfo classInfo : classes) {
+        	Class<?> cls = classInfo.getClazz();
             Component anno = cls.getAnnotation(Component.class);
             if (anno != null) {
 				String name = anno.value().equals("") ? cls.getName() : anno.value();
