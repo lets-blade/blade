@@ -40,10 +40,6 @@ public class JarReaderImpl extends AbstractClassReader implements ClassReader {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(JarReaderImpl.class);
 	
-	public JarReaderImpl(BladeClassLoader classLoader) {
-		super(classLoader);
-	}
-	
 	@Override
 	public Set<ClassInfo> getClass(String packageName, boolean recursive) {
 		return this.getClassByAnnotation(packageName, null, null, recursive);
@@ -68,7 +64,7 @@ public class JarReaderImpl extends AbstractClassReader implements ClassReader {
         // 定义一个枚举的集合 并进行循环来处理这个目录下的URL
         Enumeration<URL> dirs;
         try {
-            dirs = classLoader.getResources(packageDirName);
+            dirs = this.getClass().getClassLoader().getResources(packageDirName);
             // 循环迭代下去
             while (dirs.hasMoreElements()) {
                 // 获取下一个元素
@@ -120,8 +116,7 @@ public class JarReaderImpl extends AbstractClassReader implements ClassReader {
 								// 去掉后面的".class" 获取真正的类名
 								String className = name.substring(packageName.length() + 1, name.length() - 6);
 								// 添加到classes
-//									Class<?> clazz = Class.forName(packageName + '.' + className);
-								Class<?> clazz = classLoader.defineClassByName(packageName + '.' + className);
+									Class<?> clazz = Class.forName(packageName + '.' + className);
 								if(null != parent && null != annotation){
 									if(null != clazz.getSuperclass() && 
 										clazz.getSuperclass().equals(parent) && null != clazz.getAnnotation(annotation)){

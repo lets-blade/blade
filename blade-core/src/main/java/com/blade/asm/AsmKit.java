@@ -4,15 +4,8 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
-import org.objectweb.asm.ClassReader;
-import org.objectweb.asm.ClassVisitor;
-import org.objectweb.asm.Label;
-import org.objectweb.asm.MethodVisitor;
-import org.objectweb.asm.Opcodes;
-import org.objectweb.asm.Type;
-
 public final class AsmKit {
-	
+
 	/**
 	 * 
 	 * <p>
@@ -59,22 +52,18 @@ public final class AsmKit {
 		}
 		cr.accept(new ClassVisitor(Opcodes.ASM4) {
 			@Override
-			public MethodVisitor visitMethod(final int access,
-					final String name, final String desc,
+			public MethodVisitor visitMethod(final int access, final String name, final String desc,
 					final String signature, final String[] exceptions) {
 				final Type[] args = Type.getArgumentTypes(desc);
 				// 方法名相同并且参数个数相同
-				if (!name.equals(m.getName())
-						|| !sameType(args, m.getParameterTypes())) {
-					return super.visitMethod(access, name, desc, signature,
-							exceptions);
+				if (!name.equals(m.getName()) || !sameType(args, m.getParameterTypes())) {
+					return super.visitMethod(access, name, desc, signature, exceptions);
 				}
-				MethodVisitor v = super.visitMethod(access, name, desc,
-						signature, exceptions);
+				MethodVisitor v = super.visitMethod(access, name, desc, signature, exceptions);
 				return new MethodVisitor(Opcodes.ASM4, v) {
 					@Override
-					public void visitLocalVariable(String name, String desc,
-							String signature, Label start, Label end, int index) {
+					public void visitLocalVariable(String name, String desc, String signature, Label start, Label end,
+							int index) {
 						int i = index - 1;
 						// 如果是静态方法，则第一就是参数
 						// 如果不是静态方法，则第一个是"this"，然后才是方法的参数
@@ -84,8 +73,7 @@ public final class AsmKit {
 						if (i >= 0 && i < paramNames.length) {
 							paramNames[i] = name;
 						}
-						super.visitLocalVariable(name, desc, signature, start,
-								end, index);
+						super.visitLocalVariable(name, desc, signature, start, end, index);
 					}
 
 				};
@@ -93,5 +81,5 @@ public final class AsmKit {
 		}, 0);
 		return paramNames;
 	}
-	
+
 }

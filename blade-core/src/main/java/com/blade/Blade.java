@@ -21,7 +21,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.blade.aop.Aop;
 import com.blade.config.ApplicationConfig;
 import com.blade.config.BaseConfig;
 import com.blade.config.ConfigLoader;
@@ -75,7 +74,7 @@ public final class Blade {
 
 	// jetty start port
 	private int port = Const.DEFAULT_PORT;
-
+	
 	// default context path
 	private String contextPath = Const.DEFAULT_CONTEXTPATH;
 
@@ -91,8 +90,6 @@ public final class Blade {
 	// config loader
 	private ConfigLoader configLoader;
 	
-	private Aop aop;
-
 	private Blade() {
 		this.environment = new Environment();
 		this.applicationConfig = new ApplicationConfig();
@@ -100,7 +97,6 @@ public final class Blade {
 		this.plugins = new HashSet<Class<? extends Plugin>>();
 		this.routeBuilder = new RouteBuilder(this.routers);
 		this.configLoader = new ConfigLoader(this.ioc, this.applicationConfig);
-		this.aop = new Aop();
 	}
 
 	static final class BladeHolder {
@@ -156,10 +152,6 @@ public final class Blade {
 		}
 	}
 	
-	public Aop aop(){
-		return this.aop;
-	}
-	
 	/**
 	 * @return return route manager
 	 */
@@ -187,7 +179,7 @@ public final class Blade {
 	public Ioc ioc() {
 		return ioc;
 	}
-
+	
 	/**
 	 * Setting a ioc container
 	 * 
@@ -198,6 +190,7 @@ public final class Blade {
 	public Blade container(Ioc ioc) {
 		Assert.notNull(ioc);
 		this.ioc = ioc;
+		this.configLoader.setIoc(ioc);
 		return this;
 	}
 

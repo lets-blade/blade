@@ -51,6 +51,10 @@ public class ConfigLoader {
 		this.applicationConfig = applicationConfig;
 	}
 	
+	public void setIoc(Ioc ioc){
+		this.ioc = ioc;
+	}
+	
 	@SuppressWarnings("unchecked")
 	public void loadConfig() {
 		String[] configPackages = Blade.$().config().getConfigPackages();

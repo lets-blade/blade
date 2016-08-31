@@ -41,9 +41,9 @@ public class DynamicClassReader {
 	
 	public static ClassReader getClassReader(){
 		if(IS_JAR_CONTEXT){
-			return new JarReaderImpl(ApplicationContext.getClassLoader());
+			return new JarReaderImpl();
 		}
-		return new ClassPathClassReader(ApplicationContext.getClassLoader());
+		return new ClassPathClassReader();
 	}
 	
 }

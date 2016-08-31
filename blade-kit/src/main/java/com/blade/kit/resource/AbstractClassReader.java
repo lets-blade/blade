@@ -41,21 +41,6 @@ public abstract class AbstractClassReader implements ClassReader {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(AbstractClassReader.class);
 	
-	protected BladeClassLoader classLoader;
-	
-	@Override
-	public BladeClassLoader getClassLoader() {
-		return classLoader;
-	}
-	
-	public AbstractClassReader(BladeClassLoader classLoader) {
-		if(null == classLoader){
-			this.classLoader = this.getClassLoader();	
-		} else{
-			this.classLoader = classLoader;
-		}
-	}
-	
 	@Override
 	public Set<ClassInfo> getClass(String packageName, boolean recursive) {
 		return this.getClassByAnnotation(packageName, null, null, recursive);
@@ -99,8 +84,8 @@ public abstract class AbstractClassReader implements ClassReader {
                 } else {
                     // 如果是java类文件 去掉后面的.class 只留下类名
                     String className = file.getName().substring(0, file.getName().length() - 6);
-                    Class<?> clazz = classLoader.defineClassByName(packageName + '.' + className);
-//                    	Class<?> clazz = Class.forName(packageName + '.' + className);
+//                    Class<?> clazz = classLoader.defineClassByName(packageName + '.' + className);
+                    	Class<?> clazz = Class.forName(packageName + '.' + className);
 					if(null != parent && null != annotation){
 						if(null != clazz.getSuperclass() && clazz.getSuperclass().equals(parent) && 
 								null != clazz.getAnnotation(annotation)){
@@ -161,7 +146,7 @@ public abstract class AbstractClassReader implements ClassReader {
         // 定义一个枚举的集合 并进行循环来处理这个目录下的URL
         Enumeration<URL> dirs;
         try {
-            dirs = classLoader.getResources(packageDirName);
+            dirs = this.getClass().getClassLoader().getResources(packageDirName);
             // 循环迭代下去
             while (dirs.hasMoreElements()) {
                 // 获取下一个元素

@@ -34,6 +34,4 @@ public interface ClassReader {
 	
 	Set<ClassInfo> getClassByAnnotation(String packageName, Class<?> parent, Class<? extends Annotation> annotation, boolean recursive);
 	
-	BladeClassLoader getClassLoader();
-	
 }

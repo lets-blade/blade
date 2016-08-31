@@ -16,27 +16,24 @@
 package com.blade.ioc;
 
 import java.lang.reflect.Modifier;
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.blade.Blade;
-import com.blade.Bootstrap;
+import com.blade.annotation.Controller;
+import com.blade.config.BaseConfig;
 import com.blade.context.DynamicClassReader;
+import com.blade.interceptor.Interceptor;
 import com.blade.ioc.annotation.Component;
 import com.blade.ioc.annotation.Service;
-import com.blade.kit.CollectionKit;
 import com.blade.kit.StringKit;
 import com.blade.kit.resource.ClassInfo;
 import com.blade.kit.resource.ClassReader;
-import com.blade.plugin.Plugin;
-import com.blade.route.Route;
-import com.blade.route.RouteHandler;
-import com.blade.route.Routers;
+import com.blade.route.RouteBuilder;
 
 /**
  * IOC container, used to initialize the IOC object
@@ -48,142 +45,148 @@ public class IocApplication {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(IocApplication.class);
 	
-	/**
-	 * Ioc Container
-	 */
-	private Ioc ioc = null;
+	private static List<Object> aopInterceptors = new ArrayList<Object>();
 	
 	/**
 	 * Class to read object, load class
 	 */
 	private ClassReader classReader = null;
-	private String[] iocs;
-	private Bootstrap bootstrap;
-	
-	/**
-	 * Plugin List
-	 */
-	private List<Plugin> plugins = null;
-	
-	private Set<Class<? extends Plugin>> pluginTypes;
-	
 	private Blade blade;
 	
 	public IocApplication() {
 		this.blade = Blade.$();
 		this.classReader = DynamicClassReader.getClassReader();
-		this.plugins = CollectionKit.newArrayList();
-		this.pluginTypes = blade.plugins();
-		this.ioc = blade.ioc();
-		this.iocs = blade.config().getIocPackages();
-		this.bootstrap = blade.bootstrap();
 	}
 	
-	/**
-	 * IOC initialize
-	 * @param iocs		ioc packages
-	 * @param bootstrap	bootstrap object
-	 */
-	public void init(){
-		
-		// Initialize the global configuration class
-		if(null == ioc.getBean(Bootstrap.class)){
-			ioc.addBean(bootstrap);
-		}
-		
-		// The object to initialize the IOC container loads the IOC package to configure the class that conforms to the IOC
-		if(null != iocs && iocs.length > 0){
-			for(String packageName : iocs){
-				registerBean(packageName);
-			}
-		}
-		
-		for(Class<? extends Plugin> type : pluginTypes){
-			ioc.addBean(type);
-			Plugin plugin = ioc.getBean(type);
-			plugins.add(plugin);
-		}
-		
-		// init controllers
-		Routers routers = blade.routers();
-		Map<String, Route> routes = routers.getRoutes();
-		if(CollectionKit.isNotEmpty(routes)){
-			Collection<Route> routesList = routes.values();
-			if(CollectionKit.isNotEmpty(routesList)){
-				for(Route route : routesList){
-					Class<?> type = route.getTargetType();
-					if(null != type && null == route.getTarget() && type != RouteHandler.class && null == ioc.getBean(type)){
-						ioc.addBean(type);
+	private List<ClassInfo> loadCondigs() throws Exception{
+		List<ClassInfo> configs = null;
+		String[] configPackages = blade.config().getConfigPackages();
+		if (null != configPackages && configPackages.length > 0) {
+			configs = new ArrayList<ClassInfo>(10);
+			for (String packageName : configPackages) {
+				Set<ClassInfo> configClasses = classReader.getClassByAnnotation(packageName, Component.class, false);
+				if(null != configClasses){
+					for(ClassInfo classInfo : configClasses){
+						if(classInfo.getClazz().getSuperclass().getName().equals("com.blade.aop.AbstractMethodInterceptor")){
+							aopInterceptors.add(classInfo.newInstance());
+						}
+						Class<?>[] interfaces = classInfo.getClazz().getInterfaces();
+						for(Class<?> in : interfaces){
+							if(in.equals(BaseConfig.class)){
+								configs.add(classInfo);
+							}
+						}
 					}
 				}
 			}
 		}
-		
-		Map<String, Route> interceptors = routers.getInterceptors();
-		if(CollectionKit.isNotEmpty(interceptors)){
-			Collection<Route> routesList = interceptors.values();
-			if(CollectionKit.isNotEmpty(routesList)){
-				for(Route route : routesList){
-					Class<?> type = route.getTargetType();
-					if(null != type && null == route.getTarget() && type != RouteHandler.class && null == ioc.getBean(type)){
-						ioc.addBean(type);
+		return configs;
+	}
+	
+	private List<ClassInfo> loadServices() throws Exception{
+		List<ClassInfo> services = null;
+		String[] configPackages = blade.config().getIocPackages();
+		if (null != configPackages && configPackages.length > 0) {
+			services = new ArrayList<ClassInfo>(20);
+			for (String packageName : configPackages) {
+				if(StringKit.isBlank(packageName)){
+					continue;
+				}
+				// Recursive scan
+				boolean recursive = false; 
+				if (packageName.endsWith(".*")) {
+					packageName = packageName.substring(0, packageName.length() - 2);
+					recursive = true;
+				}
+				
+				// Scan package all class
+				Set<ClassInfo> iocClasses = classReader.getClass(packageName, recursive);
+				for (ClassInfo classInfo : iocClasses) {
+					Class<?> clazz = classInfo.getClazz();
+					if(!clazz.isInterface() && !Modifier.isAbstract(clazz.getModifiers())){
+						Component component = clazz.getAnnotation(Component.class);
+						Service service = clazz.getAnnotation(Service.class);
+						if(null != service || null != component){
+							services.add(classInfo);
+						}
 					}
 				}
 			}
 		}
+		return services;
+	}
+	
+	private List<ClassInfo> loadControllers() {
+		List<ClassInfo> controllers = null;
+		String[] routePackages = blade.config().getRoutePackages();
+		if(null != routePackages && routePackages.length > 0){
+			controllers = new ArrayList<ClassInfo>();
+    		for(String packageName : routePackages){
+    			// Scan all Controoler
+    			controllers.addAll(classReader.getClassByAnnotation(packageName, Controller.class, true));
+        	}
+    	}
+		return controllers;
+	}
+	
+	private List<ClassInfo> loadInterceptors() {
+		List<ClassInfo> interceptors = null;
+		String interceptorPackage = blade.config().getInterceptorPackage();
+		if(StringKit.isNotBlank(interceptorPackage)){
+			interceptors = new ArrayList<ClassInfo>(10);
+			interceptors.addAll(classReader.getClass(interceptorPackage, Interceptor.class, false));
+    	}
+		return interceptors;
+	}
+	
+	public void initBeans() throws Exception{
+		List<ClassInfo> services = this.loadServices();
+		List<ClassInfo> configs = this.loadCondigs();
+		List<ClassInfo> controllers = this.loadControllers();
+		// web
+		List<ClassInfo> inteceptors = this.loadInterceptors();
 		
-		LOGGER.info("Add Object: {}", ioc.getBeans());
+		// 先获取所有被容器托管的Class, 再依次注入
 		
-		// injection
+    	Ioc ioc = blade.ioc();
+    	
+    	RouteBuilder routeBuilder = blade.routeBuilder();
+    	
+    	// 1. 初始化service
+    	for(ClassInfo classInfo : services){
+    		ioc.addBean(classInfo.getClazz());
+    	}
+    	
+    	// 2. 初始化配置文件
+    	for(ClassInfo classInfo : configs){
+    		Object bean = ioc.addBean(classInfo.getClazz());
+    		BaseConfig baseConfig = (BaseConfig) bean;
+    		baseConfig.config(blade.applicationConfig());
+    	}
+    	
+    	// 3. 初始化controller
+    	for(ClassInfo classInfo : controllers){
+    		ioc.addBean(classInfo.getClazz());
+    		routeBuilder.addRouter(classInfo.getClazz());
+    	}
+    	
+    	// 4. 初始化interceptor
+    	for(ClassInfo classInfo : inteceptors){
+    		ioc.addBean(classInfo.getClazz());
+    		routeBuilder.addInterceptor(classInfo.getClazz());
+    	}
+    	
+    	LOGGER.info("Add Object: {}", ioc.getBeans());
+    	
+    	// injection
 		List<BeanDefine> beanDefines = ioc.getBeanDefines();
 		for(BeanDefine beanDefine : beanDefines){
 			IocKit.injection(ioc, beanDefine);
 		}
 	}
 	
-	/**
-	 * Register all objects in a package
-	 * 
-	 * @param packageName package name
-	 */
-	private void registerBean(String packageName) {
-		if(StringKit.isBlank(packageName)){
-			return;
-		}
-		// Recursive scan
-		boolean recursive = false; 
-		if (packageName.endsWith(".*")) {
-			packageName = packageName.substring(0, packageName.length() - 2);
-			recursive = true;
-		}
-		
-		// Scan package all class
-		Set<ClassInfo> classes = classReader.getClass(packageName, recursive);
-		for (ClassInfo classInfo : classes) {
-			Class<?> clazz = classInfo.getClazz();
-			if(!clazz.isInterface() && !Modifier.isAbstract(clazz.getModifiers())){
-				Component component = clazz.getAnnotation(Component.class);
-				Service service = clazz.getAnnotation(Service.class);
-				if(null != component || null != service){
-					// Register classes
-					ioc.addBean(clazz);
-				}
-			}
-		}
+	public static List<Object> getAopInterceptors(){
+		return aopInterceptors;
 	}
 	
-	public List<Plugin> getPlugins() {
-		return plugins;
-	}
-	
-	/**
-	 * destroy
-	 */
-	public void destroy() {
-		// Clean IOC container
-		ioc.clearAll();
-		for(Plugin plugin : plugins){
-			plugin.destroy();
-		}
-	}
 }

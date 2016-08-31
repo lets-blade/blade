@@ -71,11 +71,11 @@ public class Environment {
 						}
 						envMap.put(key, value);
 					}
-					LOGGER.info("load environment config [classpath:" + confPath + "]");
+					LOGGER.info("Load environment config [classpath:" + confPath + "]");
 				}
 			}
 		} catch (IOException e) {
-			LOGGER.error("load environment config error", e);
+			LOGGER.error("Load environment config error", e);
 		} finally {
 			IOKit.closeQuietly(in);
 		}

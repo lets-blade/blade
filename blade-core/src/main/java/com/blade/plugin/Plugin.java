@@ -24,9 +24,9 @@ package com.blade.plugin;
 public interface Plugin {
 
 	/**
-	 * Run Plugin
+	 * Start Plugin
 	 */
-	void run();
+	void start();
 	
 	/**
 	 * Destroy, release resources 

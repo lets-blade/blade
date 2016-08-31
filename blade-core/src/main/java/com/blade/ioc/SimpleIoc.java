@@ -161,9 +161,7 @@ public class SimpleIoc implements Ioc {
 	    return beanDefine.getBean();
     }
     
-    private BeanDefine getBeanDefine(Class<?> beanClass, boolean singleton) {
-//    	Object object = Blade.$().aop().createBean(beanClass);
-//		return new BeanDefine(object, beanClass, singleton);
+    public BeanDefine getBeanDefine(Class<?> beanClass, boolean singleton) {
     	try {
 			Object object = beanClass.newInstance();
 			return new BeanDefine(object, beanClass, singleton);

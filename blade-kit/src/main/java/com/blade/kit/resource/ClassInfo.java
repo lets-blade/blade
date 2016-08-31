@@ -27,4 +27,12 @@ public class ClassInfo {
 		return clazz;
 	}
 	
+	public Object newInstance() throws InstantiationException, IllegalAccessException{
+		return clazz.newInstance();
+	}
+	
+	@Override
+	public String toString() {
+		return clazz.toString();
+	}
 }
