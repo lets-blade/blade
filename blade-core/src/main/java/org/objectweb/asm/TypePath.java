@@ -28,7 +28,7 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.blade.asm;
+package org.objectweb.asm;
 
 /**
  * The path to a type argument, wildcard bound, array element type, or static

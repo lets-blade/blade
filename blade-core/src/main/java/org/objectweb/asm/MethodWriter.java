@@ -27,7 +27,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.blade.asm;
+package org.objectweb.asm;
 
 /**
  * A {@link MethodVisitor} that generates methods in bytecode form. Each visit

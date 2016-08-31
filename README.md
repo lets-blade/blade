@@ -38,18 +38,18 @@ Grab via `Maven`：
 <dependency>
 	<groupId>com.bladejava</groupId>
 	<artifactId>blade-core</artifactId>
-	<version>1.6.4</version>
+	<version>1.6.5</version>
 </dependency>
 <dependency>
 	<groupId>com.bladejava</groupId>
 	<artifactId>blade-embed-jetty</artifactId>
-	<version>0.0.2</version>
+	<version>0.0.3</version>
 </dependency>
 ```
 or `Gradle`:
 ```sh
-compile 'com.bladejava:blade-core:1.6.4'
-compile 'com.bladejava:blade-embed-jetty:0.0.2'
+compile 'com.bladejava:blade-core:1.6.5'
+compile 'com.bladejava:blade-embed-jetty:0.0.3'
 ```
 
 Create `Main` method like this：
@@ -58,11 +58,10 @@ Create `Main` method like this：
 public class App {
 	
 	public static void main(String[] args) {
-		Blade blade = me();
-		blade.get("/", (request, response) -> {
+		$().get("/", (request, response) -> {
 			response.html("<h1>Hello blade!</h1>");
 		});
-		blade.start(EmbedJettyServer.class);
+		$().start(EmbedJettyServer.class);
 	}
 }
 ```
@@ -73,12 +72,11 @@ Run it and point your browser to [http://localhost:9000](http://localhost:9000).
 
 ```java
 public static void main(String[] args) {
-	Blade blade = me();
-	blade.get("/user/21", getxxx);
-	blade.post("/save", postxxx);
-	blade.delete("/del/21", deletexxx);
-	blade.put("/put", putxxx);
-	blade.start(EmbedJettyServer.class);
+	$().get("/user/21", getxxx);
+	$().post("/save", postxxx);
+	$().delete("/del/21", deletexxx);
+	$().put("/put", putxxx);
+	$().start(EmbedJettyServer.class);
 }
 ```
 
@@ -86,20 +84,19 @@ public static void main(String[] args) {
 
 ```java
 public static void main(String[] args) {
-	Blade blade = me();
-	blade.get("/user/:uid", (request, response) -> {
+	$().get("/user/:uid", (request, response) -> {
 		Integer uid = request.paramAsInt("uid");
 		response.text("uid : " + uid);
 	});
 	
-	blade.get("/users/:uid/post/:pid", (request, response) -> {
+	$().get("/users/:uid/post/:pid", (request, response) -> {
 		Integer uid = request.paramAsInt("uid");
 		Integer pid = request.paramAsInt("pid");
 		String msg = "uid = " + uid + ", pid = " + pid;
 		response.text(msg);
 	});
 	
-	blade.start(EmbedJettyServer.class);
+	$().start(EmbedJettyServer.class);
 }
 ```
 
@@ -107,12 +104,11 @@ public static void main(String[] args) {
 
 ```java
 public static void main(String[] args) {
-	Blade blade = me();
-	blade.get("/user", (request, response) -> {
+	$().get("/user", (request, response) -> {
 		Integer uid = request.queryAsInt("uid");
 		response.text("uid : " + uid);
 	});
-	blade.start(EmbedJettyServer.class);
+	$().start(EmbedJettyServer.class);
 }
 ```
 
@@ -150,30 +146,11 @@ POST	/upload_img			UploadRoute.upload_img
 
 ```java
 public static void main(String[] args) {
-	Blade blade = me();
-	blade.before("/.*", (request, response) -> {
+	$().before("/.*", (request, response) -> {
 		System.out.println("before...");
 	});
-	blade.start(EmbedJettyServer.class);
+	$().start(EmbedJettyServer.class);
 }
-```
-
-## DSL DB Operation
-
-```java
-// query
-List<Post> posts =
-	AR.find("where title like ? order by id desc limit ?,?", title, page, count).list(Post.class);
-
-// save
-String insertSql = "insert into t_post (title, content, view_count, create_time) values (?,?,?,?)";
-AR.update(insertSql, title, content, 0, new Date()).commit();
-
-// update
-AR.update("update t_post set title = ? and content = ? where id = ?",title, content, id).commit();
-
-// delete
-AR.update("delete from t_post where id = ?",id).commit()
 ```
 
 You may refer to these examples for additional guidance:

@@ -27,7 +27,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.blade.asm;
+package org.objectweb.asm;
 
 /**
  * Information about the input and output stack map frames of a basic block.
