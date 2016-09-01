@@ -18,9 +18,13 @@ package com.blade.route;
 import java.lang.reflect.Method;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.blade.Blade;
 import com.blade.annotation.Controller;
 import com.blade.annotation.Intercept;
+import com.blade.annotation.RestController;
 import com.blade.annotation.Route;
 import com.blade.context.DynamicClassReader;
 import com.blade.interceptor.Interceptor;
@@ -41,6 +45,8 @@ import com.blade.web.http.Response;
  */
 public class RouteBuilder {
     
+	private static final Logger LOGGER = LoggerFactory.getLogger(RouteBuilder.class);
+	
     /**
      * Class reader, used to scan the class specified in the rules
      */
@@ -135,8 +141,6 @@ public class RouteBuilder {
     		return;
     	}
     	
-//    	ioc.addBean(interceptor);
-    	
     	Intercept intercept = interceptor.getAnnotation(Intercept.class);
     	String partten = "/.*";
     	if(null != intercept){
@@ -167,11 +171,23 @@ public class RouteBuilder {
     	if(null == methods || methods.length == 0){
     		return;
     	}
+    	String nameSpace = null, suffix = null;
     	
-		final String nameSpace = router.getAnnotation(Controller.class).value();
-		
-		final String suffix = router.getAnnotation(Controller.class).suffix();
-		
+    	if(null != router.getAnnotation(Controller.class)){
+    		nameSpace = router.getAnnotation(Controller.class).value();
+    		suffix = router.getAnnotation(Controller.class).suffix();
+    	}
+    	
+    	if(null != router.getAnnotation(RestController.class)){
+    		nameSpace = router.getAnnotation(RestController.class).value();
+    		suffix = router.getAnnotation(RestController.class).suffix();
+    	}
+    	
+    	if(null == nameSpace && null == suffix){
+    		LOGGER.warn("Route [{}] not controller annotation", router.getName());
+    		return;
+    	}
+    	
 		for (Method method : methods) {
 			Route mapping = method.getAnnotation(Route.class);
 			//route method

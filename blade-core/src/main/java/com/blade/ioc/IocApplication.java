@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 
 import com.blade.Blade;
 import com.blade.annotation.Controller;
+import com.blade.annotation.RestController;
 import com.blade.config.BaseConfig;
 import com.blade.context.DynamicClassReader;
 import com.blade.interceptor.Interceptor;
@@ -125,6 +126,7 @@ public class IocApplication {
 			for (String packageName : routePackages) {
 				// Scan all Controoler
 				controllers.addAll(classReader.getClassByAnnotation(packageName, Controller.class, true));
+				controllers.addAll(classReader.getClassByAnnotation(packageName, RestController.class, true));
 			}
 		}
 		return controllers;
