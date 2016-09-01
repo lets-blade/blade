@@ -1,12 +1,13 @@
 
 [![](https://dn-biezhi.qbox.me/LOGO_BIG.png)](http://bladejava.com)
 
+[Quick Start](https://bladejava.com/docs)&nbsp; | &nbsp;[Demo Project](https://github.com/blade-samples)&nbsp; | &nbsp;[Contribute](https://bladejava.com/docs/appendix/contribute)&nbsp; | &nbsp;[Donate]()&nbsp; | &nbsp;[FAQ](https://bladejava.com/docs/faqs) | &nbsp;[中文说明](https://github.com/biezhi/blade/blob/master/README_CN.md)
+
 [![Build Status](https://img.shields.io/travis/biezhi/blade.svg?style=flat-square)](https://travis-ci.org/biezhi/blade)
 [![maven-central](https://img.shields.io/maven-central/v/com.bladejava/blade-core.svg?style=flat-square)](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.bladejava%22)
 [![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg?style=flat-square)](https://www.apache.org/licenses/LICENSE-2.0.html)
 [![Gitter](https://badges.gitter.im/biezhi/blade.svg)](https://gitter.im/biezhi/blade?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
-[中文说明](https://github.com/biezhi/blade/blob/master/README_CN.md)
 
 ## What Is Blade?
 
@@ -55,14 +56,10 @@ compile 'com.bladejava:blade-embed-jetty:0.0.3'
 Create `Main` method like this：
 
 ```java
-public class App {
-	
-	public static void main(String[] args) {
-		$().get("/", (request, response) -> {
-			response.html("<h1>Hello blade!</h1>");
-		});
-		$().start(EmbedJettyServer.class);
-	}
+public static void main(String[] args) {
+	$().get("/", (request, response) -> {
+		response.html("<h1>Hello blade!</h1>");
+	}).start(Application.class);
 }
 ```
 
@@ -76,7 +73,6 @@ public static void main(String[] args) {
 	$().post("/save", postxxx);
 	$().delete("/del/21", deletexxx);
 	$().put("/put", putxxx);
-	$().start(EmbedJettyServer.class);
 }
 ```
 
@@ -96,7 +92,7 @@ public static void main(String[] args) {
 		response.text(msg);
 	});
 	
-	$().start(EmbedJettyServer.class);
+	$().start(Application.class);
 }
 ```
 
@@ -107,8 +103,7 @@ public static void main(String[] args) {
 	$().get("/user", (request, response) -> {
 		Integer uid = request.queryAsInt("uid");
 		response.text("uid : " + uid);
-	});
-	$().start(EmbedJettyServer.class);
+	}).start(Application.class);
 }
 ```
 
@@ -148,25 +143,17 @@ POST	/upload_img			UploadRoute.upload_img
 public static void main(String[] args) {
 	$().before("/.*", (request, response) -> {
 		System.out.println("before...");
-	});
-	$().start(EmbedJettyServer.class);
+	}).start(Application.class);
 }
 ```
 
 You may refer to these examples for additional guidance:
 
 + [Hello Blade](https://github.com/blade-samples/hello)
-+ [BBS WebSite](http://java-china.org)
-+ [API Doc](http://bladejava.com/apidocs)
-+ [User Guide](http://bladejava.com/docs)
-+ [Version Changes](LAST_VERSION.md)
-+ [Examples](https://github.com/blade-samples)
++ [BBS WebSite](https://github.com/junicorn/java-china)
++ [Doc Service](https://github.com/biezhi/grice)
++ [More Examples](https://github.com/blade-samples)
 
-## Plan
-
-- 1. Add the test code
-- 2. Optimize the code base
-- 3. Optimization of concurrent ability
 	
 ## Update
 
