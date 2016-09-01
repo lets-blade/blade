@@ -24,7 +24,7 @@ package com.blade;
 public interface Const {
 
 	// current blade version
-	String BLADE_VERSION = "1.6.6";
+	String BLADE_VERSION = "1.6.6-alpha";
 	
 	// default embedd server context path
 	String DEFAULT_CONTEXTPATH = "/";

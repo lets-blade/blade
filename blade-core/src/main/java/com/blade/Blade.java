@@ -460,6 +460,14 @@ public final class Blade {
 		return this;
 	}
 
+	
+	/**
+	 * @return	Return Current TemplateEngine
+	 */
+	public TemplateEngine viewEngin() {
+		return this.templateEngine;
+	}
+	
 	/**
 	 * Setting the frame static file folder
 	 * 

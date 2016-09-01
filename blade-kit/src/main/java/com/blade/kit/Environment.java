@@ -17,6 +17,7 @@ package com.blade.kit;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -51,11 +52,13 @@ public class Environment {
 	private Map<String, String> loadMap(String confPath){
 		Map<String, String> envMap = new HashMap<String, String>(20);
 		Properties config = new Properties();
-		confPath = confPath.startsWith("/") ? confPath : "/" + confPath;
-		InputStream in = this.getClass().getResourceAsStream(confPath);
+		
+		InputStreamReader inr = null;
 		try {
-			if(null != in){
-				config.load(in);
+			InputStream inputStream = Environment.class.getClassLoader().getResourceAsStream(confPath);
+			if(null != inputStream){
+				inr = new InputStreamReader(inputStream, "UTF-8");
+				config.load(inr);
 				// parse properties file
 				Set<Entry<Object, Object>> set = config.entrySet();
 				if(CollectionKit.isNotEmpty(set)){
@@ -77,7 +80,7 @@ public class Environment {
 		} catch (IOException e) {
 			LOGGER.error("Load environment config error", e);
 		} finally {
-			IOKit.closeQuietly(in);
+			IOKit.closeQuietly(inr);
 		}
 		return envMap;
 	}
