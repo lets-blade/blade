@@ -1,32 +1,35 @@
 
 [![](https://dn-biezhi.qbox.me/LOGO_BIG.png)](http://bladejava.com)
 
+[开始使用](https://bladejava.com/docs)&nbsp; | &nbsp;[示例项目](https://github.com/blade-samples)&nbsp; | &nbsp;[贡献代码](https://bladejava.com/docs/appendix/contribute)&nbsp; | &nbsp;[捐赠](#)&nbsp; | &nbsp;[FAQ](https://bladejava.com/docs/faqs) | &nbsp;[English](https://github.com/biezhi/blade/blob/master/README.md)
+
 [![Build Status](https://img.shields.io/travis/biezhi/blade.svg?style=flat-square)](https://travis-ci.org/biezhi/blade)
 [![maven-central](https://img.shields.io/maven-central/v/com.bladejava/blade-core.svg?style=flat-square)](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.bladejava%22)
 [![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg?style=flat-square)](https://www.apache.org/licenses/LICENSE-2.0.html)
 [![@biezhi on weibo](https://img.shields.io/badge/weibo-%40biezhi-red.svg?style=flat-square)](http://weibo.com/u/5238733773)
 
-[English](https://github.com/biezhi/blade/blob/master/README.md)
-
 ## Blade是什么?
 
-Blade 是一个轻量级的MVC框架. 它拥有简洁的代码，优雅的设计。
-如果你喜欢,欢迎 [Star and Fork](https://github.com/biezhi/blade), 谢谢!
+Blade 是一款轻量级的MVC框架, 重新定义JavaWeb开发,它拥有简洁的代码，优雅的设计。
+
+如果你觉得不错, 欢迎 [Star](https://github.com/biezhi/blade) / [Fork](https://github.com/biezhi/blade), 谢谢 :blush:!
 
 ## 特性
 
-* [x] 轻量级。代码简洁,结构清晰,更容易开发
+* [x] 轻量级, 代码简洁,结构清晰,更容易开发
 * [x] 模块化(你可以选择使用哪些组件)
 * [x] 插件扩展机制
 * [x] Restful风格的路由接口
 * [x] 多种配置文件支持(当前支持properties、json和硬编码)
-* [x] 内置Jetty服务,模板引擎支持
-* [x] 支持JDK1.6或者更高版本
+* [x] 多种模板引擎支持
+* [x] 更方便的启动和部署
+* [x] 支持JDK1.6或者更高版本(JDK8写起来更爽)
 
 ## 概述
 
 * 简洁的：框架设计简单,容易理解,不依赖于更多第三方库。Blade框架目标让用户在一天内理解并使用。
-* 优雅的：`blade` 支持 REST 风格路由接口, 提供 DSL 语法编写，无侵入式的拦截器。
+* 优雅的：`Blade` 支持 REST 风格路由接口, 提供 DSL 语法编写，无侵入式的拦截器。
+* 易部署：支持 `maven` 打成 `jar` 包直接运行。
 
 ## 快速入门
 
@@ -51,7 +54,7 @@ Blade 是一个轻量级的MVC框架. 它拥有简洁的代码，优雅的设计
 
 ```sh
 compile 'com.bladejava:blade-core:1.6.6-alpha'
-compile 'com.bladejava:blade-startup:0.0.1'
+compile 'com.bladejava:blade-embed-jetty:0.0.3'
 ```
 
 编写 `Main`函数：
@@ -60,8 +63,7 @@ compile 'com.bladejava:blade-startup:0.0.1'
 public static void main(String[] args) {
 	$().get("/", (request, response) -> {
 		response.html("<h1>Hello blade!</h1>");
-	});
-	$().start(EmbedJettyServer.class);
+	}).start(Application.class);
 }
 ```
 
@@ -75,7 +77,6 @@ public static void main(String[] args) {
 	$().post("/save", postxxx);
 	$().delete("/del/21", deletexxx);
 	$().put("/put", putxxx);
-	$().start(EmbedJettyServer.class);
 }
 ```
 
@@ -95,7 +96,7 @@ public static void main(String[] args) {
 		response.text(msg);
 	});
 	
-	$().start(EmbedJettyServer.class);
+	$().start(Application.class);
 }
 ```
 
@@ -106,8 +107,7 @@ public static void main(String[] args) {
 	$().get("/user", (request, response) -> {
 		Integer uid = request.queryAsInt("uid");
 		response.text("uid : " + uid);
-	});
-	$().start(EmbedJettyServer.class);
+	}).start(Application.class);
 }
 ```
 
@@ -147,43 +147,18 @@ POST	/upload_img			UploadRoute.upload_img
 public static void main(String[] args) {
 	$().before("/.*", (request, response) -> {
 		System.out.println("before...");
-	});
-	$().start(EmbedJettyServer.class);
+	}).start(Application.class);
 }
 ```
 
-## DSL数据库操作
 
-```java
-// query
-List<Post> posts =
-	AR.find("where title like ? order by id desc limit ?,?", title, page, count).list(Post.class);
-
-// save
-String insertSql = "insert into t_post (title, content, view_count, create_time) values (?,?,?,?)";
-AR.update(insertSql, title, content, 0, new Date()).commit();
-
-// update
-AR.update("update t_post set title = ? and content = ? where id = ?",title, content, id).commit();
-
-// delete
-AR.update("delete from t_post where id = ?",id).commit()
-```
-
-OK，这一切看起来多么的简单，查阅使用指南更多现成的例子供你参考:
+这一切看起来多么的简单，不过上面的功能可是冰山一角，查看文档和示例项目有更多惊喜:
 
 + [hello工程](https://github.com/blade-samples/hello)
-+ [论坛程序](http://java-china.org)
-+ [API文档](http://bladejava.com/apidocs)
-+ [使用指南](http://bladejava.com/docs)
-+ [相关案例](https://github.com/blade-samples)
-+ [版本查询](LAST_VERSION.md)
++ [论坛程序](https://github.com/junicorn/java-china)
++ [文档服务](https://github.com/biezhi/grice)
++ [更多例子](https://github.com/blade-samples)
 
-### 计划
-
-- 1. 添加测试代码
-- 2. 优化基础代码
-- 3. 优化并发能力
 
 ## 更新日志
 
@@ -212,4 +187,3 @@ OK，这一切看起来多么的简单，查阅使用指南更多现成的例子
 ## 开源协议
 
 请查看 [Apache License](LICENSE)
-
