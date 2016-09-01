@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 
 import com.blade.Blade;
 import com.blade.annotation.Controller;
+import com.blade.annotation.Intercept;
 import com.blade.annotation.RestController;
 import com.blade.config.BaseConfig;
 import com.blade.context.DynamicClassReader;
@@ -137,7 +138,14 @@ public class IocApplication {
 		String interceptorPackage = blade.config().getInterceptorPackage();
 		if (StringKit.isNotBlank(interceptorPackage)) {
 			interceptors = new ArrayList<ClassInfo>(10);
-			interceptors.addAll(classReader.getClass(interceptorPackage, Interceptor.class, false));
+			Set<ClassInfo> intes = classReader.getClassByAnnotation(interceptorPackage, Intercept.class, true);
+			if(null != intes){
+				for(ClassInfo classInfo : intes){
+					if(null != classInfo.getClazz().getInterfaces() && classInfo.getClazz().getInterfaces()[0].equals(Interceptor.class)){
+						interceptors.add(classInfo);
+					}
+				}
+			}
 		}
 		return interceptors;
 	}
