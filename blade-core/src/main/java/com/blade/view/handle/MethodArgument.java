@@ -1,7 +1,7 @@
 package com.blade.view.handle;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
 
 import com.blade.annotation.PathVariable;
 import com.blade.annotation.RequestParam;
@@ -17,7 +17,9 @@ import com.blade.web.multipart.FileItem;
 public final class MethodArgument {
 
 	public static Object[] getArgs(Request request, Response response, Method actionMethod) throws BladeException{
-		Parameter[] parameters = actionMethod.getParameters();
+		Class<?>[] parameters = actionMethod.getParameterTypes();
+		Annotation[][] paramterAnnotations = actionMethod.getParameterAnnotations();
+		
 		Object[] args = new Object[parameters.length];
 		
 		try {
@@ -26,7 +28,7 @@ public final class MethodArgument {
 			
 			for (int i = 0, len = parameters.length; i < len; i++) {
 				
-				Class<?> argType = parameters[i].getType();
+				Class<?> argType = parameters[i];
 				if (argType.getName().equals(Request.class.getName())) {
 					args[i] = request;
 					continue;
@@ -47,38 +49,41 @@ public final class MethodArgument {
 					continue;
 				}
 				
-				RequestParam requestParam = parameters[i].getAnnotation(RequestParam.class);
-				if (null != requestParam) {
-					String paramName = requestParam.value();
-					String val = request.query(paramName);
-					
-					if (StringKit.isBlank(paramName)) {
-						paramName = paramaterNames[i];
-						val = request.query(paramName);
-					} else {
-						if (StringKit.isBlank(val)) {
-							throw new NotFoundException("request param [" + paramName + "] is null");
+				Annotation annotation = paramterAnnotations[i][0];
+				if(null != annotation){
+					if(annotation.annotationType().equals(RequestParam.class)){
+						RequestParam requestParam = (RequestParam) annotation;
+						String paramName = requestParam.value();
+						String val = request.query(paramName);
+						
+						if (StringKit.isBlank(paramName)) {
+							paramName = paramaterNames[i];
+							val = request.query(paramName);
+						} else {
+							if (StringKit.isBlank(val)) {
+								throw new NotFoundException("request param [" + paramName + "] is null");
+							}
 						}
+						args[i] = getRequestParam(argType, val, requestParam.defaultValue());
+						continue;
 					}
-					args[i] = getRequestParam(argType, val, requestParam.defaultValue());
-					continue;
-				}
-
-				PathVariable pathVariable = parameters[i].getAnnotation(PathVariable.class);
-				if (null != pathVariable) {
-					String paramName = pathVariable.value();
-					String val = request.param(paramName);
 					
-					if (StringKit.isBlank(paramName)) {
-						paramName = paramaterNames[i];
-						val = request.param(paramName);
-					} else {
-						if (StringKit.isBlank(val)) {
-							throw new NotFoundException("path param [" + paramName + "] is null");
+					if(annotation.annotationType().equals(PathVariable.class)){
+						PathVariable pathVariable = (PathVariable) annotation;
+						String paramName = pathVariable.value();
+						String val = request.param(paramName);
+						
+						if (StringKit.isBlank(paramName)) {
+							paramName = paramaterNames[i];
+							val = request.param(paramName);
+						} else {
+							if (StringKit.isBlank(val)) {
+								throw new NotFoundException("path param [" + paramName + "] is null");
+							}
 						}
+						args[i] = getRequestParam(argType, val, null);
+						continue;
 					}
-					args[i] = getRequestParam(argType, val, null);
-					continue;
 				}
 			}
 			return args;

@@ -57,7 +57,7 @@ public final class AsmKit {
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
-		cr.accept(new ClassVisitor(Opcodes.ASM4) {
+		cr.accept(new ClassVisitor(Opcodes.ASM5) {
 			@Override
 			public MethodVisitor visitMethod(final int access, final String name, final String desc,
 					final String signature, final String[] exceptions) {
@@ -67,7 +67,7 @@ public final class AsmKit {
 					return super.visitMethod(access, name, desc, signature, exceptions);
 				}
 				MethodVisitor v = super.visitMethod(access, name, desc, signature, exceptions);
-				return new MethodVisitor(Opcodes.ASM4, v) {
+				return new MethodVisitor(Opcodes.ASM5, v) {
 					@Override
 					public void visitLocalVariable(String name, String desc, String signature, Label start, Label end,
 							int index) {
@@ -82,7 +82,6 @@ public final class AsmKit {
 						}
 						super.visitLocalVariable(name, desc, signature, start, end, index);
 					}
-
 				};
 			}
 		}, 0);
