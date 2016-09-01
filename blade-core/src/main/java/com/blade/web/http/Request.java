@@ -32,7 +32,7 @@ import com.blade.web.multipart.FileItem;
  * HTTP Request
  *
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
- * @since	1.0
+ * @since	1.5
  */
 public interface Request {
 	

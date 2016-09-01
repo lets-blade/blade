@@ -19,7 +19,7 @@ package com.blade.ioc;
  * Bean Define, IOC to define a target
  *
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
- * @since	1.0
+ * @since	1.5
  */
 public class BeanDefine {
 	

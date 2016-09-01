@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015, biezhi 王爵 (biezhi.me@gmail.com)
+ * Copyright (c) 2016, biezhi 王爵 (biezhi.me@gmail.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ import java.lang.annotation.Target;
  * Route class notes, identifying whether a class is routed
  *
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
- * @since	1.0
+ * @since	1.6.6
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)

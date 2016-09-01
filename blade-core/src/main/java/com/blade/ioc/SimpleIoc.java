@@ -32,7 +32,7 @@ import com.blade.kit.Assert;
  * The default IOC container implementation
  *
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
- * @since	1.0
+ * @since	1.5
  */
 public class SimpleIoc implements Ioc {
 	

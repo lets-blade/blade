@@ -41,7 +41,7 @@ import com.blade.web.http.Response;
  * Route builder
  *
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
- * @since	1.0
+ * @since	1.5
  */
 public class RouteBuilder {
     

@@ -49,7 +49,7 @@ import com.blade.web.http.HttpMethod;
  * Blade Core Class
  * 
  * @author <a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
- * @since 1.0
+ * @since 1.6.6
  */
 public final class Blade {
 

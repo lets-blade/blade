@@ -28,7 +28,7 @@ import java.lang.annotation.Target;
  * public class BaseInterceptor {...}
  * </pre>
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
- * @since	1.0
+ * @since	1.5
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)

@@ -21,10 +21,10 @@ import com.blade.kit.resource.ClassReader;
 import com.blade.kit.resource.JarReaderImpl;
 
 /**
- * 动态根据环境获取ClassReader
+ * Get ClassReader by JAR or folder
  *
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
- * @since	1.0
+ * @since	1.6.6
  */
 public final class DynamicClassReader {
 	
@@ -34,10 +34,6 @@ public final class DynamicClassReader {
 	}
 	
 	public static void init(){
-		/*String rs = DynamicClassReader.class.getResource("").toString();
-		if(rs.indexOf(".jar!") != -1){
-			IS_JAR_CONTEXT = true;
-		}*/
 		Class<?> clazz = Blade.$().config().getApplicationClass();
 		String rs = clazz.getResource("").toString();
 		if(rs.indexOf(".jar!") != -1){

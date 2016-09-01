@@ -19,6 +19,12 @@ import java.lang.reflect.Field;
 
 import com.blade.ioc.Ioc;
 
+/**
+ * Bean Field Injector
+ *
+ * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
+ * @since	1.5
+ */
 public class FieldInjector implements Injector {
 	
 	private Ioc ioc;

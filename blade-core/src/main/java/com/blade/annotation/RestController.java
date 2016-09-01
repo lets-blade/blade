@@ -21,10 +21,12 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Route class notes, identifying whether a class is routed
+ * Return JSON Data to client.
+ * 
+ * The controller all methods have this attr.
  *
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
- * @since	1.0
+ * @since	1.5
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)

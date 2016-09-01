@@ -35,7 +35,7 @@ import com.blade.view.ModelAndView;
  * JSP Render, Default Render
  *
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
- * @since	1.0
+ * @since	1.5
  */
 public final class JspEngine implements TemplateEngine {
 	

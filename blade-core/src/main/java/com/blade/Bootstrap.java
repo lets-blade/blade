@@ -19,7 +19,7 @@ package com.blade;
  * Blade global initialization class, you can do some operations at the start of the application
  * 
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
- * @since	1.0
+ * @since	1.6.6
  */
 public abstract class Bootstrap {
 	

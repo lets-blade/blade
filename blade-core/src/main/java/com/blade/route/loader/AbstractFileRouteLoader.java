@@ -36,7 +36,7 @@ import com.blade.web.http.Response;
  * Abstract loader implementation 
  *
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
- * @since	1.0
+ * @since	1.5
  */
 public abstract class AbstractFileRouteLoader implements RouteLoader {
 

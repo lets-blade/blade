@@ -23,7 +23,7 @@ import java.io.InputStream;
  * The file system based on Routing 
  *
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
- * @since	1.0
+ * @since	1.5
  */
 public class FileSystemRouteLoader extends AbstractFileRouteLoader {
 

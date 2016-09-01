@@ -35,7 +35,7 @@ import com.blade.kit.resource.ClassReader;
  * ConfigLoader
  * 
  * @author <a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
- * @since 1.0
+ * @since 1.6.6
  */
 public class ConfigLoader {
 	

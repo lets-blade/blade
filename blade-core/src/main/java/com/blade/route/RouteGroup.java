@@ -21,7 +21,7 @@ import com.blade.Blade;
  * Route Group.
  *
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
- * @since	1.0
+ * @since	1.5
  */
 public class RouteGroup {
 	

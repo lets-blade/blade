@@ -23,10 +23,10 @@ import com.blade.view.ModelAndView;
  * TemplateEngine Interface, For view layer to display data 
  *
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
- * @since	1.0
+ * @since	1.5
  */
 public interface TemplateEngine {
 	
-	public void render(ModelAndView modelAndView, Writer writer) throws TemplateException;
+	void render(ModelAndView modelAndView, Writer writer) throws TemplateException;
 	
 }

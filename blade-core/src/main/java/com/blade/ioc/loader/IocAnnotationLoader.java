@@ -28,6 +28,12 @@ import com.blade.kit.CollectionKit;
 import com.blade.kit.resource.ClassInfo;
 import com.blade.kit.resource.ClassReader;
 
+/**
+ * Ioc annotation loader
+ *
+ * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
+ * @since	1.5
+ */
 public final class IocAnnotationLoader implements IocLoader {
 	
     private Collection<ClassInfo> classes;

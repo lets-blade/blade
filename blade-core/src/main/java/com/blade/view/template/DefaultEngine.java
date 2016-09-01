@@ -35,13 +35,13 @@ import com.blade.view.ModelAndView;
  * JSP Render, Default Render
  *
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
- * @since	1.0
+ * @since	1.6.6
  */
 public final class DefaultEngine implements TemplateEngine {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(DefaultEngine.class);
 	
-	private String viewPath = "/WEB-INF/";
+	private String viewPath = "/";
 	
 	public DefaultEngine() {
 	}
