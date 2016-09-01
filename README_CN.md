@@ -38,19 +38,19 @@ Blade 是一个轻量级的MVC框架. 它拥有简洁的代码，优雅的设计
 <dependency>
 	<groupId>com.bladejava</groupId>
 	<artifactId>blade-core</artifactId>
-	<version>1.6.4</version>
+	<version>1.6.6-alpha</version>
 </dependency>
 <dependency>
 	<groupId>com.bladejava</groupId>
 	<artifactId>blade-embed-jetty</artifactId>
-	<version>0.0.2</version>
+	<version>0.0.3</version>
 </dependency>
 ```
 
 或者  `Gradle`:
 
 ```sh
-compile 'com.bladejava:blade-core:1.6.3'
+compile 'com.bladejava:blade-core:1.6.6-alpha'
 compile 'com.bladejava:blade-startup:0.0.1'
 ```
 
@@ -58,11 +58,10 @@ compile 'com.bladejava:blade-startup:0.0.1'
 
 ```java
 public static void main(String[] args) {
-	Blade blade = me();
-	blade.get("/", (request, response) -> {
+	$().get("/", (request, response) -> {
 		response.html("<h1>Hello blade!</h1>");
 	});
-	blade.start(EmbedJettyServer.class);
+	$().start(EmbedJettyServer.class);
 }
 ```
 
@@ -72,12 +71,11 @@ public static void main(String[] args) {
 
 ```java
 public static void main(String[] args) {
-	Blade blade = me();
-	blade.get("/user/21", getxxx);
-	blade.post("/save", postxxx);
-	blade.delete("/del/21", deletexxx);
-	blade.put("/put", putxxx);
-	blade.start(EmbedJettyServer.class);
+	$().get("/user/21", getxxx);
+	$().post("/save", postxxx);
+	$().delete("/del/21", deletexxx);
+	$().put("/put", putxxx);
+	$().start(EmbedJettyServer.class);
 }
 ```
 
@@ -85,20 +83,19 @@ public static void main(String[] args) {
 
 ```java
 public static void main(String[] args) {
-	Blade blade = me();
-	blade.get("/user/:uid", (request, response) -> {
+	$().get("/user/:uid", (request, response) -> {
 		Integer uid = request.paramAsInt("uid");
 		response.text("uid : " + uid);
 	});
 	
-	blade.get("/users/:uid/post/:pid", (request, response) -> {
+	$().get("/users/:uid/post/:pid", (request, response) -> {
 		Integer uid = request.paramAsInt("uid");
 		Integer pid = request.paramAsInt("pid");
 		String msg = "uid = " + uid + ", pid = " + pid;
 		response.text(msg);
 	});
 	
-	blade.start(EmbedJettyServer.class);
+	$().start(EmbedJettyServer.class);
 }
 ```
 
@@ -106,12 +103,11 @@ public static void main(String[] args) {
 
 ```java
 public static void main(String[] args) {
-	Blade blade = me();
-	blade.get("/user", (request, response) -> {
+	$().get("/user", (request, response) -> {
 		Integer uid = request.queryAsInt("uid");
 		response.text("uid : " + uid);
 	});
-	blade.start(EmbedJettyServer.class);
+	$().start(EmbedJettyServer.class);
 }
 ```
 
@@ -149,11 +145,10 @@ POST	/upload_img			UploadRoute.upload_img
 
 ```java
 public static void main(String[] args) {
-	Blade blade = me();
-	blade.before("/.*", (request, response) -> {
+	$().before("/.*", (request, response) -> {
 		System.out.println("before...");
 	});
-	blade.start(EmbedJettyServer.class);
+	$().start(EmbedJettyServer.class);
 }
 ```
 
