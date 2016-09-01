@@ -110,7 +110,8 @@ public class Environment {
 	}
 	
 	public String getString(String key) {
-		return envMap.get(key);
+		String value = envMap.get(key);
+		return null != value ? value.trim() : null;
 	}
 	
 	public String getString(String key, String defaultValue) {

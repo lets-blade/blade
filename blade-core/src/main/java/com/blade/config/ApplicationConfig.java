@@ -83,19 +83,19 @@ public class ApplicationConfig {
 			this.view500 = environment.getString("app.view.500");
 			this.view404 = environment.getString("app.view.404");
 
-			String httpFilters = environment.getString("http.filters");
+			String statics = environment.getString("app.statics");
 			String basePackage = environment.getString("app.base-package");
 			Integer port = environment.getInt("server.port");
 
 			if (null != port) {
 				Blade.$().listen(port);
 			}
-
-			if (StringKit.isNotBlank(httpFilters)) {
-				this.setStaticFolders(httpFilters.split(","));
+			
+			if (StringKit.isNotBlank(statics)) {
+				this.setStaticFolders(statics.split(","));
 			}
 
-			if (StringKit.isNotBlank(basePackage)) {
+			if (StringKit.isNotBlank(basePackage) && StringKit.isBlank(basePackage)) {
 				this.setBasePackage(basePackage);
 			}
 			isInit = true;
