@@ -12,7 +12,7 @@
 
 Blade 是一款轻量级的MVC框架, 重新定义JavaWeb开发,它拥有简洁的代码，优雅的设计。
 
-如果你觉得不错, 欢迎 [Star](https://github.com/biezhi/blade) / [Fork](https://github.com/biezhi/blade), 谢谢 :blush:!
+如果你觉得不错, 欢迎 [Star](https://github.com/biezhi/blade) / [Fork](https://github.com/biezhi/blade), 谢谢 :blush:
 
 ## 特性
 
