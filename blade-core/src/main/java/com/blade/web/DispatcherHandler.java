@@ -15,6 +15,7 @@
  */
 package com.blade.web;
 
+import java.io.IOException;
 import java.util.List;
 
 import javax.servlet.ServletContext;
@@ -28,7 +29,6 @@ import com.blade.Blade;
 import com.blade.Const;
 import com.blade.context.ApplicationWebContext;
 import com.blade.exception.BladeException;
-import com.blade.exception.NotFoundException;
 import com.blade.ioc.Ioc;
 import com.blade.kit.StringKit;
 import com.blade.route.Route;
@@ -37,6 +37,7 @@ import com.blade.route.RouteMatcher;
 import com.blade.route.Routers;
 import com.blade.view.ModelAndView;
 import com.blade.view.handle.RouteViewHandler;
+import com.blade.view.template.TemplateException;
 import com.blade.web.http.HttpStatus;
 import com.blade.web.http.Path;
 import com.blade.web.http.Request;
@@ -94,19 +95,13 @@ public class DispatcherHandler {
     	}
         
         LOGGER.info("Request : {}\t{}", method, uri);
-        
+ 		
         try {
         	
-        	// Create Request
-     		Request request = new ServletRequest(httpRequest);
-     		
-            // Init Context
+        	Request request = new ServletRequest(httpRequest);
          	ApplicationWebContext.init(servletContext, request, response);
-         	
 			Route route = routeMatcher.getRoute(method, uri);
-			
-			// If find it
-			if (route != null) {
+			if (null != route) {
 				request.setRoute(route);
 				
 				// before inteceptor
@@ -126,15 +121,19 @@ public class DispatcherHandler {
 				render404(response, uri);
 			}
 			return;
-		} catch (NotFoundException e) {
-			LOGGER.warn(e.getMessage());
-			DispatchKit.printError(e, 404, response);
-        } catch (BladeException e) {
-			LOGGER.error(e.getMessage());
+		} catch (TemplateException e) {
+			LOGGER.error("Template error", e);
 			DispatchKit.printError(e, 500, response);
-        } catch (Exception e) {
+		} catch (BladeException e) {
+			LOGGER.error(e.getMessage(), e);
 			DispatchKit.printError(e, 500, response);
-        }
+		} catch (IOException e) {
+			LOGGER.error(e.getMessage(), e);
+			DispatchKit.printError(e, 500, response);
+		}catch (Exception e) {
+			LOGGER.error(e.getMessage(), e);
+			DispatchKit.printError(e, 500, response);
+		}
         return;
 	}
 	
@@ -143,8 +142,10 @@ public class DispatcherHandler {
 	 * 
 	 * @param response	response object
 	 * @param uri		404 uri
+	 * @throws IOException 
+	 * @throws TemplateException 
 	 */
-	private void render404(Response response, String uri) {
+	private void render404(Response response, String uri) throws Exception {
 		String view404 = blade.view404();
     	if(StringKit.isNotBlank(view404)){
     		ModelAndView modelAndView = new ModelAndView(view404);
@@ -181,15 +182,13 @@ public class DispatcherHandler {
 	 * @param response	response object
 	 * @param route		route object
 	 */
-	private void routeHandle(Request request, Response response, Route route){
-		
+	private void routeHandle(Request request, Response response, Route route) throws Exception{
 		Object target = route.getTarget();
 		if(null == target){
 			Class<?> clazz = route.getAction().getDeclaringClass();
 			target = ioc.getBean(clazz);
 			route.setTarget(target);
 		}
-		
 		request.initPathParams(route.getPath());
 		
 		// Init context

@@ -17,11 +17,13 @@ package com.blade.web.http;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.PrintWriter;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 
 import com.blade.view.ModelAndView;
+import com.blade.view.template.TemplateException;
 
 /**
  * HTTP Response
@@ -204,12 +206,18 @@ public interface Response {
 	OutputStream outputStream() throws IOException;
 
 	/**
+	 * @return	Return ResponseWriter Stream
+	 * @throws IOException
+	 */
+	PrintWriter writer() throws IOException;
+	
+	/**
 	 * Render view 
 	 * 
 	 * @param view	view page
 	 * @return		Return Response
 	 */
-	Response render(String view) ;
+	Response render(String view) throws TemplateException, IOException;
 
 	/**
 	 * Render view And Setting Data
@@ -217,7 +225,7 @@ public interface Response {
 	 * @param modelAndView 	ModelAndView object
 	 * @return				Return Response
 	 */
-	Response render(ModelAndView modelAndView) ;
+	Response render(ModelAndView modelAndView) throws TemplateException, IOException;
 
 	/**
 	 * Redirect to Path

@@ -23,19 +23,22 @@ import org.slf4j.LoggerFactory;
 import com.blade.Blade;
 import com.blade.Const;
 import com.blade.kit.FileKit;
+import com.blade.kit.IOKit;
 import com.blade.kit.StreamKit;
 import com.blade.kit.StringKit;
 import com.blade.web.http.HttpException;
 import com.blade.web.http.Response;
 
 public class DispatchKit {
-	
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(DispatchKit.class);
-	
-	static final boolean isWeb = Blade.$().enableServer();
-	
+
+	static final boolean isWeb = !Blade.$().enableServer();
+
+	static final Class<?> appClass = Blade.$().config().getApplicationClass();
+
 	private static Boolean isDev = null;
-	
+
 	public static File getWebRoot(ServletContext sc) {
 		String dir = sc.getRealPath("/");
 		if (dir == null) {
@@ -74,31 +77,32 @@ public class DispatchKit {
 		} catch (UnsupportedEncodingException e) {
 		}
 	}
-	
+
 	/**
 	 * Print Error Message
+	 * 
 	 * @param err
 	 * @param code
 	 * @param response
 	 */
-	public static void printError(Throwable err, int code, Response response){
-		if(null == isDev){
+	public static void printError(Throwable err, int code, Response response) {
+		if (null == isDev) {
 			isDev = Blade.$().isDev();
 		}
 		try {
 			final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-	        final PrintWriter writer = new PrintWriter(baos);
-	        
+			final PrintWriter writer = new PrintWriter(baos);
+
 			// If the developer mode, the error output to the page
-			if(isDev){
+			if (isDev) {
 				writer.println(String.format(HTML, err.getClass() + " : " + err.getMessage()));
 				writer.println();
 				err.printStackTrace(writer);
 				writer.println(END);
 			} else {
-				if(code == 404){
+				if (code == 404) {
 					String view404 = Blade.$().view404();
-					if(StringKit.isNotBlank(view404)){
+					if (StringKit.isNotBlank(view404)) {
 						response.render(view404);
 						return;
 					} else {
@@ -106,7 +110,7 @@ public class DispatchKit {
 					}
 				} else {
 					String view500 = Blade.$().view500();
-					if(StringKit.isNotBlank(view500)){
+					if (StringKit.isNotBlank(view500)) {
 						response.render(view500);
 						return;
 					} else {
@@ -115,26 +119,38 @@ public class DispatchKit {
 				}
 			}
 			writer.close();
-	        response.status(code);
-	        InputStream body = new ByteArrayInputStream(baos.toByteArray());
-			print(body, response.outputStream());
+			response.status(code);
+			InputStream body = new ByteArrayInputStream(baos.toByteArray());
+			print(body, response.writer());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * Print
+	 * 
 	 * @param body
 	 * @param out
 	 * @throws IOException
 	 */
-	public static void print(InputStream body, OutputStream out) throws IOException {
-		StreamKit.io(body, out, true, true);
+	public static void print(InputStream in, OutputStream out) throws IOException {
+		StreamKit.io(in, out);
 	}
-	
+
+	public static void print(InputStream body, PrintWriter writer) throws IOException {
+		print(IOKit.toString(body), writer);
+	}
+
+	public static void print(String content, PrintWriter writer) throws IOException {
+		writer.print(content);
+		writer.flush();
+		writer.close();
+	}
+
 	/**
 	 * Print static file
+	 * 
 	 * @param uri
 	 * @param realpath
 	 * @param httpResponse
@@ -143,22 +159,22 @@ public class DispatchKit {
 		try {
 			String realpath = "";
 			InputStream ins = null;
-			if(isWeb){
+			if (isWeb) {
 				realpath = request.getServletContext().getRealPath(uri);
 				File file = new File(realpath);
-	    		if(FileKit.exist(file)){
-	    			ins = new FileInputStream(file);
-	    		}
-			} else{
-				ins = DispatchKit.class.getResourceAsStream(uri);
+				if (FileKit.exist(file)) {
+					ins = new FileInputStream(file);
+				}
+			} else {
+				ins = appClass.getResourceAsStream(uri);
 			}
-			
-    		if(null != ins){
-    			print(ins, response.outputStream());
-    		} else {
-    			LOGGER.debug("request realpath is [{}]", realpath);
-    			HttpException httpException = new HttpException(404, uri + " not found");
-    			DispatchKit.printError(httpException, 404, response);
+
+			if (null != ins) {
+				print(ins, response.outputStream());
+			} else {
+				LOGGER.debug("request realpath is [{}]", realpath);
+				HttpException httpException = new HttpException(404, uri + " not found");
+				DispatchKit.printError(httpException, 404, response);
 			}
 		} catch (FileNotFoundException e) {
 			DispatchKit.printError(e, 404, response);
@@ -166,12 +182,12 @@ public class DispatchKit {
 			DispatchKit.printError(e, 500, response);
 		}
 	}
-    
+
 	private static final String HTML = "<!DOCTYPE html><html><head><meta charset='utf-8'><title>Blade Framework Error Page</title>"
 			+ "<style type='text/css'>*{margin:0;padding:0}.info{margin:0;padding:10px;color:#000;background-color:#f8edc2;height:60px;line-height:60px;border-bottom:5px solid #761226}.isa_error{margin:0;padding:10px;font-size:14px;font-weight:bold;background-color:#e0c9db;border-bottom:1px solid #000}.version{color:green;font-size:16px;font-weight:bold;padding:10px}</style></head><body>"
 			+ "<div class='info'><h3>%s</h3></div><div class='isa_error'><pre>";
-	
-	
-	private static final String END = "</pre></div><div class='version'>Blade-" + Const.BLADE_VERSION + "（<a href='http://bladejava.com' target='_blank'>Blade Framework</a>） </div></body></html>";
-	
+
+	private static final String END = "</pre></div><div class='version'>Blade-" + Const.BLADE_VERSION
+			+ "（<a href='http://bladejava.com' target='_blank'>Blade Framework</a>） </div></body></html>";
+
 }

@@ -15,6 +15,7 @@
  */
 package com.blade.view;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import com.blade.kit.CollectionKit;
@@ -30,7 +31,7 @@ public class ModelAndView {
 	/**
 	 * Data object, the object is placed in the attribute httprequest 
 	 */
-	private Map<String, Object> model;
+	private Map<String, Object> model = new HashMap<String, Object>(5);
     
 	/**
 	 * View Page
@@ -38,7 +39,6 @@ public class ModelAndView {
     private String view;
 
     public ModelAndView() {
-    	
     }
     
     /**

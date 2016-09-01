@@ -66,6 +66,8 @@ public class ApplicationConfig {
 	private boolean isDev = true;
 	
 	private boolean isInit  = false;
+	
+	private Class<?> applicationClass;
 
 	public ApplicationConfig() {
 		staticFolders.add("/public");
@@ -95,10 +97,6 @@ public class ApplicationConfig {
 
 			if (StringKit.isNotBlank(basePackage)) {
 				this.setBasePackage(basePackage);
-				this.addConfigPackages(basePackage + ".config");
-				this.addIocPackages(basePackage + ".service.*");
-				this.addRoutePackages(basePackage + ".controller");
-				this.setInterceptorPackage(basePackage + ".interceptor");
 			}
 			isInit = true;
 		}
@@ -121,6 +119,10 @@ public class ApplicationConfig {
 
 	public void setBasePackage(String basePackage) {
 		this.basePackage = basePackage;
+		this.addConfigPackages(basePackage + ".config");
+		this.addIocPackages(basePackage + ".service.*");
+		this.addRoutePackages(basePackage + ".controller");
+		this.setInterceptorPackage(basePackage + ".interceptor");
 	}
 
 	public String[] getIocPackages() {
@@ -204,4 +206,13 @@ public class ApplicationConfig {
 	public boolean isInit(){
 		return this.isInit;
 	}
+
+	public Class<?> getApplicationClass() {
+		return applicationClass;
+	}
+
+	public void setApplicationClass(Class<?> applicationClass) {
+		this.applicationClass = applicationClass;
+	}
+	
 }

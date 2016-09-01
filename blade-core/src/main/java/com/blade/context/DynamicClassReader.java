@@ -15,6 +15,7 @@
  */
 package com.blade.context;
 
+import com.blade.Blade;
 import com.blade.kit.resource.ClassPathClassReader;
 import com.blade.kit.resource.ClassReader;
 import com.blade.kit.resource.JarReaderImpl;
@@ -25,15 +26,20 @@ import com.blade.kit.resource.JarReaderImpl;
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since	1.0
  */
-public class DynamicClassReader {
-
+public final class DynamicClassReader {
+	
 	private static boolean IS_JAR_CONTEXT = false;
 	
 	private DynamicClassReader() {
 	}
 	
 	public static void init(){
-		String rs = DynamicClassReader.class.getResource("").toString();
+		/*String rs = DynamicClassReader.class.getResource("").toString();
+		if(rs.indexOf(".jar!") != -1){
+			IS_JAR_CONTEXT = true;
+		}*/
+		Class<?> clazz = Blade.$().config().getApplicationClass();
+		String rs = clazz.getResource("").toString();
 		if(rs.indexOf(".jar!") != -1){
 			IS_JAR_CONTEXT = true;
 		}

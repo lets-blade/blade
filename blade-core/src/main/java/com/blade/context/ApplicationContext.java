@@ -14,7 +14,9 @@ public final class ApplicationContext {
 	
 	public static void init(Blade blade) throws BladeException{
 		try {
+			
 			blade.bootstrap().init(blade);
+			blade.applicationConfig().setBasePackage(blade.bootstrap().getClass().getPackage().getName());
 			
 			if(!blade.config().isInit()){
 			    blade.loadAppConf(Const.APP_PROPERTIES);

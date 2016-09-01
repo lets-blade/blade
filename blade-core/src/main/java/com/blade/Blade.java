@@ -25,11 +25,13 @@ import com.blade.config.ApplicationConfig;
 import com.blade.config.BaseConfig;
 import com.blade.config.ConfigLoader;
 import com.blade.embedd.EmbedServer;
+import com.blade.exception.EmbedServerException;
 import com.blade.interceptor.Interceptor;
 import com.blade.ioc.Ioc;
 import com.blade.ioc.SimpleIoc;
 import com.blade.kit.Assert;
 import com.blade.kit.Environment;
+import com.blade.kit.StringKit;
 import com.blade.kit.reflect.ReflectKit;
 import com.blade.plugin.Plugin;
 import com.blade.route.Route;
@@ -79,7 +81,7 @@ public final class Blade {
 	private String contextPath = Const.DEFAULT_CONTEXTPATH;
 
 	// enableServer
-	private boolean enableServer = false;
+	private Boolean enableServer = false;
 
 	// plugins
 	private Set<Class<? extends Plugin>> plugins;
@@ -587,6 +589,35 @@ public final class Blade {
 		this.port = port;
 		return this;
 	}
+	
+	public void start(Class<?> applicationClass) {
+		Assert.notNull(applicationClass);
+		
+	    this.loadAppConf(Const.APP_PROPERTIES);
+	    
+		// init blade environment config
+	    applicationConfig.setEnv(environment);
+	    applicationConfig.setApplicationClass(applicationClass);
+	    
+	    if(StringKit.isBlank(applicationConfig.getBasePackage())){
+	    	applicationConfig.setBasePackage(applicationClass.getPackage().getName());
+	    }
+	    try {
+			Class<?> embedClazz = Class.forName("com.blade.embedd.EmbedJettyServer");
+			if(null == embedClazz){
+				embedClazz = Class.forName("com.blade.embedd.EmbedTomcatServer");
+			}
+			if(null != embedClazz){
+				EmbedServer embedServer = (EmbedServer) embedClazz.newInstance();
+				embedServer.startup(port, contextPath);
+				this.enableServer = true;
+			} else {
+				throw new EmbedServerException("Not found EmbedServer");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 
 	/**
 	 * @return Return blade config object
@@ -734,20 +765,6 @@ public final class Blade {
 
 	public Set<Class<? extends Plugin>> plugins() {
 		return this.plugins;
-	}
-
-	public void start(Class<? extends EmbedServer> embedServer) throws Exception {
-	    this.loadAppConf(Const.APP_PROPERTIES);
-		// init blade environment config
-	    this.config().setEnv(environment);
-		
-		embedServer.newInstance().startup(port, contextPath);
-		this.enableServer = true;
-	}
-
-	public void start(EmbedServer embedServer) throws Exception {
-		embedServer.startup(port, contextPath);
-		this.enableServer = true;
 	}
 
 }

@@ -27,6 +27,8 @@ import com.blade.context.ApplicationWebContext;
 import com.blade.kit.Assert;
 import com.blade.view.ModelAndView;
 import com.blade.view.template.TemplateEngine;
+import com.blade.view.template.TemplateException;
+import com.blade.web.DispatchKit;
 import com.blade.web.http.HttpStatus;
 import com.blade.web.http.Path;
 import com.blade.web.http.Request;
@@ -174,14 +176,13 @@ public class ServletResponse implements Response {
         response.addCookie(cookie);
 		return this;
 	}
-
-
+	
 	@Override
 	public Response text(String text) {
 		try {
 			response.setHeader("Cache-Control", "no-cache");
     		response.setContentType("text/plain;charset=utf-8");
-			response.getWriter().print(text);
+			DispatchKit.print(text, response.getWriter());
 			this.written = true;
 			return this;
 		} catch (IOException e) {
@@ -196,11 +197,8 @@ public class ServletResponse implements Response {
 			response.setHeader("Cache-Control", "no-cache");
 			response.setContentType("text/html;charset=utf-8");
 			
-			PrintWriter out = response.getWriter();
-			out.print(html);
-    		out.flush();
-    		out.close();
-    		
+			PrintWriter writer = response.getWriter();
+			DispatchKit.print(html, writer);
     		this.written = true;
 			return this;
 		} catch (UnsupportedEncodingException e1) {
@@ -223,11 +221,8 @@ public class ServletResponse implements Response {
 		}
 		try {
 			response.setHeader("Cache-Control", "no-cache");
-			PrintWriter out = response.getWriter();
-			out.print(json);
-    		out.flush();
-    		out.close();
-    		
+			PrintWriter writer = response.getWriter();
+			DispatchKit.print(json, writer);
     		this.written = true;
 			return this;
 		} catch (UnsupportedEncodingException e1) {
@@ -243,12 +238,8 @@ public class ServletResponse implements Response {
 		try {
 			response.setHeader("Cache-Control", "no-cache");
 			response.setContentType("text/xml;charset=utf-8");
-			
-			PrintWriter out = response.getWriter();
-			out.print(xml);
-    		out.flush();
-    		out.close();
-    		
+			PrintWriter writer = response.getWriter();
+			DispatchKit.print(xml, writer);
     		this.written = true;
 			return this;
 		} catch (UnsupportedEncodingException e1) {
@@ -264,37 +255,32 @@ public class ServletResponse implements Response {
 	public ServletOutputStream outputStream() throws IOException {
 		return response.getOutputStream();
 	}
+	
+	@Override
+	public PrintWriter writer() throws IOException {
+		return response.getWriter();
+	}
 
 	@Override
-	public Response render(String view) {
-		try {
-			Assert.notBlank(view, "view not is null");
-			
-			String viewPath = Path.cleanPath(view);
-			ModelAndView modelAndView = new ModelAndView(viewPath);
-			render.render(modelAndView, response.getWriter());
-			return this;
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return null;
+	public Response render(String view) throws TemplateException, IOException{
+		Assert.notBlank(view, "view not is null");
+		
+		String viewPath = Path.cleanPath(view);
+		ModelAndView modelAndView = new ModelAndView(viewPath);
+		render.render(modelAndView, response.getWriter());
+		return this;
 	}
 	
 	@Override
-	public Response render(ModelAndView modelAndView) {
-		try {
-			Assert.notNull(modelAndView, "ModelAndView not is null!");
-			Assert.notBlank(modelAndView.getView(), "view not is null");
-			
-			String viewPath = Path.cleanPath(modelAndView.getView());
-			modelAndView.setView(viewPath);
-			
-			render.render(modelAndView, response.getWriter());
-			return this;
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return null;
+	public Response render(ModelAndView modelAndView) throws TemplateException, IOException {
+		Assert.notNull(modelAndView, "ModelAndView not is null!");
+		Assert.notBlank(modelAndView.getView(), "view not is null");
+		
+		String viewPath = Path.cleanPath(modelAndView.getView());
+		modelAndView.setView(viewPath);
+		
+		render.render(modelAndView, response.getWriter());
+		return this;
 	}
 
 	@Override
