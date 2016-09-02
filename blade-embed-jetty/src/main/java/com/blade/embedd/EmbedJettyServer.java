@@ -1,5 +1,7 @@
 package com.blade.embedd;
 
+import static com.blade.Blade.$;
+
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.HttpConfiguration;
 import org.eclipse.jetty.server.HttpConnectionFactory;
@@ -12,12 +14,9 @@ import org.eclipse.jetty.webapp.WebAppContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.blade.Blade;
 import com.blade.Const;
 import com.blade.kit.Environment;
-import com.blade.kit.StringKit;
 import com.blade.web.DispatcherServlet;
-import static com.blade.Blade.$;
 
 public class EmbedJettyServer implements EmbedServer {
 
@@ -32,6 +31,7 @@ public class EmbedJettyServer implements EmbedServer {
 	private Environment environment = null;
     
 	public EmbedJettyServer() {
+		System.setProperty("org.apache.jasper.compiler.disablejsr199", "true");
 		$().loadAppConf("jetty.properties");
 		environment = $().environment();
 		$().enableServer(true);
@@ -48,29 +48,32 @@ public class EmbedJettyServer implements EmbedServer {
 	}
 	
 	@Override
+	public void setWebRoot(String webRoot) {
+		webAppContext.setResourceBase(webRoot);
+	}
+	
+	@Override
 	public void startup(int port, String contextPath, String webRoot) throws Exception {
 		this.port = port;
 		
 		// Setup Threadpool
         QueuedThreadPool threadPool = new QueuedThreadPool();
         
-        int maxThreads = environment.getInt("server.jetty.max-threads", 100);
+        int minThreads = environment.getInt("server.jetty.min-threads", 100);
+        int maxThreads = environment.getInt("server.jetty.max-threads", 500);
         
+        threadPool.setMinThreads(minThreads);
         threadPool.setMaxThreads(maxThreads);
         
 		server = new org.eclipse.jetty.server.Server(threadPool);
+		
 		// 设置在JVM退出时关闭Jetty的钩子。
         server.setStopAtShutdown(true);
         
         webAppContext = new WebAppContext();
         webAppContext.setContextPath(contextPath);
-	    
-	    if(StringKit.isBlank(webRoot)){
-	    	webRoot = Blade.$().config().getApplicationClass().getResource("/").getPath();
-	    }
-	    
-	    webAppContext.setResourceBase(webRoot);
-	    
+        webAppContext.setResourceBase("");
+        
 	    int securePort = environment.getInt("server.jetty.http.secure-port", 8443);
 	    int outputBufferSize = environment.getInt("server.jetty.http.output-buffersize", 32768);
 	    int requestHeaderSize = environment.getInt("server.jetty.http.request-headersize", 8192);
@@ -111,8 +114,4 @@ public class EmbedJettyServer implements EmbedServer {
         server.stop();
     }
     
-    public void waitForInterrupt() throws InterruptedException {
-        server.join();
-    }
-
 }

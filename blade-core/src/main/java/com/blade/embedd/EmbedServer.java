@@ -31,4 +31,6 @@ public interface EmbedServer {
 	
 	void stop() throws Exception;
 	
+	void setWebRoot(String webRoot);
+	
 }

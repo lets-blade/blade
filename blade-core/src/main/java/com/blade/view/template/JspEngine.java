@@ -37,6 +37,7 @@ import com.blade.view.ModelAndView;
 public final class JspEngine implements TemplateEngine {
 	
 	private String viewPath = "/views/";
+	private String suffix = ".jsp";
 	
 	public JspEngine() {
 	}
@@ -45,14 +46,31 @@ public final class JspEngine implements TemplateEngine {
 		this.viewPath = viewPath;
 	}
 	
+	public String getViewPath() {
+		return viewPath;
+	}
+
+	public void setViewPath(String viewPath) {
+		this.viewPath = viewPath;
+	}
+
+	public String getSuffix() {
+		return suffix;
+	}
+
+	public void setSuffix(String suffix) {
+		this.suffix = suffix;
+	}
+
 	@Override
 	public void render(ModelAndView modelAndView, Writer writer) throws TemplateException {
 		HttpServletRequest request = ApplicationWebContext.request().raw();
 		HttpServletResponse response = ApplicationWebContext.response().raw();
 		try {
 			Map<String, Object> model = modelAndView.getModel();
-			String realPath = viewPath + modelAndView.getView();
-			if (null != model && !model.isEmpty()) {
+			String realPath = viewPath + modelAndView.getView() + suffix;
+			
+			if (!model.isEmpty()) {
 				Set<String> keys = model.keySet();
 				for (String key : keys) {
 					request.setAttribute(key, model.get(key));
@@ -62,6 +80,8 @@ public final class JspEngine implements TemplateEngine {
 		} catch (ServletException e) {
 			throw new TemplateException(e);
 		} catch (IOException e) {
+			throw new TemplateException(e);
+		} catch (Exception e) {
 			throw new TemplateException(e);
 		}
 	}

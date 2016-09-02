@@ -87,6 +87,9 @@ public final class Blade {
 	// config loader
 	private ConfigLoader configLoader;
 	
+	// embed server
+	private EmbedServer embedServer;
+	
 	private Blade() {
 		this.environment = new Environment();
 		this.applicationConfig = new ApplicationConfig();
@@ -602,8 +605,8 @@ public final class Blade {
 				embedClazz = Class.forName("com.blade.embedd.EmbedTomcatServer");
 			}
 			if(null != embedClazz){
-				EmbedServer embedServer = (EmbedServer) embedClazz.newInstance();
-				embedServer.startup(port, contextPath);
+				this.embedServer = (EmbedServer) embedClazz.newInstance();
+				this.embedServer.startup(port, contextPath);
 				this.enableServer = true;
 			} else {
 				throw new EmbedServerException("Not found EmbedServer");
@@ -612,7 +615,14 @@ public final class Blade {
 			e.printStackTrace();
 		}
 	}
-
+	
+	/**
+	 * @return	Return EmbedServer
+	 */
+	public EmbedServer embedServer() {
+		return this.embedServer;
+	}
+	
 	/**
 	 * @return Return blade config object
 	 */
@@ -753,5 +763,5 @@ public final class Blade {
 	public Set<Class<? extends Plugin>> plugins() {
 		return this.plugins;
 	}
-
+	
 }

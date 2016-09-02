@@ -33,6 +33,7 @@ import com.blade.Bootstrap;
 import com.blade.context.ApplicationContext;
 import com.blade.context.ApplicationWebContext;
 import com.blade.context.DynamicClassReader;
+import com.blade.embedd.EmbedServer;
 import com.blade.kit.StringKit;
 import com.blade.kit.SystemKit;
 
@@ -69,21 +70,27 @@ public class DispatcherServlet extends HttpServlet {
 		servletContext = config.getServletContext();
 		if(!blade.isInit()){
 			
-			LOGGER.info("jdk.version = {}", SystemKit.getJavaInfo().getVersion());
-			LOGGER.info("user.dir = {}", System.getProperty("user.dir"));
-			LOGGER.info("java.io.tmpdir = {}", System.getProperty("java.io.tmpdir"));
-			LOGGER.info("user.timezone = {}", System.getProperty("user.timezone"));
-			LOGGER.info("file.encoding = {}", System.getProperty("file.encoding"));
-			
-			DynamicClassReader.init();
+			LOGGER.info("jdk.version\t=> {}", SystemKit.getJavaInfo().getVersion());
+			LOGGER.info("user.dir\t=> {}", System.getProperty("user.dir"));
+			LOGGER.info("java.io.tmpdir\t=> {}", System.getProperty("java.io.tmpdir"));
+			LOGGER.info("user.timezone\t=> {}", System.getProperty("user.timezone"));
+			LOGGER.info("file.encodin\t=> {}", System.getProperty("file.encoding"));
 			
 			long initStart = System.currentTimeMillis();
 			
-		    blade.webRoot(DispatchKit.getWebRoot(servletContext).getPath());
+			String webRoot = DispatchKit.getWebRoot(servletContext);
+			
+		    blade.webRoot(webRoot);
+		    EmbedServer embedServer = blade.embedServer();
+		    if(null != embedServer){
+		    	embedServer.setWebRoot(webRoot);
+		    }
+		    
+		    LOGGER.info("blade.webroot\t=> {}", webRoot);
+		    
+		    DynamicClassReader.init();
 		    
 		    ApplicationWebContext.init(servletContext);
-		    
-		    LOGGER.info("blade.webroot = {}", blade.webRoot());
 		    
 		    this.bootstrap = blade.bootstrap();
 		    

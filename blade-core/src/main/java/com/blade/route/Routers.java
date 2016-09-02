@@ -24,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.blade.kit.Assert;
+import com.blade.kit.reflect.ReflectKit;
 import com.blade.web.http.HttpMethod;
 import com.blade.web.http.Request;
 import com.blade.web.http.Response;
@@ -36,7 +37,7 @@ import com.blade.web.http.Response;
  */
 public class Routers {
 	
-	private Logger LOGGER = LoggerFactory.getLogger(Routers.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(Routers.class);
 	
 	private Map<String, Route> routes = null;
 	
@@ -72,10 +73,10 @@ public class Routers {
 				LOGGER.warn("\tInterceptor {} -> {} has exist", path, httpMethod.toString());
 			}
 			this.interceptors.put(key, route);
-			LOGGER.debug("Add Interceptor: {}", route);
+			LOGGER.debug("Add Interceptor => {}", route);
 		} else {
 			this.routes.put(key, route);
-			LOGGER.debug("Add Route: {}", route);
+			LOGGER.debug("Add Route => {}", route);
 		}
 	}
 	
@@ -113,7 +114,7 @@ public class Routers {
 			LOGGER.info("Add Interceptor: {}", route);
 		} else {
 			this.routes.put(key, route);
-			LOGGER.info("Add Route: {}", route);
+			LOGGER.info("Add Route => {}", route);
 		}
 		
 	}
@@ -132,6 +133,8 @@ public class Routers {
 		}
 	}
 	
+	private Map<String, Method[]> classMethosPool = new HashMap<String, Method[]>(8);
+	
 	public void route(String path, Class<?> clazz, String methodName) {
 		
 		Assert.notNull(path, "Route path not is null!");
@@ -144,20 +147,26 @@ public class Routers {
 			httpMethod = HttpMethod.valueOf(methodArr[0].toUpperCase());
 			methodName = methodArr[1];
 		}
-		try {	
-			Method method = clazz.getMethod(methodName, Request.class, Response.class);
-			addRoute(httpMethod, path, null, clazz, method);
-		} catch (NoSuchMethodException e) {
-			try {
-				Method method = clazz.getMethod(methodName, Response.class, Request.class);
-				addRoute(httpMethod, path, null, clazz, method);
-			} catch (NoSuchMethodException e1) {
-				e1.printStackTrace();
-			} catch (SecurityException e1) {
-				e1.printStackTrace();
+		try {
+			
+			Method[] methods = classMethosPool.get(clazz.getName());
+			if(null == methods){
+				methods = clazz.getMethods();
+				classMethosPool.put(clazz.getName(), methods);
+			}
+			if(null != methods){
+				for(Method method : methods){
+					if(method.getName().equals(methodName)){
+						addRoute(httpMethod, path, ReflectKit.newInstance(clazz), clazz, method);
+					}
+				}
 			}
 		} catch (SecurityException e) {
-			e.printStackTrace();
+			LOGGER.error(e.getMessage(), e);
+		} catch (InstantiationException e) {
+			LOGGER.error(e.getMessage(), e);
+		} catch (IllegalAccessException e) {
+			LOGGER.error(e.getMessage(), e);
 		}
 	}
 	

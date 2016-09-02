@@ -28,32 +28,53 @@ import com.blade.kit.StreamKit;
 import com.blade.kit.StringKit;
 import com.blade.web.http.HttpException;
 import com.blade.web.http.Response;
+import static com.blade.Blade.$;
 
 public class DispatchKit {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(DispatchKit.class);
 
-	static final boolean isWeb = !Blade.$().enableServer();
+	static final boolean isWeb = !$().enableServer();
 
-	static final Class<?> appClass = Blade.$().config().getApplicationClass();
+	static final Class<?> appClass = $().config().getApplicationClass();
 
 	private static Boolean isDev = null;
-
-	public static File getWebRoot(ServletContext sc) {
-		String dir = sc.getRealPath("/");
-		if (dir == null) {
-			try {
-				URL url = sc.getResource("/");
-				if (url != null && "file".equals(url.getProtocol())) {
-					dir = URLDecoder.decode(url.getFile(), "utf-8");
-				} else {
-					throw new IllegalStateException("Can't get webroot dir, url = " + url);
-				}
-			} catch (IOException e) {
-				throw new IllegalStateException(e);
-			}
+	
+	public static String getPath(Class<?> clazz) {
+		URL url = clazz.getProtectionDomain().getCodeSource().getLocation();
+		String filePath = null;
+		try {
+			filePath = URLDecoder.decode(url.getPath(), "utf-8");
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-		return new File(dir);
+		if (filePath.endsWith(".jar")) {
+			filePath = "jar:file:" + filePath + "!/";
+			return filePath;
+		}
+		File file = new File(filePath);
+		filePath = file.getAbsolutePath();
+		return filePath;
+	}
+	
+	public static String getWebRoot(ServletContext sc) {
+		if(isWeb){
+			String dir = sc.getRealPath("/");
+			if (dir == null) {
+				try {
+					URL url = sc.getResource("/");
+					if (url != null && "file".equals(url.getProtocol())) {
+						dir = URLDecoder.decode(url.getFile(), "utf-8");
+					} else {
+						throw new IllegalStateException("Can't get webroot dir, url = " + url);
+					}
+				} catch (IOException e) {
+					throw new IllegalStateException(e);
+				}
+			}
+			return dir;
+		}
+		return getPath(appClass);
 	}
 
 	public static void setNoCache(HttpServletResponse response) {

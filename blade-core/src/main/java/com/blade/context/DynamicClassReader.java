@@ -15,6 +15,9 @@
  */
 package com.blade.context;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.blade.Blade;
 import com.blade.kit.resource.ClassPathClassReader;
 import com.blade.kit.resource.ClassReader;
@@ -28,7 +31,7 @@ import com.blade.kit.resource.JarReaderImpl;
  */
 public final class DynamicClassReader {
 	
-	private static boolean IS_JAR_CONTEXT = false;
+	private static final Logger LOGGER = LoggerFactory.getLogger(DynamicClassReader.class);
 	
 	private static ClassReader CLASS_READER = null;
 	
@@ -38,19 +41,15 @@ public final class DynamicClassReader {
 	public static void init(){
 		Class<?> clazz = Blade.$().config().getApplicationClass();
 		String rs = clazz.getResource("").toString();
-		if(rs.indexOf(".jar!") != -1){
-			IS_JAR_CONTEXT = true;
+		if(rs.indexOf(".jar") != -1){
+			CLASS_READER = new JarReaderImpl();
+			LOGGER.debug("{}", CLASS_READER);
+		} else{
+			CLASS_READER = new ClassPathClassReader();
 		}
 	}
 	
 	public static ClassReader getClassReader(){
-		if(null != CLASS_READER){
-			return CLASS_READER;
-		}
-		if(IS_JAR_CONTEXT){
-			CLASS_READER = new JarReaderImpl();
-		}
-		CLASS_READER = new ClassPathClassReader();
 		return CLASS_READER;
 	}
 	
