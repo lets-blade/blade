@@ -31,6 +31,6 @@ import java.lang.annotation.Target;
 @Documented
 public @interface Order{
 	
-	int sort() default 0;
+	int sort();
 	
 }
