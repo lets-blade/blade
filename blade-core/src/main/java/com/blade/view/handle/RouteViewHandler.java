@@ -23,7 +23,7 @@ import com.blade.ioc.Ioc;
 import com.blade.kit.reflect.ReflectKit;
 import com.blade.route.Route;
 import com.blade.view.ModelAndView;
-import com.blade.view.parser.JSONView;
+import com.blade.view.ViewSettings;
 import com.blade.web.DispatchKit;
 import com.blade.web.http.Request;
 import com.blade.web.http.Response;
@@ -31,9 +31,10 @@ import com.blade.web.http.Response;
 public class RouteViewHandler {
 	
 	private Ioc ioc;
-	
+	private ViewSettings viewSettings;
 	public RouteViewHandler(Ioc ioc) {
 		this.ioc = ioc;
+		this.viewSettings = ViewSettings.$();
 	}
 	
 	public void handle(Request request, Response response, Route route) throws Exception {
@@ -54,7 +55,7 @@ public class RouteViewHandler {
 			RestController restController = target.getClass().getAnnotation(RestController.class);
 			JSON json = actionMethod.getAnnotation(JSON.class);
 			if(null != restController || null != json){
-				response.json(JSONView.toJSONString(returnParam));
+				response.json(viewSettings.toJSONString(returnParam));
 			} else{
 				if (returnType == String.class) {
 					response.render(returnParam.toString());

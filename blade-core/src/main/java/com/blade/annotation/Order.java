@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015, biezhi 王爵 (biezhi.me@gmail.com)
+ * Copyright (c) 2016, biezhi 王爵 (biezhi.me@gmail.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,21 +21,16 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Interceptor notes, written in the class
- * e.g:
- * <pre>
- * {@link Intercept}
- * public class BaseInterceptor {...}
- * </pre>
+ * Order By
+ *
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
- * @since	1.5
+ * @since	1.6.6
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface Intercept{
-	
-	String value() default "/.*";
+public @interface Order{
 	
 	int sort() default 0;
+	
 }

@@ -41,8 +41,6 @@ import com.blade.route.RouteGroup;
 import com.blade.route.RouteHandler;
 import com.blade.route.Routers;
 import com.blade.route.loader.ClassPathRouteLoader;
-import com.blade.view.template.DefaultEngine;
-import com.blade.view.template.TemplateEngine;
 import com.blade.web.http.HttpMethod;
 
 /**
@@ -64,9 +62,6 @@ public final class Blade {
 
 	// ioc container
 	private Ioc ioc = new SimpleIoc();
-
-	// default render is jspRender
-	private TemplateEngine templateEngine = null;
 
 	// routes
 	private Routers routers = new Routers();
@@ -95,14 +90,13 @@ public final class Blade {
 	private Blade() {
 		this.environment = new Environment();
 		this.applicationConfig = new ApplicationConfig();
-		this.templateEngine = new DefaultEngine();
 		this.plugins = new HashSet<Class<? extends Plugin>>();
 		this.routeBuilder = new RouteBuilder(this.routers);
 		this.configLoader = new ConfigLoader(this.ioc, this.applicationConfig);
 	}
 
 	static final class BladeHolder {
-		private static final Blade ME = new Blade();
+		private static final Blade $ = new Blade();
 	}
 
 	/**
@@ -110,7 +104,7 @@ public final class Blade {
 	 */
 	@Deprecated
 	public static final Blade me() {
-		return BladeHolder.ME;
+		return BladeHolder.$;
 	}
 
 	/**
@@ -120,7 +114,7 @@ public final class Blade {
 	 */
 	@Deprecated
 	public static final Blade me(String confPath) {
-		Blade blade = BladeHolder.ME;
+		Blade blade = BladeHolder.$;
 		blade.environment.add(confPath);
 		return blade;
 	}
@@ -129,7 +123,7 @@ public final class Blade {
 	 * @return Single case method returns Blade object
 	 */
 	public static final Blade $() {
-		return BladeHolder.ME;
+		return BladeHolder.$;
 	}
 
 	/**
@@ -137,7 +131,8 @@ public final class Blade {
 	 * @return
 	 */
 	public static final Blade $(String confPath) {
-		Blade blade = BladeHolder.ME;
+		Assert.notEmpty(confPath);
+		Blade blade = BladeHolder.$;
 		blade.environment.add(confPath);
 		return blade;
 	}
@@ -448,27 +443,6 @@ public final class Blade {
 	}
 
 	/**
-	 * Setting Render Engin, Default is JspRender
-	 * 
-	 * @param templateEngine
-	 *            Render engine object
-	 * @return return blade
-	 */
-	public Blade viewEngin(TemplateEngine templateEngine) {
-		Assert.notNull(templateEngine);
-		this.templateEngine = templateEngine;
-		return this;
-	}
-
-	
-	/**
-	 * @return	Return Current TemplateEngine
-	 */
-	public TemplateEngine viewEngin() {
-		return this.templateEngine;
-	}
-	
-	/**
 	 * Setting the frame static file folder
 	 * 
 	 * @param folders
@@ -598,18 +572,31 @@ public final class Blade {
 		return this;
 	}
 	
+	/**
+	 * start web server
+	 */
+	public void start() {
+		this.start(null);
+	}
+	
+	/**
+	 * start web server
+	 * @param applicationClass	your app root package starter
+	 */
 	public void start(Class<?> applicationClass) {
-		Assert.notNull(applicationClass);
 		
 	    this.loadAppConf(Const.APP_PROPERTIES);
 	    
 		// init blade environment config
 	    applicationConfig.setEnv(environment);
-	    applicationConfig.setApplicationClass(applicationClass);
 	    
-	    if(StringKit.isBlank(applicationConfig.getBasePackage())){
-	    	applicationConfig.setBasePackage(applicationClass.getPackage().getName());
+	    if(null != applicationClass){
+	    	applicationConfig.setApplicationClass(applicationClass);
+		    if(StringKit.isBlank(applicationConfig.getBasePackage())){
+		    	applicationConfig.setBasePackage(applicationClass.getPackage().getName());
+		    }
 	    }
+	    
 	    try {
 			Class<?> embedClazz = Class.forName("com.blade.embedd.EmbedJettyServer");
 			if(null == embedClazz){
@@ -696,14 +683,7 @@ public final class Blade {
 	public Bootstrap bootstrap() {
 		return this.bootstrap;
 	}
-
-	/**
-	 * @return Return current templateEngine
-	 */
-	public TemplateEngine templateEngine() {
-		return this.templateEngine;
-	}
-
+	
 	/**
 	 * return register plugin object
 	 * 

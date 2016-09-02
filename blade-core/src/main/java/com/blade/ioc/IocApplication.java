@@ -17,6 +17,7 @@ package com.blade.ioc;
 
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -27,6 +28,7 @@ import com.blade.Blade;
 import com.blade.annotation.Controller;
 import com.blade.annotation.Intercept;
 import com.blade.annotation.RestController;
+import com.blade.comparator.OrderComparator;
 import com.blade.config.BaseConfig;
 import com.blade.context.DynamicClassReader;
 import com.blade.interceptor.Interceptor;
@@ -54,12 +56,20 @@ public class IocApplication {
 	 */
 	private ClassReader classReader = null;
 	private Blade blade;
+	private OrderComparator orderComparator;
 
 	public IocApplication() {
 		this.blade = Blade.$();
 		this.classReader = DynamicClassReader.getClassReader();
+		this.orderComparator = new OrderComparator();
 	}
 
+	/**
+	 * load config beans
+	 * 
+	 * @return
+	 * @throws Exception
+	 */
 	private List<ClassInfo> loadCondigs() throws Exception {
 		List<ClassInfo> configs = null;
 		String[] configPackages = blade.config().getConfigPackages();
@@ -69,19 +79,20 @@ public class IocApplication {
 				Set<ClassInfo> configClasses = classReader.getClassByAnnotation(packageName, Component.class, false);
 				if (null != configClasses) {
 					for (ClassInfo classInfo : configClasses) {
-						if (classInfo.getClazz().getSuperclass().getName()
-								.equals("com.blade.aop.AbstractMethodInterceptor")) {
-							aopInterceptors.add(classInfo.newInstance());
-						}
 						Class<?>[] interfaces = classInfo.getClazz().getInterfaces();
 						for (Class<?> in : interfaces) {
 							if (in.equals(BaseConfig.class)) {
 								configs.add(classInfo);
 							}
 						}
+						if (classInfo.getClazz().getSuperclass().getName()
+								.equals("com.blade.aop.AbstractMethodInterceptor")) {
+							aopInterceptors.add(classInfo.newInstance());
+						}
 					}
 				}
 			}
+			Collections.sort(configs, orderComparator);
 		}
 		return configs;
 	}
@@ -139,12 +150,14 @@ public class IocApplication {
 		if (StringKit.isNotBlank(interceptorPackage)) {
 			interceptors = new ArrayList<ClassInfo>(10);
 			Set<ClassInfo> intes = classReader.getClassByAnnotation(interceptorPackage, Intercept.class, true);
-			if(null != intes){
-				for(ClassInfo classInfo : intes){
-					if(null != classInfo.getClazz().getInterfaces() && classInfo.getClazz().getInterfaces()[0].equals(Interceptor.class)){
+			if (null != intes) {
+				for (ClassInfo classInfo : intes) {
+					if (null != classInfo.getClazz().getInterfaces()
+							&& classInfo.getClazz().getInterfaces()[0].equals(Interceptor.class)) {
 						interceptors.add(classInfo);
 					}
 				}
+				Collections.sort(interceptors, orderComparator);
 			}
 		}
 		return interceptors;
@@ -157,20 +170,18 @@ public class IocApplication {
 		// web
 		List<ClassInfo> inteceptors = this.loadInterceptors();
 
-		// 先获取所有被容器托管的Class, 再依次注入
-
 		Ioc ioc = blade.ioc();
 
 		RouteBuilder routeBuilder = blade.routeBuilder();
 
-		// 1. 初始化service
+		// 1. init service
 		if (null != services) {
 			for (ClassInfo classInfo : services) {
 				ioc.addBean(classInfo.getClazz());
 			}
 		}
 
-		// 2. 初始化配置文件
+		// 2. init configs
 		if (null != configs) {
 			for (ClassInfo classInfo : configs) {
 				Object bean = ioc.addBean(classInfo.getClazz());
@@ -179,7 +190,7 @@ public class IocApplication {
 			}
 		}
 
-		// 3. 初始化controller
+		// 3. init controller
 		if (null != controllers) {
 			for (ClassInfo classInfo : controllers) {
 				ioc.addBean(classInfo.getClazz());
@@ -187,7 +198,7 @@ public class IocApplication {
 			}
 		}
 
-		// 4. 初始化interceptor
+		// 4. init interceptor
 		if (null != inteceptors) {
 			for (ClassInfo classInfo : inteceptors) {
 				ioc.addBean(classInfo.getClazz());
@@ -204,7 +215,6 @@ public class IocApplication {
 				IocKit.injection(ioc, beanDefine);
 			}
 		}
-
 	}
 
 	public static List<Object> getAopInterceptors() {

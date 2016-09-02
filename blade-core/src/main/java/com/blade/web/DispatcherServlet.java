@@ -28,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.blade.Blade;
+import com.blade.BladeBanner;
 import com.blade.Bootstrap;
 import com.blade.context.ApplicationContext;
 import com.blade.context.ApplicationWebContext;
@@ -110,7 +111,7 @@ public class DispatcherServlet extends HttpServlet {
 		    
 		    String appName = blade.environment().getString("app.name", "Blade");
 		    
-		    LOGGER.info(appName + " initialize successfully, Time elapsed: {} ms.", System.currentTimeMillis() - initStart);
+		    LOGGER.info("{} initialize successfully, Time elapsed: {} ms.", appName, System.currentTimeMillis() - initStart);
 		}
 	}
 	
