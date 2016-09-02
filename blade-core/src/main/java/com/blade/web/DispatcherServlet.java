@@ -71,7 +71,7 @@ public class DispatcherServlet extends HttpServlet {
 		if(!blade.isInit()){
 			
 			LOGGER.info("jdk.version\t=> {}", SystemKit.getJavaInfo().getVersion());
-			LOGGER.info("user.dir\t=> {}", System.getProperty("user.dir"));
+			LOGGER.info("user.dir\t\t=> {}", System.getProperty("user.dir"));
 			LOGGER.info("java.io.tmpdir\t=> {}", System.getProperty("java.io.tmpdir"));
 			LOGGER.info("user.timezone\t=> {}", System.getProperty("user.timezone"));
 			LOGGER.info("file.encodin\t=> {}", System.getProperty("file.encoding"));
