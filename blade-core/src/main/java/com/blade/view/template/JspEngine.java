@@ -24,9 +24,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.blade.context.ApplicationWebContext;
 import com.blade.view.ModelAndView;
 
@@ -39,9 +36,7 @@ import com.blade.view.ModelAndView;
  */
 public final class JspEngine implements TemplateEngine {
 	
-	private static final Logger LOGGER = LoggerFactory.getLogger(JspEngine.class);
-	
-	private String viewPath = "/WEB-INF/";
+	private String viewPath = "/views/";
 	
 	public JspEngine() {
 	}
@@ -51,27 +46,23 @@ public final class JspEngine implements TemplateEngine {
 	}
 	
 	@Override
-	public void render(ModelAndView modelAndView, Writer writer) {
-		HttpServletRequest servletRequest = ApplicationWebContext.request().raw();
-		HttpServletResponse servletResponse = ApplicationWebContext.response().raw();
-		
+	public void render(ModelAndView modelAndView, Writer writer) throws TemplateException {
+		HttpServletRequest request = ApplicationWebContext.request().raw();
+		HttpServletResponse response = ApplicationWebContext.response().raw();
 		try {
 			Map<String, Object> model = modelAndView.getModel();
 			String realPath = viewPath + modelAndView.getView();
-			
 			if (null != model && !model.isEmpty()) {
 				Set<String> keys = model.keySet();
 				for (String key : keys) {
-					servletRequest.setAttribute(key, model.get(key));
+					request.setAttribute(key, model.get(key));
 				}
 			}
-			servletRequest.getRequestDispatcher(realPath).forward(servletRequest, servletResponse);
+			request.getRequestDispatcher(realPath).forward(request, response);
 		} catch (ServletException e) {
-			e.printStackTrace();
-			LOGGER.error("", e);
+			throw new TemplateException(e);
 		} catch (IOException e) {
-			e.printStackTrace();
-			LOGGER.error("", e);
+			throw new TemplateException(e);
 		}
 	}
     

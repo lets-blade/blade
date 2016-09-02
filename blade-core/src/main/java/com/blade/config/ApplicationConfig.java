@@ -19,7 +19,11 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.blade.Blade;
+import com.blade.kit.Assert;
 import com.blade.kit.Environment;
 import com.blade.kit.StringKit;
 
@@ -32,17 +36,19 @@ import com.blade.kit.StringKit;
  */
 public class ApplicationConfig {
 	
+	private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationConfig.class);
+	
 	// Storage of all routing packets
-	private Set<String> routePackages = new HashSet<String>();
+	private Set<String> routePackages = new HashSet<String>(8);
 
 	// Store all IOC packages
-	private Set<String> iocPackages = new HashSet<String>();
+	private Set<String> iocPackages = new HashSet<String>(8);
 
 	// Strore all config packages
-	private Set<String> configPackages = new HashSet<String>();
+	private Set<String> configPackages = new HashSet<String>(2);
 
 	// Store all filter directories
-	private Set<String> staticFolders = new HashSet<String>();
+	private Set<String> staticFolders = new HashSet<String>(5);
 	
 	// Base package
 	private String basePackage;
@@ -58,7 +64,7 @@ public class ApplicationConfig {
 
 	// 404 view page
 	private String view404;
-
+	
 	// 500 view page
 	private String view500;
 
@@ -70,9 +76,7 @@ public class ApplicationConfig {
 	private Class<?> applicationClass;
 
 	public ApplicationConfig() {
-		staticFolders.add("/public");
-		staticFolders.add("/assets");
-		staticFolders.add("/static");
+		this.addResources("/public", "/assets", "/static");
 	}
 
 	public void setEnv(Environment environment) {
@@ -92,9 +96,9 @@ public class ApplicationConfig {
 			}
 			
 			if (StringKit.isNotBlank(statics)) {
-				this.setStaticFolders(statics.split(","));
+				this.addResources(statics.split(","));
 			}
-
+			
 			if (StringKit.isNotBlank(basePackage) && StringKit.isBlank(basePackage)) {
 				this.setBasePackage(basePackage);
 			}
@@ -159,8 +163,12 @@ public class ApplicationConfig {
 		return staticFolders;
 	}
 
-	public void setStaticFolders(String... packages) {
-		staticFolders.addAll(Arrays.asList(packages));
+	public void addResources(String... resources) {
+		Assert.notNull(resources);
+		for(String resource : resources){
+			LOGGER.debug("Add Resource: {}", resource);
+		}
+		staticFolders.addAll(Arrays.asList(resources));
 	}
 
 	public String getView404() {

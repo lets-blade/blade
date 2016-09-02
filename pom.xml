@@ -24,7 +24,7 @@
 		<blade-core.version>1.6.6-beta</blade-core.version>
 		<blade-kit.version>1.3.3</blade-kit.version>
 		<blade-aop.version>1.0.0</blade-aop.version>
-		<blade-embed-jetty.version>0.0.3</blade-embed-jetty.version>
+		<blade-embed-jetty.version>0.0.4</blade-embed-jetty.version>
 		
 	</properties>
 

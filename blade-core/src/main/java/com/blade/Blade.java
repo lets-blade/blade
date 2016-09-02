@@ -445,13 +445,12 @@ public final class Blade {
 	/**
 	 * Setting the frame static file folder
 	 * 
-	 * @param folders
+	 * @param resources
 	 *            List of directories to filter, e.g: "/public,/static,/images"
 	 * @return return blade
 	 */
-	public Blade staticFolder(final String... folders) {
-		Assert.notNull(folders);
-		applicationConfig.setStaticFolders(folders);
+	public Blade addResources(final String... resources) {
+		applicationConfig.addResources(resources);
 		return this;
 	}
 

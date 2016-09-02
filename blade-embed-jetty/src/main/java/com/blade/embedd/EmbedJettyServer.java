@@ -1,18 +1,23 @@
 package com.blade.embedd;
 
+import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.HttpConfiguration;
 import org.eclipse.jetty.server.HttpConnectionFactory;
 import org.eclipse.jetty.server.ServerConnector;
-import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.server.handler.DefaultHandler;
+import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
+import org.eclipse.jetty.webapp.WebAppContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.blade.Blade;
 import com.blade.Const;
 import com.blade.kit.Environment;
+import com.blade.kit.StringKit;
 import com.blade.web.DispatcherServlet;
+import static com.blade.Blade.$;
 
 public class EmbedJettyServer implements EmbedServer {
 
@@ -22,14 +27,14 @@ public class EmbedJettyServer implements EmbedServer {
 	
 	private org.eclipse.jetty.server.Server server;
 	
-	private ServletContextHandler context;
+	private WebAppContext webAppContext;
 	
 	private Environment environment = null;
     
 	public EmbedJettyServer() {
-		Blade.$().loadAppConf("jetty.properties");
-		environment = Blade.$().environment();
-		Blade.$().enableServer(true);
+		$().loadAppConf("jetty.properties");
+		environment = $().environment();
+		$().enableServer(true);
 	}
 	
 	@Override
@@ -57,15 +62,14 @@ public class EmbedJettyServer implements EmbedServer {
 		// 设置在JVM退出时关闭Jetty的钩子。
         server.setStopAtShutdown(true);
         
-	    context = new ServletContextHandler(ServletContextHandler.SESSIONS);
-	    context.setContextPath(contextPath);
+        webAppContext = new WebAppContext();
+        webAppContext.setContextPath(contextPath);
 	    
-	    /*if(StringKit.isNotBlank(webRoot)){
-	    	context.setResourceBase(webRoot);
-	    } else{
-	    	context.setResourceBase(getClass().getResource("").getPath());
-	    }*/
-	    context.setResourceBase(".");
+	    if(StringKit.isBlank(webRoot)){
+	    	webRoot = Blade.$().config().getApplicationClass().getResource("/").getPath();
+	    }
+	    
+	    webAppContext.setResourceBase(webRoot);
 	    
 	    int securePort = environment.getInt("server.jetty.http.secure-port", 8443);
 	    int outputBufferSize = environment.getInt("server.jetty.http.output-buffersize", 32768);
@@ -92,8 +96,11 @@ public class EmbedJettyServer implements EmbedServer {
 	    servletHolder.setAsyncSupported(false);
 	    servletHolder.setInitOrder(1);
 	    
-	    context.addServlet(servletHolder, "/");
-        server.setHandler(this.context);
+	    webAppContext.addServlet(servletHolder, "/");
+	    
+	    HandlerList handlers = new HandlerList();
+	    handlers.setHandlers(new Handler[] { webAppContext, new DefaultHandler() });
+	    server.setHandler(handlers);
         
 	    server.start();
 	    LOGGER.info("Blade Server Listen on 0.0.0.0:{}", this.port);

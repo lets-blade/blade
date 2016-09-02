@@ -15,6 +15,9 @@
  */
 package com.blade.view;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.blade.kit.Assert;
 import com.blade.view.parser.DefaultJSONParser;
 import com.blade.view.parser.JSONParser;
@@ -28,6 +31,8 @@ import com.blade.view.template.TemplateEngine;
  * @since	1.6.6
  */
 public final class ViewSettings {
+	
+	private static final Logger LOGGER = LoggerFactory.getLogger(ViewSettings.class);
 	
 	private JSONParser jsonParser = new DefaultJSONParser();
 	private TemplateEngine templateEngine = new DefaultEngine();
@@ -45,6 +50,7 @@ public final class ViewSettings {
 
 	public ViewSettings JSONParser(JSONParser jsonParser) {
 		Assert.notNull(jsonParser);
+		LOGGER.debug("Switch JSONParser With [{}]", jsonParser);
 		this.jsonParser = jsonParser;
 		return this;
 	}
@@ -66,6 +72,7 @@ public final class ViewSettings {
 	 */
 	public ViewSettings templateEngine(TemplateEngine templateEngine) {
 		Assert.notNull(templateEngine);
+		LOGGER.debug("Switch TemplateEngine With [{}]", templateEngine);
 		this.templateEngine = templateEngine;
 		return this;
 	}

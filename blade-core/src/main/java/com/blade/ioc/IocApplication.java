@@ -190,11 +190,6 @@ public class IocApplication {
 			}
 		}
 		
-		Set<String> resources = blade.applicationConfig().getStaticFolders();
-		for(String resource : resources){
-			LOGGER.debug("Add Resource: {}", resource);
-		}
-		
 		// 3. init controller
 		if (null != controllers) {
 			for (ClassInfo classInfo : controllers) {
@@ -210,7 +205,7 @@ public class IocApplication {
 				routeBuilder.addInterceptor(classInfo.getClazz());
 			}
 		}
-
+		
 		LOGGER.info("Add Object: {}", ioc.getBeans());
 		
 		// injection
