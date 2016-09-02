@@ -31,7 +31,7 @@ import com.blade.web.multipart.FileItem;
 
 public final class MethodArgument {
 
-	public static Object[] getArgs(Request request, Response response, Method actionMethod) throws BladeException{
+	public static Object[] getArgs(Request request, Response response, Method actionMethod) throws Exception{
 		Class<?>[] parameters = actionMethod.getParameterTypes();
 		Annotation[][] paramterAnnotations = actionMethod.getParameterAnnotations();
 		
@@ -65,6 +65,7 @@ public final class MethodArgument {
 				}
 				
 				Annotation annotation = paramterAnnotations[i][0];
+				
 				if(null != annotation){
 					if(annotation.annotationType().equals(RequestParam.class)){
 						RequestParam requestParam = (RequestParam) annotation;

@@ -36,7 +36,6 @@ import com.blade.route.RouteHandler;
 import com.blade.route.RouteMatcher;
 import com.blade.route.Routers;
 import com.blade.view.ModelAndView;
-import com.blade.view.ViewSettings;
 import com.blade.view.handle.RouteViewHandler;
 import com.blade.view.template.TemplateException;
 import com.blade.web.http.HttpStatus;
@@ -68,8 +67,6 @@ public class DispatcherHandler {
 	
 	private RouteViewHandler routeViewHandler;
 	
-	private ViewSettings viewSettings;
-	
 	public DispatcherHandler(ServletContext servletContext, Routers routers) {
 		this.servletContext = servletContext;
 		this.blade = Blade.$();
@@ -77,7 +74,6 @@ public class DispatcherHandler {
 		this.routeMatcher = new RouteMatcher(routers);
 		this.staticFileFilter = new StaticFileFilter(blade.staticFolder());
 		this.routeViewHandler = new RouteViewHandler(this.ioc);
-		this.viewSettings = ViewSettings.$();
 	}
 	
 	public void handle(HttpServletRequest httpRequest, HttpServletResponse httpResponse){
@@ -89,7 +85,7 @@ public class DispatcherHandler {
         String uri = Path.getRelativePath(httpRequest.getRequestURI(), servletContext.getContextPath());
         
  		// Create Response
- 		Response response = new ServletResponse(httpResponse, viewSettings.templateEngine());;
+ 		Response response = new ServletResponse(httpResponse);;
  		
         // If it is static, the resource is handed over to the filter
     	if(staticFileFilter.isStatic(uri)){
@@ -169,7 +165,7 @@ public class DispatcherHandler {
 	 * @param interceptors	execute the interceptor list
 	 * @return				Return execute is ok
 	 */
-	private boolean invokeInterceptor(Request request, Response response, List<Route> interceptors) {
+	private boolean invokeInterceptor(Request request, Response response, List<Route> interceptors) throws Exception {
 		for(Route route : interceptors){
 			boolean flag = routeViewHandler.intercept(request, response, route);
 			if(!flag){

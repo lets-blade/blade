@@ -26,10 +26,10 @@ public interface Plugin {
 	/**
 	 * Start Plugin
 	 */
-	void start();
+	void startup();
 	
 	/**
 	 * Destroy, release resources 
 	 */
-	void destroy();
+	void shutdown();
 }

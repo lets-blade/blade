@@ -40,8 +40,6 @@ public final class IocAnnotationLoader implements IocLoader {
     
     private ClassReader classReader = DynamicClassReader.getClassReader();
     
-    
-    
     public IocAnnotationLoader(String... packageNames) {
         List<Class<? extends Annotation>> annotations = new ArrayList<Class<? extends Annotation>>(1);
         annotations.add(Component.class);        

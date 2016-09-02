@@ -23,7 +23,6 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 
 import com.blade.view.ModelAndView;
-import com.blade.view.template.TemplateException;
 
 /**
  * HTTP Response
@@ -192,6 +191,13 @@ public interface Response {
 	Response json(String json);
 	
 	/**
+	 * Render by json
+	 * @param bean
+	 * @return
+	 */
+	Response json(Object bean);
+	
+	/**
 	 * Render by xml
 	 * 
 	 * @param xml		xml content
@@ -217,7 +223,7 @@ public interface Response {
 	 * @param view	view page
 	 * @return		Return Response
 	 */
-	Response render(String view) throws TemplateException, IOException;
+	Response render(String view);
 
 	/**
 	 * Render view And Setting Data
@@ -225,7 +231,7 @@ public interface Response {
 	 * @param modelAndView 	ModelAndView object
 	 * @return				Return Response
 	 */
-	Response render(ModelAndView modelAndView) throws TemplateException, IOException;
+	Response render(ModelAndView modelAndView);
 
 	/**
 	 * Redirect to Path

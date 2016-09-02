@@ -11,13 +11,13 @@ public class AopPlugin implements Plugin {
 	private static final Logger LOGGER = LoggerFactory.getLogger(AopPlugin.class);
 	
 	@Override
-	public void start() {
+	public void startup() {
 		LOGGER.info("Set Ioc container is {}", ProxyIocImpl.class.getName());
 		Blade.$().container(new ProxyIocImpl());
 	}
-
+	
 	@Override
-	public void destroy() {
+	public void shutdown() {
 		
 	}
 

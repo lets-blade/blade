@@ -669,7 +669,7 @@ public final class Blade {
 	public boolean isDev() {
 		return applicationConfig.isDev();
 	}
-
+	
 	/**
 	 * @return Return static resource directory
 	 */

@@ -23,9 +23,14 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.blade.context.ApplicationWebContext;
 import com.blade.kit.Assert;
 import com.blade.view.ModelAndView;
+import com.blade.view.ViewSettings;
+import com.blade.view.parser.JSONParser;
 import com.blade.view.template.TemplateEngine;
 import com.blade.view.template.TemplateException;
 import com.blade.web.DispatchKit;
@@ -42,15 +47,23 @@ import com.blade.web.http.Response;
  */
 public class ServletResponse implements Response {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(ServletResponse.class);
+	
 	private HttpServletResponse response;
 	
 	private boolean written = false;
 	
-	private TemplateEngine render;
+	private ViewSettings viewSettings;
+	
+	private TemplateEngine templateEngine;
+	
+	private JSONParser jsonParser;
 			
-	public ServletResponse(HttpServletResponse response, TemplateEngine render) {
+	public ServletResponse(HttpServletResponse response) {
 		this.response = response;
-		this.render = render;
+		this.viewSettings = ViewSettings.$();
+		this.templateEngine = viewSettings.templateEngine();
+		this.jsonParser = viewSettings.JSONParser();
 	}
 	
 	@Override
@@ -232,6 +245,11 @@ public class ServletResponse implements Response {
 		}
 		return null;
 	}
+	
+	@Override
+	public Response json(Object bean) {
+		return this.json(jsonParser.toJSONSting(bean));
+	}
 
 	@Override
 	public Response xml(String xml) {
@@ -262,24 +280,35 @@ public class ServletResponse implements Response {
 	}
 
 	@Override
-	public Response render(String view) throws TemplateException, IOException{
+	public Response render(String view){
 		Assert.notBlank(view, "view not is null");
 		
 		String viewPath = Path.cleanPath(view);
 		ModelAndView modelAndView = new ModelAndView(viewPath);
-		render.render(modelAndView, response.getWriter());
+		try {
+			templateEngine.render(modelAndView, response.getWriter());
+		} catch (TemplateException e) {
+			LOGGER.error(e.getMessage(), e);
+		} catch (IOException e) {
+			LOGGER.error(e.getMessage(), e);
+		}
 		return this;
 	}
 	
 	@Override
-	public Response render(ModelAndView modelAndView) throws TemplateException, IOException {
+	public Response render(ModelAndView modelAndView) {
 		Assert.notNull(modelAndView, "ModelAndView not is null!");
 		Assert.notBlank(modelAndView.getView(), "view not is null");
 		
 		String viewPath = Path.cleanPath(modelAndView.getView());
 		modelAndView.setView(viewPath);
-		
-		render.render(modelAndView, response.getWriter());
+		try {
+			templateEngine.render(modelAndView, response.getWriter());
+		} catch (TemplateException e) {
+			LOGGER.error(e.getMessage(), e);
+		} catch (IOException e) {
+			LOGGER.error(e.getMessage(), e);
+		}
 		return this;
 	}
 

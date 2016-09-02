@@ -33,7 +33,7 @@ import org.objectweb.asm.Type;
  * @since	1.6.6
  */
 public final class AsmKit {
-
+	
 	/**
 	 * 
 	 * <p>
@@ -51,7 +51,6 @@ public final class AsmKit {
 		if (types.length != clazzes.length) {
 			return false;
 		}
-
 		for (int i = 0; i < types.length; i++) {
 			if (!Type.getType(clazzes[i]).equals(types[i])) {
 				return false;
@@ -69,14 +68,14 @@ public final class AsmKit {
 	 * @param m
 	 * @return
 	 */
-	public static String[] getMethodParamNames(final Method m) {
+	public static String[] getMethodParamNames(final Method m) throws IOException {
 		final String[] paramNames = new String[m.getParameterTypes().length];
 		final String n = m.getDeclaringClass().getName();
 		ClassReader cr = null;
 		try {
 			cr = new ClassReader(n);
 		} catch (IOException e) {
-			throw new RuntimeException(e);
+			return null;
 		}
 		cr.accept(new ClassVisitor(Opcodes.ASM5) {
 			@Override

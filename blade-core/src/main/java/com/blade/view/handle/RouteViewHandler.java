@@ -24,7 +24,6 @@ import com.blade.kit.reflect.ReflectKit;
 import com.blade.route.Route;
 import com.blade.view.ModelAndView;
 import com.blade.view.ViewSettings;
-import com.blade.web.DispatchKit;
 import com.blade.web.http.Request;
 import com.blade.web.http.Response;
 
@@ -67,7 +66,7 @@ public class RouteViewHandler {
 		}
 	}
 
-	public boolean intercept(Request request, Response response, Route route) {
+	public boolean intercept(Request request, Response response, Route route) throws Exception {
 		Method actionMethod = route.getAction();
 		Object target = route.getTarget();
 
@@ -95,14 +94,10 @@ public class RouteViewHandler {
 					return (Boolean) returnParam;
 				}
 			}
-
 			return true;
-
 		} catch (Exception e) {
-			request.abort();
-			DispatchKit.printError(e, 500, response);
+			throw e;
 		}
-		return false;
 	}
 
 }

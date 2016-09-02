@@ -43,7 +43,7 @@ public class ApplicationConfig {
 
 	// Store all filter directories
 	private Set<String> staticFolders = new HashSet<String>();
-
+	
 	// Base package
 	private String basePackage;
 	

@@ -30,6 +30,8 @@ public final class DynamicClassReader {
 	
 	private static boolean IS_JAR_CONTEXT = false;
 	
+	private static ClassReader CLASS_READER = null;
+	
 	private DynamicClassReader() {
 	}
 	
@@ -42,10 +44,14 @@ public final class DynamicClassReader {
 	}
 	
 	public static ClassReader getClassReader(){
-		if(IS_JAR_CONTEXT){
-			return new JarReaderImpl();
+		if(null != CLASS_READER){
+			return CLASS_READER;
 		}
-		return new ClassPathClassReader();
+		if(IS_JAR_CONTEXT){
+			CLASS_READER = new JarReaderImpl();
+		}
+		CLASS_READER = new ClassPathClassReader();
+		return CLASS_READER;
 	}
 	
 }
