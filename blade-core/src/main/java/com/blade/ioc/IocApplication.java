@@ -31,13 +31,13 @@ import com.blade.annotation.RestController;
 import com.blade.comparator.OrderComparator;
 import com.blade.config.BaseConfig;
 import com.blade.context.DynamicClassReader;
-import com.blade.interceptor.Interceptor;
 import com.blade.ioc.annotation.Component;
 import com.blade.ioc.annotation.Service;
 import com.blade.kit.StringKit;
 import com.blade.kit.resource.ClassInfo;
 import com.blade.kit.resource.ClassReader;
-import com.blade.route.RouteBuilder;
+import com.blade.mvc.interceptor.Interceptor;
+import com.blade.mvc.route.RouteBuilder;
 
 /**
  * IOC container, used to initialize the IOC object

@@ -20,7 +20,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import com.blade.web.http.HttpMethod;
+import com.blade.mvc.http.HttpMethod;
 
 /**
  * Methods defined on the route notes

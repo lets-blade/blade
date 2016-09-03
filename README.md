@@ -39,7 +39,7 @@ Grab via `Maven`：
 <dependency>
 	<groupId>com.bladejava</groupId>
 	<artifactId>blade-core</artifactId>
-	<version>1.6.6-beta</version>
+	<version>1.6.6</version>
 </dependency>
 <dependency>
 	<groupId>com.bladejava</groupId>
