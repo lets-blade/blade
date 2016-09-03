@@ -1,5 +1,12 @@
-bin
-target
-.settings
-.project
+# Maven #
+target/
+
+# IDEA #
+.idea/
+*.iml
+
+# Eclipse #
+.settings/
 .classpath
+.project
+bin/
