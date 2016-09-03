@@ -12,7 +12,7 @@
 ## What Is Blade?
 
 Blade is a lightweight MVC framework. It is based on the principles of simplicity and elegance. 
-If you like it, please [star and fork it](https://github.com/biezhi/blade). Thank you!
+If you like it, please [star](https://github.com/biezhi/blade/stargazers) / [fork](https://github.com/biezhi/blade). Thx :blush:
 
 ## Features
 
