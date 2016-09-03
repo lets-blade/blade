@@ -35,6 +35,8 @@ public final class DynamicClassReader {
 	
 	private static ClassReader CLASS_READER = null;
 	
+	private static boolean isJarContext = false;
+	
 	private DynamicClassReader() {
 	}
 	
@@ -43,6 +45,7 @@ public final class DynamicClassReader {
 		String rs = clazz.getResource("").toString();
 		if(rs.indexOf(".jar") != -1){
 			CLASS_READER = new JarReaderImpl();
+			isJarContext = true;
 			LOGGER.debug("{}", CLASS_READER);
 		} else{
 			CLASS_READER = new ClassPathClassReader();
@@ -51,6 +54,10 @@ public final class DynamicClassReader {
 	
 	public static ClassReader getClassReader(){
 		return CLASS_READER;
+	}
+	
+	public static boolean isJarContext() {
+		return isJarContext;
 	}
 	
 }

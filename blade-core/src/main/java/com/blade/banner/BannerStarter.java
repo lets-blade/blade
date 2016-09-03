@@ -15,17 +15,15 @@
  */
 package com.blade.banner;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 public final class BannerStarter {
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(BannerStarter.class);
 	
-	private static Banner banner = new BladeBanner();
+	private static Banner BANNER = new BladeBanner();
 	
 	public static void printStart(){
-		LOGGER.info(banner.startText());
+		System.out.println(BANNER.startText());
 	}
 	
+	public static void banner(Banner banner){
+		BANNER = banner;
+	}
 }

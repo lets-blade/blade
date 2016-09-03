@@ -60,13 +60,13 @@ public class ApplicationConfig {
 	private String encoding = "utf-8";
 
 	// web root path
-	private String webRoot;
+	private String webRoot = "";
 
 	// 404 view page
-	private String view404;
+	private String view404 = "404.html";
 	
 	// 500 view page
-	private String view500;
+	private String view500 = "500.html";
 
 	// Is dev mode
 	private boolean isDev = true;

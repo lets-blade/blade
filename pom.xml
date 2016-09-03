@@ -34,6 +34,7 @@
 		<module>blade-embed-jetty</module>
 		<module>blade-auth</module>
 		<module>blade-aop</module>
+		<module>blade-starter</module>
 	</modules>
 
 	<repositories>
@@ -51,26 +52,22 @@
 
 	<dependencyManagement>
 		<dependencies>
-
 			<dependency>
 				<groupId>org.slf4j</groupId>
 				<artifactId>slf4j-api</artifactId>
 				<version>${slf4j-api.version}</version>
 			</dependency>
-
 			<dependency>
 				<groupId>org.slf4j</groupId>
 				<artifactId>slf4j-log4j12</artifactId>
 				<version>${slf4j-log4j12.version}</version>
 			</dependency>
-
 			<dependency>
 				<groupId>junit</groupId>
 				<artifactId>junit</artifactId>
 				<version>${junit.version}</version>
 				<scope>test</scope>
 			</dependency>
-
 		</dependencies>
 	</dependencyManagement>
 

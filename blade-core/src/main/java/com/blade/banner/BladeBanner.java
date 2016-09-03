@@ -25,14 +25,14 @@ public class BladeBanner implements Banner {
 			" |_) | , | | |_/ |",
 			" ~   ~~~ ~ ~ ~   ~~~"
 			};
-
+	
 	@Override
 	public String startText() {
 		StringBuffer text = new StringBuffer();
 		for (String s : banner) {
-			text.append('\t' + s);
+			text.append("\r\n\t\t" + s);
 		}
-		text.append("\t :: Blade :: (v" + Const.BLADE_VERSION + ")\r\n");
+		text.append("\r\n\t\t :: Blade :: (v" + Const.BLADE_VERSION + ")\r\n");
 		return text.toString();
 	}
 }

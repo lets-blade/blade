@@ -34,6 +34,7 @@ import com.blade.context.ApplicationContext;
 import com.blade.context.ApplicationWebContext;
 import com.blade.context.DynamicClassReader;
 import com.blade.embedd.EmbedServer;
+import com.blade.kit.DispatchKit;
 import com.blade.kit.StringKit;
 import com.blade.kit.SystemKit;
 

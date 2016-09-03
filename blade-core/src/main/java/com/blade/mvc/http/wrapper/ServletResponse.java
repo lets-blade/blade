@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
 
 import com.blade.context.ApplicationWebContext;
 import com.blade.kit.Assert;
-import com.blade.mvc.DispatchKit;
+import com.blade.kit.DispatchKit;
 import com.blade.mvc.http.HttpStatus;
 import com.blade.mvc.http.Path;
 import com.blade.mvc.http.Request;
