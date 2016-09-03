@@ -5,3 +5,4 @@ jdk:
   - openjdk6
 after_success:
   - mvn cobertura:cobertura coveralls:report
+
