@@ -25,9 +25,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.blade.Blade;
-import com.blade.annotation.Controller;
-import com.blade.annotation.Intercept;
-import com.blade.annotation.RestController;
 import com.blade.comparator.OrderComparator;
 import com.blade.config.BaseConfig;
 import com.blade.context.DynamicClassReader;
@@ -36,6 +33,9 @@ import com.blade.ioc.annotation.Service;
 import com.blade.kit.StringKit;
 import com.blade.kit.resource.ClassInfo;
 import com.blade.kit.resource.ClassReader;
+import com.blade.mvc.annotation.Controller;
+import com.blade.mvc.annotation.Intercept;
+import com.blade.mvc.annotation.RestController;
 import com.blade.mvc.interceptor.Interceptor;
 import com.blade.mvc.route.RouteBuilder;
 

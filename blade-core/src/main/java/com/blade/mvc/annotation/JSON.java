@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2016, biezhi 王爵 (biezhi.me@gmail.com)
+ * Copyright (c) 2015, biezhi 王爵 (biezhi.me@gmail.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,32 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.blade.annotation;
-import java.lang.annotation.Documented;
+package com.blade.mvc.annotation;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Route class notes, identifying whether a class is routed
- *
+ * Return JSON Params
+ *  
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since	1.6.6
  */
-@Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-@Documented
-public @interface Controller{
-
-	/**
-	 * @return	namespace
-	 */
-	String value() default "/";
-	
-	/**
-	 * @return	route suffix
-	 */
-	String suffix() default "";
+@Target(ElementType.METHOD)
+public @interface JSON {
 	
 }

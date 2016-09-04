@@ -13,21 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.blade.annotation;
-
+package com.blade.mvc.annotation;
+import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Return JSON Params
- *  
+ * Return JSON Data to client.
+ * 
+ * The controller all methods have this attr.
+ *
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
- * @since	1.6.6
+ * @since	1.5
  */
+@Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
-public @interface JSON {
+@Documented
+public @interface RestController {
+	
+	/**
+	 * @return	namespace
+	 */
+	String value() default "/";
+	
+	/**
+	 * @return	route suffix
+	 */
+	String suffix() default "";
 	
 }

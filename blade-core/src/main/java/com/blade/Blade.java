@@ -587,7 +587,7 @@ public final class Blade {
 	 */
 	public void start(Class<?> applicationClass) {
 		
-	    this.loadAppConf(Const.APP_PROPERTIES);
+		this.loadAppConf(Const.APP_PROPERTIES);
 	    
 		// init blade environment config
 	    applicationConfig.setEnv(environment);

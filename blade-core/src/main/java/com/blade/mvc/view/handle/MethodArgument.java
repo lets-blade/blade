@@ -18,12 +18,12 @@ package com.blade.mvc.view.handle;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 
-import com.blade.annotation.PathVariable;
-import com.blade.annotation.RequestParam;
 import com.blade.exception.BladeException;
 import com.blade.exception.NotFoundException;
 import com.blade.kit.AsmKit;
 import com.blade.kit.StringKit;
+import com.blade.mvc.annotation.PathVariable;
+import com.blade.mvc.annotation.RequestParam;
 import com.blade.mvc.http.Request;
 import com.blade.mvc.http.Response;
 import com.blade.mvc.multipart.FileItem;
@@ -75,12 +75,11 @@ public final class MethodArgument {
 						if (StringKit.isBlank(paramName)) {
 							paramName = paramaterNames[i];
 							val = request.query(paramName);
-						} else {
-							if (StringKit.isBlank(val)) {
-								throw new NotFoundException("request param [" + paramName + "] is null");
-							}
 						}
-						args[i] = getRequestParam(argType, val, requestParam.defaultValue());
+						if (StringKit.isBlank(val)) {
+							val = requestParam.defaultValue();
+						}
+						args[i] = getRequestParam(argType, val);
 						continue;
 					}
 					
@@ -88,16 +87,14 @@ public final class MethodArgument {
 						PathVariable pathVariable = (PathVariable) annotation;
 						String paramName = pathVariable.value();
 						String val = request.param(paramName);
-						
 						if (StringKit.isBlank(paramName)) {
 							paramName = paramaterNames[i];
 							val = request.param(paramName);
-						} else {
-							if (StringKit.isBlank(val)) {
-								throw new NotFoundException("path param [" + paramName + "] is null");
-							}
 						}
-						args[i] = getRequestParam(argType, val, null);
+						if (StringKit.isBlank(val)) {
+							throw new NotFoundException("path param [" + paramName + "] is null");
+						}
+						args[i] = getRequestParam(argType, val);
 						continue;
 					}
 				}
@@ -108,51 +105,25 @@ public final class MethodArgument {
 		}
 	}
 	
-	private static Object getRequestParam(Class<?> parameterType, String val, String defaultValue) {
+	private static Object getRequestParam(Class<?> parameterType, String val) {
 		Object result = null;
 		if (parameterType.equals(String.class)) {
-			if (StringKit.isNotBlank(val)) {
-				result = val;
-			} else {
-				if (null != defaultValue) {
-					result = defaultValue;
-				}
-			}
+			result = val;
 		} else if (parameterType.equals(Integer.class)) {
-			if (StringKit.isNotBlank(val)) {
-				result = Integer.parseInt(val);
-			} else {
-				if (StringKit.isNotBlank(defaultValue)) {
-					result = Integer.parseInt(defaultValue);
-				}
-			}
+			result = Integer.parseInt(val);
 		} else if (parameterType.equals(int.class)) {
-			if (StringKit.isNotBlank(val)) {
-				result = Integer.parseInt(val);
+			if("".equals(val)){
+				result = 0;
 			} else {
-				if (StringKit.isNotBlank(defaultValue)) {
-					result = Integer.parseInt(defaultValue);
-				} else {
-					result = 0;
-				}
+				result = Integer.parseInt(val);
 			}
 		} else if (parameterType.equals(Long.class)) {
-			if (StringKit.isNotBlank(val)) {
-				result = Long.parseLong(val);
-			} else {
-				if (StringKit.isNotBlank(defaultValue)) {
-					result = Long.parseLong(defaultValue);
-				}
-			}
+			result = Long.parseLong(val);
 		} else if (parameterType.equals(long.class)) {
-			if (StringKit.isNotBlank(val)) {
-				result = Long.parseLong(val);
+			if("".equals(val)){
+				result = 0L;
 			} else {
-				if (StringKit.isNotBlank(defaultValue)) {
-					result = Long.parseLong(defaultValue);
-				} else {
-					result = 0L;
-				}
+				result = Integer.parseInt(val);
 			}
 		}
 		return result;

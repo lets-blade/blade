@@ -22,11 +22,17 @@ public abstract class AbstractMethodInterceptor implements MethodInterceptor {
 	public Object intercept(Object target, Method method, Object[] args, MethodProxy proxy) throws Throwable {
 		// 执行源对象的method方法
 		try {
-			String methodPrefix = method.getDeclaringClass().getAnnotation(Aop.class).methodPrefix();
-			String methodName = method.getName();
-			if(!"".equals(methodPrefix) && !methodName.startsWith(methodPrefix)){
+			Aop aop = method.getDeclaringClass().getAnnotation(Aop.class);
+			if(null != aop){
+				String methodPrefix = aop.methodPrefix();
+				String methodName = method.getName();
+				if(!"".equals(methodPrefix) && !methodName.startsWith(methodPrefix)){
+					return proxy.invokeSuper(target, args);
+				}
+			} else {
 				return proxy.invokeSuper(target, args);
 			}
+			
 			Invocaction invocaction = new Invocaction(target, args, proxy);
 			before(invocaction);
 			Object returnValue = doInvoke(invocaction);

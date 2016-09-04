@@ -13,8 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.blade.annotation;
-
+package com.blade.mvc.annotation;
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -22,20 +21,21 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Request Query ParmeterAnnotation
- * 
- * @author <a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
- * @since 1.6.6
+ * Interceptor notes, written in the class
+ * e.g:
+ * <pre>
+ * {@link Intercept}
+ * public class BaseInterceptor {...}
+ * </pre>
+ * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
+ * @since	1.5
  */
-@Target(ElementType.PARAMETER)
+@Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface RequestParam {
+public @interface Intercept{
 	
-	String value() default "";
+	String value() default "/.*";
 	
-	boolean required() default true;
-	
-	String defaultValue() default "";
-
+	int sort() default 0;
 }

@@ -17,10 +17,10 @@ package com.blade.mvc.view.handle;
 
 import java.lang.reflect.Method;
 
-import com.blade.annotation.JSON;
-import com.blade.annotation.RestController;
 import com.blade.ioc.Ioc;
 import com.blade.kit.reflect.ReflectKit;
+import com.blade.mvc.annotation.JSON;
+import com.blade.mvc.annotation.RestController;
 import com.blade.mvc.http.Request;
 import com.blade.mvc.http.Response;
 import com.blade.mvc.route.Route;
