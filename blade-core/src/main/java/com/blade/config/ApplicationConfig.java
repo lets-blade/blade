@@ -26,6 +26,7 @@ import com.blade.Blade;
 import com.blade.kit.Assert;
 import com.blade.kit.Environment;
 import com.blade.kit.StringKit;
+import com.blade.mvc.view.ViewSettings;
 
 /**
  * Blade Application Config Class
@@ -61,13 +62,7 @@ public class ApplicationConfig {
 
 	// web root path
 	private String webRoot = "";
-
-	// 404 view page
-	private String view404 = "404.html";
 	
-	// 500 view page
-	private String view500 = "500.html";
-
 	// Is dev mode
 	private boolean isDev = true;
 	
@@ -82,12 +77,14 @@ public class ApplicationConfig {
 	public void setEnv(Environment environment) {
 		if (null != environment && !isInit) {
 			this.isDev = environment.getBoolean("app.dev", true);
-			this.encoding = environment.getString("http.encoding", "UTF-8");
+			
 			this.addIocPackages(environment.getString("app.ioc"));
-			this.view500 = environment.getString("app.view.500");
-			this.view404 = environment.getString("app.view.404");
-
-			String statics = environment.getString("app.statics");
+			
+			ViewSettings.$().setView500(environment.getString("mvc.view.500"));
+			ViewSettings.$().setView404(environment.getString("mvc.view.404"));
+			this.encoding = environment.getString("mvc.http.encoding", "UTF-8");
+			String statics = environment.getString("mvc.statics");
+			
 			String basePackage = environment.getString("app.base-package");
 			Integer port = environment.getInt("server.port");
 
@@ -169,22 +166,6 @@ public class ApplicationConfig {
 			LOGGER.debug("Add Resource: {}", resource);
 		}
 		staticFolders.addAll(Arrays.asList(resources));
-	}
-
-	public String getView404() {
-		return view404;
-	}
-
-	public void setView404(String view404) {
-		this.view404 = view404;
-	}
-
-	public String getView500() {
-		return view500;
-	}
-
-	public void setView500(String view500) {
-		this.view500 = view500;
 	}
 
 	public String getWebRoot() {

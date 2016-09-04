@@ -36,7 +36,9 @@ public final class ViewSettings {
 	
 	private JSONParser jsonParser = new DefaultJSONParser();
 	private TemplateEngine templateEngine = new DefaultEngine();
-
+	private String view404 = "404.html";
+	private String view500 = "500.html";
+	
 	private ViewSettings() {
 	}
 
@@ -84,4 +86,22 @@ public final class ViewSettings {
 		return this.templateEngine;
 	}
 
+	public String getView404() {
+		return view404;
+	}
+
+	public ViewSettings setView404(String view404) {
+		this.view404 = view404;
+		return this;
+	}
+
+	public String getView500() {
+		return view500;
+	}
+
+	public ViewSettings setView500(String view500) {
+		this.view500 = view500;
+		return this;
+	}
+	
 }

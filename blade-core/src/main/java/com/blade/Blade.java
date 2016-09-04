@@ -512,32 +512,6 @@ public final class Blade {
 	}
 
 	/**
-	 * Setting 404 view page
-	 * 
-	 * @param view404
-	 *            404 view page
-	 * @return return blade
-	 */
-	public Blade view404(final String view404) {
-		Assert.notBlank(view404);
-		applicationConfig.setView404(view404);
-		return this;
-	}
-
-	/**
-	 * Setting 500 view page
-	 * 
-	 * @param view500
-	 *            500 view page
-	 * @return return blade
-	 */
-	public Blade view500(final String view500) {
-		Assert.notBlank(view500);
-		applicationConfig.setView500(view500);
-		return this;
-	}
-
-	/**
 	 * Setting blade web root path
 	 * 
 	 * @param webRoot
@@ -649,20 +623,6 @@ public final class Blade {
 	 */
 	public String encoding() {
 		return applicationConfig.getEncoding();
-	}
-
-	/**
-	 * @return Return 404 view
-	 */
-	public String view404() {
-		return applicationConfig.getView404();
-	}
-
-	/**
-	 * @return Return 500 view
-	 */
-	public String view500() {
-		return applicationConfig.getView500();
 	}
 
 	/**

@@ -28,6 +28,7 @@ import com.blade.kit.StreamKit;
 import com.blade.kit.StringKit;
 import com.blade.mvc.http.HttpException;
 import com.blade.mvc.http.Response;
+import com.blade.mvc.view.ViewSettings;
 
 import static com.blade.Blade.$;
 
@@ -123,7 +124,7 @@ public class DispatchKit {
 				writer.println(END);
 			} else {
 				if (code == 404) {
-					String view404 = Blade.$().view404();
+					String view404 = ViewSettings.$().getView404();
 					if (StringKit.isNotBlank(view404)) {
 						response.render(view404);
 						return;
@@ -131,7 +132,7 @@ public class DispatchKit {
 						writer.write(err.getMessage());
 					}
 				} else {
-					String view500 = Blade.$().view500();
+					String view500 = ViewSettings.$().getView500();
 					if (StringKit.isNotBlank(view500)) {
 						response.render(view500);
 						return;

@@ -43,6 +43,7 @@ import com.blade.mvc.route.RouteHandler;
 import com.blade.mvc.route.RouteMatcher;
 import com.blade.mvc.route.Routers;
 import com.blade.mvc.view.ModelAndView;
+import com.blade.mvc.view.ViewSettings;
 import com.blade.mvc.view.handle.RouteViewHandler;
 import com.blade.mvc.view.template.TemplateException;
 
@@ -147,7 +148,7 @@ public class DispatcherHandler {
 	 * @throws TemplateException 
 	 */
 	private void render404(Response response, String uri) throws Exception {
-		String view404 = blade.view404();
+		String view404 = ViewSettings.$().getView404();
     	if(StringKit.isNotBlank(view404)){
     		ModelAndView modelAndView = new ModelAndView(view404);
     		modelAndView.add("viewName", uri);
