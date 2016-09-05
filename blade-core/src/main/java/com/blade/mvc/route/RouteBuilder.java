@@ -22,7 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.blade.Blade;
-import com.blade.context.DynamicClassReader;
+import com.blade.context.DynamicContext;
 import com.blade.kit.CollectionKit;
 import com.blade.kit.StringKit;
 import com.blade.kit.reflect.ReflectKit;
@@ -60,7 +60,7 @@ public class RouteBuilder {
     
     public RouteBuilder(Routers routers) {
     	this.routers = routers;
-    	this.classReader = DynamicClassReader.getClassReader();
+    	this.classReader = DynamicContext.getClassReader();
     }
     
     /**

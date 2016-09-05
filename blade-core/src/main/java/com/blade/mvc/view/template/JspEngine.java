@@ -24,7 +24,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.blade.context.ApplicationWebContext;
+import com.blade.context.WebApplicationContext;
 import com.blade.mvc.view.ModelAndView;
 
 
@@ -64,8 +64,8 @@ public final class JspEngine implements TemplateEngine {
 
 	@Override
 	public void render(ModelAndView modelAndView, Writer writer) throws TemplateException {
-		HttpServletRequest request = ApplicationWebContext.request().raw();
-		HttpServletResponse response = ApplicationWebContext.response().raw();
+		HttpServletRequest request = WebApplicationContext.request().raw();
+		HttpServletResponse response = WebApplicationContext.response().raw();
 		try {
 			Map<String, Object> model = modelAndView.getModel();
 			String realPath = viewPath + modelAndView.getView() + suffix;

@@ -31,8 +31,8 @@ import com.blade.Blade;
 import com.blade.Bootstrap;
 import com.blade.banner.BannerStarter;
 import com.blade.context.ApplicationContext;
-import com.blade.context.ApplicationWebContext;
-import com.blade.context.DynamicClassReader;
+import com.blade.context.WebApplicationContext;
+import com.blade.context.DynamicContext;
 import com.blade.embedd.EmbedServer;
 import com.blade.kit.DispatchKit;
 import com.blade.kit.StringKit;
@@ -89,9 +89,9 @@ public class DispatcherServlet extends HttpServlet {
 		    
 		    LOGGER.info("blade.webroot\t=> {}", webRoot);
 		    
-		    DynamicClassReader.init();
+		    DynamicContext.init();
 		    
-		    ApplicationWebContext.init(servletContext);
+		    WebApplicationContext.init(servletContext);
 		    
 		    this.bootstrap = blade.bootstrap();
 		    

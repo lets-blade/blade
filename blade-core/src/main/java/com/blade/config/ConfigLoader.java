@@ -22,7 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.blade.Blade;
-import com.blade.context.DynamicClassReader;
+import com.blade.context.DynamicContext;
 import com.blade.exception.ConfigException;
 import com.blade.ioc.Ioc;
 import com.blade.ioc.annotation.Component;
@@ -47,7 +47,7 @@ public class ConfigLoader {
 
 	public ConfigLoader(Ioc ioc, ApplicationConfig applicationConfig) {
 		this.ioc = ioc;
-		this.classReader = DynamicClassReader.getClassReader();
+		this.classReader = DynamicContext.getClassReader();
 		this.applicationConfig = applicationConfig;
 	}
 	

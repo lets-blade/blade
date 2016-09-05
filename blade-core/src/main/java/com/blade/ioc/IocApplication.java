@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
 import com.blade.Blade;
 import com.blade.comparator.OrderComparator;
 import com.blade.config.BaseConfig;
-import com.blade.context.DynamicClassReader;
+import com.blade.context.DynamicContext;
 import com.blade.ioc.annotation.Component;
 import com.blade.ioc.annotation.Service;
 import com.blade.kit.StringKit;
@@ -60,7 +60,7 @@ public class IocApplication {
 
 	public IocApplication() {
 		this.blade = Blade.$();
-		this.classReader = DynamicClassReader.getClassReader();
+		this.classReader = DynamicContext.getClassReader();
 		this.orderComparator = new OrderComparator();
 	}
 

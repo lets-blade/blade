@@ -21,7 +21,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import com.blade.context.DynamicClassReader;
+import com.blade.context.DynamicContext;
 import com.blade.ioc.SimpleIoc;
 import com.blade.ioc.annotation.Component;
 import com.blade.kit.CollectionKit;
@@ -38,7 +38,7 @@ public final class IocAnnotationLoader implements IocLoader {
 	
     private Collection<ClassInfo> classes;
     
-    private ClassReader classReader = DynamicClassReader.getClassReader();
+    private ClassReader classReader = DynamicContext.getClassReader();
     
     public IocAnnotationLoader(String... packageNames) {
         List<Class<? extends Annotation>> annotations = new ArrayList<Class<? extends Annotation>>(1);

@@ -26,7 +26,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.blade.context.ApplicationWebContext;
+import com.blade.context.WebApplicationContext;
 import com.blade.kit.Assert;
 import com.blade.kit.DispatchKit;
 import com.blade.mvc.http.HttpStatus;
@@ -225,7 +225,7 @@ public class ServletResponse implements Response {
 
 	@Override
 	public Response json(String json) {
-		Request request = ApplicationWebContext.request();
+		Request request = WebApplicationContext.request();
 		String userAgent = request.userAgent();
 		if (userAgent.contains("MSIE")) {
 			response.setContentType("text/html;charset=utf-8");
@@ -324,7 +324,7 @@ public class ServletResponse implements Response {
 	@Override
 	public void go(String path) {
 		try {
-			String ctx = ApplicationWebContext.servletContext().getContextPath();
+			String ctx = WebApplicationContext.servletContext().getContextPath();
         	String location = Path.fixPath(ctx + path);
 			response.sendRedirect(location);
 		} catch (IOException e) {
