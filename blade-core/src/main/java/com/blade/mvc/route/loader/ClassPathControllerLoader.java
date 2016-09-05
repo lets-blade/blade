@@ -17,6 +17,7 @@ package com.blade.mvc.route.loader;
 
 import com.blade.Blade;
 import com.blade.ioc.Ioc;
+import com.blade.kit.StringKit;
 import com.blade.mvc.route.RouteException;
 
 /**
@@ -39,10 +40,10 @@ public class ClassPathControllerLoader implements ControllerLoader {
 
 	public ClassPathControllerLoader(String basePackage) {
 		this.basePackage = basePackage;
-
-		if (this.basePackage != null && !"".equals(this.basePackage)) {
+		
+		if (StringKit.isNotBlank(basePackage)) {
 			if (!this.basePackage.endsWith(".")) {
-				this.basePackage += ".";
+				this.basePackage += '.';
 			}
 		}
 	}

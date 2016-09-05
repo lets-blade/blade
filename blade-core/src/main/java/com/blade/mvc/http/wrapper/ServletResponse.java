@@ -46,7 +46,7 @@ import com.blade.mvc.view.template.TemplateException;
  * @since	1.5
  */
 public class ServletResponse implements Response {
-
+	
 	private static final Logger LOGGER = LoggerFactory.getLogger(ServletResponse.class);
 	
 	private HttpServletResponse response;
@@ -171,10 +171,10 @@ public class ServletResponse implements Response {
 	javax.servlet.http.Cookie map(Cookie cookie) {
 		javax.servlet.http.Cookie servletCookie = new javax.servlet.http.Cookie(cookie.getName(), cookie.getValue());
 		servletCookie.setMaxAge(cookie.getMaxAge());
-		if (cookie.getPath() != null) {
+		if (null != cookie.getPath()) {
 			servletCookie.setPath(cookie.getPath());
 		}
-		if (cookie.getDomain() != null) {
+		if (null != cookie.getDomain()) {
 			servletCookie.setDomain(cookie.getDomain());
 		}
 		servletCookie.setHttpOnly(cookie.isHttpOnly());
@@ -193,13 +193,13 @@ public class ServletResponse implements Response {
 	@Override
 	public Response text(String text) {
 		try {
-			response.setHeader("Cache-Control", "no-cache");
-    		response.setContentType("text/plain;charset=utf-8");
+			this.header("Cache-Control", "no-cache");
+			this.contentType("text/plain;charset=utf-8");
 			DispatchKit.print(text, response.getWriter());
 			this.written = true;
 			return this;
 		} catch (IOException e) {
-			e.printStackTrace();
+			LOGGER.error(e.getMessage(), e);
 		}
 		return null;
 	}
@@ -207,19 +207,17 @@ public class ServletResponse implements Response {
 	@Override
 	public Response html(String html) {
 		try {
-			response.setHeader("Cache-Control", "no-cache");
-			response.setContentType("text/html;charset=utf-8");
+			this.header("Cache-Control", "no-cache");
+			this.contentType("text/html;charset=utf-8");
 			
-			PrintWriter writer = response.getWriter();
-			DispatchKit.print(html, writer);
+			DispatchKit.print(html, response.getWriter());
     		this.written = true;
 			return this;
-		} catch (UnsupportedEncodingException e1) {
-			e1.printStackTrace();
+		} catch (UnsupportedEncodingException e) {
+			LOGGER.error(e.getMessage(), e);
 		} catch (IOException e) {
-			e.printStackTrace();
+			LOGGER.error(e.getMessage(), e);
 		}
-		
 		return null;
 	}
 
@@ -228,20 +226,19 @@ public class ServletResponse implements Response {
 		Request request = WebApplicationContext.request();
 		String userAgent = request.userAgent();
 		if (userAgent.contains("MSIE")) {
-			response.setContentType("text/html;charset=utf-8");
+			this.contentType("text/html;charset=utf-8");
 		} else {
-			response.setContentType("application/json;charset=utf-8");
+			this.contentType("application/json;charset=utf-8");
 		}
 		try {
-			response.setHeader("Cache-Control", "no-cache");
-			PrintWriter writer = response.getWriter();
-			DispatchKit.print(json, writer);
+			this.header("Cache-Control", "no-cache");
+			DispatchKit.print(json, response.getWriter());
     		this.written = true;
 			return this;
-		} catch (UnsupportedEncodingException e1) {
-			e1.printStackTrace();
+		} catch (UnsupportedEncodingException e) {
+			LOGGER.error(e.getMessage(), e);
 		} catch (IOException e) {
-			e.printStackTrace();
+			LOGGER.error(e.getMessage(), e);
 		}
 		return null;
 	}
@@ -254,18 +251,16 @@ public class ServletResponse implements Response {
 	@Override
 	public Response xml(String xml) {
 		try {
-			response.setHeader("Cache-Control", "no-cache");
-			response.setContentType("text/xml;charset=utf-8");
-			PrintWriter writer = response.getWriter();
-			DispatchKit.print(xml, writer);
+			this.header("Cache-Control", "no-cache");
+			this.contentType("text/xml;charset=utf-8");
+			DispatchKit.print(xml, response.getWriter());
     		this.written = true;
 			return this;
-		} catch (UnsupportedEncodingException e1) {
-			e1.printStackTrace();
+		} catch (UnsupportedEncodingException e) {
+			LOGGER.error(e.getMessage(), e);
 		} catch (IOException e) {
-			e.printStackTrace();
+			LOGGER.error(e.getMessage(), e);
 		}
-		
 		return null;
 	}
 
@@ -317,7 +312,7 @@ public class ServletResponse implements Response {
 		try {
 			response.sendRedirect(path);
 		} catch (IOException e) {
-			e.printStackTrace();
+			LOGGER.error(e.getMessage(), e);
 		}
 	}
 	
@@ -328,7 +323,7 @@ public class ServletResponse implements Response {
         	String location = Path.fixPath(ctx + path);
 			response.sendRedirect(location);
 		} catch (IOException e) {
-			e.printStackTrace();
+			LOGGER.error(e.getMessage(), e);
 		}
 	}
 

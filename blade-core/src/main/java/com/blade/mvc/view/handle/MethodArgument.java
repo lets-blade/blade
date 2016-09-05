@@ -112,7 +112,7 @@ public final class MethodArgument {
 		} else if (parameterType.equals(Integer.class)) {
 			result = Integer.parseInt(val);
 		} else if (parameterType.equals(int.class)) {
-			if("".equals(val)){
+			if(StringKit.isBlank(val)){
 				result = 0;
 			} else {
 				result = Integer.parseInt(val);
@@ -120,7 +120,7 @@ public final class MethodArgument {
 		} else if (parameterType.equals(Long.class)) {
 			result = Long.parseLong(val);
 		} else if (parameterType.equals(long.class)) {
-			if("".equals(val)){
+			if(StringKit.isBlank(val)){
 				result = 0L;
 			} else {
 				result = Integer.parseInt(val);

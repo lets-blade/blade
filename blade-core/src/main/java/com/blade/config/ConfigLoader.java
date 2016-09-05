@@ -21,7 +21,7 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.blade.Blade;
+import static com.blade.Blade.$;
 import com.blade.context.DynamicContext;
 import com.blade.exception.ConfigException;
 import com.blade.ioc.Ioc;
@@ -57,7 +57,7 @@ public class ConfigLoader {
 	
 	@SuppressWarnings("unchecked")
 	public void loadConfig() {
-		String[] configPackages = Blade.$().applicationConfig().getConfigPackages();
+		String[] configPackages = $().applicationConfig().getConfigPackages();
 		if (null != configPackages && configPackages.length > 0) {
 			// Scan package all class
 			try {

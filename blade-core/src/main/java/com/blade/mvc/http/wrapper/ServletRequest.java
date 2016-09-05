@@ -37,6 +37,9 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.blade.kit.IOKit;
 import com.blade.kit.ObjectKit;
 import com.blade.kit.StringKit;
@@ -57,15 +60,19 @@ import com.blade.mvc.route.Route;
  */
 public class ServletRequest implements Request {
 	
+	private static final Logger LOGGER = LoggerFactory.getLogger(ServletRequest.class);
+	
 	private static final String USER_AGENT = "user-agent";
 	
 	protected Route route;
 	
 	private HttpServletRequest request;
 	
-	protected Map<String,String> pathParams = null;
+	// path parameter eg: /user/12
+	private Map<String,String> pathParams = null;
 	
-	private Map<String,String> multipartParams = null;
+	// query parameter eg: /user?name=jack
+	private Map<String,String> queryParams = null;
 
 	private List<FileItem> files = null;
 	
@@ -75,47 +82,43 @@ public class ServletRequest implements Request {
 	
 	public ServletRequest(HttpServletRequest request) throws MultipartException, IOException {
 		this.request = request;
-		this.pathParams = new HashMap<String,String>();
-		this.multipartParams = new HashMap<String,String>();
-		this.files = new ArrayList<FileItem>();
-		init();
+		this.pathParams = new HashMap<String,String>(8);
+		this.queryParams = new HashMap<String,String>(16);
+		this.files = new ArrayList<FileItem>(8);
+		this.init();
 	}
 	
-	public ServletRequest init() throws IOException, MultipartException {
+	public void init() throws IOException, MultipartException {
 		// retrieve multipart/form-data parameters
 		if (Multipart.isMultipartContent(request)) {
 			Multipart multipart = new Multipart();
 			multipart.parse(request, new MultipartHandler() {
-
 				@Override
 				public void handleFormItem(String name, String value) {
-					multipartParams.put( name, value );
+					queryParams.put( name, value );
 				}
-
 				@Override
 				public void handleFileItem(String name, FileItem fileItem) {
 					files.add(fileItem);
 				}
-
 			});
 		}
-		return this;
 	}
 	
 	private String join(String[] arr) {
-		String ret = "";
+		StringBuffer ret = new StringBuffer();
 		for (String item : arr) {
-			ret += "," + item;
+			ret.append(',').append(item);
 		}
 		if (ret.length() > 0) {
-			ret = ret.substring(1);
+			return ret.substring(1);
 		}
-		return ret;
+		return ret.toString();
 	}
 	
 	@Override
 	public void initPathParams(String routePath) {
-		pathParams.clear();
+		this.pathParams.clear();
 		
 		List<String> variables = getPathParam(routePath);
 		String regexPath = routePath.replaceAll(Path.VAR_REGEXP, Path.VAR_REPLACE);
@@ -128,13 +131,13 @@ public class ServletRequest implements Request {
 			// start index at 1 as group(0) always stands for the entire expression
 			for (int i=1, len = variables.size(); i <= len; i++) {
 				String value = matcher.group(i);
-				pathParams.put(variables.get(i-1), value);
+				this.pathParams.put(variables.get(i-1), value);
 			}
 		}
 	}
 	
 	private List<String> getPathParam(String routePath) {
-		List<String> variables = new ArrayList<String>();
+		List<String> variables = new ArrayList<String>(8);
 		Matcher matcher = Pattern.compile(Path.VAR_REGEXP).matcher(routePath);
 		while (matcher.find()) {
 			variables.add(matcher.group(1));
@@ -251,7 +254,7 @@ public class ServletRequest implements Request {
 		for (Map.Entry<String,String[]> entry : requestParams.entrySet()) {
 			params.put( entry.getKey(), join(entry.getValue()) );
 		}
-		params.putAll(multipartParams);
+		params.putAll(queryParams);
 		return Collections.unmodifiableMap(params);
 	}
 
@@ -262,7 +265,7 @@ public class ServletRequest implements Request {
 		if (param != null) {
 			val = join(param);
 		} else {
-			val = multipartParams.get(name);
+			val = queryParams.get(name);
 		}
 		return val;
 	}
@@ -274,7 +277,7 @@ public class ServletRequest implements Request {
 		if (param != null) {
 			val = join(param);
 		} else {
-			val = multipartParams.get(name);
+			val = queryParams.get(name);
 		}
 		if(null == val){
 			val = defaultValue;
@@ -384,7 +387,7 @@ public class ServletRequest implements Request {
 
 	@Override
 	public Set<String> attributes() {
-		Set<String> attrList = new HashSet<String>();
+		Set<String> attrList = new HashSet<String>(8);
         Enumeration<String> attributes = (Enumeration<String>) request.getAttributeNames();
         while (attributes.hasMoreElements()) {
             attrList.add(attributes.nextElement());
@@ -409,21 +412,19 @@ public class ServletRequest implements Request {
 
 	@Override
 	public boolean isAjax() {
-		if (request.getHeader("x-requested-with") == null) {
+		if (null == header("x-requested-with")) {
             return false;
         }
-        return "XMLHttpRequest".equals(request.getHeader("x-requested-with"));
+        return "XMLHttpRequest".equals(header("x-requested-with"));
 	}
 
 	@Override
 	public Map<String, Cookie> cookies() {
 		javax.servlet.http.Cookie[] servletCookies = request.getCookies();
-
-		Map<String,Cookie> cookies = new HashMap<String,Cookie>();
+		Map<String,Cookie> cookies = new HashMap<String,Cookie>(8);
 		for (javax.servlet.http.Cookie c : servletCookies) {
 			cookies.put( c.getName(), map(c) );
 		}
-
 		return Collections.unmodifiableMap(cookies);
 	}
 	
@@ -455,11 +456,9 @@ public class ServletRequest implements Request {
 	@Override
 	public Cookie cookieRaw(String name) {
 		javax.servlet.http.Cookie[] servletCookies = request.getCookies();
-
 		if (servletCookies == null) {
 			return null;
 		}
-
 		for (javax.servlet.http.Cookie c : servletCookies) {
 			if (c.getName().equals(name)) {
 				return map(c);
@@ -471,7 +470,7 @@ public class ServletRequest implements Request {
 	@Override
 	public Map<String, String> headers() {
 		Enumeration<String> servletHeaders = request.getHeaderNames();
-		Map<String,String> headers = new HashMap<String,String>();
+		Map<String,String> headers = new HashMap<String,String>(16);
 		while(servletHeaders.hasMoreElements()) {
 			String headerName = servletHeaders.nextElement();
 			headers.put(headerName, request.getHeader(headerName));
@@ -489,7 +488,7 @@ public class ServletRequest implements Request {
 		try {
 			request.setCharacterEncoding(encoding);
 		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
+			LOGGER.error(e.getMessage(), e);
 		}
 	}
 	
@@ -525,7 +524,7 @@ public class ServletRequest implements Request {
 	@Override
 	public FileItem[] files() {
 		FileItem[] fileParts = new FileItem[files.size()];
-		for (int i=0; i < files.size(); i++) {
+		for (int i=0, len=files.size(); i < len; i++) {
 			fileParts[i] = files.get(i);
 		}
 		return fileParts;
@@ -540,26 +539,24 @@ public class ServletRequest implements Request {
 					BufferedReader reader = new BufferedReader( new InputStreamReader(request.getInputStream()) );
 					StringBuilder sb = new StringBuilder();
 					String line = reader.readLine();
-					while (line != null) {
-						sb.append(line + "\n");
+					while (null != line) {
+						sb.append(line + "\r\n");
 						line = reader.readLine();
 					}
 					reader.close();
-					String data = sb.toString();
-
-					return data;
+					return sb.toString();
 				} catch (IOException e) {
-					e.printStackTrace();
+					LOGGER.error(e.getMessage(), e);
 				}
 				return null;
 			}
-
+			
 			@Override
 			public InputStream asInputStream() {
 				try {
 					return request.getInputStream();
 				} catch (IOException e) {
-					e.printStackTrace();
+					LOGGER.error(e.getMessage(), e);
 				}
 				return null;
 			}
@@ -569,11 +566,11 @@ public class ServletRequest implements Request {
 				try {
 					return IOKit.toByteArray(request.getInputStream());
 				} catch (IOException e) {
-					e.printStackTrace();
+					LOGGER.error(e.getMessage(), e);
 				}
 				return null;
 			}
 		};
 	}
-
+	
 }

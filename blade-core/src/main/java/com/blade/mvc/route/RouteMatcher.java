@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.blade.kit.StringKit;
 import com.blade.mvc.http.HttpMethod;
 import com.blade.mvc.http.Path;
 
@@ -44,14 +45,14 @@ public class RouteMatcher {
 	
 	// Storage Map Key
 	private Set<String> routeKeys = null;
-	private List<Route> interceptorRoutes = new ArrayList<Route>();
+	private List<Route> interceptorRoutes = new ArrayList<Route>(8);
 	
     public RouteMatcher(Routers routers) {
 		this.routes = routers.getRoutes();
 		this.interceptors = routers.getInterceptors();
 		this.routeKeys = routes.keySet();
 		Collection<Route> inters = interceptors.values();
-		if (null != inters && inters.size() > 0) {
+		if (null != inters && !inters.isEmpty()) {
 			this.interceptorRoutes.addAll(inters);
 		}
     }
@@ -65,7 +66,7 @@ public class RouteMatcher {
     public Route getRoute(String httpMethod, String path) {
 		String cleanPath = parsePath(path);
 		
-		String routeKey = path + "#" + httpMethod.toUpperCase();
+		String routeKey = path + '#' + httpMethod.toUpperCase();
 		Route route = routes.get(routeKey);
 		if(null != route){
 			return route;
@@ -75,9 +76,9 @@ public class RouteMatcher {
 			return route;
 		}
 		
-		List<Route> matchRoutes = new ArrayList<Route>();
+		List<Route> matchRoutes = new ArrayList<Route>(6);
 		for(String key : routeKeys){
-			String[] keyArr = key.split("#");
+			String[] keyArr =  StringKit.split("#");
 			HttpMethod routeMethod = HttpMethod.valueOf(keyArr[1]);
 			if (matchesPath(keyArr[0], cleanPath)) {
 				if (routeMethod == HttpMethod.ALL || HttpMethod.valueOf(httpMethod) == routeMethod) {
@@ -88,9 +89,9 @@ public class RouteMatcher {
 		}
 		
 		// Priority matching principle 
-        giveMatch(path, matchRoutes);
+        this.giveMatch(path, matchRoutes);
         
-        return matchRoutes.size() > 0 ? matchRoutes.get(0) : null;
+        return matchRoutes.isEmpty() ? null : matchRoutes.get(0);
 	}
     
     /**
@@ -99,15 +100,15 @@ public class RouteMatcher {
      * @return		return interceptor list
      */
     public List<Route> getBefore(String path) {
-    	
-		List<Route> befores = new ArrayList<Route>();
+		List<Route> befores = new ArrayList<Route>(8);
 		String cleanPath = parsePath(path);
-		for (Route route : interceptorRoutes) {
+		for (int i = 0, len = interceptorRoutes.size(); i < len; i++) {
+			Route route = interceptorRoutes.get(i);
 			if(matchesPath(route.getPath(), cleanPath) && route.getHttpMethod() == HttpMethod.BEFORE){
 				befores.add(route);
 			}
-        }
-		giveMatch(path, befores);
+		}
+		this.giveMatch(path, befores);
 		return befores;
 	}
 	
@@ -117,14 +118,15 @@ public class RouteMatcher {
      * @return		return interceptor list
      */
 	public List<Route> getAfter(String path) {
-		List<Route> afters = new ArrayList<Route>();
+		List<Route> afters = new ArrayList<Route>(8);
 		String cleanPath = parsePath(path);
-		for (Route route : interceptorRoutes) {
+		for (int i = 0, len = interceptorRoutes.size(); i < len; i++) {
+			Route route = interceptorRoutes.get(i);
 			if(matchesPath(route.getPath(), cleanPath) && route.getHttpMethod() == HttpMethod.AFTER){
 				afters.add(route);
 			}
         }
-		giveMatch(path, afters);
+		this.giveMatch(path, afters);
 		return afters;
 	}
     

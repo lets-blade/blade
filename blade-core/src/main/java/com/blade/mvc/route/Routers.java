@@ -82,8 +82,8 @@ public class Routers {
 	
 	public void addRoutes(List<Route> routes) {
 		Assert.notNull(routes);
-		for(Route route : routes){
-			this.addRoute(route);
+		for (int i = 0, len = routes.size(); i < len; i++) {
+			this.addRoute(routes.get(i));
 		}
 	}
 	
@@ -128,8 +128,8 @@ public class Routers {
 	}
 	
 	public void route(String[] paths, RouteHandler handler, HttpMethod httpMethod) {
-		for(String path : paths){
-			route(path, handler, httpMethod);
+		for (int i = 0, len = paths.length; i < len; i++) {
+			route(paths[i], handler, httpMethod);
 		}
 	}
 	
@@ -155,8 +155,9 @@ public class Routers {
 				classMethosPool.put(clazz.getName(), methods);
 			}
 			if(null != methods){
-				for(Method method : methods){
-					if(method.getName().equals(methodName)){
+				for (int i = 0, len = methods.length; i < len; i++) {
+					Method method = methods[i];
+					if (method.getName().equals(methodName)) {
 						addRoute(httpMethod, path, ReflectKit.newInstance(clazz), clazz, method);
 					}
 				}

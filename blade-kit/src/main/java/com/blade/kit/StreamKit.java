@@ -69,7 +69,7 @@ public abstract class StreamKit {
 
         byte[] buffer = new byte[bufferSize];
         int amount;
-
+        
         while ((amount = in.read(buffer)) >= 0) {
             out.write(buffer, 0, amount);
         }

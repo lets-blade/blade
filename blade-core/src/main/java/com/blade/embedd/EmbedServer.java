@@ -15,6 +15,8 @@
  */
 package com.blade.embedd;
 
+import com.blade.exception.EmbedServerException;
+
 /**
  * Jetty Server
  *
@@ -23,13 +25,13 @@ package com.blade.embedd;
  */
 public interface EmbedServer {
 	
-	void startup(int port) throws Exception;
+	void startup(int port) throws EmbedServerException;
 	
-	void startup(int port, String contextPath) throws Exception;
+	void startup(int port, String contextPath) throws EmbedServerException;
 	
-	void startup(int port, String contextPath, String webRoot) throws Exception;
+	void startup(int port, String contextPath, String webRoot) throws EmbedServerException;
 	
-	void stop() throws Exception;
+	void stop() throws EmbedServerException;
 	
 	void setWebRoot(String webRoot);
 	

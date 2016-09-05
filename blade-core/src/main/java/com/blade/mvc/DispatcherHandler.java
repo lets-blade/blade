@@ -96,9 +96,9 @@ public class DispatcherHandler {
 			return;
     	}
         
-        LOGGER.info("Request : {}\t{}", method, uri);
- 		
         try {
+        	
+        	LOGGER.info("Request : {}\t{}", method, uri);
         	
         	Request request = new ServletRequest(httpRequest);
          	WebApplicationContext.init(servletContext, request, response);
@@ -168,9 +168,10 @@ public class DispatcherHandler {
 	 * @return				Return execute is ok
 	 */
 	private boolean invokeInterceptor(Request request, Response response, List<Route> interceptors) throws Exception {
-		for(Route route : interceptors){
+		for (int i = 0, len = interceptors.size(); i < len; i++) {
+			Route route = interceptors.get(i);
 			boolean flag = routeViewHandler.intercept(request, response, route);
-			if(!flag){
+			if (!flag) {
 				return false;
 			}
 		}

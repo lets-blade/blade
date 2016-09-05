@@ -35,20 +35,21 @@ public final class ApplicationContext {
 	
 	public static void init(Blade blade) throws BladeException{
 		try {
-			
-			blade.bootstrap().init(blade);
-			
-			if(!blade.applicationConfig().isInit()){
-			    blade.loadAppConf(Const.APP_PROPERTIES);
-				blade.applicationConfig().setEnv(blade.config());
-		    }
-			
-			// initialization ioc
-			IocApplication iocApplication = new IocApplication();
-			iocApplication.initBeans();
-			
-			blade.init();
-			blade.bootstrap().contextInitialized();
+			if(!blade.isInit()){
+				blade.bootstrap().init(blade);
+				
+				if(!blade.applicationConfig().isInit()){
+				    blade.loadAppConf(Const.APP_PROPERTIES);
+					blade.applicationConfig().setEnv(blade.config());
+			    }
+				
+				// initialization ioc
+				IocApplication iocApplication = new IocApplication();
+				iocApplication.initBeans();
+				
+				blade.init();
+				blade.bootstrap().contextInitialized();
+			}
 		} catch (Exception e) {
 			LOGGER.error("ApplicationContext init error", e);
 		}

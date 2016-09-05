@@ -49,7 +49,10 @@ public class IocApplication {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(IocApplication.class);
 
-	private static List<Object> aopInterceptors = new ArrayList<Object>();
+	/**
+	 * aop interceptor
+	 */
+	private static List<Object> aopInterceptors = new ArrayList<Object>(8);
 
 	/**
 	 * Class to read object, load class

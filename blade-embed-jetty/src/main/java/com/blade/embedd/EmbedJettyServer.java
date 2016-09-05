@@ -5,6 +5,7 @@ import static com.blade.Blade.$;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.HttpConfiguration;
 import org.eclipse.jetty.server.HttpConnectionFactory;
+import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.DefaultHandler;
 import org.eclipse.jetty.server.handler.HandlerList;
@@ -15,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.blade.Const;
+import com.blade.exception.EmbedServerException;
 import com.blade.kit.base.Config;
 import com.blade.mvc.DispatcherServlet;
 
@@ -24,7 +26,7 @@ public class EmbedJettyServer implements EmbedServer {
 	
     private int port = Const.DEFAULT_PORT;
 	
-	private org.eclipse.jetty.server.Server server;
+	private Server server;
 	
 	private WebAppContext webAppContext;
 	
@@ -38,12 +40,12 @@ public class EmbedJettyServer implements EmbedServer {
 	}
 	
 	@Override
-	public void startup(int port) throws Exception {
+	public void startup(int port) throws EmbedServerException {
 		this.startup(port, Const.DEFAULT_CONTEXTPATH, null);
 	}
 
 	@Override
-	public void startup(int port, String contextPath) throws Exception {
+	public void startup(int port, String contextPath) throws EmbedServerException {
 		this.startup(port, contextPath, null);
 	}
 	
@@ -53,7 +55,7 @@ public class EmbedJettyServer implements EmbedServer {
 	}
 	
 	@Override
-	public void startup(int port, String contextPath, String webRoot) throws Exception {
+	public void startup(int port, String contextPath, String webRoot) throws EmbedServerException {
 		this.port = port;
 		
 		// Setup Threadpool
@@ -105,13 +107,21 @@ public class EmbedJettyServer implements EmbedServer {
 	    handlers.setHandlers(new Handler[] { webAppContext, new DefaultHandler() });
 	    server.setHandler(handlers);
         
-	    server.start();
-	    LOGGER.info("Blade Server Listen on 0.0.0.0:{}", this.port);
-	    server.join();
+	    try {
+	    	server.start();
+		    LOGGER.info("Blade Server Listen on 0.0.0.0:{}", this.port);
+		    server.join();
+		} catch (Exception e) {
+			throw new EmbedServerException(e);
+		}
 	}
 	
-    public void stop() throws Exception {
-        server.stop();
+    public void stop() throws EmbedServerException {
+        try {
+			server.stop();
+		} catch (Exception e) {
+			throw new EmbedServerException(e);
+		}
     }
     
 }
