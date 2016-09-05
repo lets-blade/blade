@@ -15,19 +15,17 @@
  */
 package com.blade.mvc.view.template;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.Writer;
-import java.util.Map;
-import java.util.Set;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import com.blade.Blade;
 import com.blade.context.WebApplicationContext;
+import com.blade.kit.StreamKit;
 import com.blade.mvc.view.ModelAndView;
 
 
@@ -39,39 +37,25 @@ import com.blade.mvc.view.ModelAndView;
  */
 public final class DefaultEngine implements TemplateEngine {
 	
-	private static final Logger LOGGER = LoggerFactory.getLogger(DefaultEngine.class);
-	
-	private String viewPath = "/";
+	private String templatePath = "/templates/";
 	
 	public DefaultEngine() {
 	}
 	
-	public DefaultEngine(String viewPath) {
-		this.viewPath = viewPath;
+	public DefaultEngine(String templatePath) {
+		this.templatePath = templatePath;
 	}
 	
 	@Override
-	public void render(ModelAndView modelAndView, Writer writer) {
-		HttpServletRequest servletRequest = WebApplicationContext.request().raw();
-		HttpServletResponse servletResponse = WebApplicationContext.response().raw();
-		
+	public void render(ModelAndView modelAndView, Writer writer) throws TemplateException {
 		try {
-			Map<String, Object> model = modelAndView.getModel();
-			String realPath = viewPath + modelAndView.getView();
-			
-			if (null != model && !model.isEmpty()) {
-				Set<String> keys = model.keySet();
-				for (String key : keys) {
-					servletRequest.setAttribute(key, model.get(key));
-				}
-			}
-			servletRequest.getRequestDispatcher(realPath).forward(servletRequest, servletResponse);
-		} catch (ServletException e) {
-			e.printStackTrace();
-			LOGGER.error("", e);
+			HttpServletResponse servletResponse = WebApplicationContext.response().raw();
+			servletResponse.setContentType("text/html;charset=utf-8");
+			String realPath = new File(Blade.$().webRoot() + File.separatorChar + templatePath + File.separatorChar + modelAndView.getView()).getPath();
+			String content = StreamKit.readText(new BufferedReader(new FileReader(new File(realPath))));
+			servletResponse.getWriter().print(content);
 		} catch (IOException e) {
-			e.printStackTrace();
-			LOGGER.error("", e);
+			throw new TemplateException(e);
 		}
 	}
     

@@ -202,7 +202,11 @@ public final class Blade {
 	 */
 	public Blade loadAppConf(String location) {
 		Assert.notBlank(location);
-		config.add(location);
+		try {
+			config.add(location);
+		} catch (Exception e) {
+			
+		}
 		return this;
 	}
 
