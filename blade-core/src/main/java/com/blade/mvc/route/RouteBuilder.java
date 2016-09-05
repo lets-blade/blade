@@ -68,8 +68,8 @@ public class RouteBuilder {
      */
     public void building() {
     	
-    	this.routePackages = Blade.$().config().getRoutePackages();
-    	this.interceptorPackage = Blade.$().config().getInterceptorPackage();
+    	this.routePackages = Blade.$().applicationConfig().getRoutePackages();
+    	this.interceptorPackage = Blade.$().applicationConfig().getInterceptorPackage();
     	
     	// Route
     	if(null != routePackages && routePackages.length > 0){

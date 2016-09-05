@@ -72,7 +72,7 @@ public class IocApplication {
 	 */
 	private List<ClassInfo> loadCondigs() throws Exception {
 		List<ClassInfo> configs = null;
-		String[] configPackages = blade.config().getConfigPackages();
+		String[] configPackages = blade.applicationConfig().getConfigPackages();
 		if (null != configPackages && configPackages.length > 0) {
 			configs = new ArrayList<ClassInfo>(10);
 			for (String packageName : configPackages) {
@@ -99,7 +99,7 @@ public class IocApplication {
 
 	private List<ClassInfo> loadServices() throws Exception {
 		List<ClassInfo> services = null;
-		String[] configPackages = blade.config().getIocPackages();
+		String[] configPackages = blade.applicationConfig().getIocPackages();
 		if (null != configPackages && configPackages.length > 0) {
 			services = new ArrayList<ClassInfo>(20);
 			for (String packageName : configPackages) {
@@ -132,7 +132,7 @@ public class IocApplication {
 
 	private List<ClassInfo> loadControllers() {
 		List<ClassInfo> controllers = null;
-		String[] routePackages = blade.config().getRoutePackages();
+		String[] routePackages = blade.applicationConfig().getRoutePackages();
 		if (null != routePackages && routePackages.length > 0) {
 			controllers = new ArrayList<ClassInfo>();
 			for (String packageName : routePackages) {
@@ -146,7 +146,7 @@ public class IocApplication {
 
 	private List<ClassInfo> loadInterceptors() {
 		List<ClassInfo> interceptors = null;
-		String interceptorPackage = blade.config().getInterceptorPackage();
+		String interceptorPackage = blade.applicationConfig().getInterceptorPackage();
 		if (StringKit.isNotBlank(interceptorPackage)) {
 			interceptors = new ArrayList<ClassInfo>(10);
 			Set<ClassInfo> intes = classReader.getClassByAnnotation(interceptorPackage, Intercept.class, true);

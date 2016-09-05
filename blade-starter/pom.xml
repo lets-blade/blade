@@ -13,13 +13,14 @@
     <artifactId>blade-starter</artifactId>
     <packaging>pom</packaging>
     <version>0.0.1</version>
-
+	
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!-- versions -->
         <blade-core.version>1.6.6</blade-core.version>
         <blade-aop.version>1.0.0</blade-aop.version>
-        <blade-jdbc.version>0.1.2</blade-jdbc.version>
+        <blade-jdbc.version>0.1.3-alpha</blade-jdbc.version>
+        <blade-patchca.version>1.0.4</blade-patchca.version>
         <blade-template-jetbrick.version>0.0.6</blade-template-jetbrick.version>
         <blade-template-velocity.version>0.0.4</blade-template-velocity.version>
         <blade-embed-jetty.version>0.0.4</blade-embed-jetty.version>
@@ -70,12 +71,15 @@
                 <artifactId>blade-jdbc</artifactId>
                 <version>${blade-jdbc.version}</version>
             </dependency>
-
+			<dependency>
+                <groupId>com.bladejava</groupId>
+                <artifactId>blade-patchca</artifactId>
+                <version>${blade-patchca.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
-
+	
     <build>
-        <finalName>${artifactId}-${version}</finalName>
         <resources>
             <resource>
                 <directory>src/main/java</directory>

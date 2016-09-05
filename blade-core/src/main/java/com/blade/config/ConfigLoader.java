@@ -57,7 +57,7 @@ public class ConfigLoader {
 	
 	@SuppressWarnings("unchecked")
 	public void loadConfig() {
-		String[] configPackages = Blade.$().config().getConfigPackages();
+		String[] configPackages = Blade.$().applicationConfig().getConfigPackages();
 		if (null != configPackages && configPackages.length > 0) {
 			// Scan package all class
 			try {

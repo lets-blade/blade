@@ -29,8 +29,8 @@ import com.blade.exception.EmbedServerException;
 import com.blade.ioc.Ioc;
 import com.blade.ioc.SimpleIoc;
 import com.blade.kit.Assert;
-import com.blade.kit.Environment;
 import com.blade.kit.StringKit;
+import com.blade.kit.base.Config;
 import com.blade.kit.reflect.ReflectKit;
 import com.blade.mvc.http.HttpMethod;
 import com.blade.mvc.interceptor.Interceptor;
@@ -81,8 +81,8 @@ public final class Blade {
 	// plugins
 	private Set<Class<? extends Plugin>> plugins;
 
-	// global environment
-	private Environment environment;
+	// global config
+	private Config config;
 
 	// config loader
 	private ConfigLoader configLoader;
@@ -91,7 +91,7 @@ public final class Blade {
 	private EmbedServer embedServer;
 	
 	private Blade() {
-		this.environment = new Environment();
+		this.config = new Config();
 		this.applicationConfig = new ApplicationConfig();
 		this.plugins = new HashSet<Class<? extends Plugin>>();
 		this.routeBuilder = new RouteBuilder(this.routers);
@@ -112,13 +112,13 @@ public final class Blade {
 
 	/**
 	 * 
-	 * @param appConf
+	 * @param location
 	 * @return
 	 */
 	@Deprecated
-	public static final Blade me(String confPath) {
+	public static final Blade me(String location) {
 		Blade blade = BladeHolder.$;
-		blade.environment.add(confPath);
+		blade.config.add(location);
 		return blade;
 	}
 
@@ -133,10 +133,10 @@ public final class Blade {
 	 * @param confPath
 	 * @return
 	 */
-	public static final Blade $(String confPath) {
-		Assert.notEmpty(confPath);
+	public static final Blade $(String location) {
+		Assert.notEmpty(location);
 		Blade blade = BladeHolder.$;
-		blade.environment.add(confPath);
+		blade.config.add(location);
 		return blade;
 	}
 
@@ -197,13 +197,12 @@ public final class Blade {
 	/**
 	 * Setting Properties configuration file File path based on classpath
 	 * 
-	 * @param confPath
-	 *            properties file name
+	 * @param location	properties file name
 	 * @return return blade
 	 */
-	public Blade loadAppConf(String confPath) {
-		Assert.notBlank(confPath);
-		environment.add(confPath);
+	public Blade loadAppConf(String location) {
+		Assert.notBlank(location);
+		config.add(location);
 		return this;
 	}
 
@@ -557,6 +556,7 @@ public final class Blade {
 	
 	/**
 	 * start web server
+	 * 
 	 * @param applicationClass	your app root package starter
 	 */
 	public void start(Class<?> applicationClass) {
@@ -564,7 +564,7 @@ public final class Blade {
 		this.loadAppConf(Const.APP_PROPERTIES);
 	    
 		// init blade environment config
-	    applicationConfig.setEnv(environment);
+	    applicationConfig.setEnv(config);
 	    
 	    if(null != applicationClass){
 	    	applicationConfig.setApplicationClass(applicationClass);
@@ -607,15 +607,8 @@ public final class Blade {
 	/**
 	 * @return Return blade config object
 	 */
-	public ApplicationConfig config() {
-		return applicationConfig;
-	}
-
-	/**
-	 * @return Return Blade Environment
-	 */
-	public Environment environment() {
-		return environment;
+	public Config config() {
+		return this.config;
 	}
 
 	/**

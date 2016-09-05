@@ -15,7 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.blade.Const;
-import com.blade.kit.Environment;
+import com.blade.kit.base.Config;
 import com.blade.mvc.DispatcherServlet;
 
 public class EmbedJettyServer implements EmbedServer {
@@ -28,12 +28,12 @@ public class EmbedJettyServer implements EmbedServer {
 	
 	private WebAppContext webAppContext;
 	
-	private Environment environment = null;
+	private Config config = null;
     
 	public EmbedJettyServer() {
 		System.setProperty("org.apache.jasper.compiler.disablejsr199", "true");
 		$().loadAppConf("jetty.properties");
-		environment = $().environment();
+		config = $().config();
 		$().enableServer(true);
 	}
 	
@@ -59,8 +59,8 @@ public class EmbedJettyServer implements EmbedServer {
 		// Setup Threadpool
         QueuedThreadPool threadPool = new QueuedThreadPool();
         
-        int minThreads = environment.getInt("server.jetty.min-threads", 100);
-        int maxThreads = environment.getInt("server.jetty.max-threads", 500);
+        int minThreads = config.getInt("server.jetty.min-threads", 100);
+        int maxThreads = config.getInt("server.jetty.max-threads", 500);
         
         threadPool.setMinThreads(minThreads);
         threadPool.setMaxThreads(maxThreads);
@@ -74,10 +74,10 @@ public class EmbedJettyServer implements EmbedServer {
         webAppContext.setContextPath(contextPath);
         webAppContext.setResourceBase("");
         
-	    int securePort = environment.getInt("server.jetty.http.secure-port", 8443);
-	    int outputBufferSize = environment.getInt("server.jetty.http.output-buffersize", 32768);
-	    int requestHeaderSize = environment.getInt("server.jetty.http.request-headersize", 8192);
-	    int responseHeaderSize = environment.getInt("server.jetty.http.response-headersize", 8192);
+	    int securePort = config.getInt("server.jetty.http.secure-port", 8443);
+	    int outputBufferSize = config.getInt("server.jetty.http.output-buffersize", 32768);
+	    int requestHeaderSize = config.getInt("server.jetty.http.request-headersize", 8192);
+	    int responseHeaderSize = config.getInt("server.jetty.http.response-headersize", 8192);
 	    
 	    // HTTP Configuration
         HttpConfiguration http_config = new HttpConfiguration();
@@ -88,7 +88,7 @@ public class EmbedJettyServer implements EmbedServer {
         http_config.setSendServerVersion(true);
         http_config.setSendDateHeader(false);
         
-        long idleTimeout = environment.getLong("server.jetty.http.idle-timeout", 30000L);
+        long idleTimeout = config.getLong("server.jetty.http.idle-timeout", 30000L);
         
         ServerConnector http = new ServerConnector(server, new HttpConnectionFactory(http_config));
         http.setPort(this.port);

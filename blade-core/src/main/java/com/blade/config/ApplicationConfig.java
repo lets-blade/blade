@@ -24,8 +24,8 @@ import org.slf4j.LoggerFactory;
 
 import com.blade.Blade;
 import com.blade.kit.Assert;
-import com.blade.kit.Environment;
 import com.blade.kit.StringKit;
+import com.blade.kit.base.Config;
 import com.blade.mvc.view.ViewSettings;
 
 /**
@@ -74,19 +74,19 @@ public class ApplicationConfig {
 		this.addResources("/public", "/assets", "/static");
 	}
 
-	public void setEnv(Environment environment) {
-		if (null != environment && !isInit) {
-			this.isDev = environment.getBoolean("app.dev", true);
+	public void setEnv(Config config) {
+		if (null != config && !isInit) {
+			this.isDev = config.getBoolean("app.dev", true);
 			
-			this.addIocPackages(environment.getString("app.ioc"));
+			this.addIocPackages(config.get("app.ioc"));
 			
-			ViewSettings.$().setView500(environment.getString("mvc.view.500"));
-			ViewSettings.$().setView404(environment.getString("mvc.view.404"));
-			this.encoding = environment.getString("mvc.http.encoding", "UTF-8");
-			String statics = environment.getString("mvc.statics");
+			ViewSettings.$().setView500(config.get("mvc.view.500"));
+			ViewSettings.$().setView404(config.get("mvc.view.404"));
+			this.encoding = config.get("mvc.http.encoding", "UTF-8");
+			String statics = config.get("mvc.statics");
 			
-			String basePackage = environment.getString("app.base-package");
-			Integer port = environment.getInt("server.port");
+			String basePackage = config.get("app.base-package");
+			Integer port = config.getInt("server.port");
 
 			if (null != port) {
 				Blade.$().listen(port);

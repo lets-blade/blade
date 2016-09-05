@@ -78,6 +78,24 @@ public final class AsmKit {
 			return null;
 		}
 		cr.accept(new ClassVisitor(Opcodes.ASM5) {
+			
+			@Override
+			public void visitInnerClass(String name, String outerName, String innerName, int access) {
+				super.visitInnerClass(name, outerName, innerName, access);
+				System.out.println("name = " + name);
+				System.out.println("outerName = " + outerName);
+				System.out.println("innerName = " + innerName);
+				System.out.println("access = " + access);
+			}
+			
+			@Override
+			public void visitOuterClass(String owner, String name, String desc) {
+				super.visitOuterClass(owner, name, desc);
+				System.out.println("owner = " + owner);
+				System.out.println("name = " + name);
+				System.out.println("desc = " + desc);
+			}
+			
 			@Override
 			public MethodVisitor visitMethod(final int access, final String name, final String desc,
 					final String signature, final String[] exceptions) {

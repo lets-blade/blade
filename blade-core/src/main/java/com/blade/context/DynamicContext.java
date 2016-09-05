@@ -41,7 +41,7 @@ public final class DynamicContext {
 	}
 	
 	public static void init(){
-		Class<?> clazz = Blade.$().config().getApplicationClass();
+		Class<?> clazz = Blade.$().applicationConfig().getApplicationClass();
 		String rs = clazz.getResource("").toString();
 		if(rs.indexOf(".jar") != -1){
 			CLASS_READER = new JarReaderImpl();

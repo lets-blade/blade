@@ -117,7 +117,7 @@ public class DispatcherServlet extends HttpServlet {
 		    
 		    BannerStarter.printStart();
 		    
-		    String appName = blade.environment().getString("app.name", "Blade");
+		    String appName = blade.config().get("app.name", "Blade");
 		    
 		    LOGGER.info("{} initialize successfully, Time elapsed: {} ms.", appName, System.currentTimeMillis() - initStart);
 		}

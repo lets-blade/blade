@@ -1,5 +1,7 @@
 package com.blade.kit;
 
+import static com.blade.Blade.$;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -22,15 +24,9 @@ import org.slf4j.LoggerFactory;
 
 import com.blade.Blade;
 import com.blade.Const;
-import com.blade.kit.FileKit;
-import com.blade.kit.IOKit;
-import com.blade.kit.StreamKit;
-import com.blade.kit.StringKit;
 import com.blade.mvc.http.HttpException;
 import com.blade.mvc.http.Response;
 import com.blade.mvc.view.ViewSettings;
-
-import static com.blade.Blade.$;
 
 public class DispatchKit {
 
@@ -38,7 +34,7 @@ public class DispatchKit {
 
 	static final boolean isWeb = !$().enableServer();
 
-	static final Class<?> appClass = $().config().getApplicationClass();
+	static final Class<?> appClass = $().applicationConfig().getApplicationClass();
 
 	private static Boolean isDev = null;
 	

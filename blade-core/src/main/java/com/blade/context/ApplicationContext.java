@@ -38,9 +38,9 @@ public final class ApplicationContext {
 			
 			blade.bootstrap().init(blade);
 			
-			if(!blade.config().isInit()){
+			if(!blade.applicationConfig().isInit()){
 			    blade.loadAppConf(Const.APP_PROPERTIES);
-				blade.config().setEnv(blade.environment());
+				blade.applicationConfig().setEnv(blade.config());
 		    }
 			
 			// initialization ioc
