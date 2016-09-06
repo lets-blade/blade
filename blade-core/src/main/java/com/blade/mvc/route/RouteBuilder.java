@@ -194,7 +194,7 @@ public class RouteBuilder {
 				String[] paths = mapping.value();
 				if(null != paths && paths.length > 0){
 					for(int j=0, plen = paths.length; j<plen; j++){
-						String pathV = getRoutePath(paths[i], nameSpace, suffix);
+						String pathV = getRoutePath(paths[j], nameSpace, suffix);
 						this.buildRoute(router, method, pathV, methodType);
 					}
 				}

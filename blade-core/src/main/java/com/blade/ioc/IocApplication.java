@@ -74,10 +74,9 @@ public class IocApplication {
 	 * @throws Exception
 	 */
 	private List<ClassInfo> loadCondigs() throws Exception {
-		List<ClassInfo> configs = null;
 		String[] configPkgs = blade.applicationConfig().getConfigPkgs();
 		if (null != configPkgs && configPkgs.length > 0) {
-			configs = new ArrayList<ClassInfo>(10);
+			List<ClassInfo> configs = new ArrayList<ClassInfo>(10);
 			for (int i = 0, len = configPkgs.length; i < len; i++) {
 				Set<ClassInfo> configClasses = classReader.getClassByAnnotation(configPkgs[i], Component.class, false);
 				if (null != configClasses) {
@@ -88,16 +87,16 @@ public class IocApplication {
 								configs.add(classInfo);
 							}
 						}
-						if (classInfo.getClazz().getSuperclass().getName()
-								.equals("com.blade.aop.AbstractMethodInterceptor")) {
+						if (classInfo.getClazz().getSuperclass().getName().equals("com.blade.aop.AbstractMethodInterceptor")) {
 							aopInterceptors.add(classInfo.newInstance());
 						}
 					}
 				}
 			}
 			Collections.sort(configs, orderComparator);
+			return configs;
 		}
-		return configs;
+		return null;
 	}
 
 	private List<ClassInfo> loadServices() throws Exception {
@@ -129,6 +128,7 @@ public class IocApplication {
 					}
 				}
 			}
+			return services;
 		}
 		return null;
 	}
@@ -142,6 +142,7 @@ public class IocApplication {
 				controllers.addAll(classReader.getClassByAnnotation(routePkgs[i], Controller.class, true));
 				controllers.addAll(classReader.getClassByAnnotation(routePkgs[i], RestController.class, true));
 			}
+			return controllers;
 		}
 		return null;
 	}
@@ -159,6 +160,7 @@ public class IocApplication {
 					}
 				}
 			}
+			return interceptors;
 		}
 		return null;
 	}

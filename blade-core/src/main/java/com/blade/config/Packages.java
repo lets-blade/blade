@@ -28,8 +28,11 @@ public class Packages {
 			Set<String> values = pool.get(name);
 			if(null == values){
 				values = new HashSet<String>(pkgs.length);
+			} else {
+				pool.remove(name);
 			}
 			values.addAll(Arrays.asList(pkgs));
+			pool.put(name, values);
 		}
 	}
 	
