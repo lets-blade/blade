@@ -23,7 +23,7 @@
         <blade-patchca.version>1.0.4</blade-patchca.version>
         <blade-template-jetbrick.version>0.0.6</blade-template-jetbrick.version>
         <blade-template-velocity.version>0.0.4</blade-template-velocity.version>
-        <blade-embed-jetty.version>0.0.4</blade-embed-jetty.version>
+        <blade-embed-jetty.version>0.0.5</blade-embed-jetty.version>
     </properties>
 
     <repositories>
