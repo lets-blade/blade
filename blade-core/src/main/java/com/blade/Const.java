@@ -41,6 +41,16 @@ public interface Const {
 	// Request ThreadPoll context key
 	String BLADE_EXECUTOR = "blade-req-executor";
 	
+	/***************
+	 * package names 
+	 ***************/
+	String ROUTE_PKGS = "route_packages";
+	String IOC_PKGS = "ioc_packages";
+	String CONFIG_PKGS = "config_packages";
+	String RESOURCE_PKGS = "resouce_packages";
+	String BASE_PKG = "base_package";
+	String INTERCEPTOR_PKG = "interceptor_package";
+	
 	/****************
 	 * blade properties 
 	 * **************/

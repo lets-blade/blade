@@ -74,7 +74,7 @@ public class DispatcherHandler {
 		this.blade = Blade.$();
 		this.ioc = blade.ioc();
 		this.routeMatcher = new RouteMatcher(routers);
-		this.staticFileFilter = new StaticFileFilter(blade.staticFolder());
+		this.staticFileFilter = new StaticFileFilter(blade.applicationConfig().getResources());
 		this.routeViewHandler = new RouteViewHandler(this.ioc);
 	}
 	

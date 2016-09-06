@@ -15,14 +15,14 @@
  */
 package com.blade.config;
 
-import java.util.Arrays;
-import java.util.HashSet;
+import static com.blade.Blade.$;
+
 import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.blade.Blade;
+import com.blade.Const;
 import com.blade.kit.Assert;
 import com.blade.kit.StringKit;
 import com.blade.kit.base.Config;
@@ -39,169 +39,147 @@ public class ApplicationConfig {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationConfig.class);
 	
-	// Storage of all routing packets
-	private Set<String> routePackages = new HashSet<String>(8);
-
-	// Store all IOC packages
-	private Set<String> iocPackages = new HashSet<String>(8);
-
-	// Strore all config packages
-	private Set<String> configPackages = new HashSet<String>(2);
-
-	// Store all filter directories
-	private Set<String> staticFolders = new HashSet<String>(5);
+	private Packages packages;
 	
-	// Base package
-	private String basePackage;
-	
-	// Interceptor package
-	private String interceptorPackage;
-
 	// Encoding
 	private String encoding = "utf-8";
-
-	// web root path
-	private String webRoot = "";
 	
 	// Is dev mode
 	private boolean isDev = true;
 	
 	private boolean isInit  = false;
 	
+	private String webRoot;
+	
 	private Class<?> applicationClass;
 
 	public ApplicationConfig() {
+		this.packages = new Packages();
 		this.addResources("/public", "/assets", "/static");
 	}
 
 	public void setEnv(Config config) {
 		if (null != config && !isInit) {
+			
+			// get dev mode
 			this.isDev = config.getBoolean("app.dev", true);
 			
-			this.addIocPackages(config.get("app.ioc"));
+			// get ioc packages
+			packages.put(Const.IOC_PKGS, config.get("app.ioc"));
 			
+			// get view 404, 500 page
 			ViewSettings.$().setView500(config.get("mvc.view.500"));
 			ViewSettings.$().setView404(config.get("mvc.view.404"));
-			this.encoding = config.get("mvc.http.encoding", "UTF-8");
+			
+			// get http encoding
+			this.encoding = config.get("http.encoding", "UTF-8");
+			
+			// get mvc static folders
 			String statics = config.get("mvc.statics");
 			
+			// get app base package
 			String basePackage = config.get("app.base-package");
-			Integer port = config.getInt("server.port");
-
-			if (null != port) {
-				Blade.$().listen(port);
-			}
+			
+			// get server start port
+			Integer port = config.getInt("server.port", Const.DEFAULT_PORT);
+			$().listen(port);
 			
 			if (StringKit.isNotBlank(statics)) {
-				this.addResources(statics.split(","));
+				this.addResources(StringKit.split(statics, ','));
 			}
 			
-			if (StringKit.isNotBlank(basePackage) && StringKit.isBlank(basePackage)) {
+			if (StringKit.isNotBlank(basePackage)) {
 				this.setBasePackage(basePackage);
 			}
 			isInit = true;
 		}
 	}
-
-	public String[] getRoutePackages() {
-		String[] routeArr = new String[routePackages.size()];
-		return routePackages.toArray(routeArr);
+	
+	public void addRoutePkgs(String... pkgs){
+		packages.add(Const.ROUTE_PKGS, pkgs);
 	}
-
-	public void addRoutePackages(String... packages) {
-		if (null != packages && packages.length > 0) {
-			routePackages.addAll(Arrays.asList(packages));
-		}
+	
+	public void addIocPkgs(String... pkgs){
+		packages.add(Const.IOC_PKGS, pkgs);
 	}
-
+	
 	public String getBasePackage() {
-		return basePackage;
+		return packages.first(Const.BASE_PKG);
 	}
 
-	public void setBasePackage(String basePackage) {
-		this.basePackage = basePackage;
-		this.addConfigPackages(basePackage + ".config");
-		this.addIocPackages(basePackage + ".service.*");
-		this.addRoutePackages(basePackage + ".controller");
-		this.setInterceptorPackage(basePackage + ".interceptor");
+	public String[] getConfigPkgs(){
+		return packages.array(Const.CONFIG_PKGS);
 	}
-
-	public String[] getIocPackages() {
-		String[] iocArr = new String[iocPackages.size()];
-		return iocPackages.toArray(iocArr);
+	
+	public String[] getIocPkgs(){
+		return packages.array(Const.IOC_PKGS);
 	}
-
-	public String[] getConfigPackages() {
-		String[] configArr = new String[configPackages.size()];
-		return configPackages.toArray(configArr);
+	
+	public String[] getRoutePkgs(){
+		return packages.array(Const.ROUTE_PKGS);
 	}
-
-	public void addIocPackages(String... packages) {
-		if (null != packages && packages.length > 0) {
-			iocPackages.addAll(Arrays.asList(packages));
-		}
+	
+	public Set<String> getResources(){
+		return packages.values(Const.RESOURCE_PKGS);
 	}
-
-	public void addConfigPackages(String... packages) {
-		if (null != packages && packages.length > 0) {
-			configPackages.addAll(Arrays.asList(packages));
-		}
+	
+	public String getInterceptorPkg(){
+		return packages.first(Const.INTERCEPTOR_PKG);
 	}
-
-	public String getInterceptorPackage() {
-		return interceptorPackage;
-	}
-
-	public void setInterceptorPackage(String interceptorPackage) {
-		this.interceptorPackage = interceptorPackage;
-	}
-
-	public Set<String> getStaticFolders() {
-		return staticFolders;
-	}
-
-	public void addResources(String... resources) {
-		Assert.notNull(resources);
-		for(String resource : resources){
-			LOGGER.debug("Add Resource: {}", resource);
-		}
-		staticFolders.addAll(Arrays.asList(resources));
-	}
-
-	public String getWebRoot() {
-		return webRoot;
-	}
-
-	public void setWebRoot(String webRoot) {
-		this.webRoot = webRoot;
-	}
-
+	
 	public boolean isDev() {
 		return isDev;
 	}
-
-	public void setDev(boolean isDev) {
-		this.isDev = isDev;
-	}
-
+	
 	public String getEncoding() {
 		return encoding;
-	}
-
-	public void setEncoding(String encoding) {
-		this.encoding = encoding;
 	}
 
 	public boolean isInit(){
 		return this.isInit;
 	}
 
+	public String webRoot() {
+		return this.webRoot;
+	}
+	
 	public Class<?> getApplicationClass() {
 		return applicationClass;
 	}
-
+	
 	public void setApplicationClass(Class<?> applicationClass) {
 		this.applicationClass = applicationClass;
+	}
+	
+	public void  setInterceptorPackage(String interceptorPkg) {
+		packages.put(Const.INTERCEPTOR_PKG, interceptorPkg);
+	}
+	
+	public void setBasePackage(String basePackage) {
+		Assert.notBlank(basePackage);
+		
+		packages.put(Const.BASE_PKG, basePackage);
+		packages.put(Const.INTERCEPTOR_PKG, basePackage + ".interceptor");
+		
+		packages.add(Const.CONFIG_PKGS, basePackage + ".config");
+		packages.add(Const.IOC_PKGS, basePackage + ".service.*");
+		packages.add(Const.ROUTE_PKGS, basePackage + ".controller");
+	}
+	
+	public void addResources(String... resources) {
+		Assert.notNull(resources);
+		for(String resource : resources){
+			LOGGER.debug("Add Resource: {}", resource);
+		}
+		packages.add(Const.RESOURCE_PKGS, resources);
+	}
+
+	public void setWebRoot(String webRoot) {
+		this.webRoot = webRoot;
+	}
+	
+	public void setDev(boolean isDev) {
+		this.isDev = isDev;
 	}
 	
 }

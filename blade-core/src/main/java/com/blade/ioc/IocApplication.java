@@ -75,11 +75,11 @@ public class IocApplication {
 	 */
 	private List<ClassInfo> loadCondigs() throws Exception {
 		List<ClassInfo> configs = null;
-		String[] configPackages = blade.applicationConfig().getConfigPackages();
-		if (null != configPackages && configPackages.length > 0) {
+		String[] configPkgs = blade.applicationConfig().getConfigPkgs();
+		if (null != configPkgs && configPkgs.length > 0) {
 			configs = new ArrayList<ClassInfo>(10);
-			for (String packageName : configPackages) {
-				Set<ClassInfo> configClasses = classReader.getClassByAnnotation(packageName, Component.class, false);
+			for (int i = 0, len = configPkgs.length; i < len; i++) {
+				Set<ClassInfo> configClasses = classReader.getClassByAnnotation(configPkgs[i], Component.class, false);
 				if (null != configClasses) {
 					for (ClassInfo classInfo : configClasses) {
 						Class<?>[] interfaces = classInfo.getClazz().getInterfaces();
@@ -101,23 +101,23 @@ public class IocApplication {
 	}
 
 	private List<ClassInfo> loadServices() throws Exception {
-		List<ClassInfo> services = null;
-		String[] configPackages = blade.applicationConfig().getIocPackages();
-		if (null != configPackages && configPackages.length > 0) {
-			services = new ArrayList<ClassInfo>(20);
-			for (String packageName : configPackages) {
-				if (StringKit.isBlank(packageName)) {
+		String[] iocPkgs = blade.applicationConfig().getIocPkgs();
+		if (null != iocPkgs && iocPkgs.length > 0) {
+			List<ClassInfo> services = new ArrayList<ClassInfo>(20);
+			for (int i = 0, len = iocPkgs.length; i < len; i++) {
+				String pkgName = iocPkgs[i];
+				if (StringKit.isBlank(pkgName)) {
 					continue;
 				}
 				// Recursive scan
 				boolean recursive = false;
-				if (packageName.endsWith(".*")) {
-					packageName = packageName.substring(0, packageName.length() - 2);
+				if (pkgName.endsWith(".*")) {
+					pkgName = pkgName.substring(0, pkgName.length() - 2);
 					recursive = true;
 				}
 
 				// Scan package all class
-				Set<ClassInfo> iocClasses = classReader.getClass(packageName, recursive);
+				Set<ClassInfo> iocClasses = classReader.getClass(pkgName, recursive);
 				for (ClassInfo classInfo : iocClasses) {
 					Class<?> clazz = classInfo.getClazz();
 					if (!clazz.isInterface() && !Modifier.isAbstract(clazz.getModifiers())) {
@@ -130,28 +130,26 @@ public class IocApplication {
 				}
 			}
 		}
-		return services;
+		return null;
 	}
 
 	private List<ClassInfo> loadControllers() {
-		List<ClassInfo> controllers = null;
-		String[] routePackages = blade.applicationConfig().getRoutePackages();
-		if (null != routePackages && routePackages.length > 0) {
-			controllers = new ArrayList<ClassInfo>();
-			for (String packageName : routePackages) {
+		String[] routePkgs = blade.applicationConfig().getRoutePkgs();
+		if (null != routePkgs && routePkgs.length > 0) {
+			List<ClassInfo> controllers = new ArrayList<ClassInfo>();
+			for(int i=0, len=routePkgs.length; i<len; i++){
 				// Scan all Controoler
-				controllers.addAll(classReader.getClassByAnnotation(packageName, Controller.class, true));
-				controllers.addAll(classReader.getClassByAnnotation(packageName, RestController.class, true));
+				controllers.addAll(classReader.getClassByAnnotation(routePkgs[i], Controller.class, true));
+				controllers.addAll(classReader.getClassByAnnotation(routePkgs[i], RestController.class, true));
 			}
 		}
-		return controllers;
+		return null;
 	}
 
 	private List<ClassInfo> loadInterceptors() {
-		List<ClassInfo> interceptors = null;
-		String interceptorPackage = blade.applicationConfig().getInterceptorPackage();
+		String interceptorPackage = blade.applicationConfig().getInterceptorPkg();
 		if (StringKit.isNotBlank(interceptorPackage)) {
-			interceptors = new ArrayList<ClassInfo>(10);
+			List<ClassInfo> interceptors = new ArrayList<ClassInfo>(10);
 			Set<ClassInfo> intes = classReader.getClassByAnnotation(interceptorPackage, Intercept.class, true);
 			if (null != intes) {
 				for (ClassInfo classInfo : intes) {
@@ -160,10 +158,9 @@ public class IocApplication {
 						interceptors.add(classInfo);
 					}
 				}
-				Collections.sort(interceptors, orderComparator);
 			}
 		}
-		return interceptors;
+		return null;
 	}
 
 	public void initBeans() throws Exception {
@@ -179,49 +176,49 @@ public class IocApplication {
 
 		// 1. init service
 		if (null != services) {
-			for (ClassInfo classInfo : services) {
-				ioc.addBean(classInfo.getClazz());
+			for(int i=0, len=services.size(); i<len; i++){
+				ioc.addBean(services.get(i).getClazz());
 			}
 		}
 
 		// 2. init configs
 		if (null != configs) {
-			for (ClassInfo classInfo : configs) {
-				Object bean = ioc.addBean(classInfo.getClazz());
+			for(int i=0, len=configs.size(); i<len; i++){
+				Object bean = ioc.addBean(configs.get(i).getClazz());
 				BaseConfig baseConfig = (BaseConfig) bean;
 				baseConfig.config(blade.applicationConfig());
 			}
 		}
-		
+
 		// 3. init controller
 		if (null != controllers) {
-			for (ClassInfo classInfo : controllers) {
-				ioc.addBean(classInfo.getClazz());
-				routeBuilder.addRouter(classInfo.getClazz());
+			for(int i=0, len=controllers.size(); i<len; i++){
+				ioc.addBean(controllers.get(i).getClazz());
+				routeBuilder.addRouter(controllers.get(i).getClazz());
 			}
 		}
 
 		// 4. init interceptor
 		if (null != inteceptors) {
-			for (ClassInfo classInfo : inteceptors) {
-				ioc.addBean(classInfo.getClazz());
-				routeBuilder.addInterceptor(classInfo.getClazz());
+			for(int i=0, len=inteceptors.size(); i<len; i++){
+				ioc.addBean(inteceptors.get(i).getClazz());
+				routeBuilder.addInterceptor(inteceptors.get(i).getClazz());
 			}
 		}
-		
+
 		LOGGER.info("Add Object: {}", ioc.getBeans());
-		
+
 		// injection
 		List<BeanDefine> beanDefines = ioc.getBeanDefines();
 		if (null != beanDefines) {
-			for (BeanDefine beanDefine : beanDefines) {
-				IocKit.injection(ioc, beanDefine);
+			for(int i=0, len=beanDefines.size(); i<len; i++){
+				IocKit.injection(ioc, beanDefines.get(i));
 			}
 		}
 	}
-
+	
 	public static List<Object> getAopInterceptors() {
 		return aopInterceptors;
 	}
-
+	
 }

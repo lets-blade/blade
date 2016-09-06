@@ -231,34 +231,28 @@ public final class Blade {
 	 * @return return blade
 	 */
 	public Blade addRoutePackages(String... packages) {
-		Assert.notNull(packages);
-		applicationConfig.addRoutePackages(packages);
+		applicationConfig.addRoutePkgs(packages);
 		return this;
 	}
 
 	/**
+	 * set base package
 	 * 
 	 * @param basePackage
 	 * @return
 	 */
 	public Blade basePackage(String basePackage) {
-		Assert.notBlank(basePackage);
 		applicationConfig.setBasePackage(basePackage);
-		applicationConfig.addIocPackages(basePackage + ".service.*");
-		applicationConfig.addRoutePackages(basePackage + ".controller");
-		applicationConfig.setInterceptorPackage(basePackage + ".interceptor");
 		return this;
 	}
 
 	/**
 	 * Setting the path where the interceptor, e.g:com.bladejava.interceptor
 	 * 
-	 * @param packageName
-	 *            interceptor packagename
+	 * @param packageName	interceptor packagename
 	 * @return return blade
 	 */
 	public Blade interceptor(String packageName) {
-		Assert.notBlank(packageName);
 		applicationConfig.setInterceptorPackage(packageName);
 		return this;
 	}
@@ -272,8 +266,7 @@ public final class Blade {
 	 * @return return blade
 	 */
 	public Blade ioc(String... packages) {
-		Assert.notNull(packages);
-		applicationConfig.addIocPackages(packages);
+		applicationConfig.addIocPkgs(packages);
 		return this;
 	}
 
@@ -626,7 +619,7 @@ public final class Blade {
 	 * @return Return blade web root path
 	 */
 	public String webRoot() {
-		return applicationConfig.getWebRoot();
+		return applicationConfig.webRoot();
 	}
 
 	/**
@@ -636,13 +629,6 @@ public final class Blade {
 		return applicationConfig.isDev();
 	}
 	
-	/**
-	 * @return Return static resource directory
-	 */
-	public Set<String> staticFolder() {
-		return applicationConfig.getStaticFolders();
-	}
-
 	/**
 	 * @return Return bootstrap object
 	 */

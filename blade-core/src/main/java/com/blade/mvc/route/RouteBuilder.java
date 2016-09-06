@@ -15,13 +15,14 @@
  */
 package com.blade.mvc.route;
 
+import static com.blade.Blade.$;
+
 import java.lang.reflect.Method;
 import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.blade.Blade;
 import com.blade.context.DynamicContext;
 import com.blade.kit.CollectionKit;
 import com.blade.kit.StringKit;
@@ -36,7 +37,6 @@ import com.blade.mvc.http.HttpMethod;
 import com.blade.mvc.http.Request;
 import com.blade.mvc.http.Response;
 import com.blade.mvc.interceptor.Interceptor;
-
 /**
  * Route builder
  *
@@ -68,8 +68,8 @@ public class RouteBuilder {
      */
     public void building() {
     	
-    	this.routePackages = Blade.$().applicationConfig().getRoutePackages();
-    	this.interceptorPackage = Blade.$().applicationConfig().getInterceptorPackage();
+    	this.routePackages = $().applicationConfig().getRoutePkgs();
+    	this.interceptorPackage = $().applicationConfig().getInterceptorPkg();
     	
     	// Route
     	if(null != routePackages && routePackages.length > 0){

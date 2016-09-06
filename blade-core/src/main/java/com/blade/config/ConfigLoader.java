@@ -57,7 +57,7 @@ public class ConfigLoader {
 	
 	@SuppressWarnings("unchecked")
 	public void loadConfig() {
-		String[] configPackages = $().applicationConfig().getConfigPackages();
+		String[] configPackages = $().applicationConfig().getConfigPkgs();
 		if (null != configPackages && configPackages.length > 0) {
 			// Scan package all class
 			try {

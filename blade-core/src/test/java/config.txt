@@ -1,0 +1,31 @@
+# this is config struct
+
+app
+	base-package
+	ioc
+	mvc
+		view
+			404
+			500
+		statics
+	http
+		encoding
+		cached
+		xss
+server
+	port
+	timeout
+
+	
+=> to properties
+
+app.base-package
+app.ioc
+app.mvc.view.404
+app.mvc.view.500
+app.mvc.statics
+app.http.encoding
+app.http.cached
+app.http.xss
+server.port
+server.timeout
