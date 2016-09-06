@@ -206,8 +206,10 @@ public class IocApplication {
 			}
 		}
 
-		LOGGER.info("Add Object: {}", ioc.getBeans());
-
+		if(null != ioc.getBeans() && !ioc.getBeans().isEmpty()){
+			LOGGER.info("Add Object: {}", ioc.getBeans());
+		}
+		
 		// injection
 		List<BeanDefine> beanDefines = ioc.getBeanDefines();
 		if (null != beanDefines) {
