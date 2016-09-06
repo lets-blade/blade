@@ -3,15 +3,15 @@
 app
 	base-package
 	ioc
-	mvc
-		view
-			404
-			500
-		statics
-	http
-		encoding
-		cached
-		xss
+mvc
+	view
+		404
+		500
+	statics
+http
+	encoding
+	cached
+	xss
 server
 	port
 	timeout
@@ -21,11 +21,14 @@ server
 
 app.base-package
 app.ioc
-app.mvc.view.404
-app.mvc.view.500
-app.mvc.statics
-app.http.encoding
-app.http.cached
-app.http.xss
+
+mvc.view.404
+mvc.view.500
+mvc.statics
+
+http.encoding
+http.cached
+http.xss
+
 server.port
 server.timeout
