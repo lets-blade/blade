@@ -26,4 +26,13 @@ public final class BannerStarter {
 	public static void banner(Banner banner){
 		BANNER = banner;
 	}
+	
+	public static void banner(final String text){
+		BANNER = new Banner() {
+			@Override
+			public String startText() {
+				return text;
+			}
+		};
+	}
 }
