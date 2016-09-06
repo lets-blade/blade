@@ -194,8 +194,9 @@ public class BannerFont {
 				if ((width(newLine) > splitWidth) && (line.length() > 0)) {
 					result = addLine(result, line + "\r\n", leftJustify, splitWidth);
 					line = append("", w);
-				} else
+				} else{
 					line = newLine;
+				}
 			}
 			if (line.length() > 0){
 				result = addLine(result, line + "\r\n", leftJustify, splitWidth);
