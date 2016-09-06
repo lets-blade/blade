@@ -24,7 +24,7 @@ import java.io.Writer;
 import javax.servlet.http.HttpServletResponse;
 
 import com.blade.Blade;
-import com.blade.context.WebApplicationContext;
+import com.blade.context.WebContextHolder;
 import com.blade.kit.StreamKit;
 import com.blade.mvc.view.ModelAndView;
 
@@ -49,7 +49,7 @@ public final class DefaultEngine implements TemplateEngine {
 	@Override
 	public void render(ModelAndView modelAndView, Writer writer) throws TemplateException {
 		try {
-			HttpServletResponse servletResponse = WebApplicationContext.response().raw();
+			HttpServletResponse servletResponse = WebContextHolder.response().raw();
 			servletResponse.setContentType("text/html;charset=utf-8");
 			String realPath = new File(Blade.$().webRoot() + File.separatorChar + templatePath + File.separatorChar + modelAndView.getView()).getPath();
 			String content = StreamKit.readText(new BufferedReader(new FileReader(new File(realPath))));

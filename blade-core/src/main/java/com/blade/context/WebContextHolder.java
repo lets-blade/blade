@@ -27,12 +27,12 @@ import com.blade.mvc.http.wrapper.Session;
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since	1.6.6
  */
-public class WebApplicationContext {
+public class WebContextHolder {
 	
 	/**
 	 * BladeWebContext object for the current thread
 	 */
-    private static ThreadLocal<WebApplicationContext> ctx = new ThreadLocal<WebApplicationContext>();
+    private static ThreadLocal<WebContextHolder> ctx = new ThreadLocal<WebContextHolder>();
     
     /**
      * ServletContext Object that is created when the application is initialized
@@ -49,20 +49,20 @@ public class WebApplicationContext {
      */
     private Response response;
     
-    private WebApplicationContext(){}
+    private WebContextHolder(){}
     
-    public static WebApplicationContext me(){
+    public static WebContextHolder me(){
     	return ctx.get();
     }
     
     public static void init(ServletContext context) {
-    	WebApplicationContext bladeWebContext = new WebApplicationContext();
+    	WebContextHolder bladeWebContext = new WebContextHolder();
     	bladeWebContext.context = context;
     	ctx.set(bladeWebContext);
     }
     
     public static void init(ServletContext context, Request request, Response response) {
-    	WebApplicationContext bladeWebContext = new WebApplicationContext();
+    	WebContextHolder bladeWebContext = new WebContextHolder();
     	bladeWebContext.context = context;
     	bladeWebContext.request = request;
     	bladeWebContext.response = response;

@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
 
 import com.blade.Blade;
 import com.blade.Const;
-import com.blade.context.WebApplicationContext;
+import com.blade.context.WebContextHolder;
 import com.blade.exception.BladeException;
 import com.blade.ioc.Ioc;
 import com.blade.kit.DispatchKit;
@@ -101,7 +101,7 @@ public class DispatcherHandler {
         	LOGGER.info("Request : {}\t{}", method, uri);
         	
         	Request request = new ServletRequest(httpRequest);
-         	WebApplicationContext.init(servletContext, request, response);
+         	WebContextHolder.init(servletContext, request, response);
 			Route route = routeMatcher.getRoute(method, uri);
 			if (null != route) {
 				request.setRoute(route);
@@ -195,7 +195,7 @@ public class DispatcherHandler {
 		request.initPathParams(route.getPath());
 		
 		// Init context
-		WebApplicationContext.init(servletContext, request, response);
+		WebContextHolder.init(servletContext, request, response);
 		if(route.getTargetType() == RouteHandler.class){
 			RouteHandler routeHandler = (RouteHandler) target;
 			routeHandler.handle(request, response);
