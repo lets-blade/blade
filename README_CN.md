@@ -63,7 +63,7 @@ compile 'com.bladejava:blade-embed-jetty:0.0.5'
 public static void main(String[] args) {
 	$().get("/", (request, response) -> {
 		response.html("<h1>Hello blade!</h1>");
-	}).start(Application.class);
+	}).start();
 }
 ```
 
@@ -96,7 +96,7 @@ public static void main(String[] args) {
 		response.text(msg);
 	});
 	
-	$().start(Application.class);
+	$().start();
 }
 ```
 
@@ -107,7 +107,7 @@ public static void main(String[] args) {
 	$().get("/user", (request, response) -> {
 		Integer uid = request.queryAsInt("uid");
 		response.text("uid : " + uid);
-	}).start(Application.class);
+	}).start();
 }
 ```
 
@@ -147,7 +147,7 @@ POST	/upload_img			UploadRoute.upload_img
 public static void main(String[] args) {
 	$().before("/.*", (request, response) -> {
 		System.out.println("before...");
-	}).start(Application.class);
+	}).start();
 }
 ```
 
