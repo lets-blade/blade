@@ -546,13 +546,6 @@ public final class Blade {
 	
 	/**
 	 * start web server
-	 */
-	public void start() {
-		this.start(null);
-	}
-	
-	/**
-	 * start web server
 	 * 
 	 * @param applicationClass	your app root package starter
 	 */

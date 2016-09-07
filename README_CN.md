@@ -18,11 +18,9 @@ Blade 是一款轻量级的MVC框架, 重新定义JavaWeb开发,它拥有简洁�
 
 * [x] 轻量级, 代码简洁,结构清晰,更容易开发
 * [x] 模块化(你可以选择使用哪些组件)
-* [x] 插件扩展机制
 * [x] Restful风格的路由接口
-* [x] 多种配置文件支持(当前支持properties、json和硬编码)
 * [x] 多种模板引擎支持
-* [x] 更方便的启动和部署
+* [x] 支持以jar文件发布运行
 * [x] 支持JDK1.6或者更高版本(JDK8写起来更爽)
 
 ## 概述
@@ -63,7 +61,7 @@ compile 'com.bladejava:blade-embed-jetty:0.0.5'
 public static void main(String[] args) {
 	$().get("/", (request, response) -> {
 		response.html("<h1>Hello blade!</h1>");
-	}).start();
+	}).start(Application.class);
 }
 ```
 
@@ -96,7 +94,7 @@ public static void main(String[] args) {
 		response.text(msg);
 	});
 	
-	$().start();
+	$().start(Application.class);
 }
 ```
 
@@ -107,7 +105,7 @@ public static void main(String[] args) {
 	$().get("/user", (request, response) -> {
 		Integer uid = request.queryAsInt("uid");
 		response.text("uid : " + uid);
-	}).start();
+	}).start(Application.class);
 }
 ```
 
@@ -147,7 +145,7 @@ POST	/upload_img			UploadRoute.upload_img
 public static void main(String[] args) {
 	$().before("/.*", (request, response) -> {
 		System.out.println("before...");
-	}).start();
+	}).start(Application.class);
 }
 ```
 

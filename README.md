@@ -18,11 +18,10 @@ If you like it, please [star](https://github.com/biezhi/blade/stargazers) / [for
 
 * [x] Lightweight: the code is simple and the structure is clear
 * [x] Modular (you can choose which components to use)
-* [x] Supports plug-in extension mechanism
 * [x] RESTful style routing interface
-* [x] Supports multiple configuration files (currently properties, json and coding)
-* [x] Embedded jetty server and template engine support
-* [x] Supports JDK 1.6 and up
+* [x] Template engine support
+* [x] Run with jar file
+* [x] Supports JDK 1.6 and up (java8 is cool)
 
 ## Overview
 
@@ -59,7 +58,7 @@ Create `Main` method like this：
 public static void main(String[] args) {
 	$().get("/", (request, response) -> {
 		response.html("<h1>Hello blade!</h1>");
-	}).start();
+	}).start(Application.class);
 }
 ```
 
@@ -92,7 +91,7 @@ public static void main(String[] args) {
 		response.text(msg);
 	});
 	
-	$().start();
+	$().start(Application.class);
 }
 ```
 
@@ -103,7 +102,7 @@ public static void main(String[] args) {
 	$().get("/user", (request, response) -> {
 		Integer uid = request.queryAsInt("uid");
 		response.text("uid : " + uid);
-	}).start();
+	}).start(Application.class);
 }
 ```
 
@@ -143,7 +142,7 @@ POST	/upload_img			UploadRoute.upload_img
 public static void main(String[] args) {
 	$().before("/.*", (request, response) -> {
 		System.out.println("before...");
-	}).start();
+	}).start(Application.class);
 }
 ```
 
