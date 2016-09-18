@@ -13,28 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.blade.embedd;
+package com.blade.mvc.annotation;
 
-import com.blade.exception.EmbedServerException;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * Jetty Server
- *
- * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
- * @since	1.6.6
+ * Request Path Parameter Annotation
+ * 
+ * @author <a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
+ * @since 1.6.6
  */
-public interface EmbedServer {
+@Target(ElementType.PARAMETER)
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+public @interface PathParam {
 	
-	void startup(int port) throws EmbedServerException;
-	
-	void startup(int port, String contextPath) throws EmbedServerException;
-	
-	void startup(int port, String contextPath, String webRoot) throws EmbedServerException;
-	
-	void join() throws EmbedServerException;
-	
-	void shutdown() throws EmbedServerException;
-	
-	void setWebRoot(String webRoot);
+	String value() default "";
 	
 }

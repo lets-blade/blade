@@ -56,6 +56,15 @@
 </dependency>
 ```
 
+## [blade-websocket-jetty](http://search.maven.org/#search%7Cga%7C1%7Cblade-websocket-jetty)
+```xml
+<dependency>
+    <groupId>com.bladejava</groupId>
+    <artifactId>blade-websocket-jetty</artifactId>
+    <version>0.0.1</version>
+</dependency>
+```
+
 ## [blade-cache](http://search.maven.org/#search%7Cga%7C1%7Cblade-cache)
 ```xml
 <dependency>

@@ -13,11 +13,7 @@
 	<version>${blade-embed-jetty.version}</version>
 	<name>blade-embed-jetty</name>
 	<url>http://maven.apache.org</url>
-	
-	<properties>
-		<jetty.version>9.2.12.v20150709</jetty.version>
-	</properties>
-	
+		
 	<dependencies>
 
 		<dependency>

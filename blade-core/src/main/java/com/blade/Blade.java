@@ -549,7 +549,13 @@ public final class Blade {
 	 * 
 	 * @param applicationClass	your app root package starter
 	 */
-	public void start(Class<?> applicationClass) {
+	public EmbedServer start(Class<?> applicationClass) {
+		startNoJoin(applicationClass);
+		embedServer.join();
+		return embedServer;
+	}
+	
+	public EmbedServer startNoJoin(Class<?> applicationClass) {
 		
 		this.loadAppConf(Const.APP_PROPERTIES);
 	    
@@ -578,8 +584,9 @@ public final class Blade {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		return embedServer;
 	}
-	
+
 	/**
 	 * @return	Return EmbedServer
 	 */

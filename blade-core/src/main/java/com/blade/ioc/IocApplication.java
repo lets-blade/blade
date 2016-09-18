@@ -18,6 +18,7 @@ package com.blade.ioc;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -60,7 +61,7 @@ public class IocApplication {
 	private ClassReader classReader = null;
 	private Blade blade;
 	private OrderComparator orderComparator;
-
+	
 	public IocApplication() {
 		this.blade = Blade.$();
 		this.classReader = DynamicContext.getClassReader();
@@ -182,13 +183,14 @@ public class IocApplication {
 				ioc.addBean(services.get(i).getClazz());
 			}
 		}
+		
+		Set<BaseConfig> baseConfigs = new HashSet<BaseConfig>();
 
 		// 2. init configs
 		if (null != configs) {
 			for(int i=0, len=configs.size(); i<len; i++){
 				Object bean = ioc.addBean(configs.get(i).getClazz());
-				BaseConfig baseConfig = (BaseConfig) bean;
-				baseConfig.config(blade.applicationConfig());
+				baseConfigs.add( (BaseConfig) bean);
 			}
 		}
 
@@ -218,6 +220,11 @@ public class IocApplication {
 			for(int i=0, len=beanDefines.size(); i<len; i++){
 				IocKit.injection(ioc, beanDefines.get(i));
 			}
+		}
+		
+		// init configs
+		for(BaseConfig baseConfig : baseConfigs){
+			baseConfig.config(blade.applicationConfig());
 		}
 	}
 	

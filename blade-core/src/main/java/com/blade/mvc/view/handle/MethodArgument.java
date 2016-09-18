@@ -22,8 +22,8 @@ import com.blade.exception.BladeException;
 import com.blade.exception.NotFoundException;
 import com.blade.kit.AsmKit;
 import com.blade.kit.StringKit;
-import com.blade.mvc.annotation.PathVariable;
-import com.blade.mvc.annotation.RequestParam;
+import com.blade.mvc.annotation.PathParam;
+import com.blade.mvc.annotation.QueryParam;
 import com.blade.mvc.http.Request;
 import com.blade.mvc.http.Response;
 import com.blade.mvc.multipart.FileItem;
@@ -67,9 +67,9 @@ public final class MethodArgument {
 				Annotation annotation = paramterAnnotations[i][0];
 				
 				if(null != annotation){
-					if(annotation.annotationType().equals(RequestParam.class)){
-						RequestParam requestParam = (RequestParam) annotation;
-						String paramName = requestParam.value();
+					if(annotation.annotationType().equals(QueryParam.class)){
+						QueryParam queryParam = (QueryParam) annotation;
+						String paramName = queryParam.value();
 						String val = request.query(paramName);
 						
 						if (StringKit.isBlank(paramName)) {
@@ -77,15 +77,15 @@ public final class MethodArgument {
 							val = request.query(paramName);
 						}
 						if (StringKit.isBlank(val)) {
-							val = requestParam.defaultValue();
+							val = queryParam.defaultValue();
 						}
 						args[i] = getRequestParam(argType, val);
 						continue;
 					}
 					
-					if(annotation.annotationType().equals(PathVariable.class)){
-						PathVariable pathVariable = (PathVariable) annotation;
-						String paramName = pathVariable.value();
+					if(annotation.annotationType().equals(PathParam.class)){
+						PathParam pathParam = (PathParam) annotation;
+						String paramName = pathParam.value();
 						String val = request.param(paramName);
 						if (StringKit.isBlank(paramName)) {
 							paramName = paramaterNames[i];
