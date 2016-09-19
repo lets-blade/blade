@@ -19,8 +19,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.blade.kit.Assert;
-import com.blade.mvc.view.parser.DefaultJSONParser;
-import com.blade.mvc.view.parser.JSONParser;
+import com.blade.mvc.view.resolve.DefaultJSONParser;
+import com.blade.mvc.view.resolve.JSONParser;
 import com.blade.mvc.view.template.DefaultEngine;
 import com.blade.mvc.view.template.TemplateEngine;
 

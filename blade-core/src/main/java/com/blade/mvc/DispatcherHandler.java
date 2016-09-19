@@ -44,7 +44,7 @@ import com.blade.mvc.route.RouteMatcher;
 import com.blade.mvc.route.Routers;
 import com.blade.mvc.view.ModelAndView;
 import com.blade.mvc.view.ViewSettings;
-import com.blade.mvc.view.handle.RouteViewHandler;
+import com.blade.mvc.view.resolve.RouteViewResolve;
 import com.blade.mvc.view.template.TemplateException;
 
 /**
@@ -67,7 +67,7 @@ public class DispatcherHandler {
 	
 	private StaticFileFilter staticFileFilter;
 	
-	private RouteViewHandler routeViewHandler;
+	private RouteViewResolve routeViewHandler;
 	
 	public DispatcherHandler(ServletContext servletContext, Routers routers) {
 		this.servletContext = servletContext;
@@ -75,7 +75,7 @@ public class DispatcherHandler {
 		this.ioc = blade.ioc();
 		this.routeMatcher = new RouteMatcher(routers);
 		this.staticFileFilter = new StaticFileFilter(blade.applicationConfig().getResources());
-		this.routeViewHandler = new RouteViewHandler(this.ioc);
+		this.routeViewHandler = new RouteViewResolve(this.ioc);
 	}
 	
 	public void handle(HttpServletRequest httpRequest, HttpServletResponse httpResponse){

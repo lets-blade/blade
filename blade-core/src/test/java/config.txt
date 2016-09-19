@@ -28,7 +28,6 @@ mvc.statics
 
 http.encoding
 http.cached
-http.xss
 
 server.port
 server.timeout

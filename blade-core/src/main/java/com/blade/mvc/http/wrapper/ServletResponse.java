@@ -35,7 +35,7 @@ import com.blade.mvc.http.Request;
 import com.blade.mvc.http.Response;
 import com.blade.mvc.view.ModelAndView;
 import com.blade.mvc.view.ViewSettings;
-import com.blade.mvc.view.parser.JSONParser;
+import com.blade.mvc.view.resolve.JSONParser;
 import com.blade.mvc.view.template.TemplateEngine;
 import com.blade.mvc.view.template.TemplateException;
 
