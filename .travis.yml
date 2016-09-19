@@ -3,6 +3,6 @@ jdk:
   - oraclejdk8
   - oraclejdk7
   - openjdk6
-after_success:
-  - mvn cobertura:cobertura coveralls:report
+script:
+  - mvn install -Dmaven.test.skip=true
 
