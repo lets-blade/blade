@@ -38,7 +38,7 @@ Grab via `Maven`：
 <dependency>
 	<groupId>com.bladejava</groupId>
 	<artifactId>blade-core</artifactId>
-	<version>1.6.6</version>
+	<version>1.6.7-alpha</version>
 </dependency>
 <dependency>
 	<groupId>com.bladejava</groupId>
@@ -48,7 +48,7 @@ Grab via `Maven`：
 ```
 or `Gradle`:
 ```sh
-compile 'com.bladejava:blade-core:1.6.6'
+compile 'com.bladejava:blade-core:1.6.7-alpha'
 compile 'com.bladejava:blade-embed-jetty:0.0.5'
 ```
 
@@ -109,16 +109,10 @@ public static void main(String[] args) {
 ## Upload File
 
 ```java
-public void upload_img(Request request, Response response){
-	
-	FileItem[] fileItems = request.files();
-	if(null != fileItems && fileItems.length > 0){
-		
-		FileItem fileItem = fileItems[0];
+public void upload_img(@MultipartParam FileItem fileItem){
+	if(null != fileItem){
 		File file = fileItem.getFile();
-		
 		String fileRealPath = "your upload file path!";
-		
 		nioTransferCopy(file, fileRealPath);
 	}
 }
