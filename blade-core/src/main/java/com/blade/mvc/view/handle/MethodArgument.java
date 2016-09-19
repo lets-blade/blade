@@ -157,15 +157,15 @@ public final class MethodArgument {
 		Object result = null;
 		if (parameterType.equals(String.class)) {
 			result = val;
-		} else if (parameterType.equals(Integer.class)) {
+		} else if (parameterType.equals(Integer.class) && StringKit.isNotBlank(val)) {
 			result = Integer.parseInt(val);
-		} else if (parameterType.equals(int.class)) {
+		} else if (parameterType.equals(int.class) && StringKit.isNotBlank(val)) {
 			if(StringKit.isBlank(val)){
 				result = 0;
 			} else {
 				result = Integer.parseInt(val);
 			}
-		} else if (parameterType.equals(Long.class)) {
+		} else if (parameterType.equals(Long.class) && StringKit.isNotBlank(val)) {
 			result = Long.parseLong(val);
 		} else if (parameterType.equals(long.class)) {
 			if(StringKit.isBlank(val)){
