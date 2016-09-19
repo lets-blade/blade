@@ -38,7 +38,7 @@ public class FileItem {
 	private File file;
 
 	private Map<String,String> headers;
-
+	
 	public FileItem(String fieldName, String fileName, String contentType, long contentLength, File file, Map<String,String> headers) {
 		
 		this.fileName = fileName;
@@ -51,27 +51,28 @@ public class FileItem {
 		}
 	}
 
-	public String getName() {
+	
+	public String name() {
 		return name;
 	}
 
-	public String getFileName() {
+	public String fileName() {
 		return fileName;
 	}
 
-	public String getContentType() {
+	public String contentType() {
 		return contentType;
 	}
 
-	public long getContentLength() {
+	public long contentLength() {
 		return contentLength;
 	}
 
-	public File getFile() {
+	public File file() {
 		return file;
 	}
 
-	public Map<String, String> getHeaders() {
+	public Map<String, String> headers() {
 		return headers;
 	}
 

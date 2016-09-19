@@ -73,8 +73,8 @@ public class ServletRequest implements Request {
 	
 	// query parameter eg: /user?name=jack
 	private Map<String,String> queryParams = null;
-
-	private List<FileItem> files = null;
+	
+	private Map<String, FileItem> fileItems = null;
 	
 	private Session session = null;
 	
@@ -84,7 +84,7 @@ public class ServletRequest implements Request {
 		this.request = request;
 		this.pathParams = new HashMap<String,String>(8);
 		this.queryParams = new HashMap<String,String>(16);
-		this.files = new ArrayList<FileItem>(8);
+		this.fileItems = new HashMap<String, FileItem>(8);
 		this.init();
 	}
 	
@@ -99,7 +99,7 @@ public class ServletRequest implements Request {
 				}
 				@Override
 				public void handleFileItem(String name, FileItem fileItem) {
-					files.add(fileItem);
+					fileItems.put(name, fileItem);
 				}
 			});
 		}
@@ -523,13 +523,19 @@ public class ServletRequest implements Request {
 	
 	@Override
 	public FileItem[] files() {
-		FileItem[] fileParts = new FileItem[files.size()];
-		for (int i=0, len=files.size(); i < len; i++) {
-			fileParts[i] = files.get(i);
-		}
-		return fileParts;
+		return this.fileItems.values().toArray(new FileItem[fileItems.size()]);
 	}
-
+	
+	@Override
+	public Map<String, FileItem> fileItems() {
+		return this.fileItems;
+	}
+	
+	@Override
+	public FileItem fileItem(String name) {
+		return this.fileItems.get(name);
+	}
+	
 	@Override
 	public BodyParser body() {
 		return new BodyParser() {

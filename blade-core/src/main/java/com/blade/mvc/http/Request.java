@@ -311,7 +311,12 @@ public interface Request {
 	/**
 	 * @return	Return the requested file list
 	 */
+	@Deprecated
 	FileItem[] files();
+	
+	Map<String, FileItem> fileItems();
+	
+	FileItem fileItem(String name);
 	
 	/**
 	 * @return	Return request body

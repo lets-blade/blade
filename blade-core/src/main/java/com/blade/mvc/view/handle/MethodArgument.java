@@ -17,11 +17,15 @@ package com.blade.mvc.view.handle;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.util.Map;
 
 import com.blade.exception.BladeException;
 import com.blade.exception.NotFoundException;
 import com.blade.kit.AsmKit;
 import com.blade.kit.StringKit;
+import com.blade.mvc.annotation.CookieParam;
+import com.blade.mvc.annotation.HeaderParam;
+import com.blade.mvc.annotation.MultipartParam;
 import com.blade.mvc.annotation.PathParam;
 import com.blade.mvc.annotation.QueryParam;
 import com.blade.mvc.http.Request;
@@ -44,30 +48,31 @@ public final class MethodArgument {
 			for (int i = 0, len = parameters.length; i < len; i++) {
 				
 				Class<?> argType = parameters[i];
-				if (argType.getName().equals(Request.class.getName())) {
+				if (argType == Request.class) {
 					args[i] = request;
 					continue;
 				}
 				
-				if (argType.getName().equals(Response.class.getName())) {
+				if (argType == Response.class) {
 					args[i] = response;
 					continue;
 				}
 
-				if (argType.getName().equals(ModelAndView.class.getName())) {
+				if (argType == ModelAndView.class) {
 					args[i] = new ModelAndView();
 					continue;
 				}
 				
-				if(argType.getName().equals(FileItem.class.getName())){
-					args[i] = new ModelAndView();
+				if (argType == Map.class) {
+					args[i] = request.querys();
 					continue;
 				}
 				
 				Annotation annotation = paramterAnnotations[i][0];
-				
 				if(null != annotation){
-					if(annotation.annotationType().equals(QueryParam.class)){
+					
+					// query param
+					if(annotation.annotationType() == QueryParam.class){
 						QueryParam queryParam = (QueryParam) annotation;
 						String paramName = queryParam.value();
 						String val = request.query(paramName);
@@ -83,7 +88,50 @@ public final class MethodArgument {
 						continue;
 					}
 					
-					if(annotation.annotationType().equals(PathParam.class)){
+					// header param
+					if(annotation.annotationType() == HeaderParam.class){
+						HeaderParam headerParam = (HeaderParam) annotation;
+						String paramName = headerParam.value();
+						String val = request.header(paramName);
+						
+						if (StringKit.isBlank(paramName)) {
+							paramName = paramaterNames[i];
+							val = request.header(paramName);
+						}
+						args[i] = getRequestParam(argType, val);
+						continue;
+					}
+					
+					// cookie param
+					if(annotation.annotationType() == CookieParam.class){
+						CookieParam cookieParam = (CookieParam) annotation;
+						String paramName = cookieParam.value();
+						String val = request.cookie(paramName);
+						
+						if (StringKit.isBlank(paramName)) {
+							paramName = paramaterNames[i];
+							val = request.cookie(paramName);
+						}
+						args[i] = getRequestParam(argType, val);
+						continue;
+					}
+					
+					// form multipart
+					if(annotation.annotationType() == MultipartParam.class && argType == FileItem.class){
+						MultipartParam multipartParam = (MultipartParam) annotation;
+						String paramName = multipartParam.value();
+						FileItem val = request.fileItem(paramName);
+						
+						if (StringKit.isBlank(paramName)) {
+							paramName = paramaterNames[i];
+							val = request.fileItem(paramName);
+						}
+						args[i] = val;
+						continue;
+					}
+					
+					// path param
+					if(annotation.annotationType() == PathParam.class){
 						PathParam pathParam = (PathParam) annotation;
 						String paramName = pathParam.value();
 						String val = request.param(paramName);
