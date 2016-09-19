@@ -47,21 +47,21 @@
 </dependency>
 ```
 
-## [blade-jdbc](http://search.maven.org/#search%7Cga%7C1%7Cblade-jdbc)
-```xml
-<dependency>
-    <groupId>com.bladejava</groupId>
-    <artifactId>blade-jdbc</artifactId>
-    <version>0.1.3-alpha</version>
-</dependency>
-```
-
 ## [blade-websocket-jetty](http://search.maven.org/#search%7Cga%7C1%7Cblade-websocket-jetty)
 ```xml
 <dependency>
     <groupId>com.bladejava</groupId>
     <artifactId>blade-websocket-jetty</artifactId>
     <version>0.0.1</version>
+</dependency>
+```
+
+## [blade-jdbc](http://search.maven.org/#search%7Cga%7C1%7Cblade-jdbc)
+```xml
+<dependency>
+    <groupId>com.bladejava</groupId>
+    <artifactId>blade-jdbc</artifactId>
+    <version>0.1.3-beta</version>
 </dependency>
 ```
 
