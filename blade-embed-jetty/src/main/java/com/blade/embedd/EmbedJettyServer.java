@@ -2,6 +2,15 @@ package com.blade.embedd;
 
 import static com.blade.Blade.$;
 
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Set;
+
+import javax.servlet.DispatcherType;
+import javax.servlet.Filter;
+import javax.servlet.annotation.WebFilter;
+
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.HttpConfiguration;
 import org.eclipse.jetty.server.HttpConnectionFactory;
@@ -15,9 +24,15 @@ import org.eclipse.jetty.webapp.WebAppContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.blade.Blade;
 import com.blade.Const;
+import com.blade.context.DynamicContext;
 import com.blade.exception.EmbedServerException;
+import com.blade.kit.StringKit;
 import com.blade.kit.base.Config;
+import com.blade.kit.resource.ClassInfo;
+import com.blade.kit.resource.ClassReader;
+import com.blade.listener.WebContextListener;
 import com.blade.mvc.DispatcherServlet;
 
 public class EmbedJettyServer implements EmbedServer {
@@ -31,11 +46,14 @@ public class EmbedJettyServer implements EmbedServer {
 	private WebAppContext webAppContext;
 	
 	private Config config = null;
+	
+	private ClassReader classReader = null;
     
 	public EmbedJettyServer() {
 		System.setProperty("org.apache.jasper.compiler.disablejsr199", "true");
 		$().loadAppConf("jetty.properties");
 		config = $().config();
+		classReader = DynamicContext.getClassReader();
 		$().enableServer(true);
 	}
 	
@@ -100,19 +118,48 @@ public class EmbedJettyServer implements EmbedServer {
 	    ServletHolder servletHolder = new ServletHolder(DispatcherServlet.class);
 	    servletHolder.setAsyncSupported(false);
 	    servletHolder.setInitOrder(1);
-	    
+
+	    webAppContext.addEventListener(new WebContextListener());
 	    webAppContext.addServlet(servletHolder, "/");
 	    
-	    HandlerList handlers = new HandlerList();
-	    handlers.setHandlers(new Handler[] { webAppContext, new DefaultHandler() });
-	    server.setHandler(handlers);
-        
 	    try {
+	    	
+		    loadFilters(webAppContext);
+		    
+		    HandlerList handlers = new HandlerList();
+		    handlers.setHandlers(new Handler[] { webAppContext, new DefaultHandler() });
+		    server.setHandler(handlers);
 	    	server.start();
 		    LOGGER.info("Blade Server Listen on 0.0.0.0:{}", this.port);
 		} catch (Exception e) {
 			throw new EmbedServerException(e);
 		}
+	}
+	
+	public List<ClassInfo> loadFilters(WebAppContext webAppContext) throws Exception{
+		String filterPkg = Blade.$().applicationConfig().getFilterPkg();
+		if (StringKit.isNotBlank(filterPkg)) {
+			List<ClassInfo> filters = new ArrayList<ClassInfo>(10);
+			Set<ClassInfo> intes = classReader.getClass(filterPkg, false);
+			if (null != intes) {
+				for (ClassInfo classInfo : intes) {
+					if (null != classInfo.getClazz().getInterfaces()
+							&& classInfo.getClazz().getInterfaces()[0].equals(Filter.class)) {
+						
+						WebFilter webFilter = classInfo.getClazz().getAnnotation(WebFilter.class);
+						if(null != webFilter){
+							String[] pathSpecs = webFilter.value();
+							Class<? extends Filter> filterClazz = (Class<? extends Filter>) classInfo.getClazz();
+							for(String pathSpec : pathSpecs){
+								webAppContext.addFilter(filterClazz, pathSpec, EnumSet.of(DispatcherType.REQUEST));
+							}
+						}
+					}
+				}
+			}
+			return filters;
+		}
+		return null;
 	}
 	
     public void shutdown() throws EmbedServerException {

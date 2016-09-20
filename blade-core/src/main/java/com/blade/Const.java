@@ -50,6 +50,8 @@ public interface Const {
 	String RESOURCE_PKGS = "resouce_packages";
 	String BASE_PKG = "base_package";
 	String INTERCEPTOR_PKG = "interceptor_package";
+	String FILTER_PKG = "filter_package";
+	String LISTENER_PKG = "listener_package";
 	
 	/****************
 	 * blade properties 

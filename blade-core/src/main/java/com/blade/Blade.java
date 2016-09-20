@@ -22,8 +22,6 @@ import java.util.List;
 import java.util.Set;
 
 import com.blade.config.ApplicationConfig;
-import com.blade.config.BaseConfig;
-import com.blade.config.ConfigLoader;
 import com.blade.embedd.EmbedServer;
 import com.blade.exception.EmbedServerException;
 import com.blade.ioc.Ioc;
@@ -83,9 +81,6 @@ public final class Blade {
 
 	// global config
 	private Config config;
-
-	// config loader
-	private ConfigLoader configLoader;
 	
 	// embed server
 	private EmbedServer embedServer;
@@ -95,7 +90,6 @@ public final class Blade {
 		this.applicationConfig = new ApplicationConfig();
 		this.plugins = new HashSet<Class<? extends Plugin>>();
 		this.routeBuilder = new RouteBuilder(this.routers);
-		this.configLoader = new ConfigLoader(this.ioc, this.applicationConfig);
 	}
 
 	static final class BladeHolder {
@@ -167,13 +161,6 @@ public final class Blade {
 	}
 
 	/**
-	 * @return return ConfigLoader
-	 */
-	public ConfigLoader configLoader() {
-		return configLoader;
-	}
-
-	/**
 	 * @return return blade ioc container
 	 */
 	public Ioc ioc() {
@@ -190,7 +177,6 @@ public final class Blade {
 	public Blade container(Ioc ioc) {
 		Assert.notNull(ioc);
 		this.ioc = ioc;
-		this.configLoader.setIoc(ioc);
 		return this;
 	}
 
@@ -495,18 +481,7 @@ public final class Blade {
 		routeBuilder.addInterceptor(interceptor);
 		return this;
 	}
-
-	/**
-	 * add config 
-	 * 
-	 * @param config		config class
-	 * @return				return blade obj
-	 */
-	public Blade addConfig(Class<? extends BaseConfig> config) {
-		configLoader.addConfig(config);
-		return this;
-	}
-
+	
 	/**
 	 * Setting blade web root path
 	 * 

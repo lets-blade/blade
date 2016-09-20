@@ -46,15 +46,15 @@ import com.blade.mvc.route.RouteBuilder;
  * @author <a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since 1.0
  */
-public class IocApplication {
-
+public final class IocApplication {
+	
 	private static final Logger LOGGER = LoggerFactory.getLogger(IocApplication.class);
 
 	/**
 	 * aop interceptor
 	 */
 	private static List<Object> aopInterceptors = new ArrayList<Object>(8);
-
+	
 	/**
 	 * Class to read object, load class
 	 */
@@ -67,7 +67,7 @@ public class IocApplication {
 		this.classReader = DynamicContext.getClassReader();
 		this.orderComparator = new OrderComparator();
 	}
-
+	
 	/**
 	 * load config beans
 	 * 

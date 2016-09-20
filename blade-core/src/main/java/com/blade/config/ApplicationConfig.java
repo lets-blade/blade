@@ -23,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.blade.Const;
+import com.blade.context.DynamicContext;
 import com.blade.kit.Assert;
 import com.blade.kit.StringKit;
 import com.blade.kit.base.Config;
@@ -127,6 +128,14 @@ public class ApplicationConfig {
 		return packages.first(Const.INTERCEPTOR_PKG);
 	}
 	
+	public String getFilterPkg(){
+		return packages.first(Const.FILTER_PKG);
+	}
+	
+	public String getListenerPkg(){
+		return packages.first(Const.LISTENER_PKG);
+	}
+	
 	public boolean isDev() {
 		return isDev;
 	}
@@ -149,6 +158,7 @@ public class ApplicationConfig {
 	
 	public void setApplicationClass(Class<?> applicationClass) {
 		this.applicationClass = applicationClass;
+		DynamicContext.init(applicationClass);
 	}
 	
 	public void  setInterceptorPackage(String interceptorPkg) {
@@ -160,6 +170,8 @@ public class ApplicationConfig {
 		
 		packages.put(Const.BASE_PKG, basePackage);
 		packages.put(Const.INTERCEPTOR_PKG, basePackage + ".interceptor");
+		packages.put(Const.FILTER_PKG, basePackage + ".filter");
+		packages.put(Const.LISTENER_PKG, basePackage + ".listener");
 		
 		packages.add(Const.CONFIG_PKGS, basePackage + ".config");
 		packages.add(Const.IOC_PKGS, basePackage + ".service.*");
