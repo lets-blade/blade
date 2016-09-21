@@ -17,9 +17,13 @@ package com.blade;
 
 import java.io.InputStream;
 import java.text.ParseException;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+
+import javax.servlet.Filter;
 
 import com.blade.config.ApplicationConfig;
 import com.blade.embedd.EmbedServer;
@@ -68,12 +72,15 @@ public final class Blade {
 	
 	// default context path
 	private String contextPath = Const.DEFAULT_CONTEXTPATH;
-
+	
 	// enableServer
 	private Boolean enableServer = false;
-
+	
 	// plugins
 	private Set<Class<? extends Plugin>> plugins;
+	
+	// filters
+	private Map<Class<? extends Filter>, String[]> filters = new HashMap<Class<? extends Filter>, String[]>(8);
 
 	// global config
 	private Config config;
@@ -91,7 +98,7 @@ public final class Blade {
 	static final class BladeHolder {
 		private static final Blade $ = new Blade();
 	}
-
+	
 	/**
 	 * @return Single case method returns Blade object
 	 */
@@ -201,6 +208,7 @@ public final class Blade {
 	 * @return return blade
 	 */
 	public Blade addRoutePackage(String packageName) {
+		Assert.notBlank(packageName);
 		return this.addRoutePackages(packageName);
 	}
 
@@ -213,6 +221,7 @@ public final class Blade {
 	 * @return return blade
 	 */
 	public Blade addRoutePackages(String... packages) {
+		Assert.notNull(packages);
 		applicationConfig.addRoutePkgs(packages);
 		return this;
 	}
@@ -224,6 +233,7 @@ public final class Blade {
 	 * @return
 	 */
 	public Blade basePackage(String basePackage) {
+		Assert.notBlank(basePackage);
 		applicationConfig.setBasePackage(basePackage);
 		return this;
 	}
@@ -235,6 +245,7 @@ public final class Blade {
 	 * @return return blade
 	 */
 	public Blade interceptor(String packageName) {
+		Assert.notBlank(packageName);
 		applicationConfig.setInterceptorPackage(packageName);
 		return this;
 	}
@@ -251,7 +262,7 @@ public final class Blade {
 		applicationConfig.addIocPkgs(packages);
 		return this;
 	}
-
+	
 	/**
 	 * Add a route
 	 * 
@@ -268,7 +279,22 @@ public final class Blade {
 		routers.route(path, clazz, method);
 		return this;
 	}
-
+	
+	/**
+	 * regsiter filter
+	 * @param clazz
+	 * @param pathSpec
+	 * @return
+	 */
+	public Blade registerFilter(Class<? extends Filter> clazz, String... pathSpec){
+		filters.put(clazz, pathSpec);
+		return this;
+	}
+	
+	public Map<Class<? extends Filter>, String[]> filters(){
+		return filters;
+	}
+	
 	/**
 	 * Register a functional route
 	 * 
