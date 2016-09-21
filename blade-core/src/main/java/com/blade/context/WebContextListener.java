@@ -81,18 +81,16 @@ public class WebContextListener implements ServletContextListener, HttpSessionLi
 		    LOGGER.info("blade.webroot\t=> {}", webRoot);
 		    
 		    try {
-				if(!blade.isInit()){
-					if(!blade.applicationConfig().isInit()){
-					    blade.loadAppConf(Const.APP_PROPERTIES);
-						blade.applicationConfig().setEnv(blade.config());
-				    }
-					
-					// initialization ioc
-					IocApplication iocApplication = new IocApplication();
-					iocApplication.initBeans();
-					
-					blade.init();
-				}
+				if(!blade.applicationConfig().isInit()){
+				    blade.loadAppConf(Const.APP_PROPERTIES);
+					blade.applicationConfig().setEnv(blade.config());
+			    }
+				
+				// initialization ioc
+				IocApplication iocApplication = new IocApplication();
+				iocApplication.initBeans();
+				
+				blade.init();
 				
 				LOGGER.info("blade.isDev = {}", blade.isDev());
 				
