@@ -1,5 +1,13 @@
 # Blade 更新日志
 
+### v1.6.7
+	1. 支持自定义filter, servlet
+	2. 支持websocket
+	3. 添加启动监听器
+	4. 配置类自动注入
+	5. 增强路由注解功能
+	
+
 ### v1.6.6
     1. 支持内置jetty服务器启动
     2. 支持@JSON和@RestController

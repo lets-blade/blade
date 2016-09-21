@@ -39,20 +39,20 @@ Blade 是一款轻量级的MVC框架, 重新定义JavaWeb开发,它拥有简洁�
 <dependency>
 	<groupId>com.bladejava</groupId>
 	<artifactId>blade-core</artifactId>
-	<version>1.6.7-alpha</version>
+	<version>1.6.7-beta</version>
 </dependency>
 <dependency>
 	<groupId>com.bladejava</groupId>
 	<artifactId>blade-embed-jetty</artifactId>
-	<version>0.0.5</version>
+	<version>0.0.6</version>
 </dependency>
 ```
 
 或者  `Gradle`:
 
 ```sh
-compile 'com.bladejava:blade-core:1.6.7-alpha'
-compile 'com.bladejava:blade-embed-jetty:0.0.5'
+compile 'com.bladejava:blade-core:1.6.7-beta'
+compile 'com.bladejava:blade-embed-jetty:0.0.6'
 ```
 
 编写 `Main`函数：
