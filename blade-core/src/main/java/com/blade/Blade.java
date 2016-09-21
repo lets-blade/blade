@@ -29,7 +29,6 @@ import com.blade.ioc.SimpleIoc;
 import com.blade.kit.Assert;
 import com.blade.kit.StringKit;
 import com.blade.kit.base.Config;
-import com.blade.kit.reflect.ReflectKit;
 import com.blade.mvc.http.HttpMethod;
 import com.blade.mvc.interceptor.Interceptor;
 import com.blade.mvc.route.Route;
@@ -51,10 +50,7 @@ public final class Blade {
 
 	// blade initialize
 	private boolean isInit = false;
-
-	// blade bootstrap config class
-	private Bootstrap bootstrap = null;
-
+	
 	// global configuration Object
 	private ApplicationConfig applicationConfig = null;
 
@@ -438,39 +434,7 @@ public final class Blade {
 		applicationConfig.addResources(resources);
 		return this;
 	}
-
-	/**
-	 * Dynamically set the global initialization class, the embedded Jetty boot
-	 * 
-	 * @param bootstrap
-	 *            global initialization config class
-	 * @return return blade
-	 */
-	public Blade app(Bootstrap bootstrap) {
-		Assert.notNull(bootstrap);
-		this.bootstrap = bootstrap;
-		return this;
-	}
-
-	/**
-	 * Dynamically set global initialization class
-	 * 
-	 * @param bootstrap
-	 *            global initialization config class
-	 * @return return blade
-	 */
-	public Blade app(Class<? extends Bootstrap> bootstrap) {
-		Assert.notNull(bootstrap);
-		try {
-			Bootstrap object = (Bootstrap) ReflectKit.newInstance(bootstrap);
-			ioc.addBean(Bootstrap.class.getName(), object);
-			this.bootstrap = object;
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return this;
-	}
-
+	
 	/**
 	 * add interceptor 
 	 * 
@@ -602,13 +566,6 @@ public final class Blade {
 	 */
 	public boolean isDev() {
 		return applicationConfig.isDev();
-	}
-	
-	/**
-	 * @return Return bootstrap object
-	 */
-	public Bootstrap bootstrap() {
-		return this.bootstrap;
 	}
 	
 	/**

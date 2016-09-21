@@ -18,23 +18,12 @@ package com.blade.mvc;
 import java.io.IOException;
 
 import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.blade.Blade;
-import com.blade.Bootstrap;
-import com.blade.banner.BannerStarter;
-import com.blade.context.ApplicationContext;
-import com.blade.embedd.EmbedServer;
-import com.blade.kit.DispatchKit;
-import com.blade.kit.StringKit;
-import com.blade.kit.SystemKit;
 
 /**
  * Blade Core DispatcherServlet
@@ -46,77 +35,16 @@ public class DispatcherServlet extends HttpServlet {
 	
 	private static final long serialVersionUID = -2607425162473178733L;
 	
-	private static final Logger LOGGER = LoggerFactory.getLogger(DispatcherServlet.class);
-	
-	private Blade blade = Blade.$();
-	
-	private Bootstrap bootstrap; 
-	
-	private ServletContext servletContext;
-	
+	private Blade blade;
 	private DispatcherHandler dispatcherHandler;
 	
 	public DispatcherServlet() {
 	}
 	
-	public DispatcherServlet(Bootstrap bootstrap) {
-		this.bootstrap = bootstrap;
-		blade.init();
-	}
-	
 	@Override
 	public void init(ServletConfig config) throws ServletException {
-		servletContext = config.getServletContext();
-		if(!blade.isInit()){
-			
-			LOGGER.info("jdk.version\t=> {}", SystemKit.getJavaInfo().getVersion());
-			LOGGER.info("user.dir\t\t=> {}", System.getProperty("user.dir"));
-			LOGGER.info("java.io.tmpdir\t=> {}", System.getProperty("java.io.tmpdir"));
-			LOGGER.info("user.timezone\t=> {}", System.getProperty("user.timezone"));
-			LOGGER.info("file.encodin\t=> {}", System.getProperty("file.encoding"));
-			
-			long initStart = System.currentTimeMillis();
-			
-			String webRoot = DispatchKit.getWebRoot(servletContext);
-			
-		    blade.webRoot(webRoot);
-		    EmbedServer embedServer = blade.embedServer();
-		    if(null != embedServer){
-		    	embedServer.setWebRoot(webRoot);
-		    }
-		    
-		    LOGGER.info("blade.webroot\t=> {}", webRoot);
-		    
-//		    WebContextHolder.init(servletContext);
-		    
-		    this.bootstrap = blade.bootstrap();
-		    
-			if(null == bootstrap){
-				String bootStrapClassName = config.getInitParameter("bootstrap");
-				if(StringKit.isNotBlank(bootStrapClassName)){
-					this.bootstrap = getBootstrap(bootStrapClassName);
-				} else {
-					this.bootstrap = new Bootstrap() {
-						@Override
-						public void init(Blade blade) {
-						}
-					}; 
-				}
-				blade.app(this.bootstrap);
-			}
-			
-			ApplicationContext.init(blade);
-			
-			LOGGER.info("blade.isDev = {}", blade.isDev());
-			
-		    dispatcherHandler = new DispatcherHandler(servletContext, blade.routers());
-		    
-		    BannerStarter.printStart();
-		    
-		    String appName = blade.config().get("app.name", "Blade");
-		    
-		    LOGGER.info("{} initialize successfully, Time elapsed: {} ms.", appName, System.currentTimeMillis() - initStart);
-		}
+		blade = Blade.$();
+		dispatcherHandler = new DispatcherHandler(config.getServletContext(), blade.routers());
 	}
 	
 	@Override
@@ -130,29 +58,4 @@ public class DispatcherServlet extends HttpServlet {
 	public void destroy() {
 		super.destroy();
 	}
-	
-	/**
-     * Get global initialization object, the application of the initialization
-     * 
-     * @param botstrapClassName 	botstrap class name
-     * @return 						return bootstrap object
-     * @throws ServletException
-     */
-    @SuppressWarnings("unchecked")
-	private Bootstrap getBootstrap(String botstrapClassName) throws ServletException {
-    	Bootstrap bootstrapClass = null;
-        try {
-        	if(null != botstrapClassName){
-            	Class<Bootstrap> applicationClass = (Class<Bootstrap>) Class.forName(botstrapClassName);
-                if(null != applicationClass){
-                	bootstrapClass = applicationClass.newInstance();
-                }
-        	} else {
-        		throw new ServletException("bootstrapClass is null !");
-			}
-        } catch (Exception e) {
-            throw new ServletException(e);
-        }
-		return bootstrapClass;
-    }
 }
