@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.Filter;
+import javax.servlet.http.HttpServlet;
 
 import com.blade.config.ApplicationConfig;
 import com.blade.embedd.EmbedServer;
@@ -81,6 +82,9 @@ public final class Blade {
 	
 	// filters
 	private Map<Class<? extends Filter>, String[]> filters = new HashMap<Class<? extends Filter>, String[]>(8);
+	
+	// servlets
+	private Map<Class<? extends HttpServlet>, String[]> servlets = new HashMap<Class<? extends HttpServlet>, String[]>(8);
 
 	// global config
 	private Config config;
@@ -291,8 +295,23 @@ public final class Blade {
 		return this;
 	}
 	
+	/**
+	 * regsiter servlet
+	 * @param clazz
+	 * @param pathSpec
+	 * @return
+	 */
+	public Blade registerServlet(Class<? extends HttpServlet> clazz, String... pathSpec){
+		servlets.put(clazz, pathSpec);
+		return this;
+	}
+	
 	public Map<Class<? extends Filter>, String[]> filters(){
 		return filters;
+	}
+	
+	public Map<Class<? extends HttpServlet>, String[]> servlets(){
+		return servlets;
 	}
 	
 	/**

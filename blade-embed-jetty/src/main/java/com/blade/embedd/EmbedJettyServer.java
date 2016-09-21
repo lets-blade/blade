@@ -9,6 +9,7 @@ import java.util.Set;
 
 import javax.servlet.DispatcherType;
 import javax.servlet.Filter;
+import javax.servlet.http.HttpServlet;
 
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.HttpConfiguration;
@@ -117,6 +118,7 @@ public class EmbedJettyServer implements EmbedServer {
 	    
 	    try {
 	    	
+	    	loadServlets(webAppContext);
 		    loadFilters(webAppContext);
 		    
 		    HandlerList handlers = new HandlerList();
@@ -138,6 +140,20 @@ public class EmbedJettyServer implements EmbedServer {
 				String[] pathSpecs = entry.getValue();
 				for(String pathSpec : pathSpecs){
 					webAppContext.addFilter(filterClazz, pathSpec, EnumSet.of(DispatcherType.REQUEST));
+				}
+			}
+		}
+	}
+	
+	public void loadServlets(WebAppContext webAppContext) throws Exception{
+		Map<Class<? extends HttpServlet>, String[]> servlets = Blade.$().servlets();
+		if(CollectionKit.isNotEmpty(servlets)){
+			Set<Entry<Class<? extends HttpServlet>, String[]>> entrySet = servlets.entrySet();
+			for(Entry<Class<? extends HttpServlet>, String[]> entry : entrySet){
+				Class<? extends HttpServlet> servletClazz = entry.getKey();
+				String[] pathSpecs = entry.getValue();
+				for(String pathSpec : pathSpecs){
+					webAppContext.addServlet(servletClazz, pathSpec);
 				}
 			}
 		}
