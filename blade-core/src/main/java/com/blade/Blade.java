@@ -565,7 +565,8 @@ public final class Blade {
 	    if(null != applicationClass){
 	    	applicationConfig.setApplicationClass(applicationClass);
 		    if(StringKit.isBlank(applicationConfig.getBasePackage())){
-		    	applicationConfig.setBasePackage(applicationClass.getPackage().getName());
+				if (applicationClass.getPackage()!=null)
+		    		applicationConfig.setBasePackage(applicationClass.getPackage().getName());
 		    }
 	    }
 	    
