@@ -38,8 +38,7 @@
 		<module>blade-aop</module>
 		<module>blade-starter</module>
 		<module>blade-websocket-jetty</module>
-        <module>test</module>
-    </modules>
+    	</modules>
 
 	<repositories>
 		<repository>
