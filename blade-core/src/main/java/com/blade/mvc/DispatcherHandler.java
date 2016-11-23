@@ -78,7 +78,7 @@ public class DispatcherHandler {
 		this.routeViewHandler = new RouteViewResolve(this.ioc);
 	}
 	
-	public void handle(HttpServletRequest httpRequest, HttpServletResponse httpResponse){
+	public void handle(HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
 		
 		// http method, GET/POST ...
         String method = httpRequest.getMethod();
@@ -122,21 +122,10 @@ public class DispatcherHandler {
 				// Not found
 				render404(response, uri);
 			}
-			return;
-		} catch (TemplateException e) {
-			LOGGER.error("Template error", e);
-			DispatchKit.printError(e, 500, response);
-		} catch (BladeException e) {
+		} catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);
-			DispatchKit.printError(e, 500, response);
-		} catch (IOException e) {
-			LOGGER.error(e.getMessage(), e);
-			DispatchKit.printError(e, 500, response);
-		}catch (Exception e) {
-			LOGGER.error(e.getMessage(), e);
-			DispatchKit.printError(e, 500, response);
+			DispatchKit.printError(new BladeException(e), 500, response);
 		}
-        return;
 	}
 	
 	/**

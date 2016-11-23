@@ -53,8 +53,6 @@ public class WebContextListener implements ServletContextListener, HttpSessionLi
 
 	@Override
 	public void contextInitialized(ServletContextEvent sce) {
-		
-		System.out.println("WebContextListener >>>>> contextInitialized");
 		Blade blade = Blade.$();
 		if(!blade.isInit()){
 			

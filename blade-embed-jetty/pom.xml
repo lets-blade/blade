@@ -12,7 +12,6 @@
 	<artifactId>blade-embed-jetty</artifactId>
 	<version>${blade-embed-jetty.version}</version>
 	<name>blade-embed-jetty</name>
-	<url>http://maven.apache.org</url>
 		
 	<dependencies>
 
