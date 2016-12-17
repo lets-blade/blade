@@ -27,6 +27,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import com.blade.kit.IOKit;
+import com.blade.mvc.handler.MultipartHandler;
 
 /**
  * Multipart

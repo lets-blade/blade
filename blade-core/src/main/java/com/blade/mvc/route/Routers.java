@@ -20,6 +20,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.blade.exception.BladeException;
+import com.blade.kit.CollectionKit;
+import com.blade.mvc.handler.RouteHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -82,8 +85,8 @@ public class Routers {
 	
 	public void addRoutes(List<Route> routes) {
 		Assert.notNull(routes);
-		for (int i = 0, len = routes.size(); i < len; i++) {
-			this.addRoute(routes.get(i));
+		for (Route route : routes) {
+			this.addRoute(route);
 		}
 	}
 	
@@ -95,10 +98,8 @@ public class Routers {
 	
 	public void addRoute(HttpMethod httpMethod, String path, Object controller, Class<?> controllerType, Method method) {
 		
-		Assert.notNull(httpMethod);
 		Assert.notBlank(path);
-		Assert.notNull(method);
-		
+
 		String key = path + "#" + httpMethod.toString();
 		// existent
 		if (null != this.routes.get(key)) {
@@ -123,17 +124,17 @@ public class Routers {
 		try {
 			addRoute(httpMethod, path, handler, METHOD_NAME);
 		} catch (NoSuchMethodException e) {
-			throw new RuntimeException(e);
+			throw new BladeException(e);
 		}
 	}
 	
 	public void route(String[] paths, RouteHandler handler, HttpMethod httpMethod) {
-		for (int i = 0, len = paths.length; i < len; i++) {
-			route(paths[i], handler, httpMethod);
+		for (String path : paths) {
+			route(path, handler, httpMethod);
 		}
 	}
 	
-	private Map<String, Method[]> classMethosPool = new HashMap<String, Method[]>(8);
+	private Map<String, Method[]> classMethosPool = CollectionKit.newHashMap(8);
 	
 	public void route(String path, Class<?> clazz, String methodName) {
 		
@@ -142,7 +143,7 @@ public class Routers {
 		Assert.notNull(methodName, "Method name not is null");
 		
 		HttpMethod httpMethod = HttpMethod.ALL;
-		if(methodName.indexOf(":") != -1){
+		if(methodName.contains(":")){
 			String[] methodArr = methodName.split(":");
 			httpMethod = HttpMethod.valueOf(methodArr[0].toUpperCase());
 			methodName = methodArr[1];
@@ -155,19 +156,14 @@ public class Routers {
 				classMethosPool.put(clazz.getName(), methods);
 			}
 			if(null != methods){
-				for (int i = 0, len = methods.length; i < len; i++) {
-					Method method = methods[i];
+				for (Method method : methods) {
 					if (method.getName().equals(methodName)) {
 						addRoute(httpMethod, path, ReflectKit.newInstance(clazz), clazz, method);
 					}
 				}
 			}
-		} catch (SecurityException e) {
-			LOGGER.error(e.getMessage(), e);
-		} catch (InstantiationException e) {
-			LOGGER.error(e.getMessage(), e);
-		} catch (IllegalAccessException e) {
-			LOGGER.error(e.getMessage(), e);
+		} catch (Exception e) {
+			LOGGER.error("", e);
 		}
 	}
 	
@@ -179,10 +175,8 @@ public class Routers {
 			Assert.notNull(httpMethod, "Request Method not is null");
 			Method method = clazz.getMethod(methodName, Request.class, Response.class);
 			addRoute(httpMethod, path, null, clazz, method);
-		} catch (NoSuchMethodException e) {
-			e.printStackTrace();
-		} catch (SecurityException e) {
-			e.printStackTrace();
+		} catch (Exception e) {
+			LOGGER.error("", e);
 		}
 	}
 	

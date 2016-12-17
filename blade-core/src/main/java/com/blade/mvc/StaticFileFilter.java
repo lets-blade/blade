@@ -15,7 +15,8 @@
  */
 package com.blade.mvc;
 
-import java.util.HashMap;
+import com.blade.kit.CollectionKit;
+
 import java.util.Map;
 import java.util.Set;
 
@@ -26,7 +27,7 @@ public class StaticFileFilter {
 	
 	public StaticFileFilter(Set<String> prefixList) {
 		this.prefixList = prefixList;
-		this.cache = new HashMap<String, Boolean>(128);
+		this.cache = CollectionKit.newHashMap(128);
 	}
 	
 	public boolean isStatic(String path){
@@ -36,7 +37,7 @@ public class StaticFileFilter {
                 return found == Boolean.TRUE;
             }
         }
-		
+
 		for(String prefix : prefixList){
 			if(path.startsWith(prefix)){
 				if (cache != null) {
@@ -45,11 +46,9 @@ public class StaticFileFilter {
 				return true;
 			}
 		}
-		
 		if (cache != null) {
             cache.put(path, Boolean.FALSE);
         }
-		
 		return false;
 	}
 	

@@ -33,11 +33,6 @@ public interface Const {
 	String	VERSION				= "1.7.0-alpha";
 
 	/**
-	 * default embedd server context path
-	 */
-	String	DEFAULT_CONTEXTPATH	= "/";
-
-	/**
 	 * server 500 error HTML
 	 */
 	String INTERNAL_ERROR		= "<html><head><title>500 Internal Error</title></head><body bgcolor=\"white\"><center><h1>500 Internal Error</h1></center><hr><center>blade " + VERSION +"</center></body></html>";

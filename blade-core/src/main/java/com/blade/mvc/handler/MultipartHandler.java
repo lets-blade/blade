@@ -13,7 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.blade.mvc.multipart;
+package com.blade.mvc.handler;
+
+import com.blade.mvc.multipart.FileItem;
 
 /**
  * MultipartHandler

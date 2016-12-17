@@ -15,23 +15,13 @@
  */
 package com.blade.mvc;
 
-import java.io.IOException;
-import java.util.List;
-
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.blade.Blade;
 import com.blade.Const;
 import com.blade.context.WebContextHolder;
-import com.blade.exception.BladeException;
 import com.blade.ioc.Ioc;
 import com.blade.kit.DispatchKit;
 import com.blade.kit.StringKit;
+import com.blade.mvc.handler.RouteHandler;
 import com.blade.mvc.http.HttpStatus;
 import com.blade.mvc.http.Path;
 import com.blade.mvc.http.Request;
@@ -39,13 +29,20 @@ import com.blade.mvc.http.Response;
 import com.blade.mvc.http.wrapper.ServletRequest;
 import com.blade.mvc.http.wrapper.ServletResponse;
 import com.blade.mvc.route.Route;
-import com.blade.mvc.route.RouteHandler;
 import com.blade.mvc.route.RouteMatcher;
 import com.blade.mvc.route.Routers;
 import com.blade.mvc.view.ModelAndView;
 import com.blade.mvc.view.ViewSettings;
 import com.blade.mvc.view.resolve.RouteViewResolve;
 import com.blade.mvc.view.template.TemplateException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.List;
 
 /**
  * Synchronous request processor
@@ -79,25 +76,24 @@ public class DispatcherHandler {
 	}
 	
 	public void handle(HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
-		
-		// http method, GET/POST ...
-        String method = httpRequest.getMethod();
-        
-        // reuqest uri
-        String uri = Path.getRelativePath(httpRequest.getRequestURI(), servletContext.getContextPath());
-        
- 		// Create Response
- 		Response response = new ServletResponse(httpResponse);;
- 		
-        // If it is static, the resource is handed over to the filter
-    	if(staticFileFilter.isStatic(uri)){
-            LOGGER.debug("Request : {}\t{}", method, uri);
-    		DispatchKit.printStatic(uri, httpRequest, response);
-			return;
-    	}
-        
+		// Create Response
+		Response response = new ServletResponse(httpResponse);
+
         try {
-        	
+
+			// http method, GET/POST ...
+			String method = httpRequest.getMethod();
+
+			// reuqest uri
+			String uri = Path.getRelativePath(httpRequest.getRequestURI(), servletContext.getContextPath());
+
+			// If it is static, the resource is handed over to the filter
+			if(staticFileFilter.isStatic(uri)){
+				LOGGER.debug("Request : {}\t{}", method, uri);
+				DispatchKit.printStatic(uri, httpRequest, response);
+				return;
+			}
+
         	LOGGER.info("Request : {}\t{}", method, uri);
         	
         	Request request = new ServletRequest(httpRequest);

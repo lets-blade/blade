@@ -15,19 +15,14 @@
  */
 package com.blade.mvc.route;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
+import com.blade.kit.CollectionKit;
 import com.blade.kit.StringKit;
 import com.blade.mvc.http.HttpMethod;
 import com.blade.mvc.http.Path;
+
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.*;
 
 /**
  * Default Route Matcher
@@ -45,14 +40,15 @@ public class RouteMatcher {
 	
 	// Storage Map Key
 	private Set<String> routeKeys = null;
-	private List<Route> interceptorRoutes = new ArrayList<Route>(8);
+
+	private List<Route> interceptorRoutes = CollectionKit.newArrayList(8);
 	
     public RouteMatcher(Routers routers) {
 		this.routes = routers.getRoutes();
 		this.interceptors = routers.getInterceptors();
 		this.routeKeys = routes.keySet();
 		Collection<Route> inters = interceptors.values();
-		if (null != inters && !inters.isEmpty()) {
+		if (!inters.isEmpty()) {
 			this.interceptorRoutes.addAll(inters);
 		}
     }
@@ -67,27 +63,28 @@ public class RouteMatcher {
 		String cleanPath = parsePath(path);
 		
 		String routeKey = path + '#' + httpMethod.toUpperCase();
-		Route route = routes.get(routeKey);
-		if(null != route){
-			return route;
+		final Route[] route = {routes.get(routeKey)};
+		if(null != route[0]){
+			return route[0];
 		}
-		route = routes.get(path + "#ALL");
-		if(null != route){
-			return route;
+		route[0] = routes.get(path + "#ALL");
+		if(null != route[0]){
+			return route[0];
 		}
 		
-		List<Route> matchRoutes = new ArrayList<Route>(6);
-		for(String key : routeKeys){
+		List<Route> matchRoutes = CollectionKit.newArrayList();
+
+		routeKeys.forEach(key -> {
 			String[] keyArr =  StringKit.split(key, '#');
 			HttpMethod routeMethod = HttpMethod.valueOf(keyArr[1]);
 			if (matchesPath(keyArr[0], cleanPath)) {
 				if (routeMethod == HttpMethod.ALL || HttpMethod.valueOf(httpMethod) == routeMethod) {
-					route = routes.get(key);
-					matchRoutes.add(route);
+					route[0] = routes.get(key);
+					matchRoutes.add(route[0]);
 				}
 			}
-		}
-		
+		});
+
 		// Priority matching principle 
         this.giveMatch(path, matchRoutes);
         
@@ -100,14 +97,13 @@ public class RouteMatcher {
      * @return		return interceptor list
      */
     public List<Route> getBefore(String path) {
-		List<Route> befores = new ArrayList<Route>(8);
+		List<Route> befores = CollectionKit.newArrayList();
 		String cleanPath = parsePath(path);
-		for (int i = 0, len = interceptorRoutes.size(); i < len; i++) {
-			Route route = interceptorRoutes.get(i);
+		interceptorRoutes.forEach(route -> {
 			if(matchesPath(route.getPath(), cleanPath) && route.getHttpMethod() == HttpMethod.BEFORE){
 				befores.add(route);
 			}
-		}
+		});
 		this.giveMatch(path, befores);
 		return befores;
 	}
@@ -118,14 +114,13 @@ public class RouteMatcher {
      * @return		return interceptor list
      */
 	public List<Route> getAfter(String path) {
-		List<Route> afters = new ArrayList<Route>(8);
+		List<Route> afters = CollectionKit.newArrayList();
 		String cleanPath = parsePath(path);
-		for (int i = 0, len = interceptorRoutes.size(); i < len; i++) {
-			Route route = interceptorRoutes.get(i);
+		interceptorRoutes.forEach(route -> {
 			if(matchesPath(route.getPath(), cleanPath) && route.getHttpMethod() == HttpMethod.AFTER){
 				afters.add(route);
 			}
-        }
+		});
 		this.giveMatch(path, afters);
 		return afters;
 	}
@@ -136,14 +131,11 @@ public class RouteMatcher {
 	 * @param routes	route list
 	 */
     private void giveMatch(final String uri, List<Route> routes) {
-		Collections.sort(routes, new Comparator<Route>() {
-		    @Override
-		    public int compare(Route o1, Route o2) {
-				if(o2.getPath().equals(uri)){
-					return o2.getPath().indexOf(uri);
-				}
-				return -1;
+		Collections.sort(routes, (o1, o2) -> {
+			if(o2.getPath().equals(uri)){
+				return o2.getPath().indexOf(uri);
 			}
+			return -1;
 		});
 	}
     

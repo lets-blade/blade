@@ -26,7 +26,7 @@ import com.blade.mvc.http.Request;
 import com.blade.mvc.multipart.FileItem;
 import com.blade.mvc.multipart.Multipart;
 import com.blade.mvc.multipart.MultipartException;
-import com.blade.mvc.multipart.MultipartHandler;
+import com.blade.mvc.handler.MultipartHandler;
 import com.blade.mvc.route.Route;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

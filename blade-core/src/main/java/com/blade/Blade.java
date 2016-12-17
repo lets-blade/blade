@@ -24,6 +24,7 @@ import com.blade.kit.Assert;
 import com.blade.kit.CollectionKit;
 import com.blade.kit.StringKit;
 import com.blade.kit.base.Config;
+import com.blade.mvc.handler.RouteHandler;
 import com.blade.mvc.http.HttpMethod;
 import com.blade.mvc.interceptor.Interceptor;
 import com.blade.mvc.route.*;
@@ -34,7 +35,9 @@ import javax.servlet.Filter;
 import javax.servlet.http.HttpServlet;
 import java.io.InputStream;
 import java.text.ParseException;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Blade Core Class
@@ -73,11 +76,6 @@ public final class Blade {
 	 * Web server startup port
 	 */
 	private int port = Const.DEFAULT_PORT;
-
-	/**
-	 * Web context path
-	 */
-	private String contextPath = Const.DEFAULT_CONTEXTPATH;
 
 	/**
 	 * Is enabled server
@@ -530,13 +528,17 @@ public final class Blade {
 	 * 
 	 * @param applicationClass	your app root package starter
 	 */
-	public EmbedServer start(Class<?> applicationClass) {
-		startNoJoin(applicationClass);
+	public EmbedServer start(Class<?> applicationClass, String contextPath) {
+		startNoJoin(applicationClass, contextPath);
 		embedServer.join();
 		return embedServer;
 	}
-	
-	public EmbedServer startNoJoin(Class<?> applicationClass) {
+
+	public EmbedServer start(Class<?> applicationClass) {
+		return start(applicationClass, "/");
+	}
+
+	public EmbedServer startNoJoin(Class<?> applicationClass, String contextPath) {
 		
 		this.loadAppConf(Const.APP_PROPERTIES);
 

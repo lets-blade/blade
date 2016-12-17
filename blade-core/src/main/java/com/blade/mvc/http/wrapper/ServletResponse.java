@@ -273,7 +273,6 @@ public class ServletResponse implements Response {
 
 	@Override
 	public Response render(String view) {
-		Assert.notBlank(view, "view not is null");
 		String viewPath = Path.cleanPath(view);
 		ModelAndView modelAndView = new ModelAndView(viewPath);
 		try {
@@ -286,7 +285,6 @@ public class ServletResponse implements Response {
 	
 	@Override
 	public Response render(ModelAndView modelAndView) {
-		Assert.notNull(modelAndView, "ModelAndView not is null!");
 		Assert.notBlank(modelAndView.getView(), "view not is null");
 		
 		String viewPath = Path.cleanPath(modelAndView.getView());

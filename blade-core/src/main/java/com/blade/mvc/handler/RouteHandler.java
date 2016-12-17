@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.blade.mvc.route;
+package com.blade.mvc.handler;
 
 import com.blade.mvc.http.Request;
 import com.blade.mvc.http.Response;
@@ -24,8 +24,9 @@ import com.blade.mvc.http.Response;
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since	1.5
  */
+@FunctionalInterface
 public interface RouteHandler {
 
-	public void handle(Request request, Response response);
+	void handle(Request request, Response response);
 	
 }
