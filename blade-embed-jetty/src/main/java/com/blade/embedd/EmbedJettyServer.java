@@ -1,21 +1,13 @@
 package com.blade.embedd;
 
-import static com.blade.Blade.$;
-
-import java.util.EnumSet;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-
-import javax.servlet.DispatcherType;
-import javax.servlet.Filter;
-import javax.servlet.http.HttpServlet;
-
-import org.eclipse.jetty.server.Handler;
-import org.eclipse.jetty.server.HttpConfiguration;
-import org.eclipse.jetty.server.HttpConnectionFactory;
-import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.ServerConnector;
+import com.blade.Blade;
+import com.blade.Const;
+import com.blade.context.WebContextListener;
+import com.blade.exception.EmbedServerException;
+import com.blade.kit.CollectionKit;
+import com.blade.kit.base.Config;
+import com.blade.mvc.DispatcherServlet;
+import org.eclipse.jetty.server.*;
 import org.eclipse.jetty.server.handler.DefaultHandler;
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.servlet.ServletHolder;
@@ -24,13 +16,15 @@ import org.eclipse.jetty.webapp.WebAppContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.blade.Blade;
-import com.blade.Const;
-import com.blade.context.WebContextListener;
-import com.blade.exception.EmbedServerException;
-import com.blade.kit.CollectionKit;
-import com.blade.kit.base.Config;
-import com.blade.mvc.DispatcherServlet;
+import javax.servlet.DispatcherType;
+import javax.servlet.Filter;
+import javax.servlet.http.HttpServlet;
+import java.util.EnumSet;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+
+import static com.blade.Blade.$;
 
 public class EmbedJettyServer implements EmbedServer {
 
@@ -53,7 +47,7 @@ public class EmbedJettyServer implements EmbedServer {
 	
 	@Override
 	public void startup(int port) throws EmbedServerException {
-		this.startup(port, Const.DEFAULT_CONTEXTPATH, null);
+		this.startup(port, "/", null);
 	}
 
 	@Override
@@ -73,11 +67,12 @@ public class EmbedJettyServer implements EmbedServer {
 		// Setup Threadpool
         QueuedThreadPool threadPool = new QueuedThreadPool();
         
-        int minThreads = config.getInt("server.jetty.min-threads", 100);
-        int maxThreads = config.getInt("server.jetty.max-threads", 500);
+        int minThreads = config.getInt("server.jetty.min-threads", 10);
+        int maxThreads = config.getInt("server.jetty.max-threads", 100);
         
         threadPool.setMinThreads(minThreads);
         threadPool.setMaxThreads(maxThreads);
+		threadPool.setName("blade-pool");
         
 		server = new org.eclipse.jetty.server.Server(threadPool);
 		
