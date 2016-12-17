@@ -17,50 +17,57 @@ package com.blade;
 
 /**
  * Const Interface
+ *
+ * <pre>
+ *     The basic configuration of the blade framework is stored
+ * </pre>
  * 
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since	1.6.6
  */
 public interface Const {
 
-	// current blade version
-	String BLADE_VERSION = "1.6.7-beta";
+	/**
+	 * the last blade framework version
+	 */
+	String	VERSION				= "1.7.0-alpha";
+
+	/**
+	 * default embedd server context path
+	 */
+	String	DEFAULT_CONTEXTPATH	= "/";
+
+	/**
+	 * server 500 error HTML
+	 */
+	String INTERNAL_ERROR		= "<html><head><title>500 Internal Error</title></head><body bgcolor=\"white\"><center><h1>500 Internal Error</h1></center><hr><center>blade " + VERSION +"</center></body></html>";
+
+    /**
+	 * server 404 error HTML
+	 */
+	String VIEW_NOTFOUND		= "<html><head><title>404 Not Found</title></head><body bgcolor=\"white\"><center><h1>[ %s ] Not Found</h1></center><hr><center>blade " + VERSION +"</center></body></html>";
+
+	/**
+	 * default web server port
+	 */
+	int		DEFAULT_PORT		= 9000;
+
+	/**** package names ****/
+	String	ROUTE_PKGS			= "route_packages";
+	String	IOC_PKGS			= "ioc_packages";
+	String	CONFIG_PKGS			= "config_packages";
+	String	RESOURCE_PKGS		= "resouce_packages";
+	String	BASE_PKG			= "base_package";
+	String	INTERCEPTOR_PKG		= "interceptor_package";
+	String	FILTER_PKG			= "filter_package";
+	String	LISTENER_PKG		= "listener_package";
 	
-	// default embedd server context path
-	String DEFAULT_CONTEXTPATH = "/";
-	
-	// Server 500 error HTML
-	String INTERNAL_ERROR = "<html><head><title>500 Internal Error</title></head><body bgcolor=\"white\"><center><h1>500 Internal Error</h1></center><hr><center>blade " + BLADE_VERSION +"</center></body></html>";
-    
-	// Server 404 error HTML
-	String VIEW_NOTFOUND = "<html><head><title>404 Not Found</title></head><body bgcolor=\"white\"><center><h1>[ %s ] Not Found</h1></center><hr><center>blade " + BLADE_VERSION +"</center></body></html>";
-	
-	// Default jetty server port
-	int DEFAULT_PORT = 9000;
-	
-	// Request ThreadPoll context key
-	String BLADE_EXECUTOR = "blade-req-executor";
-	
-	/***************
-	 * package names 
-	 ***************/
-	String ROUTE_PKGS = "route_packages";
-	String IOC_PKGS = "ioc_packages";
-	String CONFIG_PKGS = "config_packages";
-	String RESOURCE_PKGS = "resouce_packages";
-	String BASE_PKG = "base_package";
-	String INTERCEPTOR_PKG = "interceptor_package";
-	String FILTER_PKG = "filter_package";
-	String LISTENER_PKG = "listener_package";
-	
-	/****************
-	 * blade properties 
-	 * **************/
-	String BLADE_ROUTE		= "blade.route";
-	String BLADE_IOC 		= "blade.ioc";
-	String BLADE_VIEW_404 	= "blade.view404";
-	String BLADE_VIEW_500 	= "blade.view500";
-	String BLADE_DEV 		= "blade.dev";
-	String APP_PROPERTIES	= "app.properties";
+	/**** blade properties ****/
+	String	BLADE_ROUTE			= "blade.route";
+	String	BLADE_IOC 			= "blade.ioc";
+	String	BLADE_VIEW_404 		= "blade.view404";
+	String	BLADE_VIEW_500 		= "blade.view500";
+	String 	BLADE_DEV 			= "blade.dev";
+	String	APP_PROPERTIES		= "app.properties";
 	
 }

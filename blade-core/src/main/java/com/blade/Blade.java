@@ -15,91 +15,102 @@
  */
 package com.blade;
 
-import java.io.InputStream;
-import java.text.ParseException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.servlet.Filter;
-import javax.servlet.http.HttpServlet;
-
-import com.blade.config.ApplicationConfig;
+import com.blade.config.Configuration;
 import com.blade.embedd.EmbedServer;
 import com.blade.exception.EmbedServerException;
 import com.blade.ioc.Ioc;
 import com.blade.ioc.SimpleIoc;
 import com.blade.kit.Assert;
+import com.blade.kit.CollectionKit;
 import com.blade.kit.StringKit;
 import com.blade.kit.base.Config;
 import com.blade.mvc.http.HttpMethod;
 import com.blade.mvc.interceptor.Interceptor;
-import com.blade.mvc.route.Route;
-import com.blade.mvc.route.RouteBuilder;
-import com.blade.mvc.route.RouteException;
-import com.blade.mvc.route.RouteGroup;
-import com.blade.mvc.route.RouteHandler;
-import com.blade.mvc.route.Routers;
+import com.blade.mvc.route.*;
 import com.blade.mvc.route.loader.ClassPathRouteLoader;
 import com.blade.plugin.Plugin;
 
+import javax.servlet.Filter;
+import javax.servlet.http.HttpServlet;
+import java.io.InputStream;
+import java.text.ParseException;
+import java.util.*;
+
 /**
  * Blade Core Class
- * 
+ *
  * @author <a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since 1.6.6
  */
 public final class Blade {
 
-	// blade initialize
+	/**
+	 * Indicates whether the framework has been initialized
+	 */
 	private boolean isInit = false;
-	
-	// global configuration Object
-	private ApplicationConfig applicationConfig = null;
 
-	// ioc container
+	/**
+	 * Framework Global Configuration
+	 */
+	private Configuration configuration;
+
+	/**
+	 * Default ioc container
+	 */
 	private Ioc ioc = new SimpleIoc();
 
-	// routes
+	/**
+	 * Default routes
+	 */
 	private Routers routers = new Routers();
 
-	// routebuilder
+	/**
+	 * Route builder
+	 */
 	private RouteBuilder routeBuilder;
 
-	// jetty start port
+	/**
+	 * Web server startup port
+	 */
 	private int port = Const.DEFAULT_PORT;
-	
-	// default context path
-	private String contextPath = Const.DEFAULT_CONTEXTPATH;
-	
-	// enableServer
-	private Boolean enableServer = false;
-	
-	// plugins
-	private Set<Class<? extends Plugin>> plugins;
-	
-	// filters
-	private Map<Class<? extends Filter>, String[]> filters = new HashMap<Class<? extends Filter>, String[]>(8);
-	
-	// servlets
-	private Map<Class<? extends HttpServlet>, String[]> servlets = new HashMap<Class<? extends HttpServlet>, String[]>(8);
 
-	// global config
-	private Config config;
-	
-	// embed server
+	/**
+	 * Web context path
+	 */
+	private String contextPath = Const.DEFAULT_CONTEXTPATH;
+
+	/**
+	 * Is enabled server
+	 */
+	private Boolean enableServer = false;
+
+	/**
+	 * plugins
+	 */
+	private Set<Class<? extends Plugin>> plugins;
+
+	/**
+	 * filters
+	 */
+	private Map<Class<? extends Filter>, String[]> filters = CollectionKit.newHashMap(8);
+
+	/**
+	 * servlets
+	 */
+	private Map<Class<? extends HttpServlet>, String[]> servlets = CollectionKit.newHashMap(8);
+
+	/**
+	 * embed web server e.g:jetty/tomcat
+	 */
 	private EmbedServer embedServer;
 	
 	private Blade() {
-		this.config = new Config();
-		this.applicationConfig = new ApplicationConfig();
-		this.plugins = new HashSet<Class<? extends Plugin>>();
+		this.configuration = new Configuration();
+		this.plugins = CollectionKit.newHashSet();
 		this.routeBuilder = new RouteBuilder(this.routers);
 	}
 
-	static final class BladeHolder {
+	private static final class BladeHolder {
 		private static final Blade $ = new Blade();
 	}
 	
@@ -107,7 +118,7 @@ public final class Blade {
 	 * @return Single case method returns Blade object
 	 */
 	@Deprecated
-	public static final Blade me() {
+	public static Blade me() {
 		return BladeHolder.$;
 	}
 
@@ -117,36 +128,30 @@ public final class Blade {
 	 * @return
 	 */
 	@Deprecated
-	public static final Blade me(String location) {
-		Blade blade = BladeHolder.$;
-		blade.config.add(location);
-		return blade;
+	public static Blade me(String location) {
+		return $(location);
 	}
 
 	/**
 	 * @return Single case method returns Blade object
 	 */
-	public static final Blade $() {
+	public static Blade $() {
 		return BladeHolder.$;
 	}
 
 	/**
-	 * @param confPath
+	 * load blade application config file
+	 *
+	 * @param location
 	 * @return
 	 */
-	public static final Blade $(String location) {
+	public static Blade $(String location) {
 		Assert.notEmpty(location);
 		Blade blade = BladeHolder.$;
-		blade.config.add(location);
+		blade.loadAppConf(location);
 		return blade;
 	}
 
-	/**
-	 * Set Blade initialize
-	 * 
-	 * @param isInit
-	 *            initialize
-	 */
 	public void init() {
 		if (!this.isInit) {
 			this.isInit = true;
@@ -160,9 +165,6 @@ public final class Blade {
 		return routers;
 	}
 
-	/**
-	 * @return return RouteBuilder
-	 */
 	public RouteBuilder routeBuilder() {
 		return routeBuilder;
 	}
@@ -177,8 +179,7 @@ public final class Blade {
 	/**
 	 * Setting a ioc container
 	 * 
-	 * @param container
-	 *            ioc object
+	 * @param ioc object
 	 * @return return blade
 	 */
 	public Blade container(Ioc ioc) {
@@ -195,11 +196,7 @@ public final class Blade {
 	 */
 	public Blade loadAppConf(String location) {
 		Assert.notBlank(location);
-		try {
-			config.add(location);
-		} catch (Exception e) {
-			
-		}
+		configuration.load(location);
 		return this;
 	}
 
@@ -207,7 +204,7 @@ public final class Blade {
 	 * Setting route package，e.g：com.baldejava.route Can be introduced into
 	 * multiple packages, all of which are in the package.
 	 * 
-	 * @param packages
+	 * @param packageName
 	 *            route package path, is your package name
 	 * @return return blade
 	 */
@@ -226,7 +223,7 @@ public final class Blade {
 	 */
 	public Blade addRoutePackages(String... packages) {
 		Assert.notNull(packages);
-		applicationConfig.addRoutePkgs(packages);
+		configuration.addRoutePkgs(packages);
 		return this;
 	}
 
@@ -238,7 +235,7 @@ public final class Blade {
 	 */
 	public Blade basePackage(String basePackage) {
 		Assert.notBlank(basePackage);
-		applicationConfig.setBasePackage(basePackage);
+		configuration.setBasePackage(basePackage);
 		return this;
 	}
 
@@ -250,7 +247,7 @@ public final class Blade {
 	 */
 	public Blade interceptor(String packageName) {
 		Assert.notBlank(packageName);
-		applicationConfig.setInterceptorPackage(packageName);
+		configuration.setInterceptorPackage(packageName);
 		return this;
 	}
 
@@ -263,7 +260,7 @@ public final class Blade {
 	 * @return return blade
 	 */
 	public Blade ioc(String... packages) {
-		applicationConfig.addIocPkgs(packages);
+		configuration.addIocPkgs(packages);
 		return this;
 	}
 	
@@ -272,7 +269,7 @@ public final class Blade {
 	 * 
 	 * @param path
 	 *            route path
-	 * @param target
+	 * @param clazz
 	 *            Target object for routing
 	 * @param method
 	 *            The method name of the route (at the same time, the HttpMethod
@@ -432,7 +429,7 @@ public final class Blade {
 	/**
 	 * Route Group. e.g blade.group('/users').get().post()
 	 * 
-	 * @param g
+	 * @param prefix
 	 * @return return blade
 	 */
 	public RouteGroup group(String prefix) {
@@ -476,7 +473,7 @@ public final class Blade {
 	 * @return return blade
 	 */
 	public Blade addResources(final String... resources) {
-		applicationConfig.addResources(resources);
+		configuration.addResources(resources);
 		return this;
 	}
 	
@@ -500,7 +497,7 @@ public final class Blade {
 	 */
 	public Blade webRoot(final String webRoot) {
 		Assert.notBlank(webRoot);
-		applicationConfig.setWebRoot(webRoot);
+		configuration.setWebRoot(webRoot);
 		return this;
 	}
 
@@ -512,7 +509,7 @@ public final class Blade {
 	 * @return return blade
 	 */
 	public Blade isDev(boolean isDev) {
-		applicationConfig.setDev(isDev);
+		configuration.setDev(isDev);
 		return this;
 	}
 
@@ -542,14 +539,11 @@ public final class Blade {
 	public EmbedServer startNoJoin(Class<?> applicationClass) {
 		
 		this.loadAppConf(Const.APP_PROPERTIES);
-	    
-		// init blade environment config
-	    applicationConfig.setEnv(config);
-	    
+
 	    if(null != applicationClass){
-	    	applicationConfig.setApplicationClass(applicationClass);
-		    if(StringKit.isBlank(applicationConfig.getBasePackage())){
-		    	applicationConfig.setBasePackage(applicationClass.getPackage().getName());
+	    	configuration.setApplicationClass(applicationClass);
+		    if(StringKit.isBlank(configuration.getBasePackage())){
+		    	configuration.setBasePackage(applicationClass.getPackage().getName());
 		    }
 	    }
 	    
@@ -581,36 +575,36 @@ public final class Blade {
 	/**
 	 * @return Return blade config object
 	 */
-	public ApplicationConfig applicationConfig() {
-		return applicationConfig;
+	public Configuration applicationConfig() {
+		return configuration;
 	}
 
 	/**
 	 * @return Return blade config object
 	 */
 	public Config config() {
-		return this.config;
+		return configuration.config();
 	}
 
 	/**
 	 * @return Return blade encoding, default is UTF-8
 	 */
 	public String encoding() {
-		return applicationConfig.getEncoding();
+		return configuration.getEncoding();
 	}
 
 	/**
 	 * @return Return blade web root path
 	 */
 	public String webRoot() {
-		return applicationConfig.webRoot();
+		return configuration.webRoot();
 	}
 
 	/**
 	 * @return Return is dev mode
 	 */
 	public boolean isDev() {
-		return applicationConfig.isDev();
+		return configuration.isDev();
 	}
 	
 	/**

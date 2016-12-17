@@ -160,7 +160,7 @@ public class RouteBuilder {
     /**
      * Parse all routing in a controller
      * 
-     * @param controller	resolve the routing class
+     * @param router	resolve the routing class
      */
     public void addRouter(final Class<?> router){
     	
@@ -220,7 +220,7 @@ public class RouteBuilder {
     /**
      * Build a route
      * 
-     * @param target		route target execution class 
+     * @param clazz		route target execution class
      * @param execMethod	route execution method 
      * @param path			route path
      * @param method		route httpmethod
@@ -233,7 +233,7 @@ public class RouteBuilder {
      * Build a route
      * 
      * @param path			route path
-     * @param target		route target execution class 
+     * @param clazz		route target execution class
      * @param execMethod	route execution method 
      * @param method		route httpmethod
      */

@@ -55,7 +55,7 @@ public final class DefaultEngine implements TemplateEngine {
 			String content = StreamKit.readText(new BufferedReader(new FileReader(new File(realPath))));
 			servletResponse.getWriter().print(content);
 		} catch (IOException e) {
-			throw new TemplateException(e);
+			throw new TemplateException(e.getMessage());
 		}
 	}
     

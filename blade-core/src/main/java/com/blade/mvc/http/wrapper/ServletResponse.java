@@ -15,17 +15,6 @@
  */
 package com.blade.mvc.http.wrapper;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
-
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletResponse;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.blade.context.WebContextHolder;
 import com.blade.kit.Assert;
 import com.blade.kit.DispatchKit;
@@ -37,7 +26,15 @@ import com.blade.mvc.view.ModelAndView;
 import com.blade.mvc.view.ViewSettings;
 import com.blade.mvc.view.resolve.JSONParser;
 import com.blade.mvc.view.template.TemplateEngine;
-import com.blade.mvc.view.template.TemplateException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 
 /**
  * ServletResponse
@@ -275,17 +272,14 @@ public class ServletResponse implements Response {
 	}
 
 	@Override
-	public Response render(String view){
+	public Response render(String view) {
 		Assert.notBlank(view, "view not is null");
-		
 		String viewPath = Path.cleanPath(view);
 		ModelAndView modelAndView = new ModelAndView(viewPath);
 		try {
 			templateEngine.render(modelAndView, response.getWriter());
-		} catch (TemplateException e) {
-			LOGGER.error(e.getMessage(), e);
-		} catch (IOException e) {
-			LOGGER.error(e.getMessage(), e);
+		} catch (Exception e){
+			LOGGER.error("", e);
 		}
 		return this;
 	}
@@ -299,10 +293,8 @@ public class ServletResponse implements Response {
 		modelAndView.setView(viewPath);
 		try {
 			templateEngine.render(modelAndView, response.getWriter());
-		} catch (TemplateException e) {
-			LOGGER.error(e.getMessage(), e);
-		} catch (IOException e) {
-			LOGGER.error(e.getMessage(), e);
+		} catch (Exception e){
+			LOGGER.error("", e);
 		}
 		return this;
 	}

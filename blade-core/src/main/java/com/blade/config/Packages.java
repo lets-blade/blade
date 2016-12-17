@@ -6,18 +6,19 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import com.blade.kit.CollectionKit;
 import com.blade.kit.StringKit;
 
 public class Packages {
 	
-	private Map<String, Set<String>> pool = new HashMap<String, Set<String>>(8);
+	private Map<String, Set<String>> pool = CollectionKit.newHashMap(8);
 	
 	public Packages() {
 	}
 	
 	public void put(String name, String pkg) {
 		if(null != name && StringKit.isNotBlank(pkg)){
-			Set<String> values = new HashSet<String>(1);
+			Set<String> values = CollectionKit.newHashSet(1);
 			values.add(pkg);
 			pool.put(name, values);
 		}

@@ -124,7 +124,7 @@ public class DispatcherHandler {
 			}
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);
-			DispatchKit.printError(new BladeException(e), 500, response);
+			DispatchKit.printError(e, 500, response);
 		}
 	}
 	

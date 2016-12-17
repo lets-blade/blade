@@ -15,31 +15,8 @@
  */
 package com.blade.mvc.http.wrapper;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import javax.servlet.ServletContext;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import com.blade.exception.BladeException;
+import com.blade.kit.CollectionKit;
 import com.blade.kit.IOKit;
 import com.blade.kit.ObjectKit;
 import com.blade.kit.StringKit;
@@ -51,6 +28,17 @@ import com.blade.mvc.multipart.Multipart;
 import com.blade.mvc.multipart.MultipartException;
 import com.blade.mvc.multipart.MultipartHandler;
 import com.blade.mvc.route.Route;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.servlet.ServletContext;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import java.io.*;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * ServletRequest
@@ -67,11 +55,15 @@ public class ServletRequest implements Request {
 	protected Route route;
 	
 	private HttpServletRequest request;
-	
-	// path parameter eg: /user/12
+
+	/**
+	 * path parameter eg: /user/12
+	 */
 	private Map<String,String> pathParams = null;
-	
-	// query parameter eg: /user?name=jack
+
+	/**
+	 * query parameter eg: /user?name=jack
+	 */
 	private Map<String,String> queryParams = null;
 	
 	private Map<String, FileItem> fileItems = null;
@@ -89,7 +81,9 @@ public class ServletRequest implements Request {
 	}
 	
 	public void init() throws IOException, MultipartException {
-		// retrieve multipart/form-data parameters
+		/**
+		 * retrieve multipart/form-data parameters
+		 */
 		if (Multipart.isMultipartContent(request)) {
 			Multipart multipart = new Multipart();
 			multipart.parse(request, new MultipartHandler() {
@@ -201,12 +195,12 @@ public class ServletRequest implements Request {
 	}
 
 	@Override
-	public String param(String name) {
+	public String pathParam(String name) {
 		return pathParams.get(name);
 	}
 	
 	@Override
-	public String param(String name, String defaultValue) {
+	public String pathParam(String name, String defaultValue) {
 		String val = pathParams.get(name);
 		if(null == val){
 			val = defaultValue;
@@ -215,8 +209,8 @@ public class ServletRequest implements Request {
 	}
 
 	@Override
-	public Integer paramAsInt(String name) {
-		String value = param(name);
+	public Integer pathParamAsInt(String name) {
+		String value = pathParam(name);
 		if (StringKit.isNotBlank(value)) {
 			return Integer.parseInt(value);
 		}
@@ -224,8 +218,8 @@ public class ServletRequest implements Request {
 	}
 
 	@Override
-	public Long paramAsLong(String name) {
-		String value = param(name);
+	public Long pathParamAsLong(String name) {
+		String value = pathParam(name);
 		if (StringKit.isNotBlank(value)) {
 			return Long.parseLong(value);
 		}
@@ -233,8 +227,8 @@ public class ServletRequest implements Request {
 	}
 
 	@Override
-	public Boolean paramAsBool(String name) {
-		String value = param(name);
+	public Boolean pathParamAsBool(String name) {
+		String value = pathParam(name);
 		if (StringKit.isNotBlank(value)) {
 			return Boolean.parseBoolean(value);
 		}
@@ -248,8 +242,7 @@ public class ServletRequest implements Request {
 
 	@Override
 	public Map<String, String> querys() {
-		Map<String,String> params = new HashMap<String,String>();
-
+		Map<String,String> params = CollectionKit.newHashMap(8);
 		Map<String,String[]> requestParams = request.getParameterMap();
 		for (Map.Entry<String,String[]> entry : requestParams.entrySet()) {
 			params.put( entry.getKey(), join(entry.getValue()) );
@@ -261,7 +254,7 @@ public class ServletRequest implements Request {
 	@Override
 	public String query(String name) {
 		String[] param = request.getParameterValues(name);
-		String val = null;
+		String val;
 		if (param != null) {
 			val = join(param);
 		} else {
@@ -273,7 +266,7 @@ public class ServletRequest implements Request {
 	@Override
 	public String query(String name, String defaultValue) {
 		String[] param = request.getParameterValues(name);
-		String val = null;
+		String val;
 		if (param != null) {
 			val = join(param);
 		} else {
@@ -287,53 +280,67 @@ public class ServletRequest implements Request {
 
 	@Override
 	public Integer queryAsInt(String name) {
-		String value = query(name);
-		if (StringKit.isNotBlank(value) && StringKit.isNumber(value)) {
-			return Integer.parseInt(value);
+		try {
+			String value = query(name);
+			if(StringKit.isBlank(value)){
+				return null;
+			}
+			return Integer.valueOf(value);
+		} catch (Exception e){
+			throw new BladeException(e.getMessage());
 		}
-		return null;
 	}
 
 	@Override
 	public Long queryAsLong(String name) {
-		String value = query(name);
-		if (StringKit.isNotBlank(value) && StringKit.isNumber(value)) {
-			return Long.parseLong(value);
+		try {
+			String value = query(name);
+			if(StringKit.isBlank(value)){
+				return null;
+			}
+			return Long.valueOf(value);
+		} catch (Exception e){
+			throw new BladeException(e.getMessage());
 		}
-		return null;
 	}
 
 	@Override
 	public Boolean queryAsBool(String name) {
 		String value = query(name);
-		if (StringKit.isNotBlank(value) && StringKit.isBoolean(value)) {
-			return Boolean.parseBoolean(value);
+		if(StringKit.isBlank(value)){
+			return null;
 		}
-		return null;
+		if(StringKit.isBoolean(value)){
+			return Boolean.valueOf(value);
+		} else {
+			throw new BladeException("for string \"" + value + "\"");
+		}
 	}
 
 	@Override
 	public Float queryAsFloat(String name) {
-		String value = query(name);
-		if (StringKit.isNotBlank(value)) {
-			try {
-				return Float.parseFloat(value);
-			} catch (NumberFormatException e) {
+		try {
+			String value = query(name);
+			if(StringKit.isBlank(value)){
+				return null;
 			}
+			return Float.valueOf(value);
+		} catch (Exception e){
+			throw new BladeException(e.getMessage());
 		}
-		return null;
 	}
 
 	@Override
 	public Double queryAsDouble(String name) {
-		String value = query(name);
-		if (StringKit.isNotBlank(value)) {
-			try {
-				return Double.parseDouble(value);
-			} catch (NumberFormatException e) {
+		try {
+			String value = query(name);
+			if(StringKit.isBlank(value)){
+				return null;
 			}
+			return Double.valueOf(value);
+		} catch (Exception e){
+			throw new BladeException(e.getMessage());
 		}
-		return null;
 	}
 
 	@Override
@@ -388,7 +395,7 @@ public class ServletRequest implements Request {
 	@Override
 	public Set<String> attributes() {
 		Set<String> attrList = new HashSet<String>(8);
-        Enumeration<String> attributes = (Enumeration<String>) request.getAttributeNames();
+        Enumeration<String> attributes = request.getAttributeNames();
         while (attributes.hasMoreElements()) {
             attrList.add(attributes.nextElement());
         }
@@ -412,16 +419,13 @@ public class ServletRequest implements Request {
 
 	@Override
 	public boolean isAjax() {
-		if (null == header("x-requested-with")) {
-            return false;
-        }
-        return "XMLHttpRequest".equals(header("x-requested-with"));
+		return null != header("x-requested-with") && "XMLHttpRequest".equals(header("x-requested-with"));
 	}
 
 	@Override
 	public Map<String, Cookie> cookies() {
 		javax.servlet.http.Cookie[] servletCookies = request.getCookies();
-		Map<String,Cookie> cookies = new HashMap<String,Cookie>(8);
+		Map<String,Cookie> cookies = CollectionKit.newHashMap(8);
 		for (javax.servlet.http.Cookie c : servletCookies) {
 			cookies.put( c.getName(), map(c) );
 		}
@@ -546,7 +550,7 @@ public class ServletRequest implements Request {
 					StringBuilder sb = new StringBuilder();
 					String line = reader.readLine();
 					while (null != line) {
-						sb.append(line + "\r\n");
+						sb.append(line).append("\r\n");
 						line = reader.readLine();
 					}
 					reader.close();

@@ -17,6 +17,7 @@ package com.blade.mvc.view.resolve;
 
 import java.lang.reflect.Method;
 
+import com.blade.exception.BladeException;
 import com.blade.ioc.Ioc;
 import com.blade.kit.reflect.ReflectKit;
 import com.blade.mvc.annotation.JSON;
@@ -41,7 +42,7 @@ public class RouteViewResolve {
 		Object target = route.getTarget();
 		
 		int len = actionMethod.getParameterTypes().length;
-		Object returnParam = null;
+		Object returnParam;
 		if (len > 0) {
 			Object[] args = MethodArgument.getArgs(request, response, actionMethod);
 			returnParam = ReflectKit.invokeMehod(target, actionMethod, args);
@@ -66,7 +67,7 @@ public class RouteViewResolve {
 		}
 	}
 
-	public boolean intercept(Request request, Response response, Route route) throws Exception {
+	public boolean intercept(Request request, Response response, Route route) throws BladeException {
 		Method actionMethod = route.getAction();
 		Object target = route.getTarget();
 
@@ -80,7 +81,7 @@ public class RouteViewResolve {
 		int len = actionMethod.getParameterTypes().length;
 		actionMethod.setAccessible(true);
 		try {
-			Object returnParam = null;
+			Object returnParam;
 			if (len > 0) {
 				Object[] args = MethodArgument.getArgs(request, response, actionMethod);
 				returnParam = ReflectKit.invokeMehod(target, actionMethod, args);
@@ -96,7 +97,7 @@ public class RouteViewResolve {
 			}
 			return true;
 		} catch (Exception e) {
-			throw e;
+			throw new BladeException(e);
 		}
 	}
 

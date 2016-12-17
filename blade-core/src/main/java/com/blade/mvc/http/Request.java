@@ -102,7 +102,7 @@ public interface Request {
 	 * @param name	Parameter name  
 	 * @return		Return parameter value
 	 */
-	String param(String name);
+	String pathParam(String name);
 	
 	/**
 	 * Get a URL parameter, and returns defaultValue if it is NULL
@@ -110,28 +110,28 @@ public interface Request {
 	 * @param defaultValue	Default Value
 	 * @return				Return parameter value
 	 */
-	String param(String name, String defaultValue);
+	String pathParam(String name, String defaultValue);
 	
 	/**
 	 * Return a URL parameter for a Int type
 	 * @param name	Parameter name  
 	 * @return		Return Int parameter value
 	 */
-	Integer paramAsInt(String name);
+	Integer pathParamAsInt(String name);
 	
 	/**
 	 * Return a URL parameter for a Long type
 	 * @param name	Parameter name  
 	 * @return		Return Long parameter value
 	 */
-	Long paramAsLong(String name);
+	Long pathParamAsLong(String name);
 	
 	/**
 	 * Return a URL parameter for a Boolean type
 	 * @param name	Parameter name  
 	 * @return		Return Boolean parameter value
 	 */
-	Boolean paramAsBool(String name);
+	Boolean pathParamAsBool(String name);
 
 	/**
 	 * @return	Return query string
@@ -159,7 +159,7 @@ public interface Request {
 	 * @return				Return request parameter values
 	 */
 	String query(String name, String defaultValue);
-	
+
 	/**
 	 * Returns a request parameter for a Int type
 	 * 

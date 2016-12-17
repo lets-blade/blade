@@ -32,7 +32,7 @@ public class BladeBanner implements Banner {
 		for (String s : banner) {
 			text.append("\r\n\t\t" + s);
 		}
-		text.append("\r\n\t\t :: Blade :: (v" + Const.BLADE_VERSION + ")\r\n");
+		text.append("\r\n\t\t :: Blade :: (v" + Const.VERSION + ")\r\n");
 		return text.toString();
 	}
 }

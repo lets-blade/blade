@@ -45,22 +45,19 @@
     </repositories>
 
 	<properties>
-		<maven.compiler.source>1.6</maven.compiler.source>
-		<maven.compiler.target>1.6</maven.compiler.target>
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-
 		<servlet.version>3.1.0</servlet.version>
 		<junit.version>4.12</junit.version>
 		<mockito.version>2.0.2-beta</mockito.version>
 		<slf4j-api.version>1.7.21</slf4j-api.version>
 		<slf4j-log4j12.version>1.7.21</slf4j-log4j12.version>
-
-		<blade-core.version>1.6.7-beta</blade-core.version>
-		<blade-kit.version>1.3.4</blade-kit.version>
+		<blade-core.version>1.7.0-alpha</blade-core.version>
+		<blade-kit.version>1.4.0-alpha</blade-kit.version>
 		<blade-aop.version>1.0.0</blade-aop.version>
 		<blade-embed-jetty.version>0.0.6</blade-embed-jetty.version>
 		<jetty.version>9.2.12.v20150709</jetty.version>
-		
 	</properties>
 
 	<modules>
@@ -71,7 +68,8 @@
 		<module>blade-aop</module>
 		<module>blade-starter</module>
 		<module>blade-websocket-jetty</module>
-	</modules>
+        <module>blade-sample</module>
+    </modules>
 
 	<dependencyManagement>
 		<dependencies>

@@ -122,7 +122,11 @@ public class DispatchKit {
 				if (code == 404) {
 					String view404 = ViewSettings.$().getView404();
 					if (StringKit.isNotBlank(view404)) {
-						response.render(view404);
+						try {
+							response.render(view404);
+						} catch (Exception e){
+							LOGGER.error("", e);
+						}
 						return;
 					} else {
 						writer.write(err.getMessage());
@@ -130,7 +134,11 @@ public class DispatchKit {
 				} else {
 					String view500 = ViewSettings.$().getView500();
 					if (StringKit.isNotBlank(view500)) {
-						response.render(view500);
+						try {
+							response.render(view500);
+						} catch (Exception e){
+							LOGGER.error("", e);
+						}
 						return;
 					} else {
 						writer.write(Const.INTERNAL_ERROR);
@@ -206,7 +214,7 @@ public class DispatchKit {
 			+ "<style type='text/css'>*{margin:0;padding:0}.info{margin:0;padding:10px;color:#000;background-color:#f8edc2;height:60px;line-height:60px;border-bottom:5px solid #761226}.isa_error{margin:0;padding:10px;font-size:14px;font-weight:bold;background-color:#e0c9db;border-bottom:1px solid #000}.version{color:green;font-size:16px;font-weight:bold;padding:10px}</style></head><body>"
 			+ "<div class='info'><h3>%s</h3></div><div class='isa_error'><pre>";
 
-	private static final String END = "</pre></div><div class='version'>Blade-" + Const.BLADE_VERSION
+	private static final String END = "</pre></div><div class='version'>Blade-" + Const.VERSION
 			+ "（<a href='http://bladejava.com' target='_blank'>Blade Framework</a>） </div></body></html>";
 
 }
