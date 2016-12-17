@@ -73,11 +73,6 @@ public final class Blade {
 	private RouteBuilder routeBuilder;
 
 	/**
-	 * Web server startup port
-	 */
-	private int port = Const.DEFAULT_PORT;
-
-	/**
 	 * Is enabled server
 	 */
 	private Boolean enableServer = false;
@@ -519,7 +514,7 @@ public final class Blade {
 	 * @return return blade
 	 */
 	public Blade listen(int port) {
-		this.port = port;
+		config().put("server.port", port);
 		return this;
 	}
 	
@@ -556,7 +551,7 @@ public final class Blade {
 			}
 			if(null != embedClazz){
 				this.embedServer = (EmbedServer) embedClazz.newInstance();
-				this.embedServer.startup(port, contextPath);
+				this.embedServer.startup(config().getInt("server.port", Const.DEFAULT_PORT), contextPath);
 				this.enableServer = true;
 			} else {
 				throw new EmbedServerException("Not found EmbedServer");
@@ -577,7 +572,12 @@ public final class Blade {
 	/**
 	 * @return Return blade config object
 	 */
+	@Deprecated
 	public Configuration applicationConfig() {
+		return configuration;
+	}
+
+	public Configuration configuration() {
 		return configuration;
 	}
 

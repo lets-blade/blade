@@ -10,6 +10,7 @@ import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.locks.Condition;
 
 import javax.servlet.ServletContext;
 
@@ -36,18 +37,7 @@ public class Config {
         }
         return this;
     }
-	
-	/*private String getWildcard(String str) {
-		if (null != str && str.indexOf("${") != -1) {
-			int start = str.indexOf("${");
-			int end = str.indexOf("}");
-			if (start != -1 && end != -1) {
-				return str.substring(start + 2, end);
-			}
-		}
-		return null;
-	}*/
-	
+
 	public Config load(Map<String, String> map) {
         config.putAll(map);
         return this;
@@ -240,5 +230,9 @@ public class Config {
 		return null != getBoolean(key) ? getBoolean(key) : defaultValue;
 	}
 
+    public Config put(String key, Object value){
+        config.put(key, value.toString());
+        return this;
+    }
 	
 }

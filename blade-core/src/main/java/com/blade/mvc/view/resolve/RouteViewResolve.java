@@ -38,32 +38,36 @@ public class RouteViewResolve {
 	}
 	
 	public void handle(Request request, Response response, Route route) throws Exception {
-		Method actionMethod = route.getAction();
-		Object target = route.getTarget();
-		
-		int len = actionMethod.getParameterTypes().length;
-		Object returnParam;
-		if (len > 0) {
-			Object[] args = MethodArgument.getArgs(request, response, actionMethod);
-			returnParam = ReflectKit.invokeMehod(target, actionMethod, args);
-		} else {
-			returnParam = ReflectKit.invokeMehod(target, actionMethod);
-		}
-		
-		if (null != returnParam) {
-			Class<?> returnType = returnParam.getClass();
-			RestController restController = target.getClass().getAnnotation(RestController.class);
-			JSON json = actionMethod.getAnnotation(JSON.class);
-			if(null != restController || null != json){
-				response.json(viewSettings.toJSONString(returnParam));
-			} else{
-				if (returnType == String.class) {
-					response.render(returnParam.toString());
-				} else if (returnType == ModelAndView.class) {
-					ModelAndView modelAndView = (ModelAndView) returnParam;
-					response.render(modelAndView);
+		try {
+			Method actionMethod = route.getAction();
+			Object target = route.getTarget();
+
+			int len = actionMethod.getParameterTypes().length;
+			Object returnParam;
+			if (len > 0) {
+				Object[] args = MethodArgument.getArgs(request, response, actionMethod);
+				returnParam = ReflectKit.invokeMehod(target, actionMethod, args);
+			} else {
+				returnParam = ReflectKit.invokeMehod(target, actionMethod);
+			}
+
+			if (null != returnParam) {
+				Class<?> returnType = returnParam.getClass();
+				RestController restController = target.getClass().getAnnotation(RestController.class);
+				JSON json = actionMethod.getAnnotation(JSON.class);
+				if(null != restController || null != json){
+					response.json(viewSettings.toJSONString(returnParam));
+				} else{
+					if (returnType == String.class) {
+						response.render(returnParam.toString());
+					} else if (returnType == ModelAndView.class) {
+						ModelAndView modelAndView = (ModelAndView) returnParam;
+						response.render(modelAndView);
+					}
 				}
 			}
+		} catch (Exception e){
+			throw new BladeException(e);
 		}
 	}
 
