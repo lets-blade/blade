@@ -21,7 +21,7 @@ Blade 是一款轻量级的MVC框架, 重新定义JavaWeb开发,它拥有简洁�
 * [x] Restful风格的路由接口
 * [x] 多种模板引擎支持
 * [x] 支持以jar文件发布运行
-* [x] 支持JDK1.6或者更高版本(JDK8写起来更爽)
+* [x] JDK8以上
 
 ## 概述
 
@@ -39,20 +39,20 @@ Blade 是一款轻量级的MVC框架, 重新定义JavaWeb开发,它拥有简洁�
 <dependency>
 	<groupId>com.bladejava</groupId>
 	<artifactId>blade-core</artifactId>
-	<version>1.6.7-beta</version>
+	<version>1.7.0-alpha</version>
 </dependency>
 <dependency>
 	<groupId>com.bladejava</groupId>
 	<artifactId>blade-embed-jetty</artifactId>
-	<version>0.0.6</version>
+	<version>0.0.7</version>
 </dependency>
 ```
 
 或者  `Gradle`:
 
 ```sh
-compile 'com.bladejava:blade-core:1.6.7-beta'
-compile 'com.bladejava:blade-embed-jetty:0.0.6'
+compile 'com.bladejava:blade-core:1.7.0-alpha'
+compile 'com.bladejava:blade-embed-jetty:0.0.7'
 ```
 
 编写 `Main`函数：

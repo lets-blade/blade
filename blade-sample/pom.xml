@@ -27,12 +27,17 @@
         <dependency>
             <groupId>com.bladejava</groupId>
             <artifactId>blade-core</artifactId>
-            <version>1.7.0-alpha</version>
+            <version>${blade-core.version}</version>
         </dependency>
         <dependency>
             <groupId>com.bladejava</groupId>
             <artifactId>blade-embed-jetty</artifactId>
-            <version>0.0.7</version>
+            <version>${blade-embed-jetty.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.bladejava</groupId>
+            <artifactId>blade-template-velocity</artifactId>
+            <version>0.0.4</version>
         </dependency>
     </dependencies>
 

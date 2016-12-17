@@ -21,7 +21,7 @@ If you like it, please [star](https://github.com/biezhi/blade/stargazers) / [for
 * [x] RESTful style routing interface
 * [x] Template engine support
 * [x] Run with jar file
-* [x] Supports JDK 1.6 and up (java8 is cool)
+* [x] JDK8+
 
 ## Overview
 
@@ -38,18 +38,18 @@ Grab via `Maven`：
 <dependency>
 	<groupId>com.bladejava</groupId>
 	<artifactId>blade-core</artifactId>
-	<version>1.6.7-beta</version>
+	<version>1.7.0-alpha</version>
 </dependency>
 <dependency>
 	<groupId>com.bladejava</groupId>
 	<artifactId>blade-embed-jetty</artifactId>
-	<version>0.0.6</version>
+	<version>0.0.7</version>
 </dependency>
 ```
 or `Gradle`:
 ```sh
-compile 'com.bladejava:blade-core:1.6.7-beta'
-compile 'com.bladejava:blade-embed-jetty:0.0.6'
+compile 'com.bladejava:blade-core:1.7.0-alpha'
+compile 'com.bladejava:blade-embed-jetty:0.0.7'
 ```
 
 Create `Main` method like this：

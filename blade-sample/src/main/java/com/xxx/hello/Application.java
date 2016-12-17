@@ -3,6 +3,8 @@ package com.xxx.hello;
 import com.blade.Const;
 import com.blade.kit.json.JSONObject;
 import com.blade.mvc.view.RestResponse;
+import com.blade.mvc.view.ViewSettings;
+import com.blade.mvc.view.template.VelocityTemplateEngine;
 
 import static com.blade.Blade.$;
 
@@ -13,6 +15,9 @@ public class Application {
 
     public static void main(String[] args) {
 
+        // setting default template engine is velocity :)
+        ViewSettings.$().templateEngine(new VelocityTemplateEngine());
+
         $().get("/", (request, response) -> {
 
             RestResponse<JSONObject> restResponse = new RestResponse<>();
@@ -22,8 +27,11 @@ public class Application {
             restResponse.setPayload(jsonObject);
             response.json(restResponse);
 
-        }).get("/hello", (req, res)->{
-            System.out.println("");
+        }).get("/hello", (request, response)-> {
+
+            request.attribute("name", "boy");
+            response.render("hello.vm");
+
         }).start(Application.class);
     }
 
