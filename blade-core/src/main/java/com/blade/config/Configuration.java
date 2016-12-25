@@ -43,8 +43,8 @@ public class Configuration {
 	private Packages packages;
 	
 	// Encoding
-	private String encoding = "utf-8";
-	
+	private String encoding = Const.DEFAULT_ENCODING;
+
 	// Is dev mode
 	private boolean isDev = true;
 	
@@ -66,26 +66,26 @@ public class Configuration {
 		if (null != config && !isInit) {
 			
 			// get dev mode
-			this.isDev = config.getBoolean("app.dev", true);
+			this.isDev = config.getBoolean(Const.APP_DEV, true);
 			
 			// get ioc packages
-			packages.put(Const.IOC_PKGS, config.get("app.ioc"));
+			packages.put(Const.IOC_PKGS, config.get(Const.APP_IOC));
 			
 			// get view 404, 500 page
-			ViewSettings.$().setView500(config.get("mvc.view.500"));
-			ViewSettings.$().setView404(config.get("mvc.view.404"));
+			ViewSettings.$().setView500(config.get(Const.MVC_VIEW_500));
+			ViewSettings.$().setView404(config.get(Const.MVC_VIEW_404));
 			
 			// get http encoding
-			this.encoding = config.get("http.encoding", "UTF-8");
+			this.encoding = config.get(Const.HTTP_ENCODING, Const.DEFAULT_ENCODING);
 			
 			// get mvc static folders
-			String statics = config.get("mvc.statics");
+			String statics = config.get(Const.MVC_STATICS);
 			
 			// get app base package
-			String basePackage = config.get("app.base-package");
+			String basePackage = config.get(Const.APP_BASE_PKG);
 			
 			// get server start port
-			Integer port = config.getInt("server.port", Const.DEFAULT_PORT);
+			Integer port = config.getInt(Const.SERVER_PORT, Const.DEFAULT_PORT);
 			$().listen(port);
 			
 			if (StringKit.isNotBlank(statics)) {
@@ -201,7 +201,7 @@ public class Configuration {
 		try {
 			config.add(location);
 		} catch (Exception e){
-
+			System.out.println("[load config] " + e.getMessage());
 		}
 	}
 

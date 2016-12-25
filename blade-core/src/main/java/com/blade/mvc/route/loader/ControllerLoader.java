@@ -15,7 +15,7 @@
  */
 package com.blade.mvc.route.loader;
 
-import com.blade.mvc.route.RouteException;
+import com.blade.exception.RouteException;
 
 /**
  * Controller loading interface

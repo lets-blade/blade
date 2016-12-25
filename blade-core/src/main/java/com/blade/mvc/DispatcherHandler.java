@@ -50,14 +50,12 @@ import java.util.List;
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since	1.5
  */
-public class DispatcherHandler {
+class DispatcherHandler {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(DispatcherHandler.class);
 	
 	private Ioc ioc;
-	
-	private Blade blade;
-	
+
 	private ServletContext servletContext;
 	
 	private RouteMatcher routeMatcher;
@@ -68,10 +66,10 @@ public class DispatcherHandler {
 	
 	public DispatcherHandler(ServletContext servletContext, Routers routers) {
 		this.servletContext = servletContext;
-		this.blade = Blade.$();
+		Blade blade = Blade.$();
 		this.ioc = blade.ioc();
 		this.routeMatcher = new RouteMatcher(routers);
-		this.staticFileFilter = new StaticFileFilter(blade.applicationConfig().getResources());
+		this.staticFileFilter = new StaticFileFilter(blade.configuration().getResources());
 		this.routeViewHandler = new RouteViewResolve(this.ioc);
 	}
 	
@@ -153,8 +151,7 @@ public class DispatcherHandler {
 	 * @return				Return execute is ok
 	 */
 	private boolean invokeInterceptor(Request request, Response response, List<Route> interceptors) throws Exception {
-		for (int i = 0, len = interceptors.size(); i < len; i++) {
-			Route route = interceptors.get(i);
+		for (Route route : interceptors) {
 			boolean flag = routeViewHandler.intercept(request, response, route);
 			if (!flag) {
 				return false;

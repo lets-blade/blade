@@ -30,7 +30,7 @@ import com.blade.mvc.http.HttpMethod;
 import com.blade.mvc.http.Request;
 import com.blade.mvc.http.Response;
 import com.blade.mvc.route.Route;
-import com.blade.mvc.route.RouteException;
+import com.blade.exception.RouteException;
 
 /**
  * Abstract loader implementation 

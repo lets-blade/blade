@@ -15,22 +15,20 @@
  */
 package com.blade.mvc.route;
 
-import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.blade.exception.BladeException;
-import com.blade.kit.CollectionKit;
-import com.blade.mvc.handler.RouteHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.blade.kit.Assert;
+import com.blade.kit.CollectionKit;
 import com.blade.kit.reflect.ReflectKit;
+import com.blade.mvc.handler.RouteHandler;
 import com.blade.mvc.http.HttpMethod;
 import com.blade.mvc.http.Request;
 import com.blade.mvc.http.Response;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.lang.reflect.Method;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Registration, management route
@@ -49,8 +47,8 @@ public class Routers {
 	private static final String METHOD_NAME = "handle";
 	
 	public Routers() {
-		this.routes = new HashMap<String, Route>();
-		this.interceptors = new HashMap<String, Route>();
+		this.routes = CollectionKit.newHashMap();
+		this.interceptors = CollectionKit.newHashMap();
 	}
 	
 	public Map<String, Route> getRoutes() {
@@ -85,9 +83,7 @@ public class Routers {
 	
 	public void addRoutes(List<Route> routes) {
 		Assert.notNull(routes);
-		for (Route route : routes) {
-			this.addRoute(route);
-		}
+		routes.forEach(this::addRoute);
 	}
 	
 	public void addRoute(HttpMethod httpMethod, String path, RouteHandler handler, String methodName) throws NoSuchMethodException {
@@ -179,9 +175,9 @@ public class Routers {
 			LOGGER.error("", e);
 		}
 	}
-	
+
 	public void buildRoute(String path, Class<?> clazz, Method method, HttpMethod httpMethod) {
 		addRoute(httpMethod, path, null, clazz, method);
 	}
-	
+
 }

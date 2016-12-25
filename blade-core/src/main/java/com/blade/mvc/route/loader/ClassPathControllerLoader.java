@@ -18,7 +18,7 @@ package com.blade.mvc.route.loader;
 import com.blade.Blade;
 import com.blade.ioc.Ioc;
 import com.blade.kit.StringKit;
-import com.blade.mvc.route.RouteException;
+import com.blade.exception.RouteException;
 
 /**
  * ClassPath controller of loader 

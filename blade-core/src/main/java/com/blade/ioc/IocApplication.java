@@ -15,22 +15,13 @@
  */
 package com.blade.ioc;
 
-import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.blade.Blade;
 import com.blade.comparator.OrderComparator;
 import com.blade.config.BaseConfig;
 import com.blade.context.DynamicContext;
 import com.blade.ioc.annotation.Component;
 import com.blade.ioc.annotation.Service;
+import com.blade.kit.CollectionKit;
 import com.blade.kit.StringKit;
 import com.blade.kit.resource.ClassInfo;
 import com.blade.kit.resource.ClassReader;
@@ -39,6 +30,11 @@ import com.blade.mvc.annotation.Intercept;
 import com.blade.mvc.annotation.RestController;
 import com.blade.mvc.interceptor.Interceptor;
 import com.blade.mvc.route.RouteBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.lang.reflect.Modifier;
+import java.util.*;
 
 /**
  * IOC container, used to initialize the IOC object
@@ -53,7 +49,7 @@ public final class IocApplication {
 	/**
 	 * aop interceptor
 	 */
-	private static List<Object> aopInterceptors = new ArrayList<Object>(8);
+	private static List<Object> aopInterceptors = CollectionKit.newArrayList(8);
 	
 	/**
 	 * Class to read object, load class
@@ -75,9 +71,9 @@ public final class IocApplication {
 	 * @throws Exception
 	 */
 	private List<ClassInfo> loadCondigs() throws Exception {
-		String[] configPkgs = blade.applicationConfig().getConfigPkgs();
+		String[] configPkgs = blade.configuration().getConfigPkgs();
 		if (null != configPkgs && configPkgs.length > 0) {
-			List<ClassInfo> configs = new ArrayList<ClassInfo>(10);
+			List<ClassInfo> configs = CollectionKit.newArrayList(10);
 			for (int i = 0, len = configPkgs.length; i < len; i++) {
 				Set<ClassInfo> configClasses = classReader.getClassByAnnotation(configPkgs[i], Component.class, false);
 				if (null != configClasses) {
@@ -101,9 +97,9 @@ public final class IocApplication {
 	}
 
 	private List<ClassInfo> loadServices() throws Exception {
-		String[] iocPkgs = blade.applicationConfig().getIocPkgs();
+		String[] iocPkgs = blade.configuration().getIocPkgs();
 		if (null != iocPkgs && iocPkgs.length > 0) {
-			List<ClassInfo> services = new ArrayList<ClassInfo>(20);
+			List<ClassInfo> services = CollectionKit.newArrayList(16);
 			for (int i = 0, len = iocPkgs.length; i < len; i++) {
 				String pkgName = iocPkgs[i];
 				if (StringKit.isBlank(pkgName)) {
@@ -135,9 +131,9 @@ public final class IocApplication {
 	}
 
 	private List<ClassInfo> loadControllers() {
-		String[] routePkgs = blade.applicationConfig().getRoutePkgs();
+		String[] routePkgs = blade.configuration().getRoutePkgs();
 		if (null != routePkgs && routePkgs.length > 0) {
-			List<ClassInfo> controllers = new ArrayList<ClassInfo>();
+			List<ClassInfo> controllers = CollectionKit.newArrayList(8);
 			for(int i=0, len=routePkgs.length; i<len; i++){
 				// Scan all Controoler
 				controllers.addAll(classReader.getClassByAnnotation(routePkgs[i], Controller.class, true));
@@ -149,9 +145,9 @@ public final class IocApplication {
 	}
 
 	private List<ClassInfo> loadInterceptors() {
-		String interceptorPackage = blade.applicationConfig().getInterceptorPkg();
+		String interceptorPackage = blade.configuration().getInterceptorPkg();
 		if (StringKit.isNotBlank(interceptorPackage)) {
-			List<ClassInfo> interceptors = new ArrayList<ClassInfo>(10);
+			List<ClassInfo> interceptors = CollectionKit.newArrayList(8);
 			Set<ClassInfo> intes = classReader.getClassByAnnotation(interceptorPackage, Intercept.class, true);
 			if (null != intes) {
 				for (ClassInfo classInfo : intes) {
@@ -184,7 +180,7 @@ public final class IocApplication {
 			}
 		}
 		
-		Set<BaseConfig> baseConfigs = new HashSet<BaseConfig>();
+		List<BaseConfig> baseConfigs = CollectionKit.newArrayList();
 
 		// 2. init configs
 		if (null != configs) {
@@ -224,7 +220,7 @@ public final class IocApplication {
 		
 		// init configs
 		for(BaseConfig baseConfig : baseConfigs){
-			baseConfig.config(blade.applicationConfig());
+			baseConfig.config(blade.configuration());
 		}
 	}
 	

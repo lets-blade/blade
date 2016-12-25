@@ -65,12 +65,8 @@ public class Route {
 		this.action = action;
 	}
 	
-	public HttpMethod getHttpMethod() {
+	HttpMethod getHttpMethod() {
 		return httpMethod;
-	}
-
-	public void setHttpMethod(HttpMethod httpMethod) {
-		this.httpMethod = httpMethod;
 	}
 
 	public String getPath() {
@@ -93,10 +89,6 @@ public class Route {
 		return action;
 	}
 
-	public void setAction(Method action) {
-		this.action = action;
-	}
-	
 	public Class<?> getTargetType() {
 		return targetType;
 	}

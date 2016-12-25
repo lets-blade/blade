@@ -18,6 +18,7 @@ package com.blade;
 import com.blade.config.Configuration;
 import com.blade.embedd.EmbedServer;
 import com.blade.exception.EmbedServerException;
+import com.blade.exception.RouteException;
 import com.blade.ioc.Ioc;
 import com.blade.ioc.SimpleIoc;
 import com.blade.kit.Assert;
@@ -514,7 +515,7 @@ public final class Blade {
 	 * @return return blade
 	 */
 	public Blade listen(int port) {
-		config().put("server.port", port);
+		config().put(Const.SERVER_PORT, port);
 		return this;
 	}
 	
@@ -545,13 +546,13 @@ public final class Blade {
 	    }
 	    
 	    try {
-			Class<?> embedClazz = Class.forName("com.blade.embedd.EmbedJettyServer");
+			Class<?> embedClazz = Class.forName(Const.JETTY_SERVER_CLASS);
 			if(null == embedClazz){
-				embedClazz = Class.forName("com.blade.embedd.EmbedTomcatServer");
+				embedClazz = Class.forName(Const.TOMCAT_SERVER_CLASS);
 			}
 			if(null != embedClazz){
 				this.embedServer = (EmbedServer) embedClazz.newInstance();
-				this.embedServer.startup(config().getInt("server.port", Const.DEFAULT_PORT), contextPath);
+				this.embedServer.startup(config().getInt(Const.SERVER_PORT, Const.DEFAULT_PORT), contextPath);
 				this.enableServer = true;
 			} else {
 				throw new EmbedServerException("Not found EmbedServer");
@@ -630,7 +631,7 @@ public final class Blade {
 	 * @return return blade
 	 */
 	public Blade routeConf(String basePackage) {
-		return routeConf(basePackage, "route.conf");
+		return routeConf(basePackage, Const.DEFAULT_ROUTE_CONF);
 	}
 
 	/**

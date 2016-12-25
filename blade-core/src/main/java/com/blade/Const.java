@@ -47,6 +47,10 @@ public interface Const {
 	 */
 	int		DEFAULT_PORT		= 9000;
 
+	String	DEFAULT_ENCODING	= "UTF-8";
+
+	String	DEFAULT_ROUTE_CONF	= "route.conf";
+
 	/**** package names ****/
 	String	ROUTE_PKGS			= "route_packages";
 	String	IOC_PKGS			= "ioc_packages";
@@ -64,5 +68,14 @@ public interface Const {
 	String	BLADE_VIEW_500 		= "blade.view500";
 	String 	BLADE_DEV 			= "blade.dev";
 	String	APP_PROPERTIES		= "app.properties";
-	
+	String	SERVER_PORT			= "server.port";
+	String 	JETTY_SERVER_CLASS	= "com.blade.embedd.EmbedJettyServer";
+	String 	TOMCAT_SERVER_CLASS	= "com.blade.embedd.EmbedTomcatServer";
+	String 	MVC_VIEW_404		= "mvc.view.404";
+	String 	MVC_VIEW_500		= "mvc.view.500";
+	String	HTTP_ENCODING		= "http.encoding";
+	String	MVC_STATICS			= "mvc.statics";
+	String 	APP_DEV				= "app.dev";
+	String	APP_IOC				= "app.ioc";
+	String	APP_BASE_PKG		= "app.base-package";
 }
