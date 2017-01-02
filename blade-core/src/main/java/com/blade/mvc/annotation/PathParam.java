@@ -33,5 +33,7 @@ import java.lang.annotation.Target;
 public @interface PathParam {
 	
 	String value() default "";
-	
+
+	String defaultValue() default "";
+
 }

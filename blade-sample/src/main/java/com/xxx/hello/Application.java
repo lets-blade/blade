@@ -22,7 +22,6 @@ public class Application {
 
         $().route("/msg", MsgController.class, "msg", HttpMethod.GET);
 
-
         $().get("/", (request, response) -> {
 
             RestResponse<JSONObject> restResponse = new RestResponse<>();

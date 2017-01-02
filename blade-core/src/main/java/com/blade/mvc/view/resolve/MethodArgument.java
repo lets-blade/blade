@@ -34,10 +34,11 @@ public final class MethodArgument {
 
 		Class<?>[] parameters = actionMethod.getParameterTypes();
 		Annotation[][] annotations = actionMethod.getParameterAnnotations();
-		
+
 		Object[] args = new Object[parameters.length];
-		
+
 		actionMethod.setAccessible(true);
+
 		String[] paramaterNames = AsmKit.getMethodParamNames(actionMethod);
 
 		for (int i = 0, len = parameters.length; i < len; i++) {
@@ -139,7 +140,7 @@ public final class MethodArgument {
 						val = request.pathParam(paramName);
 					}
 					if (StringKit.isBlank(val)) {
-						throw new NotFoundException("path param [" + paramName + "] is null");
+						val = pathParam.defaultValue();
 					}
 					args[i] = getRequestParam(argType, val);
 				}
@@ -147,8 +148,8 @@ public final class MethodArgument {
 		}
 		return args;
 	}
-	
-	private static Object getRequestParam(Class<?> parameterType, String val) {
+
+	public static Object getRequestParam(Class<?> parameterType, String val) {
 		Object result = null;
 		if (parameterType.equals(String.class)) {
 			result = val;
@@ -171,5 +172,5 @@ public final class MethodArgument {
 		}
 		return result;
 	}
-	
+
 }
