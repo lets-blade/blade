@@ -12,12 +12,12 @@ import com.blade.mvc.annotation.Route;
 public class IndexController {
 
     @Route("sayHi")
-    public void sayHi(@QueryParam("name") String name){
+    public void sayHi(@QueryParam(value = "name", required = true) String name){
         System.out.println("name = " + name);
     }
 
     @Route("sayHi/:name")
-    public void sayHi2(@PathParam String name){
+    public void sayHi2(@PathParam Long name){
         System.out.println("name = " + name);
     }
 

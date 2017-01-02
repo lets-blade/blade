@@ -83,4 +83,5 @@ public interface Const {
 	String 	APP_DEV				= "app.dev";
 	String	APP_IOC				= "app.ioc";
 	String	APP_BASE_PKG		= "app.base-package";
+	String	APP_CLASSPATH		= "app.classpath";
 }

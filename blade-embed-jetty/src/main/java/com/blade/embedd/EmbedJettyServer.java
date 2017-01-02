@@ -5,6 +5,7 @@ import com.blade.Const;
 import com.blade.context.WebContextListener;
 import com.blade.exception.EmbedServerException;
 import com.blade.kit.CollectionKit;
+import com.blade.kit.StringKit;
 import com.blade.kit.base.Config;
 import com.blade.mvc.DispatcherServlet;
 import org.eclipse.jetty.server.*;
@@ -20,6 +21,7 @@ import org.slf4j.LoggerFactory;
 import javax.servlet.DispatcherType;
 import javax.servlet.Filter;
 import javax.servlet.http.HttpServlet;
+import java.io.File;
 import java.util.EnumSet;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -34,7 +36,9 @@ public class EmbedJettyServer implements EmbedServer {
     private int port = Const.DEFAULT_PORT;
 	
 	private Server server;
-	
+
+	private String classPath;
+
 	private WebAppContext webAppContext;
 
 	private Set<String> staticFolders;
@@ -46,6 +50,8 @@ public class EmbedJettyServer implements EmbedServer {
 		$().loadAppConf("jetty.properties");
 		config = $().config();
 		staticFolders = $().configuration().getResources();
+		File f = new File(this.getClass().getResource("/").getPath());
+		this.classPath = f.getParent() + File.separator + $().configuration().getClassPath();
 		$().enableServer(true);
 	}
 	
@@ -116,6 +122,11 @@ public class EmbedJettyServer implements EmbedServer {
 	    webAppContext.addServlet(servletHolder, "/");
 
 		ServletHolder defaultHolder = new ServletHolder(DefaultServlet.class);
+		if(StringKit.isNotBlank(classPath)){
+			LOGGER.info("add classpath : {}", classPath);
+			defaultHolder.setInitParameter("resourceBase", classPath);
+		}
+
 		for(String s : staticFolders){
 			webAppContext.addServlet(defaultHolder, s);
 		}

@@ -54,6 +54,8 @@ public class Configuration {
 	
 	private Class<?> applicationClass;
 
+	private String classPath = "config";
+
 	private Config config = new Config();
 
 	public Configuration() {
@@ -83,7 +85,9 @@ public class Configuration {
 			
 			// get app base package
 			String basePackage = config.get(Const.APP_BASE_PKG);
-			
+
+			this.classPath = config.get(Const.APP_CLASSPATH, "config");
+
 			// get server start port
 			Integer port = config.getInt(Const.SERVER_PORT, Const.DEFAULT_PORT);
 			$().listen(port);
@@ -195,6 +199,10 @@ public class Configuration {
 	
 	public void setDev(boolean isDev) {
 		this.isDev = isDev;
+	}
+
+	public String getClassPath() {
+		return classPath;
 	}
 
 	public void load(String location) {
