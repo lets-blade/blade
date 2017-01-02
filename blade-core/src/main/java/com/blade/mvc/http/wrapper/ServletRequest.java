@@ -20,13 +20,13 @@ import com.blade.kit.CollectionKit;
 import com.blade.kit.IOKit;
 import com.blade.kit.ObjectKit;
 import com.blade.kit.StringKit;
+import com.blade.mvc.handler.MultipartHandler;
 import com.blade.mvc.http.HttpMethod;
 import com.blade.mvc.http.Path;
 import com.blade.mvc.http.Request;
 import com.blade.mvc.multipart.FileItem;
 import com.blade.mvc.multipart.Multipart;
 import com.blade.mvc.multipart.MultipartException;
-import com.blade.mvc.handler.MultipartHandler;
 import com.blade.mvc.route.Route;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -253,25 +253,12 @@ public class ServletRequest implements Request {
 
 	@Override
 	public String query(String name) {
-		String[] param = request.getParameterValues(name);
-		String val;
-		if (param != null) {
-			val = join(param);
-		} else {
-			val = queryParams.get(name);
-		}
-		return val;
+		return request.getParameter(name);
 	}
 	
 	@Override
 	public String query(String name, String defaultValue) {
-		String[] param = request.getParameterValues(name);
-		String val;
-		if (param != null) {
-			val = join(param);
-		} else {
-			val = queryParams.get(name);
-		}
+		String val = this.query(name);
 		if(null == val){
 			val = defaultValue;
 		}

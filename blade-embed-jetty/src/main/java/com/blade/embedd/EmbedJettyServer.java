@@ -10,6 +10,7 @@ import com.blade.mvc.DispatcherServlet;
 import org.eclipse.jetty.server.*;
 import org.eclipse.jetty.server.handler.DefaultHandler;
 import org.eclipse.jetty.server.handler.HandlerList;
+import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.webapp.WebAppContext;
@@ -35,13 +36,16 @@ public class EmbedJettyServer implements EmbedServer {
 	private Server server;
 	
 	private WebAppContext webAppContext;
-	
+
+	private Set<String> staticFolders;
+
 	private Config config = null;
 	
 	public EmbedJettyServer() {
 		System.setProperty("org.apache.jasper.compiler.disablejsr199", "true");
 		$().loadAppConf("jetty.properties");
 		config = $().config();
+		staticFolders = $().configuration().getResources();
 		$().enableServer(true);
 	}
 	
@@ -108,9 +112,14 @@ public class EmbedJettyServer implements EmbedServer {
 	    servletHolder.setAsyncSupported(false);
 	    servletHolder.setInitOrder(1);
 
-	    webAppContext.addEventListener(new WebContextListener());
+		webAppContext.addEventListener(new WebContextListener());
 	    webAppContext.addServlet(servletHolder, "/");
-	    
+
+		ServletHolder defaultHolder = new ServletHolder(DefaultServlet.class);
+		for(String s : staticFolders){
+			webAppContext.addServlet(defaultHolder, s);
+		}
+
 	    try {
 	    	
 	    	loadServlets(webAppContext);

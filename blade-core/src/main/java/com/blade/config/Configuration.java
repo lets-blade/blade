@@ -58,7 +58,7 @@ public class Configuration {
 
 	public Configuration() {
 		this.packages = new Packages();
-		this.addResources("/public", "/assets", "/static");
+		this.addResources("/public/*", "/assets/*", "/static/*");
 	}
 
 	public void setEnv(Config config) {

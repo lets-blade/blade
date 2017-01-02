@@ -209,6 +209,11 @@ public final class IocApplication {
 		if(null != ioc.getBeans() && !ioc.getBeans().isEmpty()){
 			LOGGER.info("Add Object: {}", ioc.getBeans());
 		}
+
+		// init configs
+		for(BaseConfig baseConfig : baseConfigs){
+			baseConfig.config(blade.configuration());
+		}
 		
 		// injection
 		List<BeanDefine> beanDefines = ioc.getBeanDefines();
@@ -217,11 +222,7 @@ public final class IocApplication {
 				IocKit.injection(ioc, beanDefines.get(i));
 			}
 		}
-		
-		// init configs
-		for(BaseConfig baseConfig : baseConfigs){
-			baseConfig.config(blade.configuration());
-		}
+
 	}
 	
 	public static List<Object> getAopInterceptors() {

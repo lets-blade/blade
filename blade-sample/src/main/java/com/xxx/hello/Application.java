@@ -29,7 +29,9 @@ public class Application {
 
         }).get("/hello", (request, response)-> {
 
-            request.attribute("name", "boy");
+            String name = request.query("name", "boy");
+
+            request.attribute("name", name);
             response.render("hello.vm");
 
         }).start(Application.class);
