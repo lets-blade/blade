@@ -34,6 +34,9 @@ public class Application {
             request.attribute("name", name);
             response.render("hello.vm");
 
+        }).delete("/user/:id", (request, response)-> {
+            int id = request.pathParamAsInt("id");
+            System.out.println("userid is " + id);
         }).start(Application.class);
     }
 

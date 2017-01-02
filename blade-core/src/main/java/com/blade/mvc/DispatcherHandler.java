@@ -22,10 +22,7 @@ import com.blade.ioc.Ioc;
 import com.blade.kit.DispatchKit;
 import com.blade.kit.StringKit;
 import com.blade.mvc.handler.RouteHandler;
-import com.blade.mvc.http.HttpStatus;
-import com.blade.mvc.http.Path;
-import com.blade.mvc.http.Request;
-import com.blade.mvc.http.Response;
+import com.blade.mvc.http.*;
 import com.blade.mvc.http.wrapper.ServletRequest;
 import com.blade.mvc.http.wrapper.ServletResponse;
 import com.blade.mvc.route.Route;
@@ -85,31 +82,29 @@ class DispatcherHandler {
 			// reuqest uri
 			String uri = Path.getRelativePath(httpRequest.getRequestURI(), servletContext.getContextPath());
 
-			// If it is static, the resource is handed over to the filter
-			if(staticFileFilter.isStatic(uri)){
-				LOGGER.debug("Request : {}\t{}", method, uri);
-				DispatchKit.printStatic(uri, httpRequest, response);
-				return;
-			}
+        	LOGGER.info("{}\t{}\t{}", method, uri, httpRequest.getProtocol());
 
-        	LOGGER.info("Request : {}\t{}", method, uri);
-        	
         	Request request = new ServletRequest(httpRequest);
          	WebContextHolder.init(servletContext, request, response);
 			Route route = routeMatcher.getRoute(method, uri);
 			if (null != route) {
-				request.setRoute(route);
-				
-				// before inteceptor
-				List<Route> befores = routeMatcher.getBefore(uri);
-				boolean result = invokeInterceptor(request, response, befores);
-				if(result){
-					// execute
-					this.routeHandle(request, response, route);
-					if(!request.isAbort()){
-						// after inteceptor
-						List<Route> afters = routeMatcher.getAfter(uri);
-						invokeInterceptor(request, response, afters);
+
+				if(route.getHttpMethod() != HttpMethod.valueOf(method) && route.getHttpMethod() != HttpMethod.ALL){
+					render405(response, uri);
+				} else {
+					request.setRoute(route);
+
+					// before inteceptor
+					List<Route> befores = routeMatcher.getBefore(uri);
+					boolean result = invokeInterceptor(request, response, befores);
+					if(result){
+						// execute
+						this.routeHandle(request, response, route);
+						if(!request.isAbort()){
+							// after inteceptor
+							List<Route> afters = routeMatcher.getAfter(uri);
+							invokeInterceptor(request, response, afters);
+						}
 					}
 				}
 			} else {
@@ -121,7 +116,19 @@ class DispatcherHandler {
 			DispatchKit.printError(e, 500, response);
 		}
 	}
-	
+
+	private void render405(Response response, String uri) throws Exception {
+		String view404 = ViewSettings.$().getView404();
+		if(StringKit.isNotBlank(view404)){
+			ModelAndView modelAndView = new ModelAndView(view404);
+			modelAndView.add("viewName", uri);
+			response.render( modelAndView );
+		} else {
+			response.status(HttpStatus.METHOD_NOT_ALLOWED);
+			response.html(String.format(Const.VIEW_405, uri));
+		}
+	}
+
 	/**
 	 * 404 view render
 	 * 
@@ -138,7 +145,7 @@ class DispatcherHandler {
     		response.render( modelAndView );
     	} else {
     		response.status(HttpStatus.NOT_FOUND);
-    		response.html(String.format(Const.VIEW_NOTFOUND, uri));
+    		response.html(String.format(Const.VIEW_404, uri));
 		}
 	}
 	

@@ -76,12 +76,9 @@ public class RouteMatcher {
 
 		routeKeys.forEach(key -> {
 			String[] keyArr =  StringKit.split(key, '#');
-			HttpMethod routeMethod = HttpMethod.valueOf(keyArr[1]);
 			if (matchesPath(keyArr[0], cleanPath)) {
-				if (routeMethod == HttpMethod.ALL || HttpMethod.valueOf(httpMethod) == routeMethod) {
-					route[0] = routes.get(key);
-					matchRoutes.add(route[0]);
-				}
+				route[0] = routes.get(key);
+				matchRoutes.add(route[0]);
 			}
 		});
 

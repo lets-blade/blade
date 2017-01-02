@@ -33,14 +33,19 @@ public interface Const {
 	String	VERSION				= "1.7.0-alpha";
 
 	/**
-	 * server 500 error HTML
+	 * server 500
 	 */
-	String INTERNAL_ERROR		= "<html><head><title>500 Internal Error</title></head><body bgcolor=\"white\"><center><h1>500 Internal Error</h1></center><hr><center>blade " + VERSION +"</center></body></html>";
+	String VIEW_500				= "<html><head><title>500 Internal Error</title></head><body bgcolor=\"white\"><center><h1>500 Internal Error</h1></center><hr><center>blade " + VERSION +"</center></body></html>";
 
     /**
-	 * server 404 error HTML
+	 * server 404
 	 */
-	String VIEW_NOTFOUND		= "<html><head><title>404 Not Found</title></head><body bgcolor=\"white\"><center><h1>[ %s ] Not Found</h1></center><hr><center>blade " + VERSION +"</center></body></html>";
+	String VIEW_404				= "<html><head><title>404 Not Found</title></head><body bgcolor=\"white\"><center><h1>[ %s ] Not Found</h1></center><hr><center>blade " + VERSION +"</center></body></html>";
+
+	/**
+	 * server 405
+	 */
+	String VIEW_405				= "<html><head><title>403 Uri Forbidden</title></head><body bgcolor=\"white\"><center><h1>[ %s ] Method Not Allowed</h1></center><hr><center>blade " + VERSION +"</center></body></html>";
 
 	/**
 	 * default web server port

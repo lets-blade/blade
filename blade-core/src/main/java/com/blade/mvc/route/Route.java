@@ -65,7 +65,7 @@ public class Route {
 		this.action = action;
 	}
 	
-	HttpMethod getHttpMethod() {
+	public HttpMethod getHttpMethod() {
 		return httpMethod;
 	}
 

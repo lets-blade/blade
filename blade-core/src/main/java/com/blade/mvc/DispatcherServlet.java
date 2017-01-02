@@ -24,6 +24,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.blade.Blade;
+import com.blade.Const;
 
 /**
  * Blade Core DispatcherServlet
@@ -51,6 +52,7 @@ public class DispatcherServlet extends HttpServlet {
 	protected void service(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws ServletException, IOException {
 		httpRequest.setCharacterEncoding(blade.encoding());
 		httpResponse.setCharacterEncoding(blade.encoding());
+		httpResponse.setHeader("server", "blade " + Const.VERSION);
 		dispatcherHandler.handle(httpRequest, httpResponse);
 	}
 	

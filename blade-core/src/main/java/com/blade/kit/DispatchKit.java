@@ -1,40 +1,27 @@
 package com.blade.kit;
 
-import static com.blade.Blade.$;
-
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
-import java.net.URL;
-import java.net.URLDecoder;
-
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import com.blade.Blade;
+import com.blade.Const;
+import com.blade.mvc.http.Response;
+import com.blade.mvc.view.ViewSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.blade.Blade;
-import com.blade.Const;
-import com.blade.mvc.http.HttpException;
-import com.blade.mvc.http.Response;
-import com.blade.mvc.view.ViewSettings;
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
+import java.net.URL;
+import java.net.URLDecoder;
+
+import static com.blade.Blade.$;
 
 public class DispatchKit {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(DispatchKit.class);
 
-	static final boolean isWeb = !$().enableServer();
+	private static final boolean isWeb = !$().enableServer();
 
-	static final Class<?> appClass = $().applicationConfig().getApplicationClass();
+	private static final Class<?> appClass = $().configuration().getApplicationClass();
 
 	private static Boolean isDev = null;
 	
@@ -141,7 +128,7 @@ public class DispatchKit {
 						}
 						return;
 					} else {
-						writer.write(Const.INTERNAL_ERROR);
+						writer.write(Const.VIEW_500);
 					}
 				}
 			}
@@ -154,17 +141,6 @@ public class DispatchKit {
 		}
 	}
 
-	/**
-	 * Print
-	 * 
-	 * @param body
-	 * @param out
-	 * @throws IOException
-	 */
-	public static void print(InputStream in, OutputStream out) throws IOException {
-		StreamKit.io(in, out);
-	}
-
 	public static void print(InputStream body, PrintWriter writer) throws IOException {
 		print(IOKit.toString(body), writer);
 	}
@@ -173,41 +149,6 @@ public class DispatchKit {
 		writer.print(content);
 		writer.flush();
 		writer.close();
-	}
-
-	/**
-	 * Print static file
-	 * 
-	 * @param uri
-	 * @param realpath
-	 * @param httpResponse
-	 */
-	public static void printStatic(String uri, HttpServletRequest request, Response response) {
-		try {
-			String realpath = "";
-			InputStream ins = null;
-			if (isWeb) {
-				realpath = request.getServletContext().getRealPath(uri);
-				File file = new File(realpath);
-				if (FileKit.exist(file)) {
-					ins = new FileInputStream(file);
-				}
-			} else {
-				ins = appClass.getResourceAsStream(uri);
-			}
-
-			if (null != ins) {
-				print(ins, response.outputStream());
-			} else {
-				LOGGER.debug("request realpath is [{}]", realpath);
-				HttpException httpException = new HttpException(404, uri + " not found");
-				DispatchKit.printError(httpException, 404, response);
-			}
-		} catch (FileNotFoundException e) {
-			DispatchKit.printError(e, 404, response);
-		} catch (IOException e) {
-			DispatchKit.printError(e, 500, response);
-		}
 	}
 
 	private static final String HTML = "<!DOCTYPE html><html><head><meta charset='utf-8'><title>Blade Error Page</title>"
