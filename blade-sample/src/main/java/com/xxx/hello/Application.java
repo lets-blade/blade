@@ -2,9 +2,11 @@ package com.xxx.hello;
 
 import com.blade.Const;
 import com.blade.kit.json.JSONObject;
+import com.blade.mvc.http.HttpMethod;
 import com.blade.mvc.view.RestResponse;
 import com.blade.mvc.view.ViewSettings;
 import com.blade.mvc.view.template.VelocityTemplateEngine;
+import com.xxx.hello.controller.MsgController;
 
 import static com.blade.Blade.$;
 
@@ -17,6 +19,9 @@ public class Application {
 
         // setting default template engine is velocity :)
         ViewSettings.$().templateEngine(new VelocityTemplateEngine());
+
+        $().route("/msg", MsgController.class, "msg", HttpMethod.GET);
+
 
         $().get("/", (request, response) -> {
 

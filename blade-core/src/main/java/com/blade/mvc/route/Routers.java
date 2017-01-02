@@ -130,37 +130,18 @@ public class Routers {
 		}
 	}
 	
-	private Map<String, Method[]> classMethosPool = CollectionKit.newHashMap(8);
-	
+	private Map<String, Method[]> classMethosPool = CollectionKit.newHashMap(16);
+	private Map<Class<?>, Object> controllerPool = CollectionKit.newHashMap(16);
+
 	public void route(String path, Class<?> clazz, String methodName) {
-		
-		Assert.notNull(path, "Route path not is null!");
-		Assert.notNull(clazz, "Class Type not is null!");
 		Assert.notNull(methodName, "Method name not is null");
-		
 		HttpMethod httpMethod = HttpMethod.ALL;
 		if(methodName.contains(":")){
 			String[] methodArr = methodName.split(":");
 			httpMethod = HttpMethod.valueOf(methodArr[0].toUpperCase());
 			methodName = methodArr[1];
 		}
-		try {
-			
-			Method[] methods = classMethosPool.get(clazz.getName());
-			if(null == methods){
-				methods = clazz.getMethods();
-				classMethosPool.put(clazz.getName(), methods);
-			}
-			if(null != methods){
-				for (Method method : methods) {
-					if (method.getName().equals(methodName)) {
-						addRoute(httpMethod, path, ReflectKit.newInstance(clazz), clazz, method);
-					}
-				}
-			}
-		} catch (Exception e) {
-			LOGGER.error("", e);
-		}
+		this.route(path, clazz, methodName, httpMethod);
 	}
 	
 	public void route(String path, Class<?> clazz, String methodName, HttpMethod httpMethod) {
@@ -169,8 +150,24 @@ public class Routers {
 			Assert.notNull(clazz, "Class Type not is null!");
 			Assert.notNull(methodName, "Method name not is null");
 			Assert.notNull(httpMethod, "Request Method not is null");
-			Method method = clazz.getMethod(methodName, Request.class, Response.class);
-			addRoute(httpMethod, path, null, clazz, method);
+
+			Method[] methods = classMethosPool.get(clazz.getName());
+			if(null == methods){
+				methods = clazz.getMethods();
+				classMethosPool.put(clazz.getName(), methods);
+			}
+			if(null != methods){
+				for (Method method : methods) {
+					if (method.getName().equals(methodName)) {
+						Object controller = controllerPool.get(clazz);
+						if(null == controller){
+							controller = ReflectKit.newInstance(clazz);
+							controllerPool.put(clazz, controller);
+						}
+						addRoute(httpMethod, path, controller, clazz, method);
+					}
+				}
+			}
 		} catch (Exception e) {
 			LOGGER.error("", e);
 		}
