@@ -79,11 +79,6 @@ public class WebContextListener implements ServletContextListener, HttpSessionLi
 		    LOGGER.info("blade.webroot\t=> {}", webRoot);
 		    
 		    try {
-				if(!blade.configuration().isInit()){
-				    blade.loadAppConf(Const.APP_PROPERTIES);
-					blade.configuration().setEnv(blade.config());
-			    }
-				
 				// initialization ioc
 				IocApplication iocApplication = new IocApplication();
 				iocApplication.initBeans();

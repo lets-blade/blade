@@ -28,7 +28,10 @@ import com.blade.kit.base.Config;
 import com.blade.mvc.handler.RouteHandler;
 import com.blade.mvc.http.HttpMethod;
 import com.blade.mvc.interceptor.Interceptor;
-import com.blade.mvc.route.*;
+import com.blade.mvc.route.Route;
+import com.blade.mvc.route.RouteBuilder;
+import com.blade.mvc.route.RouteGroup;
+import com.blade.mvc.route.Routers;
 import com.blade.mvc.route.loader.ClassPathRouteLoader;
 import com.blade.plugin.Plugin;
 
@@ -551,6 +554,11 @@ public final class Blade {
 				embedClazz = Class.forName(Const.TOMCAT_SERVER_CLASS);
 			}
 			if(null != embedClazz){
+				if(!configuration().isInit()){
+					loadAppConf(Const.APP_PROPERTIES);
+					configuration().setEnv(config());
+				}
+
 				this.embedServer = (EmbedServer) embedClazz.newInstance();
 				this.embedServer.startup(config().getInt(Const.SERVER_PORT, Const.DEFAULT_PORT), contextPath);
 				this.enableServer = true;
@@ -653,9 +661,7 @@ public final class Blade {
 			routesLoader.setBasePackage(basePackage);
 			List<Route> routes = routesLoader.load();
 			routers.addRoutes(routes);
-		} catch (RouteException e) {
-			e.printStackTrace();
-		} catch (ParseException e) {
+		} catch (RouteException | ParseException e) {
 			e.printStackTrace();
 		}
 		return this;

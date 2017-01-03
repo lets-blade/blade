@@ -41,7 +41,7 @@ public final class DynamicContext {
 	
 	public static void init(Class<?> clazz){
 		String rs = clazz.getResource("").toString();
-		if(rs.indexOf(".jar") != -1){
+		if(rs.contains(".jar")){
 			CLASS_READER = new JarReaderImpl();
 			isJarContext = true;
 			LOGGER.debug("{}", CLASS_READER);

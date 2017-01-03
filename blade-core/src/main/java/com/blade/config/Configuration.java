@@ -209,7 +209,7 @@ public class Configuration {
 		try {
 			config.add(location);
 		} catch (Exception e){
-			System.out.println("[load config] " + e.getMessage());
+			LOGGER.warn("[load config] " + e.getMessage());
 		}
 	}
 
