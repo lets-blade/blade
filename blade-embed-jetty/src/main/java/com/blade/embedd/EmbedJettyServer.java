@@ -37,6 +37,8 @@ public class EmbedJettyServer implements EmbedServer {
 	
 	private Server server;
 
+	private String webRoot;
+
 	private String classPath;
 
 	private WebAppContext webAppContext;
@@ -50,8 +52,14 @@ public class EmbedJettyServer implements EmbedServer {
 		$().loadAppConf("jetty.properties");
 		config = $().config();
 		staticFolders = $().configuration().getResources();
-		File f = new File(this.getClass().getResource("/").getPath());
-		this.classPath = f.getParent() + File.separator + $().configuration().getClassPath();
+
+		String urlStr = EmbedJettyServer.class.getResource("").getPath();
+		int pos = urlStr.indexOf("jar!/");
+		if(pos != -1){
+			String jarPath = new File(urlStr.substring(5, pos + 2)).getParent();
+			this.classPath = new File(jarPath).getParent() + File.separator + $().configuration().getClassPath();
+		}
+
 		$().enableServer(true);
 	}
 	
@@ -67,6 +75,7 @@ public class EmbedJettyServer implements EmbedServer {
 	
 	@Override
 	public void setWebRoot(String webRoot) {
+		this.webRoot = webRoot;
 		webAppContext.setResourceBase(webRoot);
 	}
 	
