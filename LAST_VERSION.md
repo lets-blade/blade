@@ -25,7 +25,7 @@
 <dependency>
     <groupId>com.bladejava</groupId>
     <artifactId>blade-kit</artifactId>
-    <version>1.3.4</version>
+    <version>1.4.0-alpha</version>
 </dependency>
 ```
 
@@ -34,7 +34,7 @@
 <dependency>
     <groupId>com.bladejava</groupId>
     <artifactId>blade-core</artifactId>
-    <version>1.6.7-beta</version>
+    <version>1.7.0-alpha</version>
 </dependency>
 ```
 
@@ -43,16 +43,16 @@
 <dependency>
     <groupId>com.bladejava</groupId>
     <artifactId>blade-embed-jetty</artifactId>
-    <version>0.0.6</version>
+    <version>0.0.7</version>
 </dependency>
 ```
 
-## [blade-websocket-jetty](http://search.maven.org/#search%7Cga%7C1%7Cblade-websocket-jetty)
+## [blade-template-jetbrick](http://search.maven.org/#search%7Cga%7C1%7Cblade-template-jetbrick)
 ```xml
 <dependency>
     <groupId>com.bladejava</groupId>
-    <artifactId>blade-websocket-jetty</artifactId>
-    <version>0.0.1</version>
+    <artifactId>blade-template-jetbrick</artifactId>
+    <version>0.0.7</version>
 </dependency>
 ```
 
@@ -61,25 +61,7 @@
 <dependency>
     <groupId>com.bladejava</groupId>
     <artifactId>blade-jdbc</artifactId>
-    <version>0.1.3-beta</version>
-</dependency>
-```
-
-## [blade-cache](http://search.maven.org/#search%7Cga%7C1%7Cblade-cache)
-```xml
-<dependency>
-    <groupId>com.bladejava</groupId>
-    <artifactId>blade-cache</artifactId>
-    <version>1.2.3</version>
-</dependency>
-```
-
-## [blade-redis](http://search.maven.org/#search%7Cga%7C1%7Cblade-redis)
-```xml
-<dependency>
-    <groupId>com.bladejava</groupId>
-    <artifactId>blade-redis</artifactId>
-    <version>1.2.3</version>
+    <version>0.1.4-alpha</version>
 </dependency>
 ```
 
@@ -88,7 +70,7 @@
 <dependency>
     <groupId>com.bladejava</groupId>
     <artifactId>blade-patchca</artifactId>
-    <version>1.0.4</version>
+    <version>1.0.5</version>
 </dependency>
 ```
 
