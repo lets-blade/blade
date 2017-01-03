@@ -64,7 +64,7 @@ public class WebContextListener implements ServletContextListener, HttpSessionLi
 			LOGGER.info("user.dir\t\t=> {}", System.getProperty("user.dir"));
 			LOGGER.info("java.io.tmpdir\t=> {}", System.getProperty("java.io.tmpdir"));
 			LOGGER.info("user.timezone\t=> {}", System.getProperty("user.timezone"));
-			LOGGER.info("file.encodin\t=> {}", System.getProperty("file.encoding"));
+			LOGGER.info("file.encoding\t=> {}", System.getProperty("file.encoding"));
 			
 			long initStart = System.currentTimeMillis();
 			
@@ -79,9 +79,9 @@ public class WebContextListener implements ServletContextListener, HttpSessionLi
 		    LOGGER.info("blade.webroot\t=> {}", webRoot);
 		    
 		    try {
-				if(!blade.applicationConfig().isInit()){
+				if(!blade.configuration().isInit()){
 				    blade.loadAppConf(Const.APP_PROPERTIES);
-					blade.applicationConfig().setEnv(blade.config());
+					blade.configuration().setEnv(blade.config());
 			    }
 				
 				// initialization ioc
