@@ -2,6 +2,7 @@ package com.blade.embedd;
 
 import com.blade.Blade;
 import com.blade.Const;
+import com.blade.context.DynamicContext;
 import com.blade.context.WebContextListener;
 import com.blade.exception.EmbedServerException;
 import com.blade.kit.CollectionKit;
@@ -21,7 +22,7 @@ import org.slf4j.LoggerFactory;
 import javax.servlet.DispatcherType;
 import javax.servlet.Filter;
 import javax.servlet.http.HttpServlet;
-import java.io.File;
+import java.net.URL;
 import java.util.EnumSet;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -37,8 +38,6 @@ public class EmbedJettyServer implements EmbedServer {
 	
 	private Server server;
 
-	private String webRoot;
-
 	private String classPath;
 
 	private WebAppContext webAppContext;
@@ -53,11 +52,19 @@ public class EmbedJettyServer implements EmbedServer {
 		config = $().config();
 		staticFolders = $().configuration().getResources();
 
-		String urlStr = EmbedJettyServer.class.getResource("").getPath();
-		int pos = urlStr.indexOf("jar!/");
-		if(pos != -1){
-			String jarPath = new File(urlStr.substring(5, pos + 2)).getParent();
-			this.classPath = new File(jarPath).getParent() + File.separator + $().configuration().getClassPath();
+		if(DynamicContext.isJarContext()){
+			URL url = EmbedJettyServer.class.getResource("/");
+			this.classPath = url.getPath();
+//			if(null == url){
+//				String urlStr = EmbedJettyServer.class.getResource("").getPath();
+//				int pos = urlStr.indexOf("jar!/");
+//				if(pos != -1){
+//					String jarPath = new File(urlStr.substring(5, pos + 2)).getParent();
+//					this.classPath = new File(jarPath).getParent() + File.separator + $().configuration().getClassPath();
+//
+//				}
+//			}
+			LOGGER.info("add classpath: {}", classPath);
 		}
 
 		$().enableServer(true);
@@ -75,7 +82,6 @@ public class EmbedJettyServer implements EmbedServer {
 	
 	@Override
 	public void setWebRoot(String webRoot) {
-		this.webRoot = webRoot;
 		webAppContext.setResourceBase(webRoot);
 	}
 	
