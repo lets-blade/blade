@@ -291,7 +291,7 @@ public abstract class ReflectKit {
 	/**
 	 * 
 	 * @param bean 类实例
-	 * @param methodName 方法名称
+	 * @param method 方法名称
 	 * @param args 方法参数
 	 * @return
 	 * @throws InvocationTargetException 

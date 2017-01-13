@@ -198,7 +198,12 @@ public class ServletRequest implements Request {
 	public String pathParam(String name) {
 		return pathParams.get(name);
 	}
-	
+
+	@Override
+	public String pathString(String name) {
+		return pathParams.get(name);
+	}
+
 	@Override
 	public String pathParam(String name, String defaultValue) {
 		String val = pathParams.get(name);
@@ -209,30 +214,48 @@ public class ServletRequest implements Request {
 	}
 
 	@Override
-	public Integer pathParamAsInt(String name) {
-		String value = pathParam(name);
+	public String pathString(String name, String defaultValue) {
+		String val = pathParams.get(name);
+		if(null == val){
+			val = defaultValue;
+		}
+		return val;
+	}
+
+	@Override
+	public int pathParamAsInt(String name) {
+		String value = pathString(name);
 		if (StringKit.isNotBlank(value)) {
 			return Integer.parseInt(value);
 		}
-		return null;
+		return 0;
 	}
 
 	@Override
-	public Long pathParamAsLong(String name) {
-		String value = pathParam(name);
+	public int pathInt(String name) {
+		String value = pathString(name);
+		if (StringKit.isNotBlank(value)) {
+			return Integer.parseInt(value);
+		}
+		return 0;
+	}
+
+	@Override
+	public long pathParamAsLong(String name) {
+		String value = pathString(name);
 		if (StringKit.isNotBlank(value)) {
 			return Long.parseLong(value);
 		}
-		return null;
+		return 0;
 	}
 
 	@Override
-	public Boolean pathParamAsBool(String name) {
-		String value = pathParam(name);
+	public long pathLong(String name) {
+		String value = pathString(name);
 		if (StringKit.isNotBlank(value)) {
-			return Boolean.parseBoolean(value);
+			return Long.parseLong(value);
 		}
-		return null;
+		return 0;
 	}
 
 	@Override
@@ -266,67 +289,79 @@ public class ServletRequest implements Request {
 	}
 
 	@Override
-	public Integer queryAsInt(String name) {
+	public int queryAsInt(String name) {
+		return queryInt(name);
+	}
+
+	@Override
+	public int queryInt(String name) {
+		return queryInt(name, 0);
+	}
+
+	@Override
+	public int queryInt(String name, int defaultValue) {
 		try {
 			String value = query(name);
 			if(StringKit.isBlank(value)){
-				return null;
+				return defaultValue;
 			}
 			return Integer.valueOf(value);
 		} catch (Exception e){
-			throw new BladeException(e.getMessage());
+			throw e;
 		}
 	}
 
 	@Override
-	public Long queryAsLong(String name) {
+	public long queryAsLong(String name) {
+		return queryLong(name);
+	}
+
+	@Override
+	public long queryLong(String name) {
+		return queryLong(name, 0);
+	}
+
+	@Override
+	public long queryLong(String name, long defaultValue) {
 		try {
 			String value = query(name);
 			if(StringKit.isBlank(value)){
-				return null;
+				return defaultValue;
 			}
 			return Long.valueOf(value);
 		} catch (Exception e){
-			throw new BladeException(e.getMessage());
+			throw e;
 		}
 	}
 
 	@Override
-	public Boolean queryAsBool(String name) {
-		String value = query(name);
-		if(StringKit.isBlank(value)){
-			return null;
-		}
-		if(StringKit.isBoolean(value)){
-			return Boolean.valueOf(value);
-		} else {
-			throw new BladeException("for string \"" + value + "\"");
-		}
-	}
-
-	@Override
-	public Float queryAsFloat(String name) {
+	public double queryAsDouble(String name) {
 		try {
 			String value = query(name);
 			if(StringKit.isBlank(value)){
-				return null;
-			}
-			return Float.valueOf(value);
-		} catch (Exception e){
-			throw new BladeException(e.getMessage());
-		}
-	}
-
-	@Override
-	public Double queryAsDouble(String name) {
-		try {
-			String value = query(name);
-			if(StringKit.isBlank(value)){
-				return null;
+				return 0;
 			}
 			return Double.valueOf(value);
 		} catch (Exception e){
-			throw new BladeException(e.getMessage());
+			throw e;
+		}
+	}
+
+	@Override
+	public double queryDouble(String name) {
+		return queryDouble(name, 0);
+	}
+
+	@Override
+	public double queryDouble(String name, double defaultValue) {
+		try {
+			String value = query(name);
+			if(StringKit.isBlank(value)){
+				return defaultValue;
+			}
+			return Double.valueOf(value);
+		} catch (Exception e){
+			throw e;
 		}
 	}
 
@@ -437,13 +472,18 @@ public class ServletRequest implements Request {
 	
 	@Override
 	public String cookie(String name) {
+		return this.cookie(name, null);
+	}
+
+	@Override
+	public String cookie(String name, String defaultValue) {
 		Cookie cookie = cookieRaw(name);
 		if(null != cookie){
 			return cookie.getValue();
 		}
-		return null;
+		return defaultValue;
 	}
-	
+
 	@Override
 	public Cookie cookieRaw(String name) {
 		javax.servlet.http.Cookie[] servletCookies = request.getCookies();
@@ -472,6 +512,15 @@ public class ServletRequest implements Request {
 	@Override
 	public String header(String name) {
 		return request.getHeader(name);
+	}
+
+	@Override
+	public String header(String name, String defaultValue) {
+		String value = request.getHeader(name);
+		if(StringKit.isBlank(value)){
+			return defaultValue;
+		}
+		return value;
 	}
 
 	@Override

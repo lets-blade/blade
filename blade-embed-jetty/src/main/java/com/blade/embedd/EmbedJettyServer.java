@@ -48,8 +48,10 @@ public class EmbedJettyServer implements EmbedServer {
 	
 	public EmbedJettyServer() {
 		System.setProperty("org.apache.jasper.compiler.disablejsr199", "true");
-		$().loadAppConf("jetty.properties");
-		config = $().config();
+
+		config = Config.load("classpath:jetty.properties");
+		config.add($().config());
+
 		staticFolders = $().configuration().getResources();
 
 		if(DynamicContext.isJarContext()){

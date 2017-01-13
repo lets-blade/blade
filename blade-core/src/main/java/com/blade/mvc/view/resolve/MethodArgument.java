@@ -15,7 +15,7 @@
  */
 package com.blade.mvc.view.resolve;
 
-import com.blade.exception.NotFoundException;
+import com.blade.exception.RouteException;
 import com.blade.kit.AsmKit;
 import com.blade.kit.StringKit;
 import com.blade.mvc.annotation.*;
@@ -71,6 +71,7 @@ public final class MethodArgument {
 					QueryParam queryParam = (QueryParam) annotation;
 					String paramName = queryParam.value();
 					String val = request.query(paramName);
+					boolean required = queryParam.required();
 
 					if (StringKit.isBlank(paramName)) {
 						assert paramaterNames != null;
@@ -80,8 +81,30 @@ public final class MethodArgument {
 					if (StringKit.isBlank(val)) {
 						val = queryParam.defaultValue();
 					}
+
+					if(required && StringKit.isBlank(val)){
+						throw new RouteException("query param [" + paramName + "] not is empty.");
+					}
+
 					args[i] = getRequestParam(argType, val);
 					continue;
+				}
+
+				// path param
+				if(annotation.annotationType() == PathParam.class){
+					PathParam pathParam = (PathParam) annotation;
+					String paramName = pathParam.value();
+					String val = request.pathParam(paramName);
+
+					if (StringKit.isBlank(paramName)) {
+						assert paramaterNames != null;
+						paramName = paramaterNames[i];
+						val = request.pathParam(paramName);
+					}
+					if (StringKit.isBlank(val)) {
+						val = pathParam.defaultValue();
+					}
+					args[i] = getRequestParam(argType, val);
 				}
 
 				// header param
@@ -89,12 +112,21 @@ public final class MethodArgument {
 					HeaderParam headerParam = (HeaderParam) annotation;
 					String paramName = headerParam.value();
 					String val = request.header(paramName);
+					boolean required = headerParam.required();
 
 					if (StringKit.isBlank(paramName)) {
 						assert paramaterNames != null;
 						paramName = paramaterNames[i];
 						val = request.header(paramName);
 					}
+					if (StringKit.isBlank(val)) {
+						val = headerParam.defaultValue();
+					}
+
+					if(required && StringKit.isBlank(val)){
+						throw new RouteException("header param [" + paramName + "] not is empty.");
+					}
+
 					args[i] = getRequestParam(argType, val);
 					continue;
 				}
@@ -104,11 +136,19 @@ public final class MethodArgument {
 					CookieParam cookieParam = (CookieParam) annotation;
 					String paramName = cookieParam.value();
 					String val = request.cookie(paramName);
+					boolean required = cookieParam.required();
 
 					if (StringKit.isBlank(paramName)) {
 						assert paramaterNames != null;
 						paramName = paramaterNames[i];
 						val = request.cookie(paramName);
+					}
+					if (StringKit.isBlank(val)) {
+						val = cookieParam.defaultValue();
+					}
+
+					if(required && StringKit.isBlank(val)){
+						throw new RouteException("cookie param [" + paramName + "] not is empty.");
 					}
 					args[i] = getRequestParam(argType, val);
 					continue;
@@ -116,6 +156,7 @@ public final class MethodArgument {
 
 				// form multipart
 				if(annotation.annotationType() == MultipartParam.class && argType == FileItem.class){
+
 					MultipartParam multipartParam = (MultipartParam) annotation;
 					String paramName = multipartParam.value();
 					FileItem val = request.fileItem(paramName);
@@ -128,22 +169,6 @@ public final class MethodArgument {
 					args[i] = val;
 					continue;
 				}
-
-				// path param
-				if(annotation.annotationType() == PathParam.class){
-					PathParam pathParam = (PathParam) annotation;
-					String paramName = pathParam.value();
-					String val = request.pathParam(paramName);
-					if (StringKit.isBlank(paramName)) {
-						assert paramaterNames != null;
-						paramName = paramaterNames[i];
-						val = request.pathParam(paramName);
-					}
-					if (StringKit.isBlank(val)) {
-						val = pathParam.defaultValue();
-					}
-					args[i] = getRequestParam(argType, val);
-				}
 			}
 		}
 		return args;
@@ -152,22 +177,31 @@ public final class MethodArgument {
 	public static Object getRequestParam(Class<?> parameterType, String val) {
 		Object result = null;
 		if (parameterType.equals(String.class)) {
-			result = val;
-		} else if (parameterType.equals(Integer.class) && StringKit.isNotBlank(val)) {
-			result = Integer.parseInt(val);
-		} else if (parameterType.equals(int.class) && StringKit.isNotBlank(val)) {
-			if(StringKit.isBlank(val)){
+			return val;
+		}
+		if(StringKit.isBlank(val)){
+			if(parameterType.equals(int.class) || parameterType.equals(double.class) ||
+					parameterType.equals(long.class)|| parameterType.equals(byte.class)|| parameterType.equals(float.class)){
 				result = 0;
-			} else {
+			}
+			if(parameterType.equals(boolean.class)){
+				result = false;
+			}
+		} else {
+			if(parameterType.equals(Integer.class) || parameterType.equals(int.class)){
 				result = Integer.parseInt(val);
 			}
-		} else if (parameterType.equals(Long.class) && StringKit.isNotBlank(val)) {
-			result = Long.parseLong(val);
-		} else if (parameterType.equals(long.class)) {
-			if(StringKit.isBlank(val)){
-				result = 0L;
-			} else {
-				result = Integer.parseInt(val);
+			if(parameterType.equals(Long.class) || parameterType.equals(long.class)){
+				result = Long.parseLong(val);
+			}
+			if(parameterType.equals(Double.class) || parameterType.equals(double.class)){
+				result = Double.parseDouble(val);
+			}
+			if(parameterType.equals(Boolean.class) || parameterType.equals(boolean.class)){
+				result = Boolean.parseBoolean(val);
+			}
+			if(parameterType.equals(Byte.class) || parameterType.equals(byte.class)){
+				result = Byte.parseByte(val);
 			}
 		}
 		return result;

@@ -31,7 +31,11 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface HeaderParam {
-	
+
+	boolean required() default false;
+
 	String value() default "";
+
+	String defaultValue() default "";
 
 }

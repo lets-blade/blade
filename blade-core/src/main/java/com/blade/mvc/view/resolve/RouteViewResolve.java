@@ -15,6 +15,7 @@
  */
 package com.blade.mvc.view.resolve;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import com.blade.exception.BladeException;
@@ -66,8 +67,10 @@ public class RouteViewResolve {
 					}
 				}
 			}
+		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e){
+			throw new BladeException(e.getMessage());
 		} catch (Exception e){
-			throw new BladeException(e);
+			throw e;
 		}
 	}
 

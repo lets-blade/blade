@@ -1,36 +1,30 @@
 package com.blade.kit.base;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.URL;
-import java.net.URLDecoder;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
-import java.util.concurrent.locks.Condition;
-
-import javax.servlet.ServletContext;
-
+import com.blade.kit.Assert;
+import com.blade.kit.CollectionKit;
+import com.blade.kit.IOKit;
+import com.blade.kit.StringKit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.blade.kit.IOKit;
-import com.blade.kit.StringKit;
+import javax.servlet.ServletContext;
+import java.io.*;
+import java.net.URL;
+import java.net.URLDecoder;
+import java.util.Map;
+import java.util.Properties;
 
 public class Config {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(Config.class);
 	
-    private final Map<String, String> config;
+    private Map<String, String> config = CollectionKit.newHashMap(32);
     
     public Config() {
-    	config = new HashMap<String, String>(32);
 	}
     
 	public Config load(Properties props) {
+        Assert.notNull(props, "properties not null");
         for (String key : props.stringPropertyNames()) {
             String value = props.getProperty(key);
             config.put(key, value);
@@ -38,6 +32,7 @@ public class Config {
         return this;
     }
 
+    @Deprecated
 	public Config load(Map<String, String> map) {
         config.putAll(map);
         return this;
@@ -71,6 +66,18 @@ public class Config {
     	}
     }
 
+    public void add(Config config){
+        if(null != config){
+            this.config.putAll(config.asMap());
+        }
+    }
+
+    public void addAll(Map<String, String> configMap){
+        if(null != configMap){
+            this.config.putAll(configMap);
+        }
+    }
+
     // 从 URL 载入
     public Config load(URL url) {
         String location = url.getPath();
@@ -92,14 +99,14 @@ public class Config {
             classpath = classpath.substring(1);
         }
         InputStream is = getDefault().getResourceAsStream(classpath);
-        LOGGER.info("Load config [classpath:" + classpath + "]");
+        LOGGER.debug("Load config [classpath:" + classpath + "]");
         return loadInputStream(is, classpath);
     }
     
     // 从 File 载入
     public Config load(File file) {
         try {
-        	LOGGER.info("Load config [file:" + file.getPath() + "]");
+        	LOGGER.debug("Load config [file:" + file.getPath() + "]");
             return loadInputStream(new FileInputStream(file), file.getName());
         } catch (IOException e) {
             throw new IllegalStateException(e);
@@ -124,9 +131,9 @@ public class Config {
 
     private Config loadInputStream(InputStream is, String location) {
         if (is == null) {
-            throw new IllegalStateException("InputStream not found: " + location);
+            LOGGER.warn("InputStream not found: " + location);
+            return new Config();
         }
-        location = location.toLowerCase();
         try {
             Properties config = new Properties();
             config.load(is);
