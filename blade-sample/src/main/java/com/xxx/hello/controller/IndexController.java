@@ -17,7 +17,7 @@ public class IndexController {
     }
 
     @Route("sayHi/:name")
-    public void sayHi2(@PathParam Long name){
+    public void sayHi2(@PathParam String name){
         System.out.println("name = " + name);
     }
 
