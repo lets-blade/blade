@@ -32,7 +32,7 @@ import com.blade.mvc.route.Route;
  * HTTP Request
  *
  * @author    <a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
- * @since 1.5
+ * @since 1.7.0-beta
  */
 public interface Request {
 
@@ -98,7 +98,7 @@ public interface Request {
     Map<String, String> pathParams();
 
     /**
-     * @see String pathString(String name)
+     * @see #pathString(String name)
      *
      * @param name    Parameter name
      * @return Return parameter value
@@ -115,7 +115,7 @@ public interface Request {
     String pathString(String name);
 
     /**
-     * @see String pathString(String name, String defaultValue)
+     * @see #pathString(String name, String defaultValue)
      *
      * @param name            Parameter name
      * @param defaultValue    Default Value
@@ -134,7 +134,7 @@ public interface Request {
     String pathString(String name, String defaultValue);
 
     /**
-     * @see int pathInt(String name)
+     * @see #pathInt(String name)
      *
      * @param name    Parameter name
      * @return Return Int parameter value
@@ -151,7 +151,7 @@ public interface Request {
     int pathInt(String name);
 
     /**
-     * @see Long pathLong(String name)
+     * @see #pathLong(String name)
      *
      * @param name    Parameter name
      * @return Return Long parameter value
@@ -195,7 +195,7 @@ public interface Request {
     String query(String name, String defaultValue);
 
     /**
-     * @see Integer queryInt(String name)
+     * @see #queryInt(String name)
      *
      * @param name    Parameter name
      * @return Return Int parameter values
@@ -221,7 +221,7 @@ public interface Request {
     int queryInt(String name, int defaultValue);
 
     /**
-     * @see Long queryLong(String name)
+     * @see #queryLong(String name)
      *
      * @param name    Parameter name
      * @return Return Long parameter values
@@ -247,7 +247,7 @@ public interface Request {
     long queryLong(String name, long defaultValue);
 
     /**
-     * @see Double queryDouble(String name)
+     * @see #queryDouble(String name)
      *
      * @param name    Parameter name
      * @return Return Double parameter values

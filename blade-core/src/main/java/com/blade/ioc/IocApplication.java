@@ -90,7 +90,7 @@ public final class IocApplication {
 					}
 				}
 			}
-			Collections.sort(configs, orderComparator);
+			configs.sort(orderComparator);
 			return configs;
 		}
 		return null;

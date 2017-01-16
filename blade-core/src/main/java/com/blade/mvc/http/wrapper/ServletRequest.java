@@ -15,7 +15,6 @@
  */
 package com.blade.mvc.http.wrapper;
 
-import com.blade.exception.BladeException;
 import com.blade.kit.CollectionKit;
 import com.blade.kit.IOKit;
 import com.blade.kit.ObjectKit;
@@ -44,7 +43,7 @@ import java.util.regex.Pattern;
  * ServletRequest
  *
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
- * @since	1.5
+ * @since	1.7.0-beta
  */
 public class ServletRequest implements Request {
 	
@@ -74,16 +73,15 @@ public class ServletRequest implements Request {
 	
 	public ServletRequest(HttpServletRequest request) throws MultipartException, IOException {
 		this.request = request;
-		this.pathParams = new HashMap<String,String>(8);
-		this.queryParams = new HashMap<String,String>(16);
-		this.fileItems = new HashMap<String, FileItem>(8);
+		this.pathParams = CollectionKit.newHashMap(8);
+		this.queryParams = CollectionKit.newHashMap(16);
+		this.fileItems = CollectionKit.newHashMap(8);
 		this.init();
 	}
 	
 	public void init() throws IOException, MultipartException {
-		/**
-		 * retrieve multipart/form-data parameters
-		 */
+
+		// retrieve multipart/form-data parameters
 		if (Multipart.isMultipartContent(request)) {
 			Multipart multipart = new Multipart();
 			multipart.parse(request, new MultipartHandler() {
@@ -100,7 +98,7 @@ public class ServletRequest implements Request {
 	}
 	
 	private String join(String[] arr) {
-		StringBuffer ret = new StringBuffer();
+		StringBuilder ret = new StringBuilder();
 		for (String item : arr) {
 			ret.append(',').append(item);
 		}
@@ -131,7 +129,7 @@ public class ServletRequest implements Request {
 	}
 	
 	private List<String> getPathParam(String routePath) {
-		List<String> variables = new ArrayList<String>(8);
+		List<String> variables = CollectionKit.newArrayList(8);
 		Matcher matcher = Pattern.compile(Path.VAR_REGEXP).matcher(routePath);
 		while (matcher.find()) {
 			variables.add(matcher.group(1));
@@ -300,15 +298,11 @@ public class ServletRequest implements Request {
 
 	@Override
 	public int queryInt(String name, int defaultValue) {
-		try {
-			String value = query(name);
-			if(StringKit.isBlank(value)){
-				return defaultValue;
-			}
-			return Integer.valueOf(value);
-		} catch (Exception e){
-			throw e;
+		String value = query(name);
+		if(StringKit.isBlank(value)){
+			return defaultValue;
 		}
+		return Integer.valueOf(value);
 	}
 
 	@Override
@@ -323,28 +317,20 @@ public class ServletRequest implements Request {
 
 	@Override
 	public long queryLong(String name, long defaultValue) {
-		try {
-			String value = query(name);
-			if(StringKit.isBlank(value)){
-				return defaultValue;
-			}
-			return Long.valueOf(value);
-		} catch (Exception e){
-			throw e;
+		String value = query(name);
+		if(StringKit.isBlank(value)){
+			return defaultValue;
 		}
+		return Long.valueOf(value);
 	}
 
 	@Override
 	public double queryAsDouble(String name) {
-		try {
-			String value = query(name);
-			if(StringKit.isBlank(value)){
-				return 0;
-			}
-			return Double.valueOf(value);
-		} catch (Exception e){
-			throw e;
+		String value = query(name);
+		if(StringKit.isBlank(value)){
+			return 0;
 		}
+		return Double.valueOf(value);
 	}
 
 	@Override
@@ -354,15 +340,11 @@ public class ServletRequest implements Request {
 
 	@Override
 	public double queryDouble(String name, double defaultValue) {
-		try {
-			String value = query(name);
-			if(StringKit.isBlank(value)){
-				return defaultValue;
-			}
-			return Double.valueOf(value);
-		} catch (Exception e){
-			throw e;
-		}
+		String value = query(name);
+		if(StringKit.isBlank(value)){
+            return defaultValue;
+        }
+		return Double.valueOf(value);
 	}
 
 	@Override
@@ -416,7 +398,7 @@ public class ServletRequest implements Request {
 
 	@Override
 	public Set<String> attributes() {
-		Set<String> attrList = new HashSet<String>(8);
+		Set<String> attrList = CollectionKit.newHashSet(8);
         Enumeration<String> attributes = request.getAttributeNames();
         while (attributes.hasMoreElements()) {
             attrList.add(attributes.nextElement());
@@ -501,7 +483,7 @@ public class ServletRequest implements Request {
 	@Override
 	public Map<String, String> headers() {
 		Enumeration<String> servletHeaders = request.getHeaderNames();
-		Map<String,String> headers = new HashMap<String,String>(16);
+		Map<String,String> headers = CollectionKit.newHashMap(16);
 		while(servletHeaders.hasMoreElements()) {
 			String headerName = servletHeaders.nextElement();
 			headers.put(headerName, request.getHeader(headerName));
