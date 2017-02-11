@@ -47,7 +47,7 @@ import java.util.Set;
  * Blade Core Class
  *
  * @author <a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
- * @since 1.6.6
+ * @since 1.7.0-beta
  */
 public final class Blade {
 

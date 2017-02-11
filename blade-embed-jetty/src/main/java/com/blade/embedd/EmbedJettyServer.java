@@ -30,6 +30,12 @@ import java.util.Set;
 
 import static com.blade.Blade.$;
 
+/**
+ * Blade Jetty Server
+ *
+ * @author <a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
+ * @since 0.0.8
+ */
 public class EmbedJettyServer implements EmbedServer {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(EmbedJettyServer.class);
@@ -57,15 +63,6 @@ public class EmbedJettyServer implements EmbedServer {
 		if(DynamicContext.isJarContext()){
 			URL url = EmbedJettyServer.class.getResource("/");
 			this.classPath = url.getPath();
-//			if(null == url){
-//				String urlStr = EmbedJettyServer.class.getResource("").getPath();
-//				int pos = urlStr.indexOf("jar!/");
-//				if(pos != -1){
-//					String jarPath = new File(urlStr.substring(5, pos + 2)).getParent();
-//					this.classPath = new File(jarPath).getParent() + File.separator + $().configuration().getClassPath();
-//
-//				}
-//			}
 			LOGGER.info("add classpath: {}", classPath);
 		}
 

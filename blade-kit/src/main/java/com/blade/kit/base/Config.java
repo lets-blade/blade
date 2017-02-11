@@ -11,6 +11,7 @@ import javax.servlet.ServletContext;
 import java.io.*;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 
@@ -25,7 +26,9 @@ public class Config {
     
 	public Config load(Properties props) {
         Assert.notNull(props, "properties not null");
-        for (String key : props.stringPropertyNames()) {
+        Iterator<Object> it = props.keySet().iterator();
+        while (it.hasNext()){
+            String key = it.next().toString();
             String value = props.getProperty(key);
             config.put(key, value);
         }

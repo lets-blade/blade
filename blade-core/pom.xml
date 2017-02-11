@@ -28,7 +28,7 @@
 		</dependency>
 				
 		<dependency>
-			<groupId>com.bladejava</groupId>
+			<groupId>${project.groupId}</groupId>
 			<artifactId>blade-kit</artifactId>
 			<version>${blade-kit.version}</version>
 		</dependency>

@@ -133,7 +133,7 @@ public class ServletResponse implements Response {
 
 	@Override
 	public Response cookie(String name, String value) {
-		return cookie(name, value);
+		return cookie(name, value, -1);
 	}
 
 	@Override

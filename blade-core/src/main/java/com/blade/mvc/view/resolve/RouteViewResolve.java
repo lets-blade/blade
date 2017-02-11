@@ -68,7 +68,7 @@ public class RouteViewResolve {
 				}
 			}
 		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e){
-			throw new BladeException(e.getMessage());
+			throw new BladeException(e.getCause());
 		} catch (Exception e){
 			throw e;
 		}

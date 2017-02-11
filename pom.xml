@@ -11,27 +11,7 @@
 	<name>blade</name>
 	<url>https://github.com/biezhi/blade</url>
 
-	<licenses>
-        <license>
-            <name>The Apache Software License, Version 2.0</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-        </license>
-    </licenses>
-
-    <developers>
-        <developer>
-            <name>biezhi</name>
-            <email>biezhi.me@gmail.com</email>
-        </developer>
-    </developers>
-
-    <scm>
-        <connection>scm:git@github.com:biezhi/blade.git</connection>
-        <developerConnection>scm:git@github.com:biezhi/blade.git</developerConnection>
-        <url>git@github.com:biezhi/blade.git</url>
-    </scm>
-	
-    <repositories>
+	<repositories>
         <repository>
             <id>oss-snapshots</id>
             <url>https://oss.sonatype.org/content/repositories/snapshots</url>
@@ -53,10 +33,10 @@
 		<mockito.version>2.0.2-beta</mockito.version>
 		<slf4j-api.version>1.7.21</slf4j-api.version>
 		<slf4j-log4j12.version>1.7.21</slf4j-log4j12.version>
-		<blade-core.version>1.7.0-beta</blade-core.version>
-		<blade-kit.version>1.4.0-beta</blade-kit.version>
+		<blade-core.version>1.7.0</blade-core.version>
+		<blade-kit.version>1.4.0</blade-kit.version>
 		<blade-aop.version>1.0.0</blade-aop.version>
-		<blade-embed-jetty.version>0.0.7</blade-embed-jetty.version>
+		<blade-embed-jetty.version>0.0.9</blade-embed-jetty.version>
 		<jetty.version>9.2.12.v20150709</jetty.version>
 	</properties>
 
@@ -122,78 +102,5 @@
             </plugin>
         </plugins>
     </build>
-
-    <profiles>
-        <profile>
-            <id>release</id>
-            <distributionManagement>
-                <snapshotRepository>
-                    <id>oss</id>
-                    <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
-                </snapshotRepository>
-                <repository>
-                    <id>oss</id>
-                    <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-                </repository>
-            </distributionManagement>
-            <build>
-                <plugins>
-                    <!--  Source  -->
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-source-plugin</artifactId>
-                        <version>2.4</version>
-                        <executions>
-                            <execution>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>jar-no-fork</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                        <configuration>
-                            <testFailureIgnore>true</testFailureIgnore>
-                        </configuration>
-                    </plugin>
-                    <!--  Javadoc  -->
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-javadoc-plugin</artifactId>
-                        <version>2.10.2</version>
-                        <configuration>
-                            <charset>UTF-8</charset>
-                            <docencoding>UTF-8</docencoding>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>jar</goal>
-                                </goals>
-                                <configuration>
-                                    <additionalparam>-Xdoclint:none</additionalparam>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <!--  Gpg Signature  -->
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-gpg-plugin</artifactId>
-                        <version>1.6</version>
-                        <executions>
-                            <execution>
-                                <id>sign-artifacts</id>
-                                <phase>verify</phase>
-                                <goals>
-                                    <goal>sign</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
 
 </project>

@@ -1,5 +1,9 @@
 # Blade 更新日志
 
+### v1.7.0
+	1. 修复jar下载不到
+	2. 优化路由结构和数据结构
+
 ### v1.6.7
 	1. 支持自定义filter, servlet
 	2. 支持websocket
