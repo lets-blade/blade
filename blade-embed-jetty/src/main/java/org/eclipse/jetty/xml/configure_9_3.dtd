@@ -1,0 +1,323 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!--
+This is the document type descriptor for the
+org.eclipse.jetty.xml.XmlConfiguration class.  It allows a java object to be
+configured by with a sequence of Set, Put and Call elements.  These tags are
+mapped to methods on the object to be configured as follows:
+
+  <Set  name="Test">value</Set>              ==  obj.setTest("value");
+  <Put  name="Test">value</Put>              ==  obj.put("Test","value");
+  <Call name="test"><Arg>value</Arg></Call>  ==  obj.test("value");
+
+Values themselves may be configured objects that are created with the
+<New> tag or returned from a <Call> tag.
+
+Values are matched to arguments on a best effort approach, but types
+my be specified if a match is not achieved.
+-->
+
+<!ENTITY % CONFIG "Set|Get|Put|Call|New|Ref|Array|Map|Property">
+<!ENTITY % VALUE "#PCDATA|Get|Call|New|Ref|Array|Map|SystemProperty|Env|Property">
+
+<!ENTITY % TYPEATTR "type CDATA #IMPLIED " > <!-- String|Character|Short|Byte|Integer|Long|Boolean|Float|Double|char|short|byte|int|long|boolean|float|double|URL|InetAddress|InetAddrPort| #classname -->
+<!ENTITY % IMPLIEDCLASSATTR "class CDATA #IMPLIED" >
+<!ENTITY % CLASSATTR "class CDATA #REQUIRED" >
+<!ENTITY % NAMEATTR "name CDATA #REQUIRED" >
+<!ENTITY % IMPLIEDNAMEATTR "name CDATA #IMPLIED" >
+<!ENTITY % DEPRECATEDATTR "deprecated CDATA #IMPLIED" >
+<!ENTITY % DEFAULTATTR "default CDATA #IMPLIED" >
+<!ENTITY % IDATTR "id ID #IMPLIED" >
+<!ENTITY % ARGATTR "arg CDATA #IMPLIED" >
+<!ENTITY % ITEMATTR "item CDATA #IMPLIED" >
+<!ENTITY % REFATTR "refid CDATA #IMPLIED" >
+<!ENTITY % REQUIREDIDATTR "id ID #REQUIRED" >
+
+
+<!--
+Configure Element.
+This is the root element that specifies the class of object that
+can be configured:
+
+    <Configure class="com.acme.MyClass"> ... </Configure>
+-->
+<!ELEMENT Configure (Arg*,(%CONFIG;)*) >
+<!ATTLIST Configure %IMPLIEDCLASSATTR; %IDATTR; >
+
+
+<!--
+Set Element.
+This element maps to a call to a setter method or field on the current object.
+The name and optional type attributes are used to select the setter
+method. If the name given is xxx, then a setXxx method is used, or
+the xxx field is used of setXxx cannot be found.
+A Set element can contain value text and/or the value objects returned
+by other elements such as Call, New, SystemProperty, etc.
+If no value type is specified, then white
+space is trimmed out of the value. If it contains multiple value
+elements they are added as strings before being converted to any
+specified type.
+
+A Set with a class attribute is treated as a static set method invocation.
+-->
+<!ELEMENT Set (%VALUE;)* >
+<!ATTLIST Set %NAMEATTR; %TYPEATTR; %IMPLIEDCLASSATTR; >
+
+
+<!--
+Get Element.
+This element maps to a call to a getter method or field on the current object.
+The name attribute is used to select the get method.
+If the name given is xxx, then a getXxx method is used, or
+the xxx field is used if getXxx cannot be found.
+A Get element can contain other elements such as Set, Put, Call, etc.
+which act on the object returned by the get call.
+
+A Get with a class attribute is treated as a static get method or field.
+-->
+<!ELEMENT Get (%CONFIG;)* >
+<!ATTLIST Get %NAMEATTR; %IMPLIEDCLASSATTR; %IDATTR; >
+
+
+<!--
+Put Element.
+This element maps to a call to a put method on the current object,
+which must implement the Map interface. The name attribute is used
+as the put key and the optional type attribute can force the type
+of the value.
+
+A Put element can contain value text and/or value elements such as Call,
+New, SystemProperty, etc. If no value type is specified, then white
+space is trimmed out of the value. If it contains multiple value
+elements they are added as strings before being converted to any
+specified type.
+-->
+<!ELEMENT Put (%VALUE;)* >
+<!ATTLIST Put %NAMEATTR; %TYPEATTR; >
+
+
+<!--
+Id Element.
+This element is the equivalent of the id attribute.
+-->
+<!ELEMENT Id (%VALUE;)* >
+
+
+<!--
+Name element.
+This element is the equivalent of the name attribute.
+-->
+<!ELEMENT Name (%VALUE;)* >
+
+
+<!--
+Deprecated element.
+This element is the equivalent of the deprecated attribute.
+-->
+<!ELEMENT Deprecated (%VALUE;)* >
+
+
+<!--
+Default element.
+This element is the equivalent of the default attribute.
+-->
+<!ELEMENT Default (%VALUE;)* >
+
+
+<!--
+Class element.
+This element is the equivalent of the class attribute.
+-->
+<!ELEMENT Class (%VALUE;)* >
+
+
+<!--
+Type element.
+This element is the equivalent of the type attribute.
+-->
+<!ELEMENT Type (%VALUE;)* >
+
+
+<!--
+Call Element.
+This element maps to an arbitrary call to a method on the current object,
+The name attribute and Arg elements are used to select the method.
+
+A Call element can contain a sequence of Arg elements followed by
+a sequence of other elements such as Set, Put, Call, etc. which act on any object
+returned by the original call:
+
+ <Call id="o2" name="test">
+   <Arg>value1</Arg>
+   <Set name="Test">Value2</Set>
+ </Call>
+
+This is equivalent to:
+
+ Object o2 = o1.test("value1");
+ o2.setTest("value2");
+
+A Call with a class attribute is treated as a static call.
+-->
+<!ELEMENT Call (Id?,Name?,Class?,Arg*,(%CONFIG;)*) >
+<!ATTLIST Call %ARGATTR; %IMPLIEDNAMEATTR; %IMPLIEDCLASSATTR; %IDATTR; >
+
+
+<!--
+Arg Element.
+This element defines a positional or optional named argument for the
+Call and New elements. The optional type attribute can force the type
+of the value.
+
+An Arg element can contain value text and/or value elements such as Call,
+New, SystemProperty, etc. If no value type is specified, then white
+space is trimmed out of the value. If it contains multiple value
+elements they are added as strings before being converted to any
+specified type.
+-->
+<!ELEMENT Arg (%VALUE;)* >
+<!ATTLIST Arg %TYPEATTR; %IMPLIEDNAMEATTR; >
+
+
+<!--
+New Element.
+This element allows the creation of a new object as part of a
+value for elements such as Set, Put, Arg, etc. The class attribute
+determines the type of the new object and the contained Arg elements
+are used to select the constructor for the new object.
+
+A New element can contain a sequence of Arg elements followed by
+a sequence of elements such as Set, Put, Call, etc. elements
+which act on the new object:
+
+ <New id="o" class="com.acme.MyClass">
+   <Arg>value1</Arg>
+   <Set name="test">Value2</Set>
+ </New>
+
+This is equivalent to:
+
+ Object o = new com.acme.MyClass("value1");
+ o.setTest("Value2");
+-->
+<!ELEMENT New (Id?,Name?,Class?,Arg*,(%CONFIG;)*) >
+<!ATTLIST New %IDATTR; %IMPLIEDCLASSATTR; %ARGATTR; >
+
+
+<!--
+Ref Element.
+This element allows a previously created object to be referenced by id.  The
+attribute refid is used to specify the id of another object (the attribute id can
+also be used, but it's use is deprecated).
+A Ref element can contain a sequence of elements such as Set, Put, Call, etc.
+which act on the referenced object.
+
+ <Ref refid="myobject">
+   <Set name="Test">Value2</Set>
+ </New>
+-->
+<!ELEMENT Ref (%CONFIG;)* >
+<!ATTLIST Ref %IDATTR; %REFATTR;>
+
+
+<!--
+Array Element.
+This element allows the creation of a new array as part of a
+value of elements such as Set, Put, Arg, etc. The type attribute determines
+the type of the new array and the contained Item elements
+are used for each element of the array:
+
+ <Array type="java.lang.String">
+   <Item>value0</Item>
+   <Item><New class="java.lang.String"><Arg>value1</Arg></New></Item>
+ </Array>
+
+This is equivalent to:
+ String[] a = new String[] { "value0", new String("value1") };
+-->
+<!ELEMENT Array (Id?,Type?,Item*) >
+<!ATTLIST Array %IDATTR;%TYPEATTR;%ITEMATTR; >
+
+
+<!--
+Map Element.
+This element allows the creation of a new map as part of a
+value of elements such as Set, Put, Arg, etc. The type attribute determines
+the type of the new array and the contained Item elements
+are used for each element of the array:
+
+ <Map>
+   <Entry>
+     <Item>keyName</Item>
+     <Item><New class="java.lang.String"><Arg>value1</Arg></New></Item>
+   </Entry>
+ </Map>
+
+This is equivalent to:
+ Map m = new HashMap();
+ m.put("keyName", new String("value1"));
+-->
+<!ELEMENT Map (Id?,Entry*) >
+<!ATTLIST Map %IDATTR; >
+<!ELEMENT Entry (Item,Item) >
+
+
+<!--
+Item Element.
+This element defines an entry for the Array or Map Entry elements.
+The optional type attribute can force the type of the value.
+
+An Item element can contain value text and/or the value object of
+elements such as Call, New, SystemProperty, etc. If no value type
+is specified, then white space is trimmed out of the value.
+If it contains multiple value elements they are added as strings
+before being converted to any specified type.
+-->
+<!ELEMENT Item (%VALUE;)* >
+<!ATTLIST Item %TYPEATTR; %IDATTR; >
+
+
+<!--
+System Property Element.
+This element allows JVM System properties to be retrieved as
+part of the value of elements such as Set, Put, Arg, etc.
+The name attribute specifies the property name and the optional
+default argument provides a default value.
+
+ <SystemProperty name="Test" default="value" />
+
+This is equivalent to:
+
+ System.getProperty("Test","value");
+-->
+<!ELEMENT SystemProperty (Id?,Name?,Deprecated*,Default?) >
+<!ATTLIST SystemProperty %IMPLIEDNAMEATTR; %DEFAULTATTR; %DEPRECATEDATTR; %IDATTR; >
+
+
+<!--
+Environment variable Element.
+This element allows OS Environment variables to be retrieved as
+part of the value of elements such as Set, Put, Arg, etc.
+The name attribute specifies the env variable name and the optional
+default argument provides a default value.
+
+ <Env name="Test" default="value" />
+
+This is equivalent to:
+
+ String v=System.getEnv("Test");
+ if (v==null) v="value";
+
+-->
+<!ELEMENT Env (Id?,Name?,Deprecated*,Default?) >
+<!ATTLIST Env %IMPLIEDNAMEATTR; %DEFAULTATTR; %DEPRECATEDATTR; %IDATTR; >
+
+
+<!--
+Property Element.
+This element allows arbitrary properties to be retrieved by name.
+The name attribute specifies the property name and the optional
+default argument provides a default value.
+-->
+<!ELEMENT Property (Id?,Name?,Deprecated*,Default?) >
+<!ATTLIST Property %IMPLIEDNAMEATTR; %DEFAULTATTR; %DEPRECATEDATTR; %IDATTR; >

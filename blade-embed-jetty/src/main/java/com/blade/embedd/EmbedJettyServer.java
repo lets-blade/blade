@@ -10,6 +10,8 @@ import com.blade.kit.StringKit;
 import com.blade.kit.base.Config;
 import com.blade.mvc.AsyncDispatcherServlet;
 import com.blade.mvc.WorkerContextListener;
+import com.sun.corba.se.pept.transport.ByteBufferPool;
+import org.eclipse.jetty.security.SecurityHandler;
 import org.eclipse.jetty.server.*;
 import org.eclipse.jetty.server.handler.DefaultHandler;
 import org.eclipse.jetty.server.handler.HandlerList;
@@ -17,6 +19,7 @@ import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.webapp.WebAppContext;
+import org.eclipse.jetty.xml.XmlParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -89,14 +92,14 @@ public class EmbedJettyServer implements EmbedServer {
 	public void startup(int port, String contextPath, String webRoot) throws EmbedServerException {
 		this.port = port;
 		
+        int minThreads = config.getInt("server.jetty.min-threads", 50);
+        int maxThreads = config.getInt("server.jetty.max-threads", 100);
+
 		// Setup Threadpool
-        QueuedThreadPool threadPool = new QueuedThreadPool();
-        
-        int minThreads = config.getInt("server.jetty.min-threads", 8);
-        int maxThreads = config.getInt("server.jetty.max-threads", 32);
-        
+		QueuedThreadPool threadPool = new QueuedThreadPool();
         threadPool.setMinThreads(minThreads);
         threadPool.setMaxThreads(maxThreads);
+		threadPool.setLowThreadsThreshold(8);
 		threadPool.setName("blade-pool");
         
 		server = new org.eclipse.jetty.server.Server(threadPool);
@@ -107,12 +110,12 @@ public class EmbedJettyServer implements EmbedServer {
         webAppContext = new WebAppContext();
         webAppContext.setContextPath(contextPath);
         webAppContext.setResourceBase("");
-        
+
 	    int securePort = config.getInt("server.jetty.http.secure-port", 9443);
 	    int outputBufferSize = config.getInt("server.jetty.http.output-buffersize", 32*1024);
 	    int requestHeaderSize = config.getInt("server.jetty.http.request-headersize", 8*1024);
 	    int responseHeaderSize = config.getInt("server.jetty.http.response-headersize", 8*1024);
-	    
+
 	    // HTTP Configuration
         HttpConfiguration http_config = new HttpConfiguration();
         http_config.setSecurePort(securePort);
@@ -125,10 +128,12 @@ public class EmbedJettyServer implements EmbedServer {
         
         long idleTimeout = config.getLong("server.jetty.http.idle-timeout", 30000L);
         
-        ServerConnector http = new ServerConnector(server, new HttpConnectionFactory(http_config));
-        http.setPort(this.port);
-        http.setIdleTimeout(idleTimeout);
-        server.addConnector(http);
+        ServerConnector serverConnector = new ServerConnector(server, new HttpConnectionFactory(http_config));
+		serverConnector.setPort(this.port);
+		serverConnector.setIdleTimeout(idleTimeout);
+
+//		server.setConnectors(new Connector[]{serverConnector});
+        server.addConnector(serverConnector);
 	    
 	    ServletHolder servletHolder = new ServletHolder(AsyncDispatcherServlet.class);
 	    servletHolder.setAsyncSupported(true);
@@ -156,6 +161,7 @@ public class EmbedJettyServer implements EmbedServer {
 		    HandlerList handlers = new HandlerList();
 		    handlers.setHandlers(new Handler[] { webAppContext, new DefaultHandler() });
 		    server.setHandler(handlers);
+
 	    	server.start();
 		    LOGGER.info("Blade Server Listen on 0.0.0.0:{}", this.port);
 		} catch (Exception e) {

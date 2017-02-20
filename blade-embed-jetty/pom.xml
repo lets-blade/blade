@@ -13,10 +13,6 @@
     <version>${blade-embed-jetty.version}</version>
     <name>blade-embed-jetty</name>
 
-    <properties>
-        <jetty.version>9.2.12.v20150709</jetty.version>
-    </properties>
-
     <dependencies>
 
         <dependency>
@@ -27,12 +23,11 @@
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-server</artifactId>
-            <version>${jetty.version}</version>
         </dependency>
+
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-webapp</artifactId>
-            <version>${jetty.version}</version>
         </dependency>
 
         <dependency>

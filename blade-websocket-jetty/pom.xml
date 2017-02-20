@@ -12,11 +12,6 @@
 	<version>0.0.1</version>
 	<name>blade-websocket-jetty</name>
 	<url>http://maven.apache.org</url>
-
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<jetty.version>9.2.12.v20150709</jetty.version>
-	</properties>
 	
 	<dependencies>
 		<dependency>

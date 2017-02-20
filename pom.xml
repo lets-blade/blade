@@ -37,7 +37,7 @@
 		<blade-kit.version>1.4.0</blade-kit.version>
 		<blade-aop.version>1.0.0</blade-aop.version>
 		<blade-embed-jetty.version>0.1.0</blade-embed-jetty.version>
-		<jetty.version>9.2.12.v20150709</jetty.version>
+		<jetty.version>9.4.0.v20161208</jetty.version>
 	</properties>
 
 	<modules>
@@ -74,6 +74,39 @@
 				<version>${mockito.version}</version>
 				<scope>test</scope>
 			</dependency>
+
+			<dependency>
+				<groupId>org.eclipse.jetty</groupId>
+				<artifactId>jetty-server</artifactId>
+				<version>${jetty.version}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>org.eclipse.jetty</groupId>
+						<artifactId>jetty-jndi</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.eclipse.jetty</groupId>
+						<artifactId>jetty-io</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+
+			<dependency>
+				<groupId>org.eclipse.jetty</groupId>
+				<artifactId>jetty-webapp</artifactId>
+				<version>${jetty.version}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>org.eclipse.jetty</groupId>
+						<artifactId>jetty-xml</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.eclipse.jetty</groupId>
+						<artifactId>jetty-security</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+
 		</dependencies>
 	</dependencyManagement>
 	
