@@ -25,7 +25,7 @@
 <dependency>
     <groupId>com.bladejava</groupId>
     <artifactId>blade-kit</artifactId>
-    <version>1.4.0</version>
+    <version>1.4.1-alpha</version>
 </dependency>
 ```
 
@@ -43,7 +43,7 @@
 <dependency>
     <groupId>com.bladejava</groupId>
     <artifactId>blade-embed-jetty</artifactId>
-    <version>0.0.9</version>
+    <version>0.1.0</version>
 </dependency>
 ```
 

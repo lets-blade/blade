@@ -13,25 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.blade.kit;
+package com.blade.kit.thread;
 
 import java.util.concurrent.*;
 
-public final class BladeThreadPool {
+public final class ThreadPoolKit {
 
-    private BladeThreadPool(){}
+    private ThreadPoolKit(){}
 
     public static Executor getExecutor(int threads, int queues) {
-        return getThreadPoolExecutor(threads, queues);
+        return getThreadPoolExecutor("DEF-POOL", threads, queues);
     }
 
-    public static ThreadPoolExecutor getThreadPoolExecutor(int threads, int queues) {
-        String name = "blade-pool";
+    public static Executor getExecutor(String poolName, int threads, int queues) {
+        return getThreadPoolExecutor(poolName, threads, queues);
+    }
+
+    public static ThreadPoolExecutor getThreadPoolExecutor(String poolName, int threads, int queues) {
         return new ThreadPoolExecutor(threads, threads, 0, TimeUnit.MILLISECONDS,
                 queues == 0 ? new SynchronousQueue<>()
                         : (queues < 0 ? new LinkedBlockingQueue<>()
                         : new LinkedBlockingQueue<>(queues)),
-                new NamedThreadFactory(name, true), new AbortPolicyWithReport(name));
+                new NamedThreadFactory(poolName, true), new AbortPolicyWithReport(poolName));
     }
 
 }
