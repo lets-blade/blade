@@ -4,6 +4,7 @@ package com.blade.mvc.view;
  * rest返回对象
  *
  * @param <T>
+ * @since 1.7.1-alpha
  */
 public class RestResponse<T> {
 
@@ -23,87 +24,120 @@ public class RestResponse<T> {
     private String msg;
 
     /**
+     * 状态码
+     */
+    private int code = -1;
+
+    /**
      * 服务器响应时间
      */
     private long timestamp;
 
-    public static <T> RestResponse<T> build(T data){
-        RestResponse<T> r = new RestResponse<T>();
-        r.setPayload(data);
-        r.setSuccess(true);
-        return r;
-    }
     public RestResponse() {
         this.timestamp = System.currentTimeMillis() / 1000;
     }
 
-    public RestResponse(T payload) {
-        this.success = true;
-        this.payload = payload;
-        this.timestamp = System.currentTimeMillis() / 1000;
-    }
-
     public RestResponse(boolean success) {
-        this.success = success;
         this.timestamp = System.currentTimeMillis() / 1000;
+        this.success = success;
     }
 
-    public RestResponse(String msg) {
-        this.success = false;
+    public RestResponse(boolean success, T payload) {
+        this.timestamp = System.currentTimeMillis() / 1000;
+        this.success = success;
+        this.payload = payload;
+    }
+
+    public RestResponse(boolean success, T payload, int code) {
+        this.timestamp = System.currentTimeMillis() / 1000;
+        this.success = success;
+        this.payload = payload;
+        this.code = code;
+    }
+
+    public RestResponse(boolean success, String msg) {
+        this.timestamp = System.currentTimeMillis() / 1000;
+        this.success = success;
         this.msg = msg;
+    }
+
+    public RestResponse(boolean success, String msg, int code) {
         this.timestamp = System.currentTimeMillis() / 1000;
-    }
-
-    public void setSuccess(boolean success) {
         this.success = success;
+        this.msg = msg;
+        this.code = code;
     }
 
-    public boolean isSuccess() {
-        return success;
-    }
-
-
-    public long getTimestamp() {
-        return timestamp;
-    }
-
-    public void setTimestamp(long timestamp) {
-        this.timestamp = timestamp;
-    }
-
-    public T getPayload() {
+    public T payload() {
         return payload;
     }
 
-    public void setPayload(T payload) {
-        this.setPayload(payload, true);
+    public void payload(T payload) {
+        this.payload = payload;
     }
 
-    public void setPayload(T payload, boolean success) {
-        this.payload = payload;
+    public boolean success() {
+        return success;
+    }
+
+    public void success(boolean success) {
         this.success = success;
     }
 
-    public String getMsg() {
+    public String msg() {
         return msg;
     }
 
-    public void setMsg(String msg) {
+    public void msg(String msg) {
         this.msg = msg;
     }
 
-    @Override
-    public String toString() {
-        return "RestResponse{" +
-                "payload=" + payload +
-                ", success=" + success +
-                ", msg=" + msg +
-                ", timestamp=" + timestamp +
-                '}';
+    public long timestamp() {
+        return timestamp;
     }
 
-    public void error(String msg) {
-        this.msg = msg;
-        this.success = false;
+    public void timestamp(long timestamp) {
+        this.timestamp = timestamp;
     }
+
+    public int code() {
+        return code;
+    }
+
+    public void code(int code) {
+        this.code = code;
+    }
+
+    public static RestResponse ok(){
+        return new RestResponse(true);
+    }
+
+    public static <T> RestResponse ok(T payload){
+        return new RestResponse(true, payload);
+    }
+
+    public static <T> RestResponse ok(int code){
+        return new RestResponse(true, null, code);
+    }
+
+    public static <T> RestResponse ok(T payload, int code){
+        return new RestResponse(true, payload, code);
+    }
+
+    public static RestResponse fail(){
+        return new RestResponse(false);
+    }
+
+    public static RestResponse fail(String msg){
+        return new RestResponse(false, msg);
+    }
+
+    public static RestResponse fail(int code){
+        return new RestResponse(false, null, code);
+    }
+
+    public static RestResponse fail(int code, String msg){
+        return new RestResponse(false, msg, code);
+    }
+
 }

@@ -44,23 +44,6 @@ public abstract class StringKit {
     private static final String TOP_PATH = "..";
     private static final String CURRENT_PATH = ".";
     public static String[] NUMBER = { "零", "一", "二", "三", "四", "五", "六", "七", "八", "九", "十", "百", "千", "万", "亿" };
-	public static final String CREATE = "create";
-	public static final String DELETE = "delete";
-	public static final String SAVE = "save";
-	public static final String UPDATE = "update";
-	public static final String QUERY = "query";
-	public static final String ERROR = "error";
-	public static final String SUCCESS = "success";
-	public static final String FAILED = "failed";
-	public static final String IP = "strIp";
-	public static final String ANSWER = "strAnswer";
-	public static final String LOGIN = "login";
-	public static final String INDEX = "index";
-	public static final String HOME = "home";
-	public static final String NORIGHT = "noRight";
-	public static final String BOSSIP = "strBOSSIp";
-	public static final String BOSSIPS = "BOSSIPS";// 配置文件参数
-	public static final String BOSSANSWER = "BOSSANSWER";// 配置文件参数
     private static final String RANDOM_CHAR = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     
     /**
@@ -2863,6 +2846,56 @@ public abstract class StringKit {
         builder.setLength(builder.length() - split.length());
         return builder.toString();
     }
-    
-  
+
+    /**
+     * 在字符串左侧填充一定数量的特殊字符
+     *
+     * @param o     可被 toString 的对象
+     * @param width 字符数量
+     * @param c     字符
+     * @return 新字符串
+     */
+    public static String alignRight(Object o, int width, char c) {
+        if (null == o)
+            return null;
+        String s = o.toString();
+        int len = s.length();
+        if (len >= width)
+            return s;
+        return new StringBuilder().append(dup(c, width - len)).append(s).toString();
+    }
+
+    /**
+     * 在字符串右侧填充一定数量的特殊字符
+     *
+     * @param o     可被 toString 的对象
+     * @param width 字符数量
+     * @param c     字符
+     * @return 新字符串
+     */
+    public static String alignLeft(Object o, int width, char c) {
+        if (null == o)
+            return null;
+        String s = o.toString();
+        int length = s.length();
+        if (length >= width)
+            return s;
+        return new StringBuilder().append(s).append(dup(c, width - length)).toString();
+    }
+
+    /**
+     * 复制字符
+     *
+     * @param c   字符
+     * @param num 数量
+     * @return 新字符串
+     */
+    public static String dup(char c, int num) {
+        if (c == 0 || num < 1)
+            return "";
+        StringBuilder sb = new StringBuilder(num);
+        for (int i = 0; i < num; i++)
+            sb.append(c);
+        return sb.toString();
+    }
 }

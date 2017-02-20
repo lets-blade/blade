@@ -45,7 +45,7 @@ import java.util.List;
  * Synchronous request processor
  * 
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
- * @since	1.5
+ * @since 1.7.1-alpha
  */
 class DispatcherHandler {
 	

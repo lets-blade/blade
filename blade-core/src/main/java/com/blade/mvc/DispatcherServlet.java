@@ -30,7 +30,7 @@ import com.blade.Const;
  * Blade Core DispatcherServlet
  * 
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
- * @since	1.5
+ * @since 1.7.1-alpha
  */
 public class DispatcherServlet extends HttpServlet {
 	

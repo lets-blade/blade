@@ -23,7 +23,7 @@ import javax.servlet.http.HttpServletResponse;
  * Asynchronous Requeest Processor
  *
  * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
- * @since	1.5
+ * @since 1.7.1-alpha
  */
 public class AsyncRequestProcessor implements Runnable {
 
