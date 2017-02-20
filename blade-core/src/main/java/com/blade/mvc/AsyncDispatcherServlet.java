@@ -34,7 +34,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Blade Core DispatcherServlet
+ * Blade Asynchronous DispatcherServlet
  *
  * @author <a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since 1.7.1-alpha
@@ -89,7 +89,6 @@ public class AsyncDispatcherServlet extends HttpServlet {
         AsyncContext asyncContext = httpRequest.startAsync();
         asyncContext.addListener(new BladeAsyncListener());
         asyncContext.setTimeout(asyncContextTimeout);
-        //executor.execute(new AsyncRequestProcessor(asyncContext, blade.ioc(), routeMatcher, routeViewHandler));
         executor.execute(new AsyncRequestProcessor(asyncContext, dispatcherHandler));
     }
 
