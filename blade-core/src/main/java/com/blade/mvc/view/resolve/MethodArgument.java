@@ -21,6 +21,7 @@ import com.blade.kit.StringKit;
 import com.blade.mvc.annotation.*;
 import com.blade.mvc.http.Request;
 import com.blade.mvc.http.Response;
+import com.blade.mvc.http.wrapper.Session;
 import com.blade.mvc.multipart.FileItem;
 import com.blade.mvc.view.ModelAndView;
 
@@ -51,6 +52,11 @@ public final class MethodArgument {
 
 			if (argType == Response.class) {
 				args[i] = response;
+				continue;
+			}
+
+			if (argType == Session.class) {
+				args[i] = request.session();
 				continue;
 			}
 
