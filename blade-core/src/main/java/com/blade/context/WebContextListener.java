@@ -85,7 +85,7 @@ public class WebContextListener implements ServletContextListener, HttpSessionLi
 				
 				blade.init();
 				
-				LOGGER.info("blade.isDev = {}", blade.isDev());
+				LOGGER.info("blade.isDev\t=> {}", blade.isDev());
 				
 			    BannerStarter.printStart();
 			    String appName = blade.config().get("app.name", "Blade");

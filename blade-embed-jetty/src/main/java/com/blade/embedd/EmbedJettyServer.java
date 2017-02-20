@@ -15,6 +15,7 @@ import org.eclipse.jetty.server.handler.DefaultHandler;
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.ServletHolder;
+import org.eclipse.jetty.util.Scanner;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.slf4j.Logger;
@@ -24,6 +25,7 @@ import javax.servlet.DispatcherType;
 import javax.servlet.Filter;
 import javax.servlet.Servlet;
 import javax.servlet.http.HttpServlet;
+import java.io.File;
 import java.net.URL;
 import java.util.EnumSet;
 import java.util.Map;
@@ -52,6 +54,8 @@ public class EmbedJettyServer implements EmbedServer {
 
     private Set<String> staticFolders;
 
+    private String webRoot;
+
     public EmbedJettyServer() {
         System.setProperty("org.apache.jasper.compiler.disablejsr199", "true");
         this.staticFolders = $().configuration().getResources();
@@ -75,6 +79,7 @@ public class EmbedJettyServer implements EmbedServer {
 
     @Override
     public void setWebRoot(String webRoot) {
+        this.webRoot = webRoot;
         webAppContext.setResourceBase(webRoot);
     }
 
@@ -148,18 +153,38 @@ public class EmbedJettyServer implements EmbedServer {
             this.loadServlets(webAppContext);
             this.loadFilters(webAppContext);
 
-            HandlerList handlers = new HandlerList();
-            handlers.setHandlers(new Handler[]{webAppContext, new DefaultHandler()});
-            server.setHandler(handlers);
-
-            // 设置在JVM退出时关闭Jetty的钩子。
+            HandlerList handlerList = new HandlerList();
+            handlerList.setHandlers(new Handler[]{webAppContext, new DefaultHandler()});
+            server.setHandler(handlerList);
             server.setStopAtShutdown(true);
+
+//            boolean isDev = Blade.$().isDev();
+//            int scanInterval = config.getInt("server.jetty.scan-interval", 3);
+//            if (isDev && scanInterval > 0) {
+//                String resBase = webAppContext.getResourceBase();
+//                this.hotSwap(scanInterval, resBase);
+//            }
+
             server.start();
             LOGGER.info("Blade Server Listen on {}:{}", host, this.port);
             server.join();
         } catch (Exception e) {
             throw new EmbedServerException(e);
         }
+    }
+
+    public void hotSwap(int scanInterval, String resBase) throws Exception {
+        Scanner scanner = new Scanner();
+        scanner.setScanInterval(scanInterval);
+        scanner.addScanDir(new File(resBase));
+        scanner.addListener((Scanner.BulkListener) fileNames -> {
+            webAppContext.stop();
+            webAppContext.setResourceBase(resBase);
+            webAppContext.start();
+            webAppContext.getHandler().start();
+        });
+        LOGGER.info("Hot Swap scan interval is {}s.", scanInterval);
+        scanner.start();
     }
 
     public void loadFilters(WebAppContext webAppContext) throws Exception {
