@@ -47,12 +47,24 @@ public class DispatcherServlet extends HttpServlet {
 		blade = Blade.$();
 		dispatcherHandler = new DispatcherHandler(config.getServletContext(), blade.routers());
 	}
-	
+
+	@Override
+	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		this.service(req, resp);
+	}
+
+	@Override
+	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		this.service(req, resp);
+	}
+
 	@Override
 	protected void service(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws ServletException, IOException {
 		httpRequest.setCharacterEncoding(blade.encoding());
 		httpResponse.setCharacterEncoding(blade.encoding());
-		httpResponse.setHeader("server", "blade " + Const.VERSION);
+		httpResponse.setHeader("X-Powered-By", "Blade(" + Const.VERSION + ")");
+		httpRequest.setAttribute("org.apache.catalina.ASYNC_SUPPORTED", true);
+
 		dispatcherHandler.handle(httpRequest, httpResponse);
 	}
 	

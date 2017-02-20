@@ -29,7 +29,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Blade Core DispatcherServlet
@@ -47,8 +49,9 @@ public class AsyncDispatcherServlet extends HttpServlet {
 
     private Blade blade;
 
-    private RouteMatcher routeMatcher;
-    private RouteViewResolve routeViewHandler;
+    private DispatcherHandler dispatcherHandler;
+
+    private int asyncContextTimeout;
 
     public AsyncDispatcherServlet() {
     }
@@ -56,19 +59,21 @@ public class AsyncDispatcherServlet extends HttpServlet {
     @Override
     public void init(ServletConfig config) throws ServletException {
         blade = Blade.$();
-        this.routeMatcher = new RouteMatcher(blade.routers());
-        this.routeViewHandler = new RouteViewResolve(blade.ioc());
-        executor = (ThreadPoolExecutor) config.getServletContext().getAttribute("executor");
+        this.asyncContextTimeout = blade.config().getInt("server.async-ctx-timeout", 10 * 1000);
+        this.dispatcherHandler = new DispatcherHandler(config.getServletContext(), blade.routers());
+
+        executor = new ThreadPoolExecutor(100, 200, 50000L, TimeUnit.MILLISECONDS, new ArrayBlockingQueue<>(100));
+        LOGGER.info("init worker thread pool.");
     }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        service(req, resp);
+        this.service(req, resp);
     }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        service(req, resp);
+        this.service(req, resp);
     }
 
     @Override
@@ -83,14 +88,18 @@ public class AsyncDispatcherServlet extends HttpServlet {
 
         AsyncContext asyncContext = httpRequest.startAsync();
         asyncContext.addListener(new BladeAsyncListener());
-        asyncContext.setTimeout(2000);
-
-        executor.execute(new AsyncRequestProcessor(asyncContext, blade.ioc(), routeMatcher, routeViewHandler));
+        asyncContext.setTimeout(asyncContextTimeout);
+        //executor.execute(new AsyncRequestProcessor(asyncContext, blade.ioc(), routeMatcher, routeViewHandler));
+        executor.execute(new AsyncRequestProcessor(asyncContext, dispatcherHandler));
     }
 
     @Override
     public void destroy() {
         super.destroy();
+        if(null != executor){
+            executor.shutdown();
+            LOGGER.info("shutdown worker thread pool.");
+        }
     }
 
 }

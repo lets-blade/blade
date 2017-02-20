@@ -43,6 +43,8 @@ public class AsyncRequestProcessor implements Runnable {
 
     private RouteViewResolve routeViewHandler;
 
+    private DispatcherHandler dispatcherHandler;
+
     public AsyncRequestProcessor(AsyncContext asyncContext, Ioc ioc, RouteMatcher routeMatcher, RouteViewResolve routeViewHandler) {
         this.asyncContext = asyncContext;
 
@@ -54,8 +56,23 @@ public class AsyncRequestProcessor implements Runnable {
         this.routeViewHandler = routeViewHandler;
     }
 
+    public AsyncRequestProcessor(AsyncContext asyncContext, DispatcherHandler dispatcherHandler) {
+        this.asyncContext = asyncContext;
+        this.dispatcherHandler = dispatcherHandler;
+        this.httpRequest = (HttpServletRequest) asyncContext.getRequest();
+        this.httpResponse = (HttpServletResponse) asyncContext.getResponse();
+
+    }
+
     @Override
     public void run() {
+        try {
+            dispatcherHandler.handle(httpRequest, httpResponse);
+        } finally {
+            asyncContext.complete();
+        }
+
+        /*
         // Create Response
         Response response = new ServletResponse(httpResponse);
         try {
@@ -98,7 +115,7 @@ public class AsyncRequestProcessor implements Runnable {
             DispatchKit.printError(e, 500, response);
         } finally {
             asyncContext.complete();
-        }
+        }*/
     }
 
 

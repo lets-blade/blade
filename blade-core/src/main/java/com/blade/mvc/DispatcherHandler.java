@@ -57,8 +57,6 @@ class DispatcherHandler {
 	
 	private RouteMatcher routeMatcher;
 	
-	private StaticFileFilter staticFileFilter;
-	
 	private RouteViewResolve routeViewHandler;
 	
 	public DispatcherHandler(ServletContext servletContext, Routers routers) {
@@ -66,7 +64,6 @@ class DispatcherHandler {
 		Blade blade = Blade.$();
 		this.ioc = blade.ioc();
 		this.routeMatcher = new RouteMatcher(routers);
-		this.staticFileFilter = new StaticFileFilter(blade.configuration().getResources());
 		this.routeViewHandler = new RouteViewResolve(this.ioc);
 	}
 	
