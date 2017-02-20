@@ -46,9 +46,7 @@
 		<module>blade-embed-jetty</module>
 		<module>blade-auth</module>
 		<module>blade-aop</module>
-		<module>blade-starter</module>
 		<module>blade-websocket-jetty</module>
-        <module>blade-sample</module>
     </modules>
 
 	<dependencyManagement>

@@ -143,10 +143,16 @@ public static void main(String[] args) {
 You may refer to these examples for additional guidance:
 
 + [Hello Blade](https://github.com/blade-samples/hello)
-+ [BBS WebSite](https://github.com/junicorn/java-china)
 + [Doc Service](https://github.com/biezhi/grice)
 + [More Examples](https://github.com/blade-samples)
 
+
+## Used Blade WebSite
+
++ BBS：https://java-china.org
++ Gallery：https://nice.biezhi.me
++ SS Panel：https://github.com/biezhi/ss-panel
++ Doc Site：https://bladejava.com
 	
 ## Update
 
@@ -154,7 +160,7 @@ You may refer to these examples for additional guidance:
 
 ## Contact
 
-- Blog:[https://biezhi.me](https://biezhi.me)
+- Blog:[http://biezhi.me](http://biezhi.me)
 - Mail: biezhi.me@gmail.com
 
 ## Contributor

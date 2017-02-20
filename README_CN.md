@@ -147,10 +147,15 @@ public static void main(String[] args) {
 这一切看起来多么的简单，不过上面的功能可是冰山一角，查看文档和示例项目有更多惊喜:
 
 + [hello工程](https://github.com/blade-samples/hello)
-+ [论坛程序](https://github.com/junicorn/java-china)
 + [文档服务](https://github.com/biezhi/grice)
 + [更多例子](https://github.com/blade-samples)
 
+## 使用Blade的站点
+
++ 论坛程序：https://java-china.org
++ 图片社交：https://nice.biezhi.me
++ SS面板：https://github.com/biezhi/ss-panel
++ 文档站点：https://bladejava.com
 
 ## 更新日志
 
@@ -158,7 +163,7 @@ public static void main(String[] args) {
 
 ## 联系我
 
-- Blog:[https://biezhi.me](https://biezhi.me)
+- Blog:[http://biezhi.me](http://biezhi.me)
 - Mail: biezhi.me#gmail.com
 - Java交流群: [1013565](http://shang.qq.com/wpa/qunwpa?idkey=932642920a5c0ef5f1ae902723c4f168c58ea63f3cef1139e30d68145d3b5b2f)
 
