@@ -8,7 +8,8 @@ import com.blade.exception.EmbedServerException;
 import com.blade.kit.CollectionKit;
 import com.blade.kit.StringKit;
 import com.blade.kit.base.Config;
-import com.blade.mvc.DispatcherServlet;
+import com.blade.mvc.AsyncDispatcherServlet;
+import com.blade.mvc.WorkerContextListener;
 import org.eclipse.jetty.server.*;
 import org.eclipse.jetty.server.handler.DefaultHandler;
 import org.eclipse.jetty.server.handler.HandlerList;
@@ -91,8 +92,8 @@ public class EmbedJettyServer implements EmbedServer {
 		// Setup Threadpool
         QueuedThreadPool threadPool = new QueuedThreadPool();
         
-        int minThreads = config.getInt("server.jetty.min-threads", 10);
-        int maxThreads = config.getInt("server.jetty.max-threads", 100);
+        int minThreads = config.getInt("server.jetty.min-threads", 8);
+        int maxThreads = config.getInt("server.jetty.max-threads", 32);
         
         threadPool.setMinThreads(minThreads);
         threadPool.setMaxThreads(maxThreads);
@@ -107,10 +108,10 @@ public class EmbedJettyServer implements EmbedServer {
         webAppContext.setContextPath(contextPath);
         webAppContext.setResourceBase("");
         
-	    int securePort = config.getInt("server.jetty.http.secure-port", 8443);
-	    int outputBufferSize = config.getInt("server.jetty.http.output-buffersize", 32768);
-	    int requestHeaderSize = config.getInt("server.jetty.http.request-headersize", 8192);
-	    int responseHeaderSize = config.getInt("server.jetty.http.response-headersize", 8192);
+	    int securePort = config.getInt("server.jetty.http.secure-port", 9443);
+	    int outputBufferSize = config.getInt("server.jetty.http.output-buffersize", 32*1024);
+	    int requestHeaderSize = config.getInt("server.jetty.http.request-headersize", 8*1024);
+	    int responseHeaderSize = config.getInt("server.jetty.http.response-headersize", 8*1024);
 	    
 	    // HTTP Configuration
         HttpConfiguration http_config = new HttpConfiguration();
@@ -118,8 +119,9 @@ public class EmbedJettyServer implements EmbedServer {
         http_config.setOutputBufferSize(outputBufferSize);
         http_config.setRequestHeaderSize(requestHeaderSize);
         http_config.setResponseHeaderSize(responseHeaderSize);
-        http_config.setSendServerVersion(true);
-        http_config.setSendDateHeader(false);
+        http_config.setSendServerVersion(false);
+        http_config.setSendDateHeader(true);
+        http_config.setSendXPoweredBy(false);
         
         long idleTimeout = config.getLong("server.jetty.http.idle-timeout", 30000L);
         
@@ -128,11 +130,12 @@ public class EmbedJettyServer implements EmbedServer {
         http.setIdleTimeout(idleTimeout);
         server.addConnector(http);
 	    
-	    ServletHolder servletHolder = new ServletHolder(DispatcherServlet.class);
-	    servletHolder.setAsyncSupported(false);
+	    ServletHolder servletHolder = new ServletHolder(AsyncDispatcherServlet.class);
+	    servletHolder.setAsyncSupported(true);
 	    servletHolder.setInitOrder(1);
 
 		webAppContext.addEventListener(new WebContextListener());
+		webAppContext.addEventListener(new WorkerContextListener());
 	    webAppContext.addServlet(servletHolder, "/");
 
 		ServletHolder defaultHolder = new ServletHolder(DefaultServlet.class);

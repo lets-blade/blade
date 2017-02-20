@@ -64,6 +64,13 @@
 			<version>${jetty.version}</version>
 			<scope>test</scope>
 		</dependency>
+
+		<dependency>
+			<groupId>com.bladejava</groupId>
+			<artifactId>blade-embed-jetty</artifactId>
+			<version>0.1.0</version>
+			<scope>test</scope>
+		</dependency>
 				
 	</dependencies>
 	

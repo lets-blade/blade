@@ -30,7 +30,7 @@ public interface Const {
     /**
      * the last blade framework version
      */
-    String	VERSION				= "1.7.0-beta";
+    String	VERSION				= "1.7.1-alpha";
 
     /**
      * server 500
@@ -67,11 +67,6 @@ public interface Const {
     String	LISTENER_PKG		= "listener_package";
 
     /**** blade properties ****/
-    String	BLADE_ROUTE			= "blade.route";
-    String	BLADE_IOC 			= "blade.ioc";
-    String	BLADE_VIEW_404 		= "blade.view404";
-    String	BLADE_VIEW_500 		= "blade.view500";
-
     String 	JETTY_SERVER_CLASS	= "com.blade.embedd.EmbedJettyServer";
     String 	TOMCAT_SERVER_CLASS	= "com.blade.embedd.EmbedTomcatServer";
 
