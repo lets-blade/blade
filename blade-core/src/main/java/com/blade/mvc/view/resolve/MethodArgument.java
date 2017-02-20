@@ -203,6 +203,9 @@ public final class MethodArgument {
 			if(parameterType.equals(Double.class) || parameterType.equals(double.class)){
 				result = Double.parseDouble(val);
 			}
+			if(parameterType.equals(Float.class) || parameterType.equals(float.class)){
+				result = Float.parseFloat(val);
+			}
 			if(parameterType.equals(Boolean.class) || parameterType.equals(boolean.class)){
 				result = Boolean.parseBoolean(val);
 			}
