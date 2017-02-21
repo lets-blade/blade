@@ -1,12 +1,12 @@
 /**
  * Copyright (c) 2016, biezhi 王爵 (biezhi.me@gmail.com)
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- * 	http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,30 +15,29 @@
  */
 package com.blade.mvc.view;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.blade.kit.Assert;
 import com.blade.mvc.view.resolve.DefaultJSONParser;
 import com.blade.mvc.view.resolve.JSONParser;
 import com.blade.mvc.view.template.DefaultEngine;
 import com.blade.mvc.view.template.TemplateEngine;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * ViewSettings
- * 
- * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
- * @since	1.6.6
+ *
+ * @author    <a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
+ * @since 1.6.6
  */
 public final class ViewSettings {
-	
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(ViewSettings.class);
-	
+
 	private JSONParser jsonParser = new DefaultJSONParser();
 	private TemplateEngine templateEngine = new DefaultEngine();
 	private String view404 = "404.html";
 	private String view500 = "500.html";
-	
+
 	private ViewSettings() {
 	}
 
@@ -67,9 +66,8 @@ public final class ViewSettings {
 
 	/**
 	 * Setting Render Engin, Default is static file render
-	 * 
-	 * @param templateEngine
-	 *            Render engine object
+	 *
+	 * @param templateEngine Render engine object
 	 * @return return blade
 	 */
 	public ViewSettings templateEngine(TemplateEngine templateEngine) {
@@ -79,7 +77,7 @@ public final class ViewSettings {
 		return this;
 	}
 
-	/**
+    /**
 	 * @return Return Current TemplateEngine
 	 */
 	public TemplateEngine templateEngine() {
@@ -103,5 +101,5 @@ public final class ViewSettings {
 		this.view500 = view500;
 		return this;
 	}
-	
+
 }

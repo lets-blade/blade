@@ -12,48 +12,43 @@
  */
 package com.blade.mvc.multipart;
 
-import java.io.ByteArrayOutputStream;
-import java.io.Closeable;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 
 /**
  * <p>
  * Low level API for processing file uploads.
- *
+ * <p>
  * <p>
  * This class can be used to process data streams conforming to MIME 'multipart' format as defined in <a
  * href="http://www.ietf.org/rfc/rfc1867.txt">RFC 1867</a>. Arbitrarily large amounts of data in the stream can be
  * processed under constant memory usage.
- *
+ * <p>
  * <p>
  * The format of the stream is defined in the following way:<br>
- *
+ * <p>
  * <code>
- *   multipart-body := preamble 1*encapsulation close-delimiter epilogue<br>
- *   encapsulation := delimiter body CRLF<br>
- *   delimiter := "--" boundary CRLF<br>
- *   close-delimiter := "--" boudary "--"<br>
- *   preamble := &lt;ignore&gt;<br>
- *   epilogue := &lt;ignore&gt;<br>
- *   body := header-part CRLF body-part<br>
- *   header-part := 1*header CRLF<br>
- *   header := header-name ":" header-value<br>
- *   header-name := &lt;printable ascii characters except ":"&gt;<br>
- *   header-value := &lt;any ascii characters except CR &amp; LF&gt;<br>
- *   body-data := &lt;arbitrary data&gt;<br>
+ * multipart-body := preamble 1*encapsulation close-delimiter epilogue<br>
+ * encapsulation := delimiter body CRLF<br>
+ * delimiter := "--" boundary CRLF<br>
+ * close-delimiter := "--" boudary "--"<br>
+ * preamble := &lt;ignore&gt;<br>
+ * epilogue := &lt;ignore&gt;<br>
+ * body := header-part CRLF body-part<br>
+ * header-part := 1*header CRLF<br>
+ * header := header-name ":" header-value<br>
+ * header-name := &lt;printable ascii characters except ":"&gt;<br>
+ * header-value := &lt;any ascii characters except CR &amp; LF&gt;<br>
+ * body-data := &lt;arbitrary data&gt;<br>
  * </code>
- *
+ * <p>
  * <p>
  * Note that body-data can contain another mulipart entity. There is limited support for single pass processing of such
  * nested streams. The nested stream is <strong>required</strong> to have a boundary token of the same length as the
  * parent stream (see {@link #setBoundary(byte[])}).
- *
+ * <p>
  * <p>
  * Here is an example of usage of this class.<br>
- *
+ * <p>
  * <pre>
  * try {
  * 	MultipartStream multipartStream = new MultipartStream(input, boundary);
@@ -65,7 +60,7 @@ import java.io.UnsupportedEncodingException;
  * 		// create some output stream
  * 		multipartStream.readBodyData(output);
  * 		nextPart = multipartStream.readBoundary();
- * 	}
+ *    }
  * } catch (MultipartStream.MalformedStreamException e) {
  * 	// the stream failed to follow required syntax
  * } catch (IOException e) {
@@ -76,7 +71,6 @@ import java.io.UnsupportedEncodingException;
  * @author <a href="mailto:Rafal.Krzewski@e-point.pl">Rafal Krzewski</a>
  * @author <a href="mailto:martinc@apache.org">Martin Cooper</a>
  * @author Sean C. Sullivan
- *
  * @version $Id: MultipartStream.java 735374 2009-01-18 02:18:45Z jochen $
  */
 public class MultipartReader {
@@ -109,22 +103,22 @@ public class MultipartReader {
 	/**
 	 * A byte sequence that marks the end of <code>header-part</code> (<code>CRLFCRLF</code>).
 	 */
-	protected static final byte[] HEADER_SEPARATOR = { CR, LF, CR, LF };
+	protected static final byte[] HEADER_SEPARATOR = {CR, LF, CR, LF};
 
 	/**
 	 * A byte sequence that that follows a delimiter that will be followed by an encapsulation (<code>CRLF</code>).
 	 */
-	protected static final byte[] FIELD_SEPARATOR = { CR, LF };
+	protected static final byte[] FIELD_SEPARATOR = {CR, LF};
 
 	/**
 	 * A byte sequence that that follows a delimiter of the last encapsulation in the stream (<code>--</code>).
 	 */
-	protected static final byte[] STREAM_TERMINATOR = { DASH, DASH };
+	protected static final byte[] STREAM_TERMINATOR = {DASH, DASH};
 
 	/**
 	 * A byte sequence that precedes a boundary (<code>CRLF--</code>).
 	 */
-	protected static final byte[] BOUNDARY_PREFIX = { CR, LF, DASH, DASH };
+	protected static final byte[] BOUNDARY_PREFIX = {CR, LF, DASH, DASH};
 
 	/**
 	 * The input stream from which data is read.
@@ -176,15 +170,14 @@ public class MultipartReader {
 	/**
 	 * <p>
 	 * Constructs a <code>MultipartStream</code> with a custom size buffer.
-	 *
+	 * <p>
 	 * <p>
 	 * Note that the buffer must be at least big enough to contain the boundary string, plus 4 characters for CR/LF and
 	 * double dash, plus at least one byte of data. Too small a buffer size setting will degrade performance.
 	 *
-	 * @param input The <code>InputStream</code> to serve as a data source.
+	 * @param input    The <code>InputStream</code> to serve as a data source.
 	 * @param boundary The token used for dividing the stream into <code>encapsulations</code>.
-	 * @param bufSize The size of the buffer to be used, in bytes.
-	 *
+	 * @param bufSize  The size of the buffer to be used, in bytes.
 	 */
 	public MultipartReader(InputStream input, byte[] boundary, int bufSize) {
 		this.input = input;
@@ -205,7 +198,7 @@ public class MultipartReader {
 	/**
 	 * Constructs a <code>MultipartStream</code> with a default size buffer.
 	 *
-	 * @param input The <code>InputStream</code> to serve as a data source.
+	 * @param input    The <code>InputStream</code> to serve as a data source.
 	 * @param boundary The token used for dividing the stream into <code>encapsulations</code>.
 	 */
 	public MultipartReader(InputStream input, byte[] boundary) {
@@ -259,7 +252,6 @@ public class MultipartReader {
 	 * stream.
 	 *
 	 * @return <code>true</code> if there are more encapsulations in this stream; <code>false</code> otherwise.
-	 *
 	 * @throws MalformedStreamException if the stream ends unexpecetedly or fails to follow required syntax.
 	 */
 	public boolean readBoundary() throws MalformedStreamException {
@@ -285,18 +277,17 @@ public class MultipartReader {
 
 	/**
 	 * <p>Changes the boundary token used for partitioning the stream.</p>
-	 *
+	 * <p>
 	 * <p>This method allows single pass processing of nested multipart streams.</p>
-	 *
+	 * <p>
 	 * <p>The boundary token of the nested stream is <code>required</code> to be of the same length as the boundary token
 	 * in parent stream.</p>
-	 *
+	 * <p>
 	 * <p>Restoring the parent stream boundary token after processing of a nested stream is left to the application.</p>
 	 *
 	 * @param boundary The boundary to be used for parsing of the nested stream.
-	 *
 	 * @throws IllegalBoundaryException if the <code>boundary</code> has a different length than the one being currently
-	 *             parsed.
+	 *                                  parsed.
 	 */
 	public void setBoundary(byte[] boundary) throws IllegalBoundaryException {
 
@@ -309,7 +300,7 @@ public class MultipartReader {
 
 	/**
 	 * <p>Reads the <code>header-part</code> of the current <code>encapsulation</code>.</p>
-	 *
+	 * <p>
 	 * <p>Headers are returned verbatim to the input stream, including the trailing <code>CRLF</code> marker. Parsing is
 	 * left to the application.</p>
 	 *
@@ -358,16 +349,14 @@ public class MultipartReader {
 	/**
 	 * <p>Reads <code>body-data</code> from the current <code>encapsulation</code> and writes its contents into the output
 	 * <code>Stream</code>.</p>
-	 *
+	 * <p>
 	 * <p>Arbitrary large amounts of data can be processed by this method using a constant size buffer.</p>
 	 *
 	 * @param output The <code>Stream</code> to write data into. May be null, in which case this method is equivalent to
-	 *            {@link #discardBodyData()}.
-	 *
+	 *               {@link #discardBodyData()}.
 	 * @return the amount of data written.
-	 *
 	 * @throws MalformedStreamException if the stream ends unexpectedly.
-	 * @throws IOException if an i/o error occurs.
+	 * @throws IOException              if an i/o error occurs.
 	 */
 	public int readBodyData(OutputStream output) throws MalformedStreamException, IOException {
 		final InputStream istream = newInputStream();
@@ -385,12 +374,12 @@ public class MultipartReader {
 
 	/**
 	 * <p>Reads <code>body-data</code> from the current <code>encapsulation</code> and discards it.</p>
-	 *
+	 * <p>
 	 * <p>Use this method to skip encapsulations you don't need or don't understand.</p>
 	 *
 	 * @return The amount of data discarded.
 	 * @throws MalformedStreamException if the stream ends unexpectedly.
-	 * @throws IOException if an i/o error occurs.
+	 * @throws IOException              if an i/o error occurs.
 	 */
 	public int discardBodyData() throws MalformedStreamException, IOException {
 		return readBodyData(null);
@@ -427,12 +416,11 @@ public class MultipartReader {
 	/**
 	 * Compares <code>count</code> first bytes in the arrays <code>a</code> and <code>b</code>.
 	 *
-	 * @param a The first array to compare.
-	 * @param b The second array to compare.
+	 * @param a     The first array to compare.
+	 * @param b     The second array to compare.
 	 * @param count How many bytes should be compared.
-	 *
 	 * @return <code>true</code> if <code>count</code> first bytes in arrays <code>a</code> and <code>b</code> are
-	 *         equal.
+	 * equal.
 	 */
 	public static boolean arrayequals(byte[] a, byte[] b, int count) {
 		for (int i = 0; i < count; i++) {
@@ -448,10 +436,9 @@ public class MultipartReader {
 	 * <code>position</code>.
 	 *
 	 * @param value The value to find.
-	 * @param pos The starting position for searching.
-	 *
+	 * @param pos   The starting position for searching.
 	 * @return The position of byte found, counting from beginning of the <code>buffer</code>, or <code>-1</code> if not
-	 *         found.
+	 * found.
 	 */
 	protected int findByte(byte value, int pos) {
 		for (int i = pos; i < tail; i++) {
@@ -468,7 +455,7 @@ public class MultipartReader {
 	 * <code>tail</code>.
 	 *
 	 * @return The position of the boundary found, counting from the beginning of the <code>buffer</code>, or
-	 *         <code>-1</code> if not found.
+	 * <code>-1</code> if not found.
 	 */
 	protected int findSeparator() {
 		int first;
@@ -627,10 +614,9 @@ public class MultipartReader {
 		/**
 		 * Reads bytes into the given buffer.
 		 *
-		 * @param b The destination buffer, where to write to.
+		 * @param b   The destination buffer, where to write to.
 		 * @param off Offset of the first byte in the buffer.
 		 * @param len Maximum number of bytes to read.
-		 *
 		 * @return Number of bytes, which have been actually read, or -1 for EOF.
 		 * @throws IOException An I/O error occurred.
 		 */
@@ -668,7 +654,6 @@ public class MultipartReader {
 		 * Closes the input stream.
 		 *
 		 * @param pCloseUnderlying Whether to close the underlying stream (hard close).
-		 *
 		 * @throws IOException An I/O error occurred.
 		 */
 		public void close(boolean pCloseUnderlying) throws IOException {
@@ -679,7 +664,7 @@ public class MultipartReader {
 				closed = true;
 				input.close();
 			} else {
-				for (;;) {
+				for (; ; ) {
 					int av = available();
 					if (av == 0) {
 						av = makeAvailable();
@@ -697,7 +682,6 @@ public class MultipartReader {
 		 * Skips the given number of bytes.
 		 *
 		 * @param bytes Number of bytes to skip.
-		 *
 		 * @return The number of bytes, which have actually been skipped.
 		 * @throws IOException An I/O error occurred.
 		 */
@@ -736,7 +720,7 @@ public class MultipartReader {
 			head = 0;
 			tail = pad;
 
-			for (;;) {
+			for (; ; ) {
 				int bytesRead = input.read(buffer, tail, bufSize - tail);
 				if (bytesRead == -1) {
 					// the last pad amount is left in the buffer

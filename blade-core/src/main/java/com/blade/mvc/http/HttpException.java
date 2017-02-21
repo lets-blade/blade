@@ -16,16 +16,18 @@ public class HttpException extends IOException {
 
     /**
      * Ctor.
+     *
      * @param code HTTP status code
      */
     public HttpException(final int code) {
         super(Integer.toString(code));
         this.status = code;
     }
-    
+
     /**
      * Ctor.
-     * @param code HTTP status code
+     *
+     * @param code  HTTP status code
      * @param cause Cause of the problem
      */
     public HttpException(final int code, final String cause) {
@@ -35,8 +37,9 @@ public class HttpException extends IOException {
 
     /**
      * Ctor.
+     *
      * @param cause Cause of the problem
-     * @param code HTTP status code
+     * @param code  HTTP status code
      */
     public HttpException(final Throwable cause, final int code) {
         super(cause);
@@ -45,18 +48,20 @@ public class HttpException extends IOException {
 
     /**
      * Ctor.
-     * @param code HTTP status code
-     * @param msg Exception message
+     *
+     * @param code  HTTP status code
+     * @param msg   Exception message
      * @param cause Cause of the problem
      */
     public HttpException(final int code, final String msg,
-        final Throwable cause) {
+                         final Throwable cause) {
         super(String.format("[%03d] %s", code, msg), cause);
         this.status = code;
     }
 
     /**
      * HTTP status code.
+     *
      * @return Code
      */
     public final int code() {

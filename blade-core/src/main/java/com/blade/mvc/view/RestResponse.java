@@ -108,35 +108,35 @@ public class RestResponse<T> {
         this.code = code;
     }
 
-    public static RestResponse ok(){
+    public static RestResponse ok() {
         return new RestResponse(true);
     }
 
-    public static <T> RestResponse ok(T payload){
+    public static <T> RestResponse ok(T payload) {
         return new RestResponse(true, payload);
     }
 
-    public static <T> RestResponse ok(int code){
+    public static <T> RestResponse ok(int code) {
         return new RestResponse(true, null, code);
     }
 
-    public static <T> RestResponse ok(T payload, int code){
+    public static <T> RestResponse ok(T payload, int code) {
         return new RestResponse(true, payload, code);
     }
 
-    public static RestResponse fail(){
+    public static RestResponse fail() {
         return new RestResponse(false);
     }
 
-    public static RestResponse fail(String msg){
+    public static RestResponse fail(String msg) {
         return new RestResponse(false, msg);
     }
 
-    public static RestResponse fail(int code){
+    public static RestResponse fail(int code) {
         return new RestResponse(false, null, code);
     }
 
-    public static RestResponse fail(int code, String msg){
+    public static RestResponse fail(int code, String msg) {
         return new RestResponse(false, msg, code);
     }
 

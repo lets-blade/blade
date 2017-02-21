@@ -93,7 +93,7 @@ public class AsyncDispatcherServlet extends HttpServlet {
     @Override
     public void destroy() {
         super.destroy();
-        if(null != executor){
+        if (null != executor) {
             executor.shutdown();
             LOGGER.info("shutdown worker thread pool.");
         }

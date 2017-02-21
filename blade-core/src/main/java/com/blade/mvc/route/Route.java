@@ -1,12 +1,12 @@
 /**
  * Copyright (c) 2015, biezhi 王爵 (biezhi.me@gmail.com)
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- * 	http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,19 +15,19 @@
  */
 package com.blade.mvc.route;
 
-import java.lang.reflect.Method;
-
 import com.blade.mvc.http.HttpMethod;
 import com.blade.mvc.http.Path;
+
+import java.lang.reflect.Method;
 
 /**
  * Route Bean
  *
- * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
- * @since	1.5
+ * @author    <a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
+ * @since 1.5
  */
 public class Route {
-	
+
 	/**
 	 * HTTP Request Method
 	 */
@@ -37,22 +37,22 @@ public class Route {
 	 * Route path
 	 */
 	private String path;
-	
+
 	/**
-	 * Logical controller object 
+	 * Logical controller object
 	 */
 	private Object target;
-	
+
 	/**
 	 * Controller Class Type
 	 */
 	private Class<?> targetType;
-	
+
 	/**
-	 * Implementation logic controller method 
+	 * Implementation logic controller method
 	 */
 	private Method action;
-	
+
 	public Route() {
 	}
 
@@ -64,7 +64,7 @@ public class Route {
 		this.targetType = targetType;
 		this.action = action;
 	}
-	
+
 	public HttpMethod getHttpMethod() {
 		return httpMethod;
 	}
@@ -127,5 +127,5 @@ public class Route {
 	public String toString() {
 		return httpMethod + "\t" + path;
 	}
-	
+
 }

@@ -1,12 +1,12 @@
 /**
  * Copyright (c) 2015, biezhi 王爵 (biezhi.me@gmail.com)
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- * 	http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,93 +15,94 @@
  */
 package com.blade.context;
 
-import javax.servlet.ServletContext;
-
 import com.blade.mvc.http.Request;
 import com.blade.mvc.http.Response;
 import com.blade.mvc.http.wrapper.Session;
 
+import javax.servlet.ServletContext;
+
 /**
  * BladeWebContext
  *
- * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
- * @since	1.6.6
+ * @author    <a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
+ * @since 1.6.6
  */
 public class WebContextHolder {
-	
-	/**
-	 * BladeWebContext object for the current thread
-	 */
+
+    /**
+     * BladeWebContext object for the current thread
+     */
     private static ThreadLocal<WebContextHolder> ctx = new ThreadLocal<WebContextHolder>();
-    
+
     /**
      * ServletContext Object that is created when the application is initialized
      */
-    private ServletContext context; 
-    
+    private ServletContext context;
+
     /**
      * Request
      */
     private Request request;
-    
+
     /**
      * Response
      */
     private Response response;
-    
-    private WebContextHolder(){}
-    
-    public static WebContextHolder me(){
-    	return ctx.get();
+
+    private WebContextHolder() {
     }
-    
+
+    public static WebContextHolder me() {
+        return ctx.get();
+    }
+
     public static void init(ServletContext context) {
-    	WebContextHolder bladeWebContext = new WebContextHolder();
-    	bladeWebContext.context = context;
-    	ctx.set(bladeWebContext);
+        WebContextHolder bladeWebContext = new WebContextHolder();
+        bladeWebContext.context = context;
+        ctx.set(bladeWebContext);
     }
-    
+
     public static void init(ServletContext context, Request request, Response response) {
-    	WebContextHolder bladeWebContext = new WebContextHolder();
-    	bladeWebContext.context = context;
-    	bladeWebContext.request = request;
-    	bladeWebContext.response = response;
-    	ctx.set(bladeWebContext);
+        WebContextHolder bladeWebContext = new WebContextHolder();
+        bladeWebContext.context = context;
+        bladeWebContext.request = request;
+        bladeWebContext.response = response;
+        ctx.set(bladeWebContext);
     }
-    
+
     /**
      * 移除当前线程的Request、Response对象
      */
-    public static void remove(){
-    	ctx.remove();
+    public static void remove() {
+        ctx.remove();
     }
-    
+
     public static Request request() {
         return me().request;
     }
-    
+
     public static Response response() {
         return me().response;
     }
-    
+
     public static Session session() {
         return request().session();
     }
-    
-	public static ServletContext servletContext() {
-		return me().context;
-	}
-	
-	public ServletContext getContext() {
-		return context;
-	}
-	
-	public Request getRequest() {
-		return request;
-	}
 
-	public Response getResponse() {
-		return response;
-	}
-	
+    public static ServletContext servletContext() {
+        return me().context;
+    }
+
+    public ServletContext getContext() {
+        return context;
+    }
+
+    public Request getRequest() {
+        return request;
+    }
+
+    public Response getResponse() {
+        return response;
+    }
+
 }

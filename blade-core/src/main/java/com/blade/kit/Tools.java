@@ -1,12 +1,12 @@
 /**
  * Copyright (c) 2015, biezhi 王爵 (biezhi.me@gmail.com)
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- * 	http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -94,23 +94,23 @@ public final class Tools {
         return Math.round(value) + "";
     }
 
-    public static String md5(String str){
+    public static String md5(String str) {
         return EncrypKit.md5(str);
     }
 
-    public static String md5(String str1, String str2){
+    public static String md5(String str1, String str2) {
         return EncrypKit.md5(str1 + str2);
     }
 
-    public static String sha1(String str){
+    public static String sha1(String str) {
         return EncrypKit.encryptSHA1ToString(str);
     }
 
-    public static String sha256(String str){
+    public static String sha256(String str) {
         return EncrypKit.encryptSHA256ToString(str);
     }
 
-    public static String sha512(String str){
+    public static String sha512(String str) {
         return EncrypKit.encryptSHA512ToString(str);
     }
 

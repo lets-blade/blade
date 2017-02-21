@@ -1,12 +1,12 @@
 /**
  * Copyright (c) 2015, biezhi 王爵 (biezhi.me@gmail.com)
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- * 	http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,15 +16,15 @@
 package com.blade.mvc.route.loader;
 
 import com.blade.Blade;
+import com.blade.exception.RouteException;
 import com.blade.ioc.Ioc;
 import com.blade.kit.StringKit;
-import com.blade.exception.RouteException;
 
 /**
  * ClassPath controller of loader 
  *
- * @author	<a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
- * @since	1.5
+ * @author    <a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
+ * @since 1.5
  */
 public class ClassPathControllerLoader implements ControllerLoader {
 
@@ -33,14 +33,14 @@ public class ClassPathControllerLoader implements ControllerLoader {
 	private ClassLoader classLoader = ClassPathControllerLoader.class.getClassLoader();
 
 	private Ioc ioc = Blade.$().ioc();
-	
+
 	public ClassPathControllerLoader() {
 		this("");
 	}
 
 	public ClassPathControllerLoader(String basePackage) {
 		this.basePackage = basePackage;
-		
+
 		if (StringKit.isNotBlank(basePackage)) {
 			if (!this.basePackage.endsWith(".")) {
 				this.basePackage += '.';
@@ -53,11 +53,11 @@ public class ClassPathControllerLoader implements ControllerLoader {
 		String className = basePackage + controllerName;
 
 		try {
-			// Load controller instance 
+			// Load controller instance
 			Class<?> controllerClass = classLoader.loadClass(className);
-			
+
 			Object controller = ioc.getBean(controllerClass);
-			if(null == controller){
+			if (null == controller) {
 				ioc.addBean(controllerClass);
 				controller = ioc.getBean(controllerClass);
 			}

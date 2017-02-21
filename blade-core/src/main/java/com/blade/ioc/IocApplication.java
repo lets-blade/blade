@@ -1,12 +1,12 @@
 /**
  * Copyright (c) 2015, biezhi 王爵 (biezhi.me@gmail.com)
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- * 	http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -34,7 +34,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Modifier;
-import java.util.*;
+import java.util.List;
+import java.util.Set;
 
 /**
  * IOC container, used to initialize the IOC object
@@ -43,30 +44,30 @@ import java.util.*;
  * @since 1.0
  */
 public final class IocApplication {
-	
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(IocApplication.class);
 
 	/**
 	 * aop interceptor
 	 */
 	private static List<Object> aopInterceptors = CollectionKit.newArrayList(8);
-	
+
 	/**
 	 * Class to read object, load class
 	 */
 	private ClassReader classReader = null;
 	private Blade blade;
 	private OrderComparator orderComparator;
-	
+
 	public IocApplication() {
 		this.blade = Blade.$();
 		this.classReader = DynamicContext.getClassReader();
 		this.orderComparator = new OrderComparator();
 	}
-	
+
 	/**
 	 * load config beans
-	 * 
+	 *
 	 * @return
 	 * @throws Exception
 	 */
@@ -134,7 +135,7 @@ public final class IocApplication {
 		String[] routePkgs = blade.configuration().getRoutePkgs();
 		if (null != routePkgs && routePkgs.length > 0) {
 			List<ClassInfo> controllers = CollectionKit.newArrayList(8);
-			for(int i=0, len=routePkgs.length; i<len; i++){
+			for (int i = 0, len = routePkgs.length; i < len; i++) {
 				// Scan all Controoler
 				controllers.addAll(classReader.getClassByAnnotation(routePkgs[i], Controller.class, true));
 				controllers.addAll(classReader.getClassByAnnotation(routePkgs[i], RestController.class, true));
@@ -175,24 +176,24 @@ public final class IocApplication {
 
 		// 1. init service
 		if (null != services) {
-			for(int i=0, len=services.size(); i<len; i++){
+			for (int i = 0, len = services.size(); i < len; i++) {
 				ioc.addBean(services.get(i).getClazz());
 			}
 		}
-		
+
 		List<BaseConfig> baseConfigs = CollectionKit.newArrayList();
 
 		// 2. init configs
 		if (null != configs) {
-			for(int i=0, len=configs.size(); i<len; i++){
+			for (int i = 0, len = configs.size(); i < len; i++) {
 				Object bean = ioc.addBean(configs.get(i).getClazz());
-				baseConfigs.add( (BaseConfig) bean);
+				baseConfigs.add((BaseConfig) bean);
 			}
 		}
 
 		// 3. init controller
 		if (null != controllers) {
-			for(int i=0, len=controllers.size(); i<len; i++){
+			for (int i = 0, len = controllers.size(); i < len; i++) {
 				ioc.addBean(controllers.get(i).getClazz());
 				routeBuilder.addRouter(controllers.get(i).getClazz());
 			}
@@ -200,33 +201,33 @@ public final class IocApplication {
 
 		// 4. init interceptor
 		if (null != inteceptors) {
-			for(int i=0, len=inteceptors.size(); i<len; i++){
+			for (int i = 0, len = inteceptors.size(); i < len; i++) {
 				ioc.addBean(inteceptors.get(i).getClazz());
 				routeBuilder.addInterceptor(inteceptors.get(i).getClazz());
 			}
 		}
 
-		if(null != ioc.getBeans() && !ioc.getBeans().isEmpty()){
+		if (null != ioc.getBeans() && !ioc.getBeans().isEmpty()) {
 			LOGGER.info("Add Object: {}", ioc.getBeans());
 		}
 
 		// init configs
-		for(BaseConfig baseConfig : baseConfigs){
+		for (BaseConfig baseConfig : baseConfigs) {
 			baseConfig.config(blade.configuration());
 		}
-		
+
 		// injection
 		List<BeanDefine> beanDefines = ioc.getBeanDefines();
 		if (null != beanDefines) {
-			for(int i=0, len=beanDefines.size(); i<len; i++){
+			for (int i = 0, len = beanDefines.size(); i < len; i++) {
 				IocKit.injection(ioc, beanDefines.get(i));
 			}
 		}
 
 	}
-	
+
 	public static List<Object> getAopInterceptors() {
 		return aopInterceptors;
 	}
-	
+
 }

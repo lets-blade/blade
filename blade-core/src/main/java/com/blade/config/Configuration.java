@@ -1,12 +1,12 @@
 /**
  * Copyright (c) 2015, biezhi 王爵 (biezhi.me@gmail.com)
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- * 	http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,205 +15,203 @@
  */
 package com.blade.config;
 
-import static com.blade.Blade.$;
-
-import java.util.Set;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.blade.Const;
 import com.blade.context.DynamicContext;
 import com.blade.kit.Assert;
 import com.blade.kit.StringKit;
 import com.blade.kit.base.Config;
 import com.blade.mvc.view.ViewSettings;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.Set;
+
+import static com.blade.Blade.$;
 
 /**
  * Blade Application Config Class
- * 
+ *
  * @author <a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since 1.6.6
- *
  */
 public class Configuration {
-	
-	private static final Logger LOGGER = LoggerFactory.getLogger(Configuration.class);
-	
-	private Packages packages;
-	
-	// Encoding
-	private String encoding = Const.DEFAULT_ENCODING;
 
-	// Is dev mode
-	private boolean isDev = true;
-	
-	private boolean isInit  = false;
-	
-	private String webRoot;
-	
-	private Class<?> applicationClass;
+    private static final Logger LOGGER = LoggerFactory.getLogger(Configuration.class);
 
-	private String classPath = "config";
+    private Packages packages;
 
-	private Config config = new Config();
+    // Encoding
+    private String encoding = Const.DEFAULT_ENCODING;
 
-	public Configuration() {
-		this.packages = new Packages();
-		this.addResources("/public/*", "/assets/*", "/static/*");
-	}
+    // Is dev mode
+    private boolean isDev = true;
 
-	public void setEnv(Config config) {
+    private boolean isInit = false;
 
-		if (null != config && !isInit) {
-			
-			// get dev mode
-			this.isDev = config.getBoolean(Const.APP_DEV, true);
-			
-			// get ioc packages
-			packages.put(Const.IOC_PKGS, config.get(Const.APP_IOC));
-			
-			// get view 404, 500 page
-			ViewSettings.$().setView500(config.get(Const.MVC_VIEW_500));
-			ViewSettings.$().setView404(config.get(Const.MVC_VIEW_404));
-			
-			// get http encoding
-			this.encoding = config.get(Const.HTTP_ENCODING, Const.DEFAULT_ENCODING);
-			
-			// get mvc static folders
-			String statics = config.get(Const.MVC_STATICS);
-			
-			// get app base package
-			String basePackage = config.get(Const.APP_BASE_PKG);
+    private String webRoot;
 
-			this.classPath = config.get(Const.APP_CLASSPATH, "config");
+    private Class<?> applicationClass;
 
-			// get server start port
-			Integer port = config.getInt(Const.SERVER_PORT, Const.DEFAULT_PORT);
-			$().listen(port);
-			
-			if (StringKit.isNotBlank(statics)) {
-				this.addResources(StringKit.split(statics, ','));
-			}
-			
-			if (StringKit.isNotBlank(basePackage)) {
-				this.setBasePackage(basePackage);
-			}
-			isInit = true;
-		}
-	}
-	
-	public void addRoutePkgs(String... pkgs){
-		packages.add(Const.ROUTE_PKGS, pkgs);
-	}
-	
-	public void addIocPkgs(String... pkgs){
-		packages.add(Const.IOC_PKGS, pkgs);
-	}
-	
-	public String getBasePackage() {
-		return packages.first(Const.BASE_PKG);
-	}
+    private String classPath = "config";
 
-	public String[] getConfigPkgs(){
-		return packages.array(Const.CONFIG_PKGS);
-	}
-	
-	public String[] getIocPkgs(){
-		return packages.array(Const.IOC_PKGS);
-	}
-	
-	public String[] getRoutePkgs(){
-		return packages.array(Const.ROUTE_PKGS);
-	}
-	
-	public Set<String> getResources(){
-		return packages.values(Const.RESOURCE_PKGS);
-	}
-	
-	public String getInterceptorPkg(){
-		return packages.first(Const.INTERCEPTOR_PKG);
-	}
-	
-	public String getFilterPkg(){
-		return packages.first(Const.FILTER_PKG);
-	}
-	
-	public String getListenerPkg(){
-		return packages.first(Const.LISTENER_PKG);
-	}
-	
-	public boolean isDev() {
-		return isDev;
-	}
-	
-	public String getEncoding() {
-		return encoding;
-	}
+    private Config config = new Config();
 
-	public boolean isInit(){
-		return this.isInit;
-	}
+    public Configuration() {
+        this.packages = new Packages();
+        this.addResources("/public/*", "/assets/*", "/static/*");
+    }
 
-	public String webRoot() {
-		return this.webRoot;
-	}
-	
-	public Class<?> getApplicationClass() {
-		return applicationClass;
-	}
-	
-	public void setApplicationClass(Class<?> applicationClass) {
-		this.applicationClass = applicationClass;
-		DynamicContext.init(applicationClass);
-	}
-	
-	public void  setInterceptorPackage(String interceptorPkg) {
-		packages.put(Const.INTERCEPTOR_PKG, interceptorPkg);
-	}
-	
-	public void setBasePackage(String basePackage) {
-		Assert.notBlank(basePackage);
-		
-		packages.put(Const.BASE_PKG, basePackage);
-		packages.put(Const.INTERCEPTOR_PKG, basePackage + ".interceptor");
-		packages.put(Const.FILTER_PKG, basePackage + ".filter");
-		packages.put(Const.LISTENER_PKG, basePackage + ".listener");
-		
-		packages.add(Const.CONFIG_PKGS, basePackage + ".config");
-		packages.add(Const.IOC_PKGS, basePackage + ".service.*");
-		packages.add(Const.ROUTE_PKGS, basePackage + ".controller");
-	}
-	
-	public void addResources(String... resources) {
-		Assert.notNull(resources);
-		for(String resource : resources){
-			LOGGER.debug("Add Resource: {}", resource);
-		}
-		packages.add(Const.RESOURCE_PKGS, resources);
-	}
+    public void setEnv(Config config) {
 
-	public void setWebRoot(String webRoot) {
-		this.webRoot = webRoot;
-	}
-	
-	public void setDev(boolean isDev) {
-		this.isDev = isDev;
-	}
+        if (null != config && !isInit) {
 
-	public String getClassPath() {
-		return classPath;
-	}
+            // get dev mode
+            this.isDev = config.getBoolean(Const.APP_DEV, true);
 
-	public void load(String location) {
-		try {
-			config.add(location);
-		} catch (Exception e){
-			LOGGER.warn("[load config] " + e.getMessage());
-		}
-	}
+            // get ioc packages
+            packages.put(Const.IOC_PKGS, config.get(Const.APP_IOC));
 
-	public Config config() {
-		return config;
-	}
+            // get view 404, 500 page
+            ViewSettings.$().setView500(config.get(Const.MVC_VIEW_500));
+            ViewSettings.$().setView404(config.get(Const.MVC_VIEW_404));
+
+            // get http encoding
+            this.encoding = config.get(Const.HTTP_ENCODING, Const.DEFAULT_ENCODING);
+
+            // get mvc static folders
+            String statics = config.get(Const.MVC_STATICS);
+
+            // get app base package
+            String basePackage = config.get(Const.APP_BASE_PKG);
+
+            this.classPath = config.get(Const.APP_CLASSPATH, "config");
+
+            // get server start port
+            Integer port = config.getInt(Const.SERVER_PORT, Const.DEFAULT_PORT);
+            $().listen(port);
+
+            if (StringKit.isNotBlank(statics)) {
+                this.addResources(StringKit.split(statics, ','));
+            }
+
+            if (StringKit.isNotBlank(basePackage)) {
+                this.setBasePackage(basePackage);
+            }
+            isInit = true;
+        }
+    }
+
+    public void addRoutePkgs(String... pkgs) {
+        packages.add(Const.ROUTE_PKGS, pkgs);
+    }
+
+    public void addIocPkgs(String... pkgs) {
+        packages.add(Const.IOC_PKGS, pkgs);
+    }
+
+    public String getBasePackage() {
+        return packages.first(Const.BASE_PKG);
+    }
+
+    public String[] getConfigPkgs() {
+        return packages.array(Const.CONFIG_PKGS);
+    }
+
+    public String[] getIocPkgs() {
+        return packages.array(Const.IOC_PKGS);
+    }
+
+    public String[] getRoutePkgs() {
+        return packages.array(Const.ROUTE_PKGS);
+    }
+
+    public Set<String> getResources() {
+        return packages.values(Const.RESOURCE_PKGS);
+    }
+
+    public String getInterceptorPkg() {
+        return packages.first(Const.INTERCEPTOR_PKG);
+    }
+
+    public String getFilterPkg() {
+        return packages.first(Const.FILTER_PKG);
+    }
+
+    public String getListenerPkg() {
+        return packages.first(Const.LISTENER_PKG);
+    }
+
+    public boolean isDev() {
+        return isDev;
+    }
+
+    public String getEncoding() {
+        return encoding;
+    }
+
+    public boolean isInit() {
+        return this.isInit;
+    }
+
+    public String webRoot() {
+        return this.webRoot;
+    }
+
+    public Class<?> getApplicationClass() {
+        return applicationClass;
+    }
+
+    public void setApplicationClass(Class<?> applicationClass) {
+        this.applicationClass = applicationClass;
+        DynamicContext.init(applicationClass);
+    }
+
+    public void setInterceptorPackage(String interceptorPkg) {
+        packages.put(Const.INTERCEPTOR_PKG, interceptorPkg);
+    }
+
+    public void setBasePackage(String basePackage) {
+        Assert.notBlank(basePackage);
+
+        packages.put(Const.BASE_PKG, basePackage);
+        packages.put(Const.INTERCEPTOR_PKG, basePackage + ".interceptor");
+        packages.put(Const.FILTER_PKG, basePackage + ".filter");
+        packages.put(Const.LISTENER_PKG, basePackage + ".listener");
+
+        packages.add(Const.CONFIG_PKGS, basePackage + ".config");
+        packages.add(Const.IOC_PKGS, basePackage + ".service.*");
+        packages.add(Const.ROUTE_PKGS, basePackage + ".controller");
+    }
+
+    public void addResources(String... resources) {
+        Assert.notNull(resources);
+        for (String resource : resources) {
+            LOGGER.debug("Add Resource: {}", resource);
+        }
+        packages.add(Const.RESOURCE_PKGS, resources);
+    }
+
+    public void setWebRoot(String webRoot) {
+        this.webRoot = webRoot;
+    }
+
+    public void setDev(boolean isDev) {
+        this.isDev = isDev;
+    }
+
+    public String getClassPath() {
+        return classPath;
+    }
+
+    public void load(String location) {
+        try {
+            config.add(location);
+        } catch (Exception e) {
+            LOGGER.warn("[load config] " + e.getMessage());
+        }
+    }
+
+    public Config config() {
+        return config;
+    }
 }

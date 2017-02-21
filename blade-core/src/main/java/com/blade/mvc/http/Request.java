@@ -15,23 +15,22 @@
  */
 package com.blade.mvc.http;
 
+import com.blade.mvc.http.wrapper.Session;
+import com.blade.mvc.multipart.FileItem;
+import com.blade.mvc.route.Route;
+
+import javax.servlet.ServletContext;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.Map;
 import java.util.Set;
 
-import javax.servlet.ServletContext;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-
-import com.blade.mvc.http.wrapper.Session;
-import com.blade.mvc.multipart.FileItem;
-import com.blade.mvc.route.Route;
-
 /**
  * HTTP Request
  *
- * @author    <a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
+ * @author <a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since 1.7.0-beta
  */
 public interface Request {
@@ -43,7 +42,8 @@ public interface Request {
 
     /**
      * URL parameters on the initial route, e.g:/user/23
-     * @param routePath    Route URL
+     *
+     * @param routePath Route URL
      */
     void initPathParams(String routePath);
 
@@ -98,10 +98,9 @@ public interface Request {
     Map<String, String> pathParams();
 
     /**
-     * @see #pathString(String name)
-     *
-     * @param name    Parameter name
+     * @param name Parameter name
      * @return Return parameter value
+     * @see #pathString(String name)
      */
     @Deprecated
     String pathParam(String name);
@@ -109,17 +108,16 @@ public interface Request {
     /**
      * Get a URL parameter
      *
-     * @param name    Parameter name
+     * @param name Parameter name
      * @return Return parameter value
      */
     String pathString(String name);
 
     /**
-     * @see #pathString(String name, String defaultValue)
-     *
-     * @param name            Parameter name
-     * @param defaultValue    Default Value
+     * @param name         Parameter name
+     * @param defaultValue Default Value
      * @return Return parameter value
+     * @see #pathString(String name, String defaultValue)
      */
     @Deprecated
     String pathParam(String name, String defaultValue);
@@ -127,17 +125,16 @@ public interface Request {
     /**
      * Get a URL parameter, and returns defaultValue if it is NULL
      *
-     * @param name            Parameter name
-     * @param defaultValue    Default Value
+     * @param name         Parameter name
+     * @param defaultValue Default Value
      * @return Return parameter value
      */
     String pathString(String name, String defaultValue);
 
     /**
-     * @see #pathInt(String name)
-     *
-     * @param name    Parameter name
+     * @param name Parameter name
      * @return Return Int parameter value
+     * @see #pathInt(String name)
      */
     @Deprecated
     int pathParamAsInt(String name);
@@ -145,16 +142,15 @@ public interface Request {
     /**
      * Return a URL parameter for a Int type
      *
-     * @param name    Parameter name
+     * @param name Parameter name
      * @return Return Int parameter value
      */
     int pathInt(String name);
 
     /**
-     * @see #pathLong(String name)
-     *
-     * @param name    Parameter name
+     * @param name Parameter name
      * @return Return Long parameter value
+     * @see #pathLong(String name)
      */
     @Deprecated
     long pathParamAsLong(String name);
@@ -162,7 +158,7 @@ public interface Request {
     /**
      * Return a URL parameter for a Long type
      *
-     * @param name    Parameter name
+     * @param name Parameter name
      * @return Return Long parameter value
      */
     long pathLong(String name);
@@ -180,7 +176,7 @@ public interface Request {
     /**
      * Get a request parameter
      *
-     * @param name    Parameter name
+     * @param name Parameter name
      * @return Return request parameter value
      */
     String query(String name);
@@ -188,17 +184,16 @@ public interface Request {
     /**
      * Get a request parameter, if NULL is returned to defaultValue
      *
-     * @param name            parameter name
-     * @param defaultValue    default String value
+     * @param name         parameter name
+     * @param defaultValue default String value
      * @return Return request parameter values
      */
     String query(String name, String defaultValue);
 
     /**
-     * @see #queryInt(String name)
-     *
-     * @param name    Parameter name
+     * @param name Parameter name
      * @return Return Int parameter values
+     * @see #queryInt(String name)
      */
     @Deprecated
     int queryAsInt(String name);
@@ -206,7 +201,7 @@ public interface Request {
     /**
      * Returns a request parameter for a Int type
      *
-     * @param name    Parameter name
+     * @param name Parameter name
      * @return Return Int parameter values
      */
     int queryInt(String name);
@@ -214,17 +209,16 @@ public interface Request {
     /**
      * Returns a request parameter for a Int type
      *
-     * @param name    Parameter name
+     * @param name         Parameter name
      * @param defaultValue default int value
      * @return Return Int parameter values
      */
     int queryInt(String name, int defaultValue);
 
     /**
-     * @see #queryLong(String name)
-     *
-     * @param name    Parameter name
+     * @param name Parameter name
      * @return Return Long parameter values
+     * @see #queryLong(String name)
      */
     @Deprecated
     long queryAsLong(String name);
@@ -232,7 +226,7 @@ public interface Request {
     /**
      * Returns a request parameter for a Long type
      *
-     * @param name    Parameter name
+     * @param name Parameter name
      * @return Return Long parameter values
      */
     long queryLong(String name);
@@ -240,17 +234,16 @@ public interface Request {
     /**
      * Returns a request parameter for a Long type
      *
-     * @param name    Parameter name
+     * @param name         Parameter name
      * @param defaultValue default long value
      * @return Return Long parameter values
      */
     long queryLong(String name, long defaultValue);
 
     /**
-     * @see #queryDouble(String name)
-     *
-     * @param name    Parameter name
+     * @param name Parameter name
      * @return Return Double parameter values
+     * @see #queryDouble(String name)
      */
     @Deprecated
     double queryAsDouble(String name);
@@ -258,7 +251,7 @@ public interface Request {
     /**
      * Returns a request parameter for a Double type
      *
-     * @param name    Parameter name
+     * @param name Parameter name
      * @return Return Double parameter values
      */
     double queryDouble(String name);
@@ -266,8 +259,8 @@ public interface Request {
     /**
      * Returns a request parameter for a Double type
      *
-     * @param name    Parameter name
-     * @param defaultValue    default double value
+     * @param name         Parameter name
+     * @param defaultValue default double value
      * @return Return Double parameter values
      */
     double queryDouble(String name, double defaultValue);
@@ -294,7 +287,8 @@ public interface Request {
 
     /**
      * Return to the current or create a session
-     * @param create    create session
+     *
+     * @param create create session
      * @return Return session
      */
     Session session(boolean create);
@@ -327,7 +321,7 @@ public interface Request {
     /**
      * Get String Cookie Value
      *
-     * @param name    cookie name
+     * @param name cookie name
      * @return Return Cookie Value
      */
     String cookie(String name);
@@ -335,8 +329,8 @@ public interface Request {
     /**
      * Get String Cookie Value
      *
-     * @param name    cookie name
-     * @param defaultValue    default cookie value
+     * @param name         cookie name
+     * @param defaultValue default cookie value
      * @return Return Cookie Value
      */
     String cookie(String name, String defaultValue);
@@ -344,7 +338,7 @@ public interface Request {
     /**
      * Get Cookie
      *
-     * @param name    cookie name
+     * @param name cookie name
      * @return Return Cookie
      */
     Cookie cookieRaw(String name);
@@ -357,7 +351,7 @@ public interface Request {
     /**
      * Get header information
      *
-     * @param name    Parameter name
+     * @param name Parameter name
      * @return Return header information
      */
     String header(String name);
@@ -365,8 +359,8 @@ public interface Request {
     /**
      * Get header information
      *
-     * @param name    Parameter name
-     * @param defaultValue    default header value
+     * @param name         Parameter name
+     * @param defaultValue default header value
      * @return Return header information
      */
     String header(String name, String defaultValue);
@@ -374,21 +368,22 @@ public interface Request {
     /**
      * Setting request encoding
      *
-     * @param encoding    coded string
+     * @param encoding coded string
      */
     void encoding(String encoding);
 
     /**
      * Setting Request Attribute
      *
-     * @param name    Parameter name
-     * @param value    Parameter Value
+     * @param name  Parameter name
+     * @param value Parameter Value
      */
     void attribute(String name, Object value);
 
     /**
      * Get a Request Attribute
-     * @param name    Parameter name
+     *
+     * @param name Parameter name
      * @return Return parameter value
      */
     <T> T attribute(String name);
@@ -416,8 +411,8 @@ public interface Request {
     /**
      * Serialized form data, converted to the javabean
      *
-     * @param slug        bean slug, e.g: <input name="person.uid" value="123"/>, the slug is person
-     * @param clazz        bean type
+     * @param slug  bean slug, e.g: <input name="person.uid" value="123"/>, the slug is person
+     * @param clazz bean type
      * @return Return converted Bean Object
      */
     <T> T model(String slug, Class<? extends Serializable> clazz);
@@ -425,7 +420,7 @@ public interface Request {
     /**
      * Setting route, execute request for use
      *
-     * @param route    route object
+     * @param route route object
      */
     void setRoute(Route route);
 
@@ -446,6 +441,7 @@ public interface Request {
 
     /**
      * Request body interface
+     *
      * @author biezhi
      */
     interface BodyParser {

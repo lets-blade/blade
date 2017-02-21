@@ -15,17 +15,17 @@
  */
 package com.blade.mvc.http;
 
+import com.blade.kit.CollectionKit;
+import com.blade.kit.StringKit;
+
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.List;
 
-import com.blade.kit.CollectionKit;
-import com.blade.kit.StringKit;
-
 /**
  * Path URL
  *
- * @author    <a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
+ * @author <a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since 1.5
  */
 public final class Path {
