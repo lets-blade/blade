@@ -25,7 +25,7 @@ import java.io.IOException;
 /**
  * Asynchronous Listener
  *
- * @author    <a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
+ * @author <a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since 1.7.1-alpha
  */
 public class BladeAsyncListener implements AsyncListener {

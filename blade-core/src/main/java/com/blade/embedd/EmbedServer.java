@@ -15,25 +15,23 @@
  */
 package com.blade.embedd;
 
-import com.blade.exception.EmbedServerException;
-
 /**
  * Jetty Server
  *
- * @author    <a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
+ * @author <a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since 1.6.6
  */
 public interface EmbedServer {
 
-    void startup(int port) throws EmbedServerException;
+    void startup(int port);
 
-    void startup(int port, String contextPath) throws EmbedServerException;
+    void startup(int port, String contextPath);
 
-    void startup(int port, String contextPath, String webRoot) throws EmbedServerException;
+    void startup(int port, String contextPath, String webRoot);
 
-    void join() throws EmbedServerException;
+    void join();
 
-    void shutdown() throws EmbedServerException;
+    void shutdown();
 
     void setWebRoot(String webRoot);
 

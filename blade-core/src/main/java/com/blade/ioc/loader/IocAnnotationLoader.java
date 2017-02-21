@@ -37,7 +37,6 @@ import java.util.List;
 public final class IocAnnotationLoader implements IocLoader {
 
     private Collection<ClassInfo> classes;
-
     private ClassReader classReader = DynamicContext.getClassReader();
 
     public IocAnnotationLoader(String... packageNames) {

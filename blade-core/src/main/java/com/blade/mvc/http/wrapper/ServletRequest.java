@@ -50,9 +50,7 @@ public class ServletRequest implements Request {
     private static final Logger LOGGER = LoggerFactory.getLogger(ServletRequest.class);
 
     private static final String USER_AGENT = "user-agent";
-
     protected Route route;
-
     private HttpServletRequest request;
 
     /**
@@ -66,9 +64,7 @@ public class ServletRequest implements Request {
     private Map<String, String> queryParams = null;
 
     private Map<String, FileItem> fileItems = null;
-
     private Session session = null;
-
     private boolean isAbort = false;
 
     public ServletRequest(HttpServletRequest request) throws MultipartException, IOException {

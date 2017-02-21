@@ -52,11 +52,8 @@ class DispatcherHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(DispatcherHandler.class);
 
     private Ioc ioc;
-
     private ServletContext servletContext;
-
     private RouteMatcher routeMatcher;
-
     private RouteViewResolve routeViewHandler;
 
     public DispatcherHandler(ServletContext servletContext, Routers routers) {

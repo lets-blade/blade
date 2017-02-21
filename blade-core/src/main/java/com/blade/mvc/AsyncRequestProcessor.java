@@ -28,11 +28,8 @@ import javax.servlet.http.HttpServletResponse;
 public class AsyncRequestProcessor implements Runnable {
 
     private AsyncContext asyncContext;
-
     private HttpServletRequest httpRequest;
-
     private HttpServletResponse httpResponse;
-
     private DispatcherHandler dispatcherHandler;
 
     public AsyncRequestProcessor(AsyncContext asyncContext, DispatcherHandler dispatcherHandler) {

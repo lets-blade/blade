@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.blade.ioc;
+package com.blade.kit;
 
+import com.blade.ioc.BeanDefine;
+import com.blade.ioc.Ioc;
 import com.blade.ioc.annotation.InjectWith;
 import com.blade.ioc.injector.FieldInjector;
 import com.blade.kit.reflect.ClassDefine;

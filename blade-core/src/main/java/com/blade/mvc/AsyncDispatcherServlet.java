@@ -44,11 +44,8 @@ public class AsyncDispatcherServlet extends HttpServlet {
     private static final long serialVersionUID = -2607425162473178733L;
 
     private static ThreadPoolExecutor executor;
-
     private Blade blade;
-
     private DispatcherHandler dispatcherHandler;
-
     private int asyncContextTimeout;
 
     public AsyncDispatcherServlet() {

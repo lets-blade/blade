@@ -39,21 +39,14 @@ public class Configuration {
     private static final Logger LOGGER = LoggerFactory.getLogger(Configuration.class);
 
     private Packages packages;
-
     // Encoding
     private String encoding = Const.DEFAULT_ENCODING;
-
     // Is dev mode
     private boolean isDev = true;
-
     private boolean isInit = false;
-
     private String webRoot;
-
     private Class<?> applicationClass;
-
     private String classPath = "config";
-
     private Config config = new Config();
 
     public Configuration() {

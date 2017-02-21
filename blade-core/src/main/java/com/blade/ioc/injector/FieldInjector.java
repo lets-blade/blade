@@ -28,7 +28,6 @@ import java.lang.reflect.Field;
 public class FieldInjector implements Injector {
 
 	private Ioc ioc;
-
 	private Field field;
 
 	public FieldInjector(Ioc ioc, Field field) {

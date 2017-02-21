@@ -32,8 +32,6 @@ import java.util.*;
  */
 public class RouteMatcher {
 
-//	private static final Logger LOGGER = Logger.getLogger(SampleRouteMatcher.class);
-
     // Storage URL and route
     private Map<String, Route> routes = null;
     private Map<String, Route> interceptors = null;

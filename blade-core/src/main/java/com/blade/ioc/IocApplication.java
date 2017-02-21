@@ -22,6 +22,7 @@ import com.blade.context.DynamicContext;
 import com.blade.ioc.annotation.Component;
 import com.blade.ioc.annotation.Service;
 import com.blade.kit.CollectionKit;
+import com.blade.kit.IocKit;
 import com.blade.kit.StringKit;
 import com.blade.kit.resource.ClassInfo;
 import com.blade.kit.resource.ClassReader;

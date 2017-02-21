@@ -32,8 +32,7 @@ public final class Path {
 
     public static final String VAR_REGEXP = ":(\\w+)";
     public static final String VAR_REPLACE = "([^#/?]+)";
-
-    private static final String SLASH = "/";
+    public static final String SLASH = "/";
 
     public static String getRelativePath(String path, String contextPath) {
         contextPath = null == contextPath ? "" : contextPath;

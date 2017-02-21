@@ -17,6 +17,7 @@ package com.blade.ioc;
 
 import com.blade.ioc.loader.IocLoader;
 import com.blade.kit.Assert;
+import com.blade.kit.IocKit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,7 +34,7 @@ public class SimpleIoc implements Ioc {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(Ioc.class);
 
-	private final Map<String, BeanDefine> pool = new HashMap<String, BeanDefine>();
+	private final Map<String, BeanDefine> pool = new HashMap<>(32);
 
 	/**
 	 * ioc loader

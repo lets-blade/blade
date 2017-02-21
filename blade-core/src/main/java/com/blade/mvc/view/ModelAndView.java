@@ -31,7 +31,7 @@ public class ModelAndView {
 	/**
 	 * Data object, the object is placed in the attribute httprequest
 	 */
-	private Map<String, Object> model = new HashMap<String, Object>(5);
+	private Map<String, Object> model = new HashMap<>(8);
 
 	/**
 	 * View Page

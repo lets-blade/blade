@@ -47,13 +47,9 @@ public class ServletResponse implements Response {
     private static final Logger LOGGER = LoggerFactory.getLogger(ServletResponse.class);
 
     private HttpServletResponse response;
-
     private boolean written = false;
-
     private ViewSettings viewSettings;
-
     private TemplateEngine templateEngine;
-
     private JSONParser jsonParser;
 
     public ServletResponse(HttpServletResponse response) {

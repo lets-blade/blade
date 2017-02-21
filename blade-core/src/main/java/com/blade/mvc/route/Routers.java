@@ -41,9 +41,7 @@ public class Routers {
     private static final Logger LOGGER = LoggerFactory.getLogger(Routers.class);
 
     private Map<String, Route> routes = null;
-
     private Map<String, Route> interceptors = null;
-
     private static final String METHOD_NAME = "handle";
 
     public Routers() {

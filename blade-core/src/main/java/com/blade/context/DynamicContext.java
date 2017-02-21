@@ -32,7 +32,6 @@ public final class DynamicContext {
 	private static final Logger LOGGER = LoggerFactory.getLogger(DynamicContext.class);
 
 	private static ClassReader CLASS_READER = null;
-
 	private static boolean isJarContext = false;
 
 	private DynamicContext() {
