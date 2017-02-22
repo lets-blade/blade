@@ -26,10 +26,14 @@ public class ClassInfo {
 	public Class<?> getClazz() {
 		return clazz;
 	}
-	
-	public Object newInstance() throws InstantiationException, IllegalAccessException{
-		return clazz.newInstance();
-	}
+
+    public Object newInstance() {
+        try {
+            return clazz.newInstance();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 	
 	@Override
 	public String toString() {

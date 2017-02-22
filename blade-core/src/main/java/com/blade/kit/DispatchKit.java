@@ -36,7 +36,7 @@ public class DispatchKit {
 
     private static final boolean isWeb = !$().enableServer();
 
-    private static final Class<?> appClass = $().configuration().getApplicationClass();
+    private static final Class<?> appClass = $().bConfig().getApplicationClass();
 
     private static Boolean isDev = null;
 

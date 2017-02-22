@@ -15,13 +15,16 @@
  */
 package com.blade.kit.reflect;
 
+import com.blade.kit.Emptys;
+import com.blade.kit.ExceptionKit;
+import com.blade.kit.StringKit;
+import com.blade.kit.SystemKit;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.AccessibleObject;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Member;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
+import java.lang.reflect.*;
 import java.net.JarURLConnection;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -30,14 +33,6 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.blade.kit.Emptys;
-import com.blade.kit.ExceptionKit;
-import com.blade.kit.StringKit;
-import com.blade.kit.SystemKit;
 
 /**
  * 有关 Reflection处理的工具类。
@@ -55,10 +50,14 @@ public abstract class ReflectKit {
 	 * @throws IllegalAccessException 
 	 * @throws InstantiationException 
 	 * @throws ClassNotFoundException */
-	public static Object newInstance(String className) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+	public static Object newInstance(String className) {
 		Object obj = null;
-		Class<?> clazz = Class.forName(className);
-		obj = clazz.newInstance();
+		try {
+			Class<?> clazz = Class.forName(className);
+			obj = clazz.newInstance();
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 		LOGGER.debug("New {}", className);
 		return obj;
 	}

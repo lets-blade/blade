@@ -56,16 +56,6 @@ public interface Const {
 
     String DEFAULT_ROUTE_CONF = "route.conf";
 
-    /**** package names ****/
-    String ROUTE_PKGS = "route_packages";
-    String IOC_PKGS = "ioc_packages";
-    String CONFIG_PKGS = "config_packages";
-    String RESOURCE_PKGS = "resouce_packages";
-    String BASE_PKG = "base_package";
-    String INTERCEPTOR_PKG = "interceptor_package";
-    String FILTER_PKG = "filter_package";
-    String LISTENER_PKG = "listener_package";
-
     /**** blade properties ****/
     String JETTY_SERVER_CLASS = "com.blade.embedd.EmbedJettyServer";
     String TOMCAT_SERVER_CLASS = "com.blade.embedd.EmbedTomcatServer";
@@ -79,7 +69,7 @@ public interface Const {
 
     String APP_PROPERTIES = "app.properties";
     String APP_DEV = "app.dev";
-    String APP_IOC = "app.ioc";
+    String APP_SCAN = "app.scan";
     String APP_BASE_PKG = "app.base-package";
     String APP_CLASSPATH = "app.classpath";
 

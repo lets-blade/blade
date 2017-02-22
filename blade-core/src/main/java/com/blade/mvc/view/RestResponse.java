@@ -68,44 +68,44 @@ public class RestResponse<T> {
         this.code = code;
     }
 
-    public T payload() {
+    public T getPayload() {
         return payload;
     }
 
-    public void payload(T payload) {
+    public void setPayload(T payload) {
         this.payload = payload;
     }
 
-    public boolean success() {
+    public boolean isSuccess() {
         return success;
     }
 
-    public void success(boolean success) {
+    public void setSuccess(boolean success) {
         this.success = success;
     }
 
-    public String msg() {
+    public String getMsg() {
         return msg;
     }
 
-    public void msg(String msg) {
+    public void setMsg(String msg) {
         this.msg = msg;
     }
 
-    public long timestamp() {
-        return timestamp;
-    }
-
-    public void timestamp(long timestamp) {
-        this.timestamp = timestamp;
-    }
-
-    public int code() {
+    public int getCode() {
         return code;
     }
 
-    public void code(int code) {
+    public void setCode(int code) {
         this.code = code;
+    }
+
+    public long getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(long timestamp) {
+        this.timestamp = timestamp;
     }
 
     public static RestResponse ok() {

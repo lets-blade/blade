@@ -15,14 +15,17 @@
  */
 package com.blade.config;
 
+import com.blade.context.WebContextListener;
+
 /**
  * BaseConfig Interface, Implements Object can be auto execute.
  *
  * @author <a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since 1.6.6
  */
-public interface BaseConfig {
+@Deprecated
+public interface BaseConfig extends WebContextListener {
 
-    void config(Configuration configuration);
+    void init(BConfig bConfig);
 
 }

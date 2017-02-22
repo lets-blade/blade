@@ -67,7 +67,7 @@ class DispatcherHandler {
     public void handle(HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
         // Create Response
         Response response = new ServletResponse(httpResponse);
-
+        response.contentType("text/html;charset=utf-8");
         try {
 
             // http method, GET/POST ...

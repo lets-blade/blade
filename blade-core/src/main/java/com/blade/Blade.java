@@ -15,7 +15,7 @@
  */
 package com.blade;
 
-import com.blade.config.Configuration;
+import com.blade.config.BConfig;
 import com.blade.embedd.EmbedServer;
 import com.blade.exception.BladeException;
 import com.blade.exception.EmbedServerException;
@@ -26,6 +26,7 @@ import com.blade.kit.Assert;
 import com.blade.kit.CollectionKit;
 import com.blade.kit.StringKit;
 import com.blade.kit.base.Config;
+import com.blade.kit.reflect.ReflectKit;
 import com.blade.mvc.handler.RouteHandler;
 import com.blade.mvc.http.HttpMethod;
 import com.blade.mvc.interceptor.Interceptor;
@@ -60,7 +61,7 @@ public final class Blade {
     /**
      * Framework Global Configuration
      */
-    private Configuration configuration;
+    private BConfig bConfig;
 
     /**
      * Default ioc container
@@ -103,7 +104,7 @@ public final class Blade {
     private EmbedServer embedServer;
 
     private Blade() {
-        this.configuration = new Configuration();
+        this.bConfig = new BConfig();
         this.plugins = CollectionKit.newHashSet();
         this.routeBuilder = new RouteBuilder(this.routers);
     }
@@ -193,32 +194,7 @@ public final class Blade {
      */
     public Blade loadAppConf(String location) {
         Assert.notBlank(location);
-        configuration.load(location);
-        return this;
-    }
-
-    /**
-     * Setting route package，e.g：com.baldejava.route Can be introduced into
-     * multiple packages, all of which are in the package.
-     *
-     * @param packageName route package path, is your package name
-     * @return return blade
-     */
-    public Blade addRoutePackage(String packageName) {
-        Assert.notBlank(packageName);
-        return this.addRoutePackages(packageName);
-    }
-
-    /**
-     * Setting route package，e.g：com.baldejava.route Can be introduced into
-     * multiple packages, all of which are in the package.
-     *
-     * @param packages route package path, is your package name
-     * @return return blade
-     */
-    public Blade addRoutePackages(String... packages) {
-        Assert.notNull(packages);
-        configuration.addRoutePkgs(packages);
+        bConfig.load(location);
         return this;
     }
 
@@ -230,20 +206,13 @@ public final class Blade {
      */
     public Blade basePackage(String basePackage) {
         Assert.notBlank(basePackage);
-        configuration.setBasePackage(basePackage);
+        bConfig.setBasePackage(basePackage);
         return this;
     }
 
-    /**
-     * Setting the path where the interceptor, e.g:com.bladejava.interceptor
-     *
-     * @param packageName interceptor packagename
-     * @return return blade
-     */
-    public Blade interceptor(String packageName) {
-        Assert.notBlank(packageName);
-        configuration.setInterceptorPackage(packageName);
-        return this;
+    @Deprecated
+    public Blade ioc(String... packages) {
+        return this.scan(packages);
     }
 
     /**
@@ -253,8 +222,8 @@ public final class Blade {
      *                 number of
      * @return return blade
      */
-    public Blade ioc(String... packages) {
-        configuration.addIocPkgs(packages);
+    public Blade scan(String... packages) {
+        bConfig.addScanPackage(packages);
         return this;
     }
 
@@ -444,7 +413,7 @@ public final class Blade {
      * @return return blade
      */
     public Blade addResources(final String... resources) {
-        configuration.addResources(resources);
+        bConfig.addResources(resources);
         return this;
     }
 
@@ -467,7 +436,7 @@ public final class Blade {
      */
     public Blade webRoot(final String webRoot) {
         Assert.notBlank(webRoot);
-        configuration.setWebRoot(webRoot);
+        bConfig.setWebRoot(webRoot);
         return this;
     }
 
@@ -478,7 +447,7 @@ public final class Blade {
      * @return return blade
      */
     public Blade isDev(boolean isDev) {
-        configuration.setDev(isDev);
+        bConfig.setDev(isDev);
         return this;
     }
 
@@ -509,37 +478,29 @@ public final class Blade {
     }
 
     public EmbedServer startNoJoin(Class<?> applicationClass, String contextPath) {
-
         this.loadAppConf(Const.APP_PROPERTIES);
-
         if (null != applicationClass) {
-            configuration.setApplicationClass(applicationClass);
-            if (StringKit.isBlank(configuration.getBasePackage())) {
-                configuration.setBasePackage(applicationClass.getPackage().getName());
+            bConfig.setApplicationClass(applicationClass);
+            if (StringKit.isBlank(bConfig.getBasePackage()) && null != applicationClass.getPackage()) {
+                bConfig.setBasePackage(applicationClass.getPackage().getName());
             }
         }
-
-        try {
-            Class<?> embedClazz = Class.forName(Const.JETTY_SERVER_CLASS);
-            if (null == embedClazz) {
-                embedClazz = Class.forName(Const.TOMCAT_SERVER_CLASS);
-            }
-            if (null != embedClazz) {
-                if (!configuration().isInit()) {
-                    loadAppConf(Const.APP_PROPERTIES);
-                    configuration().setEnv(config());
-                }
-
-                this.embedServer = (EmbedServer) embedClazz.newInstance();
-                this.embedServer.startup(config().getInt(Const.SERVER_PORT, Const.DEFAULT_PORT), contextPath);
-                this.enableServer = true;
-            } else {
-                throw new EmbedServerException("Not found EmbedServer");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+        Class<?> embedClazz = ReflectKit.newClass(Const.JETTY_SERVER_CLASS);
+        if (null == embedClazz) {
+            embedClazz = ReflectKit.newClass(Const.TOMCAT_SERVER_CLASS);
         }
-        return embedServer;
+        if (null != embedClazz) {
+            if (!bConfig().isInit()) {
+                loadAppConf(Const.APP_PROPERTIES);
+                bConfig().setEnv(config());
+            }
+            this.embedServer = (EmbedServer) ReflectKit.newBean(embedClazz);
+            this.embedServer.startup(config().getInt(Const.SERVER_PORT, Const.DEFAULT_PORT), contextPath);
+            this.enableServer = true;
+            return embedServer;
+        } else {
+            throw new EmbedServerException("Not found EmbedServer");
+        }
     }
 
     /**
@@ -552,41 +513,36 @@ public final class Blade {
     /**
      * @return Return blade config object
      */
-    @Deprecated
-    public Configuration applicationConfig() {
-        return configuration;
-    }
-
-    public Configuration configuration() {
-        return configuration;
+    public BConfig bConfig() {
+        return bConfig;
     }
 
     /**
      * @return Return blade config object
      */
     public Config config() {
-        return configuration.config();
+        return bConfig.config();
     }
 
     /**
      * @return Return blade encoding, default is UTF-8
      */
     public String encoding() {
-        return configuration.getEncoding();
+        return bConfig.getEncoding();
     }
 
     /**
      * @return Return blade web root path
      */
     public String webRoot() {
-        return configuration.webRoot();
+        return bConfig.webRoot();
     }
 
     /**
      * @return Return is dev mode
      */
     public boolean isDev() {
-        return configuration.isDev();
+        return bConfig.isDev();
     }
 
     /**

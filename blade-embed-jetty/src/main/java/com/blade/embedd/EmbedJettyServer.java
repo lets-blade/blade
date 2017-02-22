@@ -2,8 +2,8 @@ package com.blade.embedd;
 
 import com.blade.Blade;
 import com.blade.Const;
+import com.blade.context.BladeInitListener;
 import com.blade.context.DynamicContext;
-import com.blade.context.WebContextListener;
 import com.blade.exception.EmbedServerException;
 import com.blade.kit.CollectionKit;
 import com.blade.kit.StringKit;
@@ -58,7 +58,7 @@ public class EmbedJettyServer implements EmbedServer {
 
     public EmbedJettyServer() {
         System.setProperty("org.apache.jasper.compiler.disablejsr199", "true");
-        this.staticFolders = $().configuration().getResources();
+        this.staticFolders = $().bConfig().getResources();
         if (DynamicContext.isJarContext()) {
             URL url = EmbedJettyServer.class.getResource("/");
             this.classPath = url.getPath();
@@ -136,7 +136,7 @@ public class EmbedJettyServer implements EmbedServer {
         servletHolder.setAsyncSupported(isAsync);
         servletHolder.setInitOrder(1);
 
-        webAppContext.addEventListener(new WebContextListener());
+        webAppContext.addEventListener(new BladeInitListener());
         webAppContext.addServlet(servletHolder, "/");
 
         ServletHolder defaultHolder = new ServletHolder(DefaultServlet.class);

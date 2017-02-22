@@ -17,17 +17,15 @@ package com.blade.ioc;
 
 import com.blade.Blade;
 import com.blade.comparator.OrderComparator;
-import com.blade.config.BaseConfig;
 import com.blade.context.DynamicContext;
+import com.blade.context.WebContextListener;
 import com.blade.ioc.annotation.Component;
 import com.blade.ioc.annotation.Service;
 import com.blade.kit.CollectionKit;
 import com.blade.kit.IocKit;
-import com.blade.kit.StringKit;
 import com.blade.kit.resource.ClassInfo;
 import com.blade.kit.resource.ClassReader;
 import com.blade.mvc.annotation.Controller;
-import com.blade.mvc.annotation.Intercept;
 import com.blade.mvc.annotation.RestController;
 import com.blade.mvc.interceptor.Interceptor;
 import com.blade.mvc.route.RouteBuilder;
@@ -46,189 +44,104 @@ import java.util.Set;
  */
 public final class IocApplication {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(IocApplication.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(IocApplication.class);
 
-	/**
-	 * aop interceptor
-	 */
-	private static List<Object> aopInterceptors = CollectionKit.newArrayList(8);
+    /**
+     * aop interceptor
+     */
+    private static List<Object> aopInterceptors = CollectionKit.newArrayList(8);
 
-	/**
-	 * Class to read object, load class
-	 */
-	private ClassReader classReader = null;
-	private Blade blade;
-	private OrderComparator orderComparator;
+    /**
+     * Class to read object, load class
+     */
+    private ClassReader classReader = null;
+    private Blade blade;
+    private OrderComparator orderComparator;
+    private List<WebContextListener> ctxs = CollectionKit.newArrayList();
 
-	public IocApplication() {
-		this.blade = Blade.$();
-		this.classReader = DynamicContext.getClassReader();
-		this.orderComparator = new OrderComparator();
-	}
+    public IocApplication() {
+        this.blade = Blade.$();
+        this.classReader = DynamicContext.getClassReader();
+        this.orderComparator = new OrderComparator();
+    }
 
-	/**
-	 * load config beans
-	 *
-	 * @return
-	 * @throws Exception
-	 */
-	private List<ClassInfo> loadCondigs() throws Exception {
-		String[] configPkgs = blade.configuration().getConfigPkgs();
-		if (null != configPkgs && configPkgs.length > 0) {
-			List<ClassInfo> configs = CollectionKit.newArrayList(10);
-			for (int i = 0, len = configPkgs.length; i < len; i++) {
-				Set<ClassInfo> configClasses = classReader.getClassByAnnotation(configPkgs[i], Component.class, false);
-				if (null != configClasses) {
-					for (ClassInfo classInfo : configClasses) {
-						Class<?>[] interfaces = classInfo.getClazz().getInterfaces();
-						for (Class<?> in : interfaces) {
-							if (in.equals(BaseConfig.class)) {
-								configs.add(classInfo);
-							}
-						}
-						if (classInfo.getClazz().getSuperclass().getName().equals("com.blade.aop.AbstractMethodInterceptor")) {
-							aopInterceptors.add(classInfo.newInstance());
-						}
-					}
-				}
-			}
-			configs.sort(orderComparator);
-			return configs;
-		}
-		return null;
-	}
+    public void initBeans() throws Exception {
 
-	private List<ClassInfo> loadServices() throws Exception {
-		String[] iocPkgs = blade.configuration().getIocPkgs();
-		if (null != iocPkgs && iocPkgs.length > 0) {
-			List<ClassInfo> services = CollectionKit.newArrayList(16);
-			for (int i = 0, len = iocPkgs.length; i < len; i++) {
-				String pkgName = iocPkgs[i];
-				if (StringKit.isBlank(pkgName)) {
-					continue;
-				}
-				// Recursive scan
-				boolean recursive = false;
-				if (pkgName.endsWith(".*")) {
-					pkgName = pkgName.substring(0, pkgName.length() - 2);
-					recursive = true;
-				}
+        Set<String> pkgs = blade.bConfig().getPackages();
+        if (null != pkgs) {
+            Ioc ioc = blade.ioc();
+            RouteBuilder routeBuilder = blade.routeBuilder();
 
-				// Scan package all class
-				Set<ClassInfo> iocClasses = classReader.getClass(pkgName, recursive);
-				for (ClassInfo classInfo : iocClasses) {
-					Class<?> clazz = classInfo.getClazz();
-					if (!clazz.isInterface() && !Modifier.isAbstract(clazz.getModifiers())) {
-						Component component = clazz.getAnnotation(Component.class);
-						Service service = clazz.getAnnotation(Service.class);
-						if (null != service || null != component) {
-							services.add(classInfo);
-						}
-					}
-				}
-			}
-			return services;
-		}
-		return null;
-	}
+            List<BeanProcessor> processors = CollectionKit.newArrayList();
+            List<ClassInfo> ctxClasses = CollectionKit.newArrayList(8);
+            List<ClassInfo> processoers = CollectionKit.newArrayList(8);
 
-	private List<ClassInfo> loadControllers() {
-		String[] routePkgs = blade.configuration().getRoutePkgs();
-		if (null != routePkgs && routePkgs.length > 0) {
-			List<ClassInfo> controllers = CollectionKit.newArrayList(8);
-			for (int i = 0, len = routePkgs.length; i < len; i++) {
-				// Scan all Controoler
-				controllers.addAll(classReader.getClassByAnnotation(routePkgs[i], Controller.class, true));
-				controllers.addAll(classReader.getClassByAnnotation(routePkgs[i], RestController.class, true));
-			}
-			return controllers;
-		}
-		return null;
-	}
+            pkgs.forEach(p -> {
+                Set<ClassInfo> classInfos = classReader.getClass(p, true);
+                if (null != classInfos) {
+                    classInfos.forEach(c -> {
+                        Class<?> clazz = c.getClazz();
+                        if (!clazz.isInterface() && !Modifier.isAbstract(clazz.getModifiers())) {
+                            Service service = clazz.getAnnotation(Service.class);
+                            Controller controller = clazz.getAnnotation(Controller.class);
+                            RestController restController = clazz.getAnnotation(RestController.class);
+                            Component component = clazz.getAnnotation(Component.class);
+                            if (null != service || null != component) {
+                                ioc.addBean(clazz);
+                            } else if (null != controller || null != restController) {
+                                ioc.addBean(clazz);
+                                routeBuilder.addRouter(clazz);
+                            } else {
+                                Class<?>[] interfaces = clazz.getInterfaces();
+                                for (Class<?> in : interfaces) {
+                                    if (in.equals(Interceptor.class)) {
+                                        ioc.addBean(clazz);
+                                        routeBuilder.addInterceptor(clazz);
+                                    } else if (in.equals(WebContextListener.class)) {
+                                        ctxClasses.add(c);
+                                    } else if (in.equals(BeanProcessor.class)) {
+                                        processoers.add(c);
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+            });
 
-	private List<ClassInfo> loadInterceptors() {
-		String interceptorPackage = blade.configuration().getInterceptorPkg();
-		if (StringKit.isNotBlank(interceptorPackage)) {
-			List<ClassInfo> interceptors = CollectionKit.newArrayList(8);
-			Set<ClassInfo> intes = classReader.getClassByAnnotation(interceptorPackage, Intercept.class, true);
-			if (null != intes) {
-				for (ClassInfo classInfo : intes) {
-					if (null != classInfo.getClazz().getInterfaces()
-							&& classInfo.getClazz().getInterfaces()[0].equals(Interceptor.class)) {
-						interceptors.add(classInfo);
-					}
-				}
-			}
-			return interceptors;
-		}
-		return null;
-	}
+            ctxClasses.sort(orderComparator);
+            processoers.sort(orderComparator);
 
-	public void initBeans() throws Exception {
-		List<ClassInfo> services = this.loadServices();
-		List<ClassInfo> configs = this.loadCondigs();
-		List<ClassInfo> controllers = this.loadControllers();
-		// web
-		List<ClassInfo> inteceptors = this.loadInterceptors();
+            ctxClasses.forEach(c -> {
+                Object bean = ioc.addBean(c.getClazz());
+                ctxs.add((WebContextListener) bean);
+            });
 
-		Ioc ioc = blade.ioc();
+            processoers.forEach(c -> {
+                Object bean = ioc.addBean(c.getClazz());
+                processors.add((BeanProcessor) bean);
+            });
 
-		RouteBuilder routeBuilder = blade.routeBuilder();
+            processors.forEach(b -> b.register(ioc));
 
-		// 1. init service
-		if (null != services) {
-			for (int i = 0, len = services.size(); i < len; i++) {
-				ioc.addBean(services.get(i).getClazz());
-			}
-		}
+            if (null != ioc.getBeans() && !ioc.getBeans().isEmpty()) {
+                LOGGER.info("Add Object: {}", ioc.getBeans());
+            }
 
-		List<BaseConfig> baseConfigs = CollectionKit.newArrayList();
+            List<BeanDefine> beanDefines = ioc.getBeanDefines();
+            if (null != beanDefines) {
+                beanDefines.forEach(b -> IocKit.injection(ioc, b));
+            }
 
-		// 2. init configs
-		if (null != configs) {
-			for (int i = 0, len = configs.size(); i < len; i++) {
-				Object bean = ioc.addBean(configs.get(i).getClazz());
-				baseConfigs.add((BaseConfig) bean);
-			}
-		}
+        }
+    }
 
-		// 3. init controller
-		if (null != controllers) {
-			for (int i = 0, len = controllers.size(); i < len; i++) {
-				ioc.addBean(controllers.get(i).getClazz());
-				routeBuilder.addRouter(controllers.get(i).getClazz());
-			}
-		}
+    public void initCtx() {
+        ctxs.forEach(c -> c.init(blade.bConfig()));
+    }
 
-		// 4. init interceptor
-		if (null != inteceptors) {
-			for (int i = 0, len = inteceptors.size(); i < len; i++) {
-				ioc.addBean(inteceptors.get(i).getClazz());
-				routeBuilder.addInterceptor(inteceptors.get(i).getClazz());
-			}
-		}
-
-		if (null != ioc.getBeans() && !ioc.getBeans().isEmpty()) {
-			LOGGER.info("Add Object: {}", ioc.getBeans());
-		}
-
-		// init configs
-		for (BaseConfig baseConfig : baseConfigs) {
-			baseConfig.config(blade.configuration());
-		}
-
-		// injection
-		List<BeanDefine> beanDefines = ioc.getBeanDefines();
-		if (null != beanDefines) {
-			for (int i = 0, len = beanDefines.size(); i < len; i++) {
-				IocKit.injection(ioc, beanDefines.get(i));
-			}
-		}
-
-	}
-
-	public static List<Object> getAopInterceptors() {
-		return aopInterceptors;
-	}
+    public static List<Object> getAopInterceptors() {
+        return aopInterceptors;
+    }
 
 }
