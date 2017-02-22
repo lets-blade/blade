@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.blade.context;
+package com.blade.mvc.context;
 
 import com.blade.Blade;
 import com.blade.banner.BannerStarter;
+import com.blade.context.WebContextHolder;
 import com.blade.embedd.EmbedServer;
 import com.blade.ioc.IocApplication;
 import com.blade.kit.DispatchKit;
@@ -27,8 +28,10 @@ import org.slf4j.LoggerFactory;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
+import javax.servlet.ServletRegistration;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
+import java.util.Set;
 
 import static com.blade.Blade.$;
 
@@ -53,11 +56,6 @@ public class BladeInitListener implements ServletContextListener, HttpSessionLis
     public void contextInitialized(ServletContextEvent sce) {
         Blade blade = Blade.$();
         if (!blade.isInit()) {
-
-            ServletContext servletContext = sce.getServletContext();
-
-            WebContextHolder.init(servletContext);
-
             LOGGER.info("jdk.version\t=> {}", SystemKit.getJavaInfo().getVersion());
             LOGGER.info("user.dir\t\t=> {}", System.getProperty("user.dir"));
             LOGGER.info("java.io.tmpdir\t=> {}", System.getProperty("java.io.tmpdir"));
@@ -66,6 +64,7 @@ public class BladeInitListener implements ServletContextListener, HttpSessionLis
 
             long initStart = System.currentTimeMillis();
 
+            ServletContext servletContext = sce.getServletContext();
             String webRoot = DispatchKit.getWebRoot(servletContext);
 
             blade.webRoot(webRoot);
@@ -89,6 +88,8 @@ public class BladeInitListener implements ServletContextListener, HttpSessionLis
 
                 iocApplication.initCtx();
 
+                this.regsiterDefaultServlet(blade.bConfig().getStatics(), servletContext);
+
                 blade.init();
 
             } catch (Exception e) {
@@ -97,8 +98,15 @@ public class BladeInitListener implements ServletContextListener, HttpSessionLis
         }
     }
 
+    private void regsiterDefaultServlet(Set<String> statics, ServletContext context) {
+        ServletRegistration defaultServlet = context.getServletRegistration("default");
+        defaultServlet.addMapping("/favicon.ico");
+        statics.forEach(s -> defaultServlet.addMapping(s + '*'));
+    }
+
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
+        WebContextHolder.destroy();
     }
 
     @Override

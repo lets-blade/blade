@@ -9,7 +9,7 @@ public class SS {
 
     public static void main(String[] args) {
         Blade.$().get("/", (request, response) -> {
-            response.text("Hello World");
-        }).start(SS.class);
+            response.text("Hello World!");
+        }).args(args).start(SS.class);
     }
 }

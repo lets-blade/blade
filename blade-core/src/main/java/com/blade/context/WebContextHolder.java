@@ -32,12 +32,7 @@ public class WebContextHolder {
     /**
      * BladeWebContext object for the current thread
      */
-    private static ThreadLocal<WebContextHolder> ctx = new ThreadLocal<WebContextHolder>();
-
-    /**
-     * ServletContext Object that is created when the application is initialized
-     */
-    private ServletContext context;
+    private static final ThreadLocal<WebContextHolder> ctx = new ThreadLocal<>();
 
     /**
      * Request
@@ -56,15 +51,8 @@ public class WebContextHolder {
         return ctx.get();
     }
 
-    public static void init(ServletContext context) {
+    public static void init(Request request, Response response) {
         WebContextHolder bladeWebContext = new WebContextHolder();
-        bladeWebContext.context = context;
-        ctx.set(bladeWebContext);
-    }
-
-    public static void init(ServletContext context, Request request, Response response) {
-        WebContextHolder bladeWebContext = new WebContextHolder();
-        bladeWebContext.context = context;
         bladeWebContext.request = request;
         bladeWebContext.response = response;
         ctx.set(bladeWebContext);
@@ -90,19 +78,11 @@ public class WebContextHolder {
     }
 
     public static ServletContext servletContext() {
-        return me().context;
+        return request().raw().getServletContext();
     }
 
-    public ServletContext getContext() {
-        return context;
-    }
-
-    public Request getRequest() {
-        return request;
-    }
-
-    public Response getResponse() {
-        return response;
+    public static void destroy() {
+        ctx.remove();
     }
 
 }

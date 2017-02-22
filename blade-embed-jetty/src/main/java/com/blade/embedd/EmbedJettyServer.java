@@ -2,18 +2,16 @@ package com.blade.embedd;
 
 import com.blade.Blade;
 import com.blade.Const;
-import com.blade.context.BladeInitListener;
-import com.blade.context.DynamicContext;
 import com.blade.exception.EmbedServerException;
 import com.blade.kit.CollectionKit;
-import com.blade.kit.StringKit;
 import com.blade.kit.base.Config;
-import com.blade.mvc.AsyncDispatcherServlet;
-import com.blade.mvc.DispatcherServlet;
+import com.blade.mvc.context.BladeInitListener;
+import com.blade.mvc.context.DynamicContext;
+import com.blade.mvc.dispatch.AsyncDispatcherServlet;
+import com.blade.mvc.dispatch.DispatcherServlet;
 import org.eclipse.jetty.server.*;
 import org.eclipse.jetty.server.handler.DefaultHandler;
 import org.eclipse.jetty.server.handler.HandlerList;
-import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.Scanner;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
@@ -52,13 +50,8 @@ public class EmbedJettyServer implements EmbedServer {
 
     private WebAppContext webAppContext;
 
-    private Set<String> staticFolders;
-
-    private String webRoot;
-
     public EmbedJettyServer() {
         System.setProperty("org.apache.jasper.compiler.disablejsr199", "true");
-        this.staticFolders = $().bConfig().getResources();
         if (DynamicContext.isJarContext()) {
             URL url = EmbedJettyServer.class.getResource("/");
             this.classPath = url.getPath();
@@ -79,7 +72,6 @@ public class EmbedJettyServer implements EmbedServer {
 
     @Override
     public void setWebRoot(String webRoot) {
-        this.webRoot = webRoot;
         webAppContext.setResourceBase(webRoot);
     }
 
@@ -139,15 +131,6 @@ public class EmbedJettyServer implements EmbedServer {
         webAppContext.addEventListener(new BladeInitListener());
         webAppContext.addServlet(servletHolder, "/");
 
-        ServletHolder defaultHolder = new ServletHolder(DefaultServlet.class);
-        if (StringKit.isNotBlank(classPath)) {
-            LOGGER.info("add classpath : {}", classPath);
-            defaultHolder.setInitParameter("resourceBase", classPath);
-        }
-        for (String s : staticFolders) {
-            webAppContext.addServlet(defaultHolder, s);
-        }
-
         try {
 
             this.loadServlets(webAppContext);
@@ -157,13 +140,6 @@ public class EmbedJettyServer implements EmbedServer {
             handlerList.setHandlers(new Handler[]{webAppContext, new DefaultHandler()});
             server.setHandler(handlerList);
             server.setStopAtShutdown(true);
-
-//            boolean isDev = Blade.$().isDev();
-//            int scanInterval = config.getInt("server.jetty.scan-interval", 3);
-//            if (isDev && scanInterval > 0) {
-//                String resBase = webAppContext.getResourceBase();
-//                this.hotSwap(scanInterval, resBase);
-//            }
 
             server.start();
             LOGGER.info("Blade Server Listen on {}:{}", host, this.port);

@@ -409,11 +409,11 @@ public final class Blade {
     /**
      * Setting the frame static file folder
      *
-     * @param resources List of directories to filter, e.g: "/public,/static,/images"
+     * @param statics List of directories to filter, e.g: "/public,/static,/images"
      * @return return blade
      */
-    public Blade addResources(final String... resources) {
-        bConfig.addResources(resources);
+    public Blade addStatics(final String... statics) {
+        bConfig.addStatic(statics);
         return this;
     }
 

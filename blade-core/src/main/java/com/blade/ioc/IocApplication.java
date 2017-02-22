@@ -17,16 +17,17 @@ package com.blade.ioc;
 
 import com.blade.Blade;
 import com.blade.comparator.OrderComparator;
-import com.blade.context.DynamicContext;
 import com.blade.context.WebContextListener;
 import com.blade.ioc.annotation.Component;
 import com.blade.ioc.annotation.Service;
 import com.blade.kit.CollectionKit;
 import com.blade.kit.IocKit;
+import com.blade.kit.reflect.ReflectKit;
 import com.blade.kit.resource.ClassInfo;
 import com.blade.kit.resource.ClassReader;
 import com.blade.mvc.annotation.Controller;
 import com.blade.mvc.annotation.RestController;
+import com.blade.mvc.context.DynamicContext;
 import com.blade.mvc.interceptor.Interceptor;
 import com.blade.mvc.route.RouteBuilder;
 import org.slf4j.Logger;
@@ -91,6 +92,8 @@ public final class IocApplication {
                             } else if (null != controller || null != restController) {
                                 ioc.addBean(clazz);
                                 routeBuilder.addRouter(clazz);
+                            } else if (clazz.getSuperclass().getName().equals("com.blade.aop.AbstractMethodInterceptor")) {
+                                aopInterceptors.add(ReflectKit.newInstance(clazz));
                             } else {
                                 Class<?>[] interfaces = clazz.getInterfaces();
                                 for (Class<?> in : interfaces) {

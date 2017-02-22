@@ -34,8 +34,8 @@ public final class ObjectKit {
 				}
 			}
 			return (T) obj;
-		} catch (NumberFormatException | InstantiationException | IllegalAccessException | SecurityException e) {
-			e.printStackTrace();
+        } catch (NumberFormatException | IllegalAccessException | SecurityException e) {
+            e.printStackTrace();
 		}
 		return null;
 	}

@@ -16,9 +16,9 @@
 package com.blade.kit;
 
 import com.blade.ioc.BeanDefine;
+import com.blade.ioc.FieldInjector;
 import com.blade.ioc.Ioc;
 import com.blade.ioc.annotation.InjectWith;
-import com.blade.ioc.injector.FieldInjector;
 import com.blade.kit.reflect.ClassDefine;
 
 import java.lang.annotation.Annotation;

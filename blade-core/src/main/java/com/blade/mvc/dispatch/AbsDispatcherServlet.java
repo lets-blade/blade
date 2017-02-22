@@ -13,14 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.blade.mvc;
+package com.blade.mvc.dispatch;
 
 import com.blade.Blade;
-import com.blade.Const;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.servlet.AsyncContext;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -32,31 +30,25 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Blade Asynchronous DispatcherServlet
+ * Blade Abstract DispatcherServlet
  *
  * @author <a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since 1.7.1-alpha
  */
-public class AsyncDispatcherServlet extends HttpServlet {
+public abstract class AbsDispatcherServlet extends HttpServlet {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AsyncDispatcherServlet.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AbsDispatcherServlet.class);
 
-    private static final long serialVersionUID = -2607425162473178733L;
-
-    private static ThreadPoolExecutor executor;
-    private Blade blade;
-    private DispatcherHandler dispatcherHandler;
-    private int asyncContextTimeout;
-
-    public AsyncDispatcherServlet() {
-    }
+    protected static ThreadPoolExecutor executor;
+    protected Blade blade;
+    protected DispatcherHandler dispatcherHandler;
+    protected int asyncContextTimeout;
 
     @Override
     public void init(ServletConfig config) throws ServletException {
         blade = Blade.$();
-        this.asyncContextTimeout = blade.config().getInt("server.async-ctx-timeout", 10 * 1000);
         this.dispatcherHandler = new DispatcherHandler(config.getServletContext(), blade.routers());
-
+        this.asyncContextTimeout = blade.config().getInt("server.async-ctx-timeout", 10 * 1000);
         executor = new ThreadPoolExecutor(100, 200, 50000L, TimeUnit.MILLISECONDS, new ArrayBlockingQueue<>(100));
         LOGGER.info("init worker thread pool.");
     }
@@ -72,22 +64,6 @@ public class AsyncDispatcherServlet extends HttpServlet {
     }
 
     @Override
-    protected void service(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws ServletException, IOException {
-
-        LOGGER.debug("AsyncLongRunningServlet Start::Name={} :: ID={}", Thread.currentThread().getName(), Thread.currentThread().getId());
-
-        httpRequest.setCharacterEncoding(blade.encoding());
-        httpResponse.setCharacterEncoding(blade.encoding());
-        httpResponse.setHeader("X-Powered-By", "Blade(" + Const.VERSION + ")");
-        httpRequest.setAttribute("org.apache.catalina.ASYNC_SUPPORTED", true);
-
-        AsyncContext asyncContext = httpRequest.startAsync();
-        asyncContext.addListener(new BladeAsyncListener());
-        asyncContext.setTimeout(asyncContextTimeout);
-        executor.execute(new AsyncRequestProcessor(asyncContext, dispatcherHandler));
-    }
-
-    @Override
     public void destroy() {
         super.destroy();
         if (null != executor) {
@@ -95,5 +71,4 @@ public class AsyncDispatcherServlet extends HttpServlet {
             LOGGER.info("shutdown worker thread pool.");
         }
     }
-
 }

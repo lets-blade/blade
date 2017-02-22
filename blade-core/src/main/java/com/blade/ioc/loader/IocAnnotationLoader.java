@@ -15,12 +15,12 @@
  */
 package com.blade.ioc.loader;
 
-import com.blade.context.DynamicContext;
 import com.blade.ioc.SimpleIoc;
 import com.blade.ioc.annotation.Component;
 import com.blade.kit.CollectionKit;
 import com.blade.kit.resource.ClassInfo;
 import com.blade.kit.resource.ClassReader;
+import com.blade.mvc.context.DynamicContext;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;

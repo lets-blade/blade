@@ -15,7 +15,7 @@
  */
 package com.blade.ioc.annotation;
 
-import com.blade.ioc.injector.FieldInjector;
+import com.blade.ioc.FieldInjector;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

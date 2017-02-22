@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.blade.ioc.injector;
+package com.blade.ioc.annotation;
 
 /**
  * Bean Injector interface

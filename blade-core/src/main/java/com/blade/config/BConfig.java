@@ -16,11 +16,11 @@
 package com.blade.config;
 
 import com.blade.Const;
-import com.blade.context.DynamicContext;
 import com.blade.kit.Assert;
 import com.blade.kit.CollectionKit;
 import com.blade.kit.StringKit;
 import com.blade.kit.base.Config;
+import com.blade.mvc.context.DynamicContext;
 import com.blade.mvc.view.ViewSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,7 +41,7 @@ public class BConfig {
     private static final Logger LOGGER = LoggerFactory.getLogger(BConfig.class);
 
     private Set<String> packages;
-    private Set<String> resources;
+    private Set<String> statics;
     // Encoding
     private String encoding = Const.DEFAULT_ENCODING;
 
@@ -56,7 +56,7 @@ public class BConfig {
 
     public BConfig() {
         this.packages = CollectionKit.newHashSet();
-        this.resources = new HashSet<>(CollectionKit.asList("/public/*", "/assets/*", "/static/*"));
+        this.statics = new HashSet<>(CollectionKit.asList("/public/", "/assets/", "/static/"));
     }
 
     public void setEnv(Config config) {
@@ -88,7 +88,7 @@ public class BConfig {
             $().listen(port);
 
             if (StringKit.isNotBlank(statics)) {
-                this.addResources(StringKit.split(statics, ','));
+                this.addStatic(StringKit.split(statics, ','));
             }
 
             if (StringKit.isNotBlank(basePackage)) {
@@ -167,13 +167,21 @@ public class BConfig {
         }
     }
 
-    public Set<String> getResources() {
-        return resources;
+    public Set<String> getStatics() {
+        return statics;
     }
 
-    public void addResources(String[] resources) {
-        if (null != resources && resources.length > 0) {
-            this.resources.addAll(CollectionKit.asList(resources));
+    public void addStatic(String[] statics) {
+        if (null != statics && statics.length > 0) {
+            for (String s : statics) {
+                if (s.endsWith("/*")) {
+                    s = s.replace("/*", "");
+                }
+                if (!s.endsWith("/")) {
+                    s += "/";
+                }
+                this.statics.add(s);
+            }
         }
     }
 

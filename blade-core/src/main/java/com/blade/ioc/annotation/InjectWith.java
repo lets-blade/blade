@@ -1,11 +1,8 @@
 package com.blade.ioc.annotation;
 
-import com.blade.ioc.injector.Injector;
-
 import java.lang.annotation.*;
 
 /**
- * S
  * 凡是标注了 InjectFieldWith 的第三方 Annotation，就被允许进行自定义注入字段
  */
 @Target(ElementType.ANNOTATION_TYPE)

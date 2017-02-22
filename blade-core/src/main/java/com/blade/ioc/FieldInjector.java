@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.blade.ioc.injector;
+package com.blade.ioc;
 
-import com.blade.ioc.Ioc;
+import com.blade.ioc.annotation.Injector;
 
 import java.lang.reflect.Field;
 
@@ -45,12 +45,8 @@ public class FieldInjector implements Injector {
 			}
 			field.setAccessible(true);
 			field.set(bean, value);
-		} catch (SecurityException e) {
-			e.printStackTrace();
-		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
+		} catch (Exception e) {
+			throw new RuntimeException(e);
 		}
 	}
 }

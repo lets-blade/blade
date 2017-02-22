@@ -69,11 +69,15 @@ public abstract class ReflectKit {
 	 * @throws IllegalAccessException 
 	 * @throws InstantiationException 
      */
-    public static Object newInstance(Class<?> clazz) throws InstantiationException, IllegalAccessException{
-    	return clazz.newInstance();
-    }
-    
-    /**
+	public static Object newInstance(Class<?> clazz) {
+		try {
+			return clazz.newInstance();
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	/**
      * 根据类名获取Class对象
      * 
      * @param className	类名称
