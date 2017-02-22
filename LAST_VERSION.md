@@ -52,7 +52,7 @@
 <dependency>
     <groupId>com.bladejava</groupId>
     <artifactId>blade-template-jetbrick</artifactId>
-    <version>0.0.8</version>
+    <version>0.0.9</version>
 </dependency>
 ```
 
@@ -61,7 +61,7 @@
 <dependency>
     <groupId>com.bladejava</groupId>
     <artifactId>blade-jdbc</artifactId>
-    <version>0.1.4-alpha</version>
+    <version>0.1.4-beta</version>
 </dependency>
 ```
 

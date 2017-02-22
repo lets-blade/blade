@@ -1,10 +1,9 @@
 package com.blade.plugin;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.blade.Blade;
 import com.blade.aop.ProxyIocImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class AopPlugin implements Plugin {
 	
@@ -18,7 +17,6 @@ public class AopPlugin implements Plugin {
 	
 	@Override
 	public void shutdown() {
-		
 	}
 
 }

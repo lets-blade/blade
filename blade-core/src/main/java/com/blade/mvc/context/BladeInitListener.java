@@ -84,9 +84,10 @@ public class BladeInitListener implements ServletContextListener, HttpSessionLis
 
                 BannerStarter.printStart();
                 String appName = blade.config().get("app.name", "Blade");
+                appName = new String(appName.getBytes("iso8859-1"), "utf-8");
                 LOGGER.info("{} initialize successfully, Time elapsed: {} ms.", appName, System.currentTimeMillis() - initStart);
 
-                iocApplication.initCtx();
+                iocApplication.initCtx(servletContext);
 
                 this.regsiterDefaultServlet(blade.bConfig().getStatics(), servletContext);
 

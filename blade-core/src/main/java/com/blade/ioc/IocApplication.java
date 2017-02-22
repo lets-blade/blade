@@ -33,6 +33,7 @@ import com.blade.mvc.route.RouteBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.servlet.ServletContext;
 import java.lang.reflect.Modifier;
 import java.util.List;
 import java.util.Set;
@@ -139,8 +140,8 @@ public final class IocApplication {
         }
     }
 
-    public void initCtx() {
-        ctxs.forEach(c -> c.init(blade.bConfig()));
+    public void initCtx(ServletContext sec) {
+        ctxs.forEach(c -> c.init(blade.bConfig(), sec));
     }
 
     public static List<Object> getAopInterceptors() {

@@ -17,6 +17,8 @@ package com.blade.context;
 
 import com.blade.config.BConfig;
 
+import javax.servlet.ServletContext;
+
 /**
  * BaseConfig Interface, Implements Object can be auto execute.
  *
@@ -25,6 +27,6 @@ import com.blade.config.BConfig;
  */
 public interface WebContextListener {
 
-    void init(BConfig bConfig);
+    void init(BConfig bConfig, ServletContext sec);
 
 }
