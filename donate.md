@@ -2,7 +2,7 @@
 
 ## Paypal
 
-[Click Pay](https://www.paypal.me/bladejava)
+[Click Pay](https://www.paypal.me/bladejava/10)
 
 ## Alipay
 
