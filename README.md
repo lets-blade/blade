@@ -1,7 +1,7 @@
 
 [![](https://dn-biezhi.qbox.me/LOGO_BIG.png)](http://bladejava.com)
 
-[Quick Start](https://bladejava.com/docs)&nbsp; | &nbsp;[Demo Project](https://github.com/blade-samples)&nbsp; | &nbsp;[Contribute](https://bladejava.com/docs/appendix/contribute)&nbsp; | &nbsp;[Donate]()&nbsp; | &nbsp;[FAQ](https://bladejava.com/docs/faqs) | &nbsp;[中文说明](https://github.com/biezhi/blade/blob/master/README_CN.md)
+[Quick Start](https://bladejava.com/docs)&nbsp; | &nbsp;[Demo Project](https://github.com/blade-samples)&nbsp; | &nbsp;[Contribute](https://bladejava.com/docs/appendix/contribute)&nbsp; | &nbsp;[Donate](donate.md)&nbsp; | &nbsp;[FAQ](https://bladejava.com/docs/faqs) | &nbsp;[中文说明](https://github.com/biezhi/blade/blob/master/README_CN.md)
 
 [![Build Status](https://img.shields.io/travis/biezhi/blade.svg?style=flat-square)](https://travis-ci.org/biezhi/blade)
 [![maven-central](https://img.shields.io/maven-central/v/com.bladejava/blade-core.svg?style=flat-square)](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.bladejava%22)
