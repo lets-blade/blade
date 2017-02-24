@@ -4,6 +4,7 @@ import com.blade.Blade;
 import com.blade.Const;
 import com.blade.exception.EmbedServerException;
 import com.blade.kit.CollectionKit;
+import com.blade.kit.StringKit;
 import com.blade.kit.base.Config;
 import com.blade.mvc.context.BladeInitListener;
 import com.blade.mvc.context.DynamicContext;
@@ -12,6 +13,7 @@ import com.blade.mvc.dispatch.DispatcherServlet;
 import org.eclipse.jetty.server.*;
 import org.eclipse.jetty.server.handler.DefaultHandler;
 import org.eclipse.jetty.server.handler.HandlerList;
+import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.Scanner;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
@@ -129,6 +131,17 @@ public class EmbedJettyServer implements EmbedServer {
         servletHolder.setInitOrder(1);
 
         webAppContext.addEventListener(new BladeInitListener());
+
+        Set<String> statics = Blade.$().bConfig().getStatics();
+        ServletHolder defaultHolder = new ServletHolder(DefaultServlet.class);
+        defaultHolder.setInitOrder(0);
+        if (StringKit.isNotBlank(classPath)) {
+            LOGGER.info("add classpath : {}", classPath);
+            defaultHolder.setInitParameter("resourceBase", classPath);
+        }
+
+        statics.forEach(s -> webAppContext.addServlet(defaultHolder, s + '*'));
+
         webAppContext.addServlet(servletHolder, "/");
 
         try {

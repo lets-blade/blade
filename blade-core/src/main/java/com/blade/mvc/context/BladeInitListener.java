@@ -28,10 +28,8 @@ import org.slf4j.LoggerFactory;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
-import javax.servlet.ServletRegistration;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
-import java.util.Set;
 
 import static com.blade.Blade.$;
 
@@ -89,20 +87,11 @@ public class BladeInitListener implements ServletContextListener, HttpSessionLis
 
                 iocApplication.initCtx(servletContext);
 
-                this.regsiterDefaultServlet(blade.bConfig().getStatics(), servletContext);
-
                 blade.init();
-
             } catch (Exception e) {
                 LOGGER.error("ApplicationContext init error", e);
             }
         }
-    }
-
-    private void regsiterDefaultServlet(Set<String> statics, ServletContext context) {
-        ServletRegistration defaultServlet = context.getServletRegistration("default");
-        defaultServlet.addMapping("/favicon.ico");
-        statics.forEach(s -> defaultServlet.addMapping(s + '*'));
     }
 
     @Override

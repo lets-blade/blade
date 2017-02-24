@@ -36,7 +36,7 @@
 		<blade-core.version>1.7.1-alpha</blade-core.version>
 		<blade-kit.version>1.4.1-alpha</blade-kit.version>
 		<blade-aop.version>1.0.0</blade-aop.version>
-		<blade-embed-jetty.version>0.1.0</blade-embed-jetty.version>
+		<blade-embed-jetty.version>0.1.1</blade-embed-jetty.version>
 		<jetty.version>9.4.0.v20161208</jetty.version>
 	</properties>
 
