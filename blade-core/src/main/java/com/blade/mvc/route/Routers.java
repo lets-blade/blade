@@ -45,8 +45,8 @@ public class Routers {
     private static final String METHOD_NAME = "handle";
 
     public Routers() {
-        this.routes = CollectionKit.newHashMap();
-        this.interceptors = CollectionKit.newHashMap();
+        this.routes = CollectionKit.newConcurrentHashMap();
+        this.interceptors = CollectionKit.newConcurrentHashMap();
     }
 
     public Map<String, Route> getRoutes() {
