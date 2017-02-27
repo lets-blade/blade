@@ -115,7 +115,7 @@ public class EmbedJettyServer implements EmbedServer {
 
         long idleTimeout = config.getLong("server.jetty.http.idle-timeout", 30000L);
 
-        String host = config.get("server.host", "127.0.0.1");
+        String host = config.get("server.host", "0.0.0.0");
         ServerConnector serverConnector = new ServerConnector(server, new HttpConnectionFactory(http_config));
         serverConnector.setHost(host);
         serverConnector.setPort(this.port);
