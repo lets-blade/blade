@@ -37,7 +37,6 @@ import java.util.List;
 public final class IocAnnotationLoader implements IocLoader {
 
     private Collection<ClassInfo> classes;
-    private ClassReader classReader = DynamicContext.getClassReader();
 
     public IocAnnotationLoader(String... packageNames) {
         List<Class<? extends Annotation>> annotations = new ArrayList<Class<? extends Annotation>>(1);
@@ -48,6 +47,7 @@ public final class IocAnnotationLoader implements IocLoader {
     private Collection<ClassInfo> finder(List<String> packageNames, List<Class<? extends Annotation>> annotations, boolean recursive) {
         Collection<ClassInfo> classes = CollectionKit.newArrayList();
         for (String packageName : packageNames) {
+            ClassReader classReader = DynamicContext.getClassReader(packageName);
             for (Class<? extends Annotation> annotation : annotations) {
                 classes.addAll(classReader.getClassByAnnotation(packageName, annotation, recursive));
             }

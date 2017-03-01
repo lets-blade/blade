@@ -128,8 +128,8 @@ public class Routers {
         }
     }
 
-    private Map<String, Method[]> classMethosPool = CollectionKit.newHashMap(16);
-    private Map<Class<?>, Object> controllerPool = CollectionKit.newHashMap(16);
+    private Map<String, Method[]> classMethosPool = CollectionKit.newConcurrentHashMap(16);
+    private Map<Class<?>, Object> controllerPool = CollectionKit.newConcurrentHashMap(16);
 
     public void route(String path, Class<?> clazz, String methodName) {
         Assert.notNull(methodName, "Method name not is null");

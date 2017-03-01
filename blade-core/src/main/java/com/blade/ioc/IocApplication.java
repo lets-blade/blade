@@ -53,17 +53,12 @@ public final class IocApplication {
      */
     private static List<Object> aopInterceptors = CollectionKit.newArrayList(8);
 
-    /**
-     * Class to read object, load class
-     */
-    private ClassReader classReader = null;
     private Blade blade;
     private OrderComparator orderComparator;
     private List<WebContextListener> ctxs = CollectionKit.newArrayList();
 
     public IocApplication() {
         this.blade = Blade.$();
-        this.classReader = DynamicContext.getClassReader();
         this.orderComparator = new OrderComparator();
     }
 
@@ -79,6 +74,7 @@ public final class IocApplication {
             List<ClassInfo> processoers = CollectionKit.newArrayList(8);
 
             pkgs.forEach(p -> {
+                ClassReader classReader = DynamicContext.getClassReader(p);
                 Set<ClassInfo> classInfos = classReader.getClass(p, true);
                 if (null != classInfos) {
                     classInfos.forEach(c -> {

@@ -129,6 +129,7 @@ public class BConfig {
         packages.add(basePackage + ".service");
         packages.add(basePackage + ".config");
         packages.add(basePackage + ".context");
+        packages.add(basePackage + ".plugins");
         packages.add(basePackage + ".init");
         packages.add(basePackage + ".interceptor");
     }

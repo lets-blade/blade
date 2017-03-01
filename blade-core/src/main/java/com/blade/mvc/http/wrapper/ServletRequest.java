@@ -69,9 +69,9 @@ public class ServletRequest implements Request {
 
     public ServletRequest(HttpServletRequest request) throws MultipartException, IOException {
         this.request = request;
-        this.pathParams = CollectionKit.newHashMap(8);
-        this.queryParams = CollectionKit.newHashMap(16);
-        this.fileItems = CollectionKit.newHashMap(8);
+        this.pathParams = CollectionKit.newConcurrentHashMap(8);
+        this.queryParams = CollectionKit.newConcurrentHashMap(16);
+        this.fileItems = CollectionKit.newConcurrentHashMap(8);
         this.init();
     }
 
@@ -260,7 +260,7 @@ public class ServletRequest implements Request {
 
     @Override
     public Map<String, String> querys() {
-        Map<String, String> params = CollectionKit.newHashMap(8);
+        Map<String, String> params = CollectionKit.newConcurrentHashMap(8);
         Map<String, String[]> requestParams = request.getParameterMap();
         for (Map.Entry<String, String[]> entry : requestParams.entrySet()) {
             params.put(entry.getKey(), join(entry.getValue()));
@@ -426,7 +426,7 @@ public class ServletRequest implements Request {
     @Override
     public Map<String, Cookie> cookies() {
         javax.servlet.http.Cookie[] servletCookies = request.getCookies();
-        Map<String, Cookie> cookies = CollectionKit.newHashMap(8);
+        Map<String, Cookie> cookies = CollectionKit.newConcurrentHashMap(8);
         for (javax.servlet.http.Cookie c : servletCookies) {
             cookies.put(c.getName(), map(c));
         }
@@ -480,7 +480,7 @@ public class ServletRequest implements Request {
     @Override
     public Map<String, String> headers() {
         Enumeration<String> servletHeaders = request.getHeaderNames();
-        Map<String, String> headers = CollectionKit.newHashMap(16);
+        Map<String, String> headers = CollectionKit.newConcurrentHashMap(16);
         while (servletHeaders.hasMoreElements()) {
             String headerName = servletHeaders.nextElement();
             headers.put(headerName, request.getHeader(headerName));

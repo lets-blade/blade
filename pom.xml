@@ -33,7 +33,7 @@
 		<mockito.version>2.0.2-beta</mockito.version>
 		<slf4j-api.version>1.7.21</slf4j-api.version>
 		<slf4j-log4j12.version>1.7.21</slf4j-log4j12.version>
-		<blade-core.version>1.7.1-alpha</blade-core.version>
+		<blade-core.version>1.7.1-beta</blade-core.version>
 		<blade-kit.version>1.4.1-alpha</blade-kit.version>
 		<blade-aop.version>1.0.0</blade-aop.version>
 		<blade-embed-jetty.version>0.1.2</blade-embed-jetty.version>
