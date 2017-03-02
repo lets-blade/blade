@@ -19,6 +19,8 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.util.Enumeration;
@@ -151,12 +153,16 @@ public abstract class AbstractClassReader implements ClassReader {
             while (dirs.hasMoreElements()) {
                 // 获取下一个元素
                 URL url = dirs.nextElement();
-				// 获取包的物理路径
-				String filePath = URLDecoder.decode(url.getFile(), "UTF-8");
-				Set<ClassInfo> subClasses = findClassByPackage(packageName, filePath, parent, annotation, recursive, classes);
-				if(subClasses.size() > 0){
-					classes.addAll(subClasses);
-				}
+		    	try {
+					// 获取包的物理路径
+		    		String filePath = new URI(url.getFile()).getPath();
+					Set<ClassInfo> subClasses = findClassByPackage(packageName, filePath, parent, annotation, recursive, classes);
+					if(subClasses.size() > 0){
+						classes.addAll(subClasses);
+					}
+				} catch (URISyntaxException e) {
+					LOGGER.error(e.getMessage(), e);
+				}  
             }
         } catch (IOException e) {
         	LOGGER.error(e.getMessage(), e);

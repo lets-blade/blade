@@ -25,8 +25,9 @@ import org.slf4j.LoggerFactory;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
-import java.net.URLDecoder;
 
 import static com.blade.Blade.$;
 
@@ -44,8 +45,8 @@ public class DispatchKit {
         URL url = clazz.getProtectionDomain().getCodeSource().getLocation();
         String filePath = null;
         try {
-            filePath = URLDecoder.decode(url.getPath(), "utf-8");
-        } catch (Exception e) {
+			filePath = new URI(url.getPath()).getPath();
+        } catch (URISyntaxException e) {
             e.printStackTrace();
         }
         if (filePath.endsWith(".jar")) {
@@ -64,7 +65,11 @@ public class DispatchKit {
                 try {
                     URL url = sc.getResource("/");
                     if (url != null && "file".equals(url.getProtocol())) {
-                        dir = URLDecoder.decode(url.getFile(), "utf-8");
+            			try {
+							dir = new URI(url.getFile()).getPath();
+						} catch (URISyntaxException e) {
+							e.printStackTrace();
+						}
                     } else {
                         throw new IllegalStateException("Can't get webroot dir, url = " + url);
                     }
