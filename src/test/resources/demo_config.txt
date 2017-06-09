@@ -1,0 +1,16 @@
+app.devMode=false
+app.name=hello
+app.monitor.enable=true
+
+http.gzip.enable=true
+http.session.key=SESSION
+http.session.timeout=1800
+
+mvc.view.404=/comm/page_404.html
+mvc.view.500=/comm/page_404.html
+mvc.statics=/upload/
+mvc.statics.list=false
+mvc.template.path=/templates/
+
+server.address=127.0.0.1
+server.port=9000
