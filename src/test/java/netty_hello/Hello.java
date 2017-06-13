@@ -12,9 +12,9 @@ public class Hello {
     public static void main(String[] args) {
 
         Blade.me()
-                .devMode(false)
-                .environment(Const.ENV_KEY_NETTY_WORKERS, Runtime.getRuntime().availableProcessors())
-                .get("/rest/hello", ((request, response) -> response.text("Hello World.")))
-                .listen(8080).start(args);
+//                .devMode(false)
+//                .environment(Const.ENV_KEY_NETTY_WORKERS, Runtime.getRuntime().availableProcessors())
+                .get("/hello", ((request, response) -> response.text("Hello World.")))
+                .start(args);
     }
 }

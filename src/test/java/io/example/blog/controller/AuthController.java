@@ -19,7 +19,7 @@ public class AuthController {
         response.text(request.attribute(CsrfMiddleware.CSRF_TOKEN));
     }
 
-    @PostRoute(values = "login")
+    @PostRoute(value = "login")
     @CsrfMiddleware.ValidToken
     public void doLogin(Response response) {
         response.text("登录成功");

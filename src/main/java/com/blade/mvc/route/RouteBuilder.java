@@ -85,15 +85,12 @@ public class RouteBuilder {
         if (null != mapping) {
             // build multiple route
             HttpMethod methodType = mapping.method();
-            String[] paths = mapping.values();
+            String[] paths = mapping.value();
             if (paths.length > 0) {
                 for (String path : paths) {
                     String pathV = getRoutePath(path, nameSpace, suffix);
                     this.buildRoute(router, controller, method, pathV, methodType);
                 }
-            } else {
-                String pathV = getRoutePath(mapping.value(), nameSpace, suffix);
-                this.buildRoute(router, controller, method, pathV, methodType);
             }
         }
     }
@@ -103,15 +100,12 @@ public class RouteBuilder {
         //route method
         if (null != getRoute) {
             // build multiple route
-            String[] paths = getRoute.values();
+            String[] paths = getRoute.value();
             if (paths.length > 0) {
                 for (String path : paths) {
                     String pathV = getRoutePath(path, nameSpace, suffix);
                     this.buildRoute(router, controller, method, pathV, HttpMethod.GET);
                 }
-            } else {
-                String pathV = getRoutePath(getRoute.value(), nameSpace, suffix);
-                this.buildRoute(router, controller, method, pathV, HttpMethod.GET);
             }
         }
     }
@@ -121,15 +115,12 @@ public class RouteBuilder {
         //route method
         if (null != postRoute) {
             // build multiple route
-            String[] paths = postRoute.values();
+            String[] paths = postRoute.value();
             if (paths.length > 0) {
                 for (String path : paths) {
                     String pathV = getRoutePath(path, nameSpace, suffix);
                     this.buildRoute(router, controller, method, pathV, HttpMethod.POST);
                 }
-            } else {
-                String pathV = getRoutePath(postRoute.value(), nameSpace, suffix);
-                this.buildRoute(router, controller, method, pathV, HttpMethod.POST);
             }
         }
     }
@@ -139,15 +130,12 @@ public class RouteBuilder {
         //route method
         if (null != putRoute) {
             // build multiple route
-            String[] paths = putRoute.values();
+            String[] paths = putRoute.value();
             if (paths.length > 0) {
                 for (String path : paths) {
                     String pathV = getRoutePath(path, nameSpace, suffix);
                     this.buildRoute(router, controller, method, pathV, HttpMethod.PUT);
                 }
-            } else {
-                String pathV = getRoutePath(putRoute.value(), nameSpace, suffix);
-                this.buildRoute(router, controller, method, pathV, HttpMethod.PUT);
             }
         }
     }
@@ -157,15 +145,12 @@ public class RouteBuilder {
         //route method
         if (null != deleteRoute) {
             // build multiple route
-            String[] paths = deleteRoute.values();
+            String[] paths = deleteRoute.value();
             if (paths.length > 0) {
                 for (String path : paths) {
                     String pathV = getRoutePath(path, nameSpace, suffix);
                     this.buildRoute(router, controller, method, pathV, HttpMethod.DELETE);
                 }
-            } else {
-                String pathV = getRoutePath(deleteRoute.value(), nameSpace, suffix);
-                this.buildRoute(router, controller, method, pathV, HttpMethod.DELETE);
             }
         }
     }

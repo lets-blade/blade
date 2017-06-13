@@ -24,13 +24,13 @@ public class IndexController {
     @Inject
     private AService aService;
 
-    @GetRoute(values = "/hello")
+    @GetRoute(value = "/hello")
     public void index(Response response) {
 //        aService.sayHi();
         response.text("hello world!");
     }
 
-    @GetRoute(values = "/user")
+    @GetRoute(value = "/user")
     public String userPage(Request request, Session session) {
         request.attribute("name", "biezhi");
         request.attribute("github", "https://github.com/biezhi");
@@ -40,7 +40,7 @@ public class IndexController {
         return "user.html";
     }
 
-    @PostRoute(values = "/save")
+    @PostRoute(value = "/save")
     @JSON
     public RestResponse saveArticle(@BodyParam Article article, Request request) {
         System.out.println(article);
@@ -50,36 +50,36 @@ public class IndexController {
         return RestResponse.ok();
     }
 
-    @PostRoute(values = "upload")
+    @PostRoute(value = "upload")
     @JSON
     public RestResponse upload(@MultipartParam("img2") FileItem fileItem) {
         System.out.println(fileItem);
         return RestResponse.ok();
     }
 
-    @GetRoute(values = "exp1")
+    @GetRoute(value = "exp1")
     @JSON
     public void exp1() {
         int a = 1 / 0;
     }
 
-    @GetRoute(values = "exp2")
+    @GetRoute(value = "exp2")
     public void exp2() {
         aService.exp();
     }
 
-    @GetRoute(values = "empty")
+    @GetRoute(value = "empty")
     public void empty() {
 //        System.out.println("empty request");
     }
 
-    @GetRoute(values = "download")
+    @GetRoute(value = "download")
     public void download(Response response) throws Exception {
         String path = Const.CLASSPATH + "static/a.txt";
         response.donwload("文件.txt", new File(path));
     }
 
-    @GetRoute(values = "redirect")
+    @GetRoute(value = "redirect")
     public void redirect(@QueryParam String url, Response response) {
         response.redirect(url);
     }
