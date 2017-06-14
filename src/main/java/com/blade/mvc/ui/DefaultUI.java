@@ -32,7 +32,8 @@ public interface DefaultUI {
             .endStyle()
             .add("<div class='info'><h3>%s</h3></div><div class='isa_error'><pre>").toString();
 
-    Locale locale = Locale.getDefault().getLanguage().equals("zh") ? Locale.CHINESE : Locale.ENGLISH;
+    Locale locale = Locale.getDefault().getLanguage().equalsIgnoreCase("zh") ? Locale.CHINESE : Locale.ENGLISH;
+
     ResourceBundle bundle = ResourceBundle.getBundle("i18n", locale);
 
     enum MonitorEnum {

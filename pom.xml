@@ -122,17 +122,6 @@
                 <directory>src/main/resources</directory>
                 <filtering>false</filtering>
             </resource>
-            <resource>
-                <directory>src/main/test</directory>
-                <filtering>false</filtering>
-                <includes>
-                    <include>**/*.properties</include>
-                </includes>
-            </resource>
-            <resource>
-                <directory>src/test/resources</directory>
-                <filtering>false</filtering>
-            </resource>
         </resources>
         <plugins>
             <!--  Compile  -->
@@ -159,6 +148,30 @@
     </build>
 
     <profiles>
+        <profile>
+            <id>dev</id>
+            <properties>
+                <activatedProperties>dev</activatedProperties>
+            </properties>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <build>
+                <resources>
+                    <resource>
+                        <directory>src/main/test</directory>
+                        <filtering>false</filtering>
+                        <includes>
+                            <include>**/*.properties</include>
+                        </includes>
+                    </resource>
+                    <resource>
+                        <directory>src/test/resources</directory>
+                        <filtering>false</filtering>
+                    </resource>
+                </resources>
+            </build>
+        </profile>
         <profile>
             <id>release</id>
             <distributionManagement>
