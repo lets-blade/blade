@@ -5,7 +5,7 @@
 
     <groupId>com.bladejava</groupId>
     <artifactId>blade-mvc</artifactId>
-    <version>2.0.0-SNAPSHOT</version>
+    <version>2.0.0-alpha</version>
     <packaging>jar</packaging>
 
     <name>blade</name>
@@ -122,17 +122,17 @@
                 <directory>src/main/resources</directory>
                 <filtering>false</filtering>
             </resource>
-            <!--<resource>-->
-            <!--<directory>src/main/test</directory>-->
-            <!--<filtering>false</filtering>-->
-            <!--<includes>-->
-            <!--<include>**/*.properties</include>-->
-            <!--</includes>-->
-            <!--</resource>-->
-            <!--<resource>-->
-            <!--<directory>src/test/resources</directory>-->
-            <!--<filtering>false</filtering>-->
-            <!--</resource>-->
+            <resource>
+                <directory>src/main/test</directory>
+                <filtering>false</filtering>
+                <includes>
+                    <include>**/*.properties</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>src/test/resources</directory>
+                <filtering>false</filtering>
+            </resource>
         </resources>
         <plugins>
             <!--  Compile  -->
@@ -176,6 +176,19 @@
                 </repository>
             </distributionManagement>
             <build>
+                <resources>
+                    <resource>
+                        <directory>src/main/java</directory>
+                        <filtering>false</filtering>
+                        <includes>
+                            <include>**/*.properties</include>
+                        </includes>
+                    </resource>
+                    <resource>
+                        <directory>src/main/resources</directory>
+                        <filtering>false</filtering>
+                    </resource>
+                </resources>
                 <plugins>
                     <!--  Source  -->
                     <plugin>
