@@ -5,7 +5,7 @@
 
     <groupId>com.bladejava</groupId>
     <artifactId>blade-mvc</artifactId>
-    <version>2.0.0-alpha</version>
+    <version>2.0.0-beta</version>
     <packaging>jar</packaging>
 
     <name>blade</name>
@@ -37,9 +37,16 @@
         <junit.version>4.12</junit.version>
         <slf4j-api.version>1.7.21</slf4j-api.version>
         <netty.version>4.1.11.Final</netty.version>
+        <blade-log.version>0.0.1</blade-log.version>
     </properties>
 
     <dependencies>
+
+        <dependency>
+            <groupId>com.bladejava</groupId>
+            <artifactId>blade-log</artifactId>
+            <version>${blade-log.version}</version>
+        </dependency>
 
         <dependency>
             <groupId>org.slf4j</groupId>
