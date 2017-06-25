@@ -63,7 +63,7 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
         this.statics = blade.getStatics();
 
         this.ci = ci;
-        this.openMonitor = blade.environment().getBoolean(ENV_KEY_MONITOR_ENABLE, true);
+        this.openMonitor = blade.environment().getBoolean(ENV_KEY_MONITOR_ENABLE, false);
         this.page404 = blade.environment().get(ENV_KEY_PAGE_404, null);
         this.page500 = blade.environment().get(ENV_KEY_PAGE_500, null);
 

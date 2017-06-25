@@ -251,7 +251,7 @@ public class Blade {
         return this.start(mainCls, DEFAULT_SERVER_ADDRESS, DEFAULT_SERVER_PORT, args);
     }
 
-    public Blade start(@NonNull Class<?> bootClass, @NonNull String address, int port, String... args) {
+    public Blade start(Class<?> bootClass, @NonNull String address, int port, String... args) {
         try {
             Assert.greaterThan(port, 0, "server port not is negative number.");
             this.bootClass = bootClass;

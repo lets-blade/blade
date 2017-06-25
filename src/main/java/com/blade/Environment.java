@@ -188,7 +188,7 @@ public class Environment {
         return Optional.ofNullable(props.getProperty(key));
     }
 
-    public String get(@NonNull String key, @NonNull String defaultValue) {
+    public String get(@NonNull String key, String defaultValue) {
         return props.getProperty(key, defaultValue);
     }
 

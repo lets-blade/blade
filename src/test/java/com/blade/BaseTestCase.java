@@ -2,6 +2,7 @@ package com.blade;
 
 import com.blade.mvc.route.RouteHandler;
 import com.github.kevinsawicki.http.HttpRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.After;
 import org.junit.Before;
 
@@ -9,6 +10,7 @@ import org.junit.Before;
  * @author biezhi
  *         2017/6/3
  */
+@Slf4j
 public class BaseTestCase {
 
     protected RouteHandler OK_HANDLER = (req, res) -> res.text("OK");
@@ -33,23 +35,27 @@ public class BaseTestCase {
     }
 
     protected HttpRequest get(String path) throws Exception {
+        log.info("[GET] {}", (origin + path));
         return HttpRequest.get(origin + path);
     }
 
     protected HttpRequest post(String path) throws Exception {
+        log.info("[POST] {}", (origin + path));
         return HttpRequest.post(origin + path);
     }
 
     protected HttpRequest put(String path) throws Exception {
+        log.info("[PUT] {}", (origin + path));
         return HttpRequest.put(origin + path);
     }
 
     protected HttpRequest delete(String path) throws Exception {
+        log.info("[DELETE] {}", (origin + path));
         return HttpRequest.delete(origin + path);
     }
 
     protected String bodyToString(String path) throws Exception {
-        return get(path).body();
+        return get(path).connectTimeout(3000).readTimeout(3000).body();
     }
 
 }
