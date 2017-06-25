@@ -3,7 +3,6 @@ package com.blade.mvc.http;
 import com.blade.kit.Assert;
 import com.blade.kit.DateKit;
 import com.blade.kit.StringKit;
-import com.blade.metric.WebStatistics;
 import com.blade.mvc.Const;
 import com.blade.mvc.WebContext;
 import com.blade.mvc.ui.ModelAndView;
@@ -216,9 +215,6 @@ public class HttpResponse implements Response {
         headers.set(HttpHeaders.Names.LOCATION, newUri);
         FullHttpResponse response = new DefaultFullHttpResponse(Const.HTTP_VERSION, HttpResponseStatus.FOUND);
         this.send(response);
-        if (WebContext.blade().environment().getBoolean(Const.ENV_KEY_MONITOR_ENABLE, true)) {
-            WebStatistics.me().registerRedirect(newUri);
-        }
     }
 
     @Override

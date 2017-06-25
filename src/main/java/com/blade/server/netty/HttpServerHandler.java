@@ -3,8 +3,6 @@ package com.blade.server.netty;
 import com.blade.Blade;
 import com.blade.exception.BladeException;
 import com.blade.kit.BladeKit;
-import com.blade.metric.Connection;
-import com.blade.metric.WebStatistics;
 import com.blade.mvc.WebContext;
 import com.blade.mvc.handler.RouteViewResolve;
 import com.blade.mvc.hook.Invoker;
@@ -29,7 +27,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -53,16 +50,14 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
     private final StaticFileHandler staticFileHandler;
     private final SessionHandler sessionHandler;
 
-    private final Connection ci;
     private final boolean openMonitor;
 
     private String page404, page500;
 
-    public HttpServerHandler(Blade blade, Connection ci) {
+    public HttpServerHandler(Blade blade) {
         this.blade = blade;
         this.statics = blade.getStatics();
 
-        this.ci = ci;
         this.openMonitor = blade.environment().getBoolean(ENV_KEY_MONITOR_ENABLE, false);
         this.page404 = blade.environment().get(ENV_KEY_PAGE_404, null);
         this.page500 = blade.environment().get(ENV_KEY_PAGE_500, null);
@@ -76,9 +71,6 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
     @Override
     public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
         super.channelRegistered(ctx);
-        if (openMonitor) {
-            WebStatistics.me().addChannel(ctx.channel());
-        }
     }
 
     private FullHttpRequest fullHttpRequest;
@@ -145,12 +137,6 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx) {
         ctx.flush();
-        if (openMonitor) {
-            WebStatistics.me().registerRequestFromIp(WebStatistics.getIpFromChannel(ctx.channel()), LocalDateTime.now());
-            if (fullHttpRequest != null) {
-                ci.addUri(fullHttpRequest.getUri());
-            }
-        }
     }
 
     @Override

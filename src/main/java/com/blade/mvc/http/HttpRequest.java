@@ -13,8 +13,7 @@ import io.netty.handler.codec.http.cookie.ServerCookieDecoder;
 import io.netty.handler.codec.http.multipart.*;
 import io.netty.util.CharsetUtil;
 import lombok.NonNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.net.URLConnection;
@@ -29,9 +28,8 @@ import static io.netty.handler.codec.http.HttpHeaders.Names.COOKIE;
  * @author biezhi
  *         2017/5/31
  */
+@Slf4j
 public class HttpRequest implements Request {
-
-    private static final Logger log = LoggerFactory.getLogger(HttpRequest.class);
 
     private static final HttpDataFactory HTTP_DATA_FACTORY = new DefaultHttpDataFactory(DefaultHttpDataFactory.MINSIZE); // Disk if size exceed
 

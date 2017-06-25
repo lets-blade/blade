@@ -227,10 +227,6 @@ public class NettyServer implements Server {
             blade.addStatics(statics.split(","));
         }
 
-        if (environment.getBoolean(ENV_KEY_MONITOR_ENABLE, false)) {
-            DefaultUI.registerStatus(blade);
-        }
-
         String templatePath = environment.get(ENV_KEY_TEMPLATE_PATH, "templates");
         if (templatePath.charAt(0) == '/') {
             templatePath = templatePath.substring(1);
