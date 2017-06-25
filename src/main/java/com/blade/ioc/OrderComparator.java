@@ -5,6 +5,8 @@ import com.blade.ioc.annotation.Order;
 import java.util.Comparator;
 
 /**
+ * Bean order by
+ *
  * @author biezhi
  *         2017/6/2
  */

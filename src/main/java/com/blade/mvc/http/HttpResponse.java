@@ -1,6 +1,7 @@
 package com.blade.mvc.http;
 
-import com.blade.BladeException;
+import com.blade.kit.Assert;
+import com.blade.kit.DateKit;
 import com.blade.kit.StringKit;
 import com.blade.metric.WebStatistics;
 import com.blade.mvc.Const;
@@ -17,6 +18,7 @@ import io.netty.channel.DefaultFileRegion;
 import io.netty.handler.codec.http.*;
 import io.netty.handler.codec.http.cookie.Cookie;
 import io.netty.handler.codec.http.cookie.ServerCookieEncoder;
+import lombok.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,7 +68,7 @@ public class HttpResponse implements Response {
     }
 
     @Override
-    public Response contentType(String contentType) {
+    public Response contentType(@NonNull String contentType) {
         this.contentType = contentType;
         return this;
     }
@@ -84,13 +86,13 @@ public class HttpResponse implements Response {
     }
 
     @Override
-    public Response header(String name, String value) {
+    public Response header(@NonNull String name, @NonNull String value) {
         this.headers.set(name, value);
         return this;
     }
 
     @Override
-    public Response cookie(com.blade.mvc.http.Cookie cookie) {
+    public Response cookie(@NonNull com.blade.mvc.http.Cookie cookie) {
         Cookie nettyCookie = new DefaultCookie(cookie.name(), cookie.value());
         if (cookie.domain() != null) {
             nettyCookie.setDomain(cookie.domain());
@@ -111,7 +113,7 @@ public class HttpResponse implements Response {
     }
 
     @Override
-    public Response cookie(String name, String value, int maxAge) {
+    public Response cookie(@NonNull String name, @NonNull String value, int maxAge) {
         Cookie nettyCookie = new DefaultCookie(name, value);
         nettyCookie.setPath("/");
         nettyCookie.setMaxAge(maxAge);
@@ -120,7 +122,7 @@ public class HttpResponse implements Response {
     }
 
     @Override
-    public Response cookie(String name, String value, int maxAge, boolean secured) {
+    public Response cookie(@NonNull String name, @NonNull String value, int maxAge, boolean secured) {
         Cookie nettyCookie = new DefaultCookie(name, value);
         nettyCookie.setPath("/");
         nettyCookie.setMaxAge(maxAge);
@@ -130,7 +132,7 @@ public class HttpResponse implements Response {
     }
 
     @Override
-    public Response cookie(String path, String name, String value, int maxAge, boolean secured) {
+    public Response cookie(@NonNull String path, @NonNull String name, @NonNull String value, int maxAge, boolean secured) {
         Cookie nettyCookie = new DefaultCookie(name, value);
         nettyCookie.setMaxAge(maxAge);
         nettyCookie.setSecure(secured);
@@ -140,7 +142,7 @@ public class HttpResponse implements Response {
     }
 
     @Override
-    public Response removeCookie(String name) {
+    public Response removeCookie(@NonNull String name) {
         Optional<Cookie> cookieOpt = this.cookies.stream().filter(cookie -> cookie.name().equals(name)).findFirst();
         cookieOpt.ifPresent(cookie -> {
             cookie.setValue("");
@@ -157,11 +159,12 @@ public class HttpResponse implements Response {
     }
 
     @Override
-    public void donwload(String fileName, File file) throws Exception {
+    public void donwload(@NonNull String fileName, @NonNull File file) throws Exception {
         try {
             if (null == file || !file.exists() || !file.isFile()) {
-                throw new BladeException("please check the file is effective!");
+                Assert.throwException("please check the file is effective!");
             }
+
             RandomAccessFile raf = new RandomAccessFile(file, "r");
             long fileLength = raf.length();
             this.contentType = StringKit.mimeType(file.getName());
@@ -196,16 +199,20 @@ public class HttpResponse implements Response {
     }
 
     @Override
-    public void render(ModelAndView modelAndView) {
+    public void render(@NonNull ModelAndView modelAndView) {
         StringWriter sw = new StringWriter();
-        templateEngine.render(modelAndView, sw);
-        ByteBuf buffer = Unpooled.wrappedBuffer(sw.toString().getBytes());
-        FullHttpResponse response = new DefaultFullHttpResponse(Const.HTTP_VERSION, HttpResponseStatus.valueOf(statusCode), buffer);
-        this.send(response);
+        try {
+            templateEngine.render(modelAndView, sw);
+            ByteBuf buffer = Unpooled.wrappedBuffer(sw.toString().getBytes());
+            FullHttpResponse response = new DefaultFullHttpResponse(Const.HTTP_VERSION, HttpResponseStatus.valueOf(statusCode), buffer);
+            this.send(response);
+        } catch (Exception e) {
+            log.error("render error", e);
+        }
     }
 
     @Override
-    public void redirect(String newUri) {
+    public void redirect(@NonNull String newUri) {
         headers.set(HttpHeaders.Names.LOCATION, newUri);
         FullHttpResponse response = new DefaultFullHttpResponse(Const.HTTP_VERSION, HttpResponseStatus.FOUND);
         this.send(response);
@@ -220,7 +227,7 @@ public class HttpResponse implements Response {
     }
 
     @Override
-    public void send(FullHttpResponse response) {
+    public void send(@NonNull FullHttpResponse response) {
         response.headers().add(getDefaultHeader());
         boolean keepAlive = WebContext.request().keepAlive();
         // Add 'Content-Length' header only for a keep-alive connection.
@@ -235,8 +242,7 @@ public class HttpResponse implements Response {
     }
 
     private HttpHeaders getDefaultHeader() {
-//        headers.set(DATE, DateKit.gmtDate());
-        headers.set(DATE, "Tue, 06 Jun 2017 11:03:38 GMT");
+        headers.set(DATE, DateKit.gmtDate());
         headers.set(CONTENT_TYPE, this.contentType);
         headers.set(SERVER, "blade/" + Const.VERSION);
         this.cookies.forEach(cookie -> headers.add(SET_COOKIE, ServerCookieEncoder.LAX.encode(cookie)));

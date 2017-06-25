@@ -1,5 +1,6 @@
 package com.blade.server.netty;
 
+import com.blade.exception.BladeException;
 import com.blade.mvc.http.Request;
 import com.blade.mvc.http.Response;
 import io.netty.channel.ChannelHandlerContext;
@@ -11,6 +12,6 @@ import io.netty.channel.ChannelHandlerContext;
 @FunctionalInterface
 public interface RequestHandler<R> {
 
-    R handle(ChannelHandlerContext ctx, Request request, Response response);
+    R handle(ChannelHandlerContext ctx, Request request, Response response) throws BladeException;
 
 }

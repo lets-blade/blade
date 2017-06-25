@@ -1,8 +1,6 @@
 package com.blade.mvc.ui.template;
 
-import com.blade.BladeException;
-
-public class UncheckedTemplateException extends BladeException {
+public class UncheckedTemplateException extends RuntimeException {
 
     private static final String INVALID_NUMBER_OF_ARGUMENTS = "Invalid number of arguments: ${argsNum}. Every argument needs to have a pair.";
 
@@ -15,10 +13,6 @@ public class UncheckedTemplateException extends BladeException {
     private static final String INVALID_ARGUMENT_NAME_NULL_OR_EMPTY = "Invalid argument name: '${arg}'. Argument should not be null or empty";
 
     private static final String INVALID_STATE_EXCEPTION = "Invalid state: '${state}'. No code coverage for this new state.";
-
-    public UncheckedTemplateException() {
-        super();
-    }
 
     public UncheckedTemplateException(String message) {
         super(message);

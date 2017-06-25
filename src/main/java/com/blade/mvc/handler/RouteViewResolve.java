@@ -1,7 +1,7 @@
 package com.blade.mvc.handler;
 
 import com.blade.Blade;
-import com.blade.BladeException;
+import com.blade.exception.BladeException;
 import com.blade.ioc.Ioc;
 import com.blade.kit.ReflectKit;
 import com.blade.mvc.annotation.JSON;
@@ -25,7 +25,7 @@ public class RouteViewResolve {
         this.templateEngine = blade.templateEngine();
     }
 
-    public boolean handle(Request request, Response response, Route route) {
+    public boolean handle(Request request, Response response, Route route) throws Exception {
         try {
             Method actionMethod = route.getAction();
             Object target = route.getTarget();

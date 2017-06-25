@@ -1,10 +1,7 @@
 package com.blade.mvc.handler;
 
-import com.blade.BladeException;
-import com.blade.kit.AsmKit;
-import com.blade.kit.JsonKit;
-import com.blade.kit.ReflectKit;
-import com.blade.kit.StringKit;
+import com.blade.exception.BladeException;
+import com.blade.kit.*;
 import com.blade.mvc.annotation.*;
 import com.blade.mvc.hook.Invoker;
 import com.blade.mvc.http.HttpSession;
@@ -113,7 +110,7 @@ public final class MethodArgument {
                 val = Optional.of(queryParam.defaultValue());
             }
             if (required && !val.isPresent()) {
-                throw new BladeException("query param [" + paramName + "] not is empty.");
+                Assert.throwException(String.format("query param [%s] not is empty.", paramName));
             }
             return getRequestParam(argType, val.get());
         } else {
@@ -121,7 +118,7 @@ public final class MethodArgument {
         }
     }
 
-    private static Object getCookie(Class<?> argType, CookieParam cookieParam, String paramName, Request request) {
+    private static Object getCookie(Class<?> argType, CookieParam cookieParam, String paramName, Request request) throws BladeException {
         String cookieName = StringKit.isBlank(cookieParam.value()) ? paramName : cookieParam.value();
         Optional<String> val = request.cookie(cookieName);
         boolean required = cookieParam.required();
@@ -129,12 +126,12 @@ public final class MethodArgument {
             val = Optional.of(cookieParam.defaultValue());
         }
         if (required && !val.isPresent()) {
-            throw new BladeException("cookie param [" + paramName + "] not is empty.");
+            Assert.throwException(String.format("cookie param [%s] not is empty.", paramName));
         }
         return getRequestParam(argType, val.get());
     }
 
-    private static Object getHeader(Class<?> argType, HeaderParam headerParam, String paramName, Request request) {
+    private static Object getHeader(Class<?> argType, HeaderParam headerParam, String paramName, Request request) throws BladeException {
         String key = StringKit.isBlank(headerParam.value()) ? paramName : headerParam.value();
         String val = request.header(key);
         boolean required = headerParam.required();
@@ -142,7 +139,7 @@ public final class MethodArgument {
             val = headerParam.defaultValue();
         }
         if (required && StringKit.isBlank(val)) {
-            throw new BladeException("header param [" + paramName + "] not is empty.");
+            Assert.throwException(String.format("header param [%s] not is empty.", paramName));
         }
         return getRequestParam(argType, val);
     }
@@ -156,7 +153,7 @@ public final class MethodArgument {
         return getRequestParam(argType, val);
     }
 
-    private static Object parseModel(Class<?> argType, Request request, String name) {
+    private static Object parseModel(Class<?> argType, Request request, String name) throws BladeException {
         try {
             Field[] fields = argType.getDeclaredFields();
             if (null == fields || fields.length == 0) {
@@ -164,6 +161,7 @@ public final class MethodArgument {
             }
             Object obj = ReflectKit.newInstance(argType);
             boolean hasField = false;
+
             for (Field field : fields) {
                 field.setAccessible(true);
                 if (field.getName().equals("serialVersionUID")) {

@@ -1,8 +1,10 @@
 package com.blade;
 
 import com.blade.kit.IOKit;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,14 +26,11 @@ import java.util.Properties;
  * @author biezhi
  *         2017/6/1
  */
+@Slf4j
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Environment {
 
-    private static final Logger log = LoggerFactory.getLogger(Environment.class);
-
     private Properties props = new Properties();
-
-    private Environment() {
-    }
 
     public static Environment empty() {
         return new Environment();
@@ -43,7 +42,7 @@ public class Environment {
      * @param props
      * @return
      */
-    public static Environment of(Properties props) {
+    public static Environment of(@NonNull Properties props) {
         Environment environment = new Environment();
         environment.props = props;
         return environment;
@@ -55,7 +54,7 @@ public class Environment {
      * @param map
      * @return
      */
-    public static Environment of(Map<String, String> map) {
+    public static Environment of(@NonNull Map<String, String> map) {
         Environment environment = new Environment();
         map.forEach((key, value) -> environment.props.setProperty(key, value));
         return environment;
@@ -67,7 +66,7 @@ public class Environment {
      * @param url
      * @return
      */
-    public Environment of(URL url) {
+    public Environment of(@NonNull URL url) {
         String location = url.getPath();
         try {
             location = URLDecoder.decode(location, "utf-8");
@@ -85,7 +84,7 @@ public class Environment {
      * @param file
      * @return
      */
-    public static Environment of(File file) {
+    public static Environment of(@NonNull File file) {
         try {
             return of(Files.newInputStream(Paths.get(file.getPath())), file.getName());
         } catch (IOException e) {
@@ -99,7 +98,7 @@ public class Environment {
      * @param location
      * @return
      */
-    public static Environment of(String location) {
+    public static Environment of(@NonNull String location) {
         if (location.startsWith("classpath:")) {
             location = location.substring("classpath:".length());
             return loadClasspath(location);
@@ -119,7 +118,7 @@ public class Environment {
         }
     }
 
-    private static Environment loadClasspath(String classpath) {
+    private static Environment loadClasspath(@NonNull String classpath) {
         if (classpath.startsWith("/")) {
             classpath = classpath.substring(1);
         }
@@ -130,11 +129,7 @@ public class Environment {
         return of(is, classpath);
     }
 
-    private static Environment of(InputStream is, String location) {
-        if (is == null) {
-            log.warn("InputStream not found: " + location);
-            return null;
-        }
+    private static Environment of(@NonNull InputStream is, String location) {
         try {
             Environment environment = new Environment();
             environment.props.load(is);
@@ -145,7 +140,6 @@ public class Environment {
             IOKit.closeQuietly(is);
         }
     }
-
 
     /**
      * Returns current thread's context class loader
@@ -170,88 +164,88 @@ public class Environment {
         return loader;
     }
 
-    public Environment set(String key, Object value) {
+    public Environment set(@NonNull String key, @NonNull Object value) {
         props.put(key, value);
         return this;
     }
 
-    public Environment add(String key, Object value) {
+    public Environment add(@NonNull String key, @NonNull Object value) {
         props.put(key, value);
         return this;
     }
 
-    public Environment addAll(Map<String, String> map) {
+    public Environment addAll(@NonNull Map<String, String> map) {
         map.forEach((key, value) -> this.props.setProperty(key, value));
         return this;
     }
 
-    public Environment addAll(Properties props) {
+    public Environment addAll(@NonNull Properties props) {
         props.forEach((key, value) -> this.props.setProperty(key.toString(), value.toString()));
         return this;
     }
 
-    public Optional<String> get(String key) {
+    public Optional<String> get(@NonNull String key) {
         return Optional.ofNullable(props.getProperty(key));
     }
 
-    public String get(String key, String defaultValue) {
+    public String get(@NonNull String key, @NonNull String defaultValue) {
         return props.getProperty(key, defaultValue);
     }
 
-    public Optional<Object> getObject(String key) {
+    public Optional<Object> getObject(@NonNull String key) {
         return Optional.ofNullable(props.get(key));
     }
 
-    public Optional<Integer> getInt(String key) {
+    public Optional<Integer> getInt(@NonNull String key) {
         if (getObject(key).isPresent()) {
             return Optional.of(Integer.valueOf(getObject(key).get().toString()));
         }
         return Optional.empty();
     }
 
-    public Integer getInt(String key, int defaultValue) {
+    public Integer getInt(@NonNull String key, int defaultValue) {
         if (getInt(key).isPresent()) {
             return getInt(key).get();
         }
         return defaultValue;
     }
 
-    public Optional<Long> getLong(String key) {
+    public Optional<Long> getLong(@NonNull String key) {
         if (getObject(key).isPresent()) {
             return Optional.of(Long.valueOf(getObject(key).get().toString()));
         }
         return Optional.empty();
     }
 
-    public Long getLong(String key, long defaultValue) {
+    public Long getLong(@NonNull String key, long defaultValue) {
         if (getLong(key).isPresent()) {
             return getLong(key).get();
         }
         return defaultValue;
     }
 
-    public Optional<Boolean> getBoolean(String key) {
+    public Optional<Boolean> getBoolean(@NonNull String key) {
         if (getObject(key).isPresent()) {
             return Optional.of(Boolean.valueOf(getObject(key).get().toString()));
         }
         return Optional.empty();
     }
 
-    public Boolean getBoolean(String key, boolean defaultValue) {
+    public Boolean getBoolean(@NonNull String key, boolean defaultValue) {
         if (getBoolean(key).isPresent()) {
             return getBoolean(key).get();
         }
         return defaultValue;
     }
 
-    public Optional<Double> getDouble(String key) {
+    public Optional<Double> getDouble(@NonNull String key) {
         if (getObject(key).isPresent()) {
             return Optional.of(Double.valueOf(getObject(key).get().toString()));
         }
         return Optional.empty();
     }
 
-    public Double getDouble(String key, double defaultValue) {
+    public Double getDouble(@NonNull String key, double defaultValue) {
         if (getDouble(key).isPresent()) {
             return getDouble(key).get();
         }

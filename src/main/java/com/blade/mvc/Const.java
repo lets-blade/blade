@@ -8,7 +8,7 @@ import io.netty.handler.codec.http.HttpVersion;
  */
 public interface Const {
 
-    String VERSION = "2.0.0-beta";
+    String VERSION = "2.0.0";
 
     String CLASSPATH = Const.class.getResource("/").getPath();
 

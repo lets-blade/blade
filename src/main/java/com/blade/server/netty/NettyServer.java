@@ -26,20 +26,17 @@ import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
-import io.netty.channel.WriteBufferWaterMark;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.ssl.SslContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 import static com.blade.mvc.Const.*;
 
@@ -47,9 +44,8 @@ import static com.blade.mvc.Const.*;
  * @author biezhi
  *         2017/5/31
  */
+@Slf4j
 public class NettyServer implements Server {
-
-    private static final Logger log = LoggerFactory.getLogger(NettyServer.class);
 
     private Blade blade;
     private Environment environment;

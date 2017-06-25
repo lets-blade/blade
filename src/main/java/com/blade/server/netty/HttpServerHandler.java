@@ -1,7 +1,7 @@
 package com.blade.server.netty;
 
 import com.blade.Blade;
-import com.blade.BladeException;
+import com.blade.exception.BladeException;
 import com.blade.kit.BladeKit;
 import com.blade.metric.Connection;
 import com.blade.metric.WebStatistics;
@@ -25,8 +25,7 @@ import io.netty.handler.codec.http.DefaultFullHttpResponse;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpVersion;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -42,10 +41,9 @@ import static io.netty.handler.codec.http.HttpUtil.is100ContinueExpected;
  * @author biezhi
  *         2017/5/31
  */
+@Slf4j
 @ChannelHandler.Sharable
 public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
-
-    public static final Logger log = LoggerFactory.getLogger(HttpServerHandler.class);
 
     private final Blade blade;
     private final RouteMatcher routeMatcher;
@@ -210,7 +208,7 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
      * @param response response object
      * @param route    route object
      */
-    private boolean routeHandle(Request request, Response response, Route route) {
+    private boolean routeHandle(Request request, Response response, Route route) throws Exception {
         Object target = route.getTarget();
         if (null == target) {
             Class<?> clazz = route.getAction().getDeclaringClass();
@@ -247,7 +245,7 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
      * @param response
      * @return
      */
-    private boolean invokeHook(List<Route> hooks, Request request, Response response) {
+    private boolean invokeHook(List<Route> hooks, Request request, Response response) throws BladeException {
         for (Route route : hooks) {
             if (route.getTargetType() == RouteHandler.class) {
                 RouteHandler routeHandler = (RouteHandler) route.getTarget();

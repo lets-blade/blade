@@ -1,6 +1,5 @@
 package com.blade.mvc.http;
 
-import com.blade.BladeException;
 import com.blade.kit.StringKit;
 import com.blade.mvc.multipart.FileItem;
 import com.blade.mvc.route.Route;
@@ -13,6 +12,9 @@ import io.netty.handler.codec.http.QueryStringDecoder;
 import io.netty.handler.codec.http.cookie.ServerCookieDecoder;
 import io.netty.handler.codec.http.multipart.*;
 import io.netty.util.CharsetUtil;
+import lombok.NonNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.URLConnection;
@@ -28,6 +30,8 @@ import static io.netty.handler.codec.http.HttpHeaders.Names.COOKIE;
  *         2017/5/31
  */
 public class HttpRequest implements Request {
+
+    private static final Logger log = LoggerFactory.getLogger(HttpRequest.class);
 
     private static final HttpDataFactory HTTP_DATA_FACTORY = new DefaultHttpDataFactory(DefaultHttpDataFactory.MINSIZE); // Disk if size exceed
 
@@ -101,7 +105,7 @@ public class HttpRequest implements Request {
                     break;
             }
         } catch (IOException e) {
-            throw new BladeException(e);
+            log.error("parse request parameter error", e);
         } finally {
             data.release();
         }
@@ -145,7 +149,7 @@ public class HttpRequest implements Request {
     }
 
     @Override
-    public Request initPathParams(Route route) {
+    public Request initPathParams(@NonNull Route route) {
         this.route = route;
         if (null != route.getPathParams())
             this.pathParams = route.getPathParams();
@@ -226,12 +230,12 @@ public class HttpRequest implements Request {
     }
 
     @Override
-    public Optional<Cookie> cookieRaw(String name) {
+    public Optional<Cookie> cookieRaw(@NonNull String name) {
         return Optional.ofNullable(this.cookies.get(name));
     }
 
     @Override
-    public Request cookie(Cookie cookie) {
+    public Request cookie(@NonNull Cookie cookie) {
         this.cookies.put(cookie.name(), cookie);
         return this;
     }

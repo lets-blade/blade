@@ -1,7 +1,7 @@
 package com.blade.server.netty;
 
 import com.blade.Blade;
-import com.blade.BladeException;
+import com.blade.exception.BladeException;
 import com.blade.kit.DateKit;
 import com.blade.kit.IOKit;
 import com.blade.kit.StringKit;
@@ -61,7 +61,7 @@ public class StaticFileHandler implements RequestHandler<Boolean> {
      * @throws Exception
      */
     @Override
-    public Boolean handle(ChannelHandlerContext ctx, Request request, Response response) {
+    public Boolean handle(ChannelHandlerContext ctx, Request request, Response response) throws BladeException {
         if (!"GET".equals(request.method())) {
             sendError(ctx, METHOD_NOT_ALLOWED);
             return false;

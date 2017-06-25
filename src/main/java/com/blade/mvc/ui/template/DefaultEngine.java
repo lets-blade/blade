@@ -1,6 +1,6 @@
 package com.blade.mvc.ui.template;
 
-import com.blade.BladeException;
+import com.blade.exception.BladeException;
 import com.blade.kit.IOKit;
 import com.blade.mvc.Const;
 import com.blade.mvc.WebContext;
@@ -24,7 +24,7 @@ public class DefaultEngine implements TemplateEngine {
     public static String TEMPLATE_PATH = "templates";
 
     @Override
-    public void render(ModelAndView modelAndView, Writer writer) {
+    public void render(ModelAndView modelAndView, Writer writer) throws BladeException {
         String view = modelAndView.getView();
         String viewPath = Const.CLASSPATH + TEMPLATE_PATH + File.separator + view;
         viewPath = viewPath.replace("//", "/");

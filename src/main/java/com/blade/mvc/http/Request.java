@@ -6,6 +6,7 @@ import com.blade.mvc.WebContext;
 import com.blade.mvc.multipart.FileItem;
 import com.blade.mvc.route.Route;
 import io.netty.buffer.ByteBuf;
+import lombok.NonNull;
 
 import java.util.List;
 import java.util.Map;
@@ -77,7 +78,7 @@ public interface Request {
      * @param name Parameter name
      * @return Return parameter value
      */
-    default String pathString(String name) {
+    default String pathString(@NonNull String name) {
         return pathParams().get(name);
     }
 
@@ -87,7 +88,7 @@ public interface Request {
      * @param name Parameter name
      * @return Return Int parameter value
      */
-    default Integer pathInt(String name) {
+    default Integer pathInt(@NonNull String name) {
         String val = pathString(name);
         return StringKit.isNotBlank(val) ? Integer.valueOf(val) : null;
     }
@@ -98,7 +99,7 @@ public interface Request {
      * @param name Parameter name
      * @return Return Long parameter value
      */
-    default Long pathLong(String name) {
+    default Long pathLong(@NonNull String name) {
         String val = pathString(name);
         return StringKit.isNotBlank(val) ? Long.valueOf(val) : null;
     }
@@ -119,7 +120,7 @@ public interface Request {
      * @param name Parameter name
      * @return Return request parameter value
      */
-    default Optional<String> query(String name) {
+    default Optional<String> query(@NonNull String name) {
         List<String> values = parameters().get(name);
         if (null != values && values.size() > 0)
             return Optional.of(values.get(0));
@@ -133,7 +134,7 @@ public interface Request {
      * @param defaultValue default String value
      * @return Return request parameter values
      */
-    default String query(String name, String defaultValue) {
+    default String query(@NonNull String name, @NonNull String defaultValue) {
         Optional<String> value = query(name);
         if (value.isPresent())
             return value.get();
@@ -146,7 +147,7 @@ public interface Request {
      * @param name Parameter name
      * @return Return Int parameter values
      */
-    default Optional<Integer> queryInt(String name) {
+    default Optional<Integer> queryInt(@NonNull String name) {
         Optional<String> value = query(name);
         if (value.isPresent())
             return Optional.of(Integer.valueOf(value.get()));
@@ -160,7 +161,7 @@ public interface Request {
      * @param defaultValue default int value
      * @return Return Int parameter values
      */
-    default int queryInt(String name, int defaultValue) {
+    default int queryInt(@NonNull String name, int defaultValue) {
         Optional<String> value = query(name);
         if (value.isPresent())
             return Integer.valueOf(value.get());
@@ -173,7 +174,7 @@ public interface Request {
      * @param name Parameter name
      * @return Return Long parameter values
      */
-    default Optional<Long> queryLong(String name) {
+    default Optional<Long> queryLong(@NonNull String name) {
         Optional<String> value = query(name);
         if (value.isPresent())
             return Optional.of(Long.valueOf(value.get()));
@@ -187,7 +188,7 @@ public interface Request {
      * @param defaultValue default long value
      * @return Return Long parameter values
      */
-    default long queryLong(String name, long defaultValue) {
+    default long queryLong(@NonNull String name, long defaultValue) {
         Optional<String> value = query(name);
         if (value.isPresent())
             return Long.valueOf(value.get());
@@ -200,7 +201,7 @@ public interface Request {
      * @param name Parameter name
      * @return Return Double parameter values
      */
-    default Optional<Double> queryDouble(String name) {
+    default Optional<Double> queryDouble(@NonNull String name) {
         Optional<String> value = query(name);
         if (value.isPresent())
             return Optional.of(Double.valueOf(value.get()));
@@ -214,7 +215,7 @@ public interface Request {
      * @param defaultValue default double value
      * @return Return Double parameter values
      */
-    default double queryDouble(String name, double defaultValue) {
+    default double queryDouble(@NonNull String name, double defaultValue) {
         Optional<String> value = query(name);
         if (value.isPresent())
             return Double.valueOf(value.get());
@@ -279,7 +280,7 @@ public interface Request {
      * @param name cookie name
      * @return Return Cookie Value
      */
-    default Optional<String> cookie(String name) {
+    default Optional<String> cookie(@NonNull String name) {
         String value = cookies().getOrDefault(name, "");
         if (value.length() > 0) {
             return Optional.of(value);
@@ -296,7 +297,7 @@ public interface Request {
      * @param defaultValue default cookie value
      * @return Return Cookie Value
      */
-    default String cookie(String name, String defaultValue) {
+    default String cookie(@NonNull String name, @NonNull String defaultValue) {
         return cookie(name).isPresent() ? cookie(name).get() : defaultValue;
     }
 
@@ -319,7 +320,7 @@ public interface Request {
      * @param name Parameter name
      * @return Return header information
      */
-    default String header(String name) {
+    default String header(@NonNull String name) {
         return headers().getOrDefault(name, "");
     }
 
@@ -330,7 +331,7 @@ public interface Request {
      * @param defaultValue default header value
      * @return Return header information
      */
-    default String header(String name, String defaultValue) {
+    default String header(@NonNull String name, @NonNull String defaultValue) {
         String value = header(name);
         return value.length() > 0 ? value : defaultValue;
     }
@@ -351,7 +352,7 @@ public interface Request {
      * @param name  Parameter name
      * @param value Parameter Value
      */
-    default Request attribute(String name, Object value) {
+    default Request attribute(@NonNull String name, @NonNull Object value) {
         attributes().put(name, value);
         return this;
     }
@@ -362,7 +363,7 @@ public interface Request {
      * @param name Parameter name
      * @return Return parameter value
      */
-    default <T> T attribute(String name) {
+    default <T> T attribute(@NonNull String name) {
         Object object = attributes().get(name);
         return null != object ? (T) object : null;
     }
@@ -378,7 +379,7 @@ public interface Request {
      * @param name
      * @return
      */
-    default Optional<FileItem> fileItem(String name) {
+    default Optional<FileItem> fileItem(@NonNull String name) {
         return Optional.ofNullable(fileItems().get(name));
     }
 

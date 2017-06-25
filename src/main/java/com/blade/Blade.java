@@ -15,8 +15,10 @@ import com.blade.mvc.route.RouteMatcher;
 import com.blade.mvc.ui.template.DefaultEngine;
 import com.blade.mvc.ui.template.TemplateEngine;
 import com.blade.server.netty.NettyServer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
@@ -30,9 +32,9 @@ import static com.blade.mvc.Const.*;
  * @author biezhi
  *         2017/5/31
  */
+@Slf4j
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Blade {
-
-    private static final Logger log = LoggerFactory.getLogger(Blade.class);
 
     private boolean started = false;
 
@@ -57,9 +59,6 @@ public class Blade {
 
     private CountDownLatch latch = new CountDownLatch(1);
 
-    private Blade() {
-    }
-
     public static Blade of() {
         return new Blade();
     }
@@ -72,50 +71,37 @@ public class Blade {
         return ioc;
     }
 
-    public Blade get(String path, RouteHandler routeHandler) {
-        Assert.notEmpty(path, "[GET] path not is empty.");
-        Assert.notNull(routeHandler, "routeHandler not is null.");
-        routeMatcher.addRoute(path, routeHandler, HttpMethod.GET);
+    public Blade get(@NonNull String path, @NonNull RouteHandler handler) {
+        routeMatcher.addRoute(path, handler, HttpMethod.GET);
         return this;
     }
 
-    public Blade post(String path, RouteHandler routeHandler) {
-        Assert.notEmpty(path, "[POST] path not is empty.");
-        Assert.notNull(routeHandler, "routeHandler not is null.");
-        routeMatcher.addRoute(path, routeHandler, HttpMethod.POST);
+    public Blade post(@NonNull String path, @NonNull RouteHandler handler) {
+        routeMatcher.addRoute(path, handler, HttpMethod.POST);
         return this;
     }
 
-    public Blade put(String path, RouteHandler routeHandler) {
-        Assert.notEmpty(path, "[PUT] path not is empty.");
-        Assert.notNull(routeHandler, "routeHandler not is null.");
-        routeMatcher.addRoute(path, routeHandler, HttpMethod.PUT);
+    public Blade put(@NonNull String path, @NonNull RouteHandler handler) {
+        routeMatcher.addRoute(path, handler, HttpMethod.PUT);
         return this;
     }
 
-    public Blade delete(String path, RouteHandler routeHandler) {
-        Assert.notEmpty(path, "[DELETE] path not is empty.");
-        Assert.notNull(routeHandler, "routeHandler not is null.");
-        routeMatcher.addRoute(path, routeHandler, HttpMethod.DELETE);
+    public Blade delete(@NonNull String path, @NonNull RouteHandler handler) {
+        routeMatcher.addRoute(path, handler, HttpMethod.DELETE);
         return this;
     }
 
-    public Blade before(String path, RouteHandler routeHandler) {
-        Assert.notEmpty(path, "[BEFORE] path not is empty.");
-        Assert.notNull(routeHandler, "routeHandler not is null.");
-        routeMatcher.addRoute(path, routeHandler, HttpMethod.BEFORE);
+    public Blade before(@NonNull String path, @NonNull RouteHandler handler) {
+        routeMatcher.addRoute(path, handler, HttpMethod.BEFORE);
         return this;
     }
 
-    public Blade after(String path, RouteHandler routeHandler) {
-        Assert.notEmpty(path, "[AFTER] path not is empty.");
-        Assert.notNull(routeHandler, "routeHandler not is null.");
-        routeMatcher.addRoute(path, routeHandler, HttpMethod.AFTER);
+    public Blade after(@NonNull String path, @NonNull RouteHandler handler) {
+        routeMatcher.addRoute(path, handler, HttpMethod.AFTER);
         return this;
     }
 
-    public Blade templateEngine(TemplateEngine templateEngine) {
-        Assert.notNull(templateEngine, "templateEngine not is null.");
+    public Blade templateEngine(@NonNull TemplateEngine templateEngine) {
         this.templateEngine = templateEngine;
         return this;
     }
@@ -128,20 +114,17 @@ public class Blade {
         return routeMatcher;
     }
 
-    public Blade register(Object bean) {
-        Assert.notNull(bean, "register bean not is null.");
+    public Blade register(@NonNull Object bean) {
         ioc.addBean(bean);
         return this;
     }
 
-    public Blade register(Class<?> cls) {
-        Assert.notNull(cls, "register Class not is null.");
+    public Blade register(@NonNull Class<?> cls) {
         ioc.addBean(cls);
         return this;
     }
 
-    public Blade addStatics(String... folders) {
-        Assert.notEmpty(folders, "static folders not is empty.");
+    public Blade addStatics(@NonNull String... folders) {
         statics.addAll(Arrays.asList(folders));
         return this;
     }
@@ -156,8 +139,7 @@ public class Blade {
         return this;
     }
 
-    public Object getBean(Class<?> cls) {
-        Assert.notNull(cls, "bean Class not is null.");
+    public Object getBean(@NonNull Class<?> cls) {
         return ioc.getBean(cls);
     }
 
@@ -177,7 +159,7 @@ public class Blade {
         return this.bootClass;
     }
 
-    public Blade enableMonitor(boolean enableMonitor) {
+    public Blade enableMonitor(@NonNull boolean enableMonitor) {
         this.environment(ENV_KEY_MONITOR_ENABLE, enableMonitor);
         return this;
     }
@@ -191,8 +173,7 @@ public class Blade {
         return statics;
     }
 
-    public Blade scanPackages(String... pkgs) {
-        Assert.notEmpty(pkgs, "scan packages not is empty.");
+    public Blade scanPackages(@NonNull String... pkgs) {
         this.pkgs.addAll(Arrays.asList(pkgs));
         return this;
     }
@@ -201,15 +182,12 @@ public class Blade {
         return pkgs;
     }
 
-    public Blade bootConf(String bootConf) {
-        Assert.notEmpty(bootConf, "boot config path not is empty.");
+    public Blade bootConf(@NonNull String bootConf) {
         this.environment(ENV_KEY_BOOT_CONF, bootConf);
         return this;
     }
 
-    public Blade environment(String key, Object value) {
-        Assert.notEmpty(key, "environment key not is empty.");
-        Assert.notNull(value, "environment value not is null.");
+    public Blade environment(@NonNull String key, @NonNull Object value) {
         environment.set(key, value);
         return this;
     }
@@ -224,15 +202,14 @@ public class Blade {
         return this;
     }
 
-    public Blade listen(String address, int port) {
-        Assert.notEmpty(address, "server address not is empty.");
+    public Blade listen(@NonNull String address, int port) {
         Assert.greaterThan(port, 0, "server port not is negative number.");
         this.environment(ENV_KEY_SERVER_ADDRESS, address);
         this.environment(ENV_KEY_SERVER_PORT, port);
         return this;
     }
 
-    public Blade use(WebHook... middlewares) {
+    public Blade use(@NonNull WebHook... middlewares) {
         if (!BladeKit.isEmpty(middlewares)) {
             this.middlewares.addAll(Arrays.asList(middlewares));
         }
@@ -243,15 +220,12 @@ public class Blade {
         return this.middlewares;
     }
 
-    public Blade appName(String appName) {
-        Assert.notEmpty(appName, "app name not is empty.");
+    public Blade appName(@NonNull String appName) {
         this.environment(ENV_KEY_APP_NAME, appName);
         return this;
     }
 
-    public Blade event(EventType eventType, EventListener eventListener) {
-        Assert.notNull(eventType, "event type not is null.");
-        Assert.notNull(eventListener, "event listener not is null.");
+    public Blade event(@NonNull EventType eventType, @NonNull EventListener eventListener) {
         eventManager.addEventListener(eventType, eventListener);
         return this;
     }
@@ -277,13 +251,8 @@ public class Blade {
         return this.start(mainCls, DEFAULT_SERVER_ADDRESS, DEFAULT_SERVER_PORT, args);
     }
 
-    public Blade start(String... args) {
-        return this.start(null, DEFAULT_SERVER_ADDRESS, DEFAULT_SERVER_PORT, args);
-    }
-
-    public Blade start(Class<?> bootClass, String address, int port, String... args) {
+    public Blade start(@NonNull Class<?> bootClass, @NonNull String address, int port, String... args) {
         try {
-            Assert.notEmpty(address, "server address not is empty.");
             Assert.greaterThan(port, 0, "server port not is negative number.");
             this.bootClass = bootClass;
             eventManager.fireEvent(EventType.SERVER_STARTING, this);

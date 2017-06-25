@@ -1,6 +1,6 @@
 package com.blade.mvc.route;
 
-import com.blade.BladeException;
+import com.blade.exception.BladeException;
 import com.blade.ioc.annotation.Order;
 import com.blade.kit.*;
 import com.blade.mvc.hook.Invoker;
@@ -188,7 +188,7 @@ public class RouteMatcher {
         }
     }
 
-    public Route lookupRoute(String httpMethod, String path) {
+    public Route lookupRoute(String httpMethod, String path) throws BladeException {
         path = parsePath(path);
         String routeKey = path + '#' + httpMethod.toUpperCase();
         Route route = staticRoutes.get(routeKey);
