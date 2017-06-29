@@ -59,10 +59,10 @@ public abstract class AbstractClassReader implements ClassReader {
             log.warn("The package [{}] not found.", packageName);
         }
         // 如果存在 就获取包下的所有文件 包括目录
-        File[] dirfiles = accept(dir, recursive);
+        File[] dirFiles = accept(dir, recursive);
         // 循环所有文件
-        if (null != dirfiles && dirfiles.length > 0) {
-            for (File file : dirfiles) {
+        if (null != dirFiles && dirFiles.length > 0) {
+            for (File file : dirFiles) {
                 // 如果是目录 则继续扫描
                 if (file.isDirectory()) {
                     findClassByPackage(packageName + '.' + file.getName(), file.getAbsolutePath(), parent, annotation, recursive, classes);
