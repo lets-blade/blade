@@ -10,7 +10,7 @@ public class BeanDefine {
 
     private Object bean;
     private Class<?> type;
-    private boolean isSignle;
+    private boolean isSingle;
 
     public BeanDefine(Object bean) {
         this(bean, bean.getClass());
@@ -19,13 +19,13 @@ public class BeanDefine {
     public BeanDefine(Object bean, Class<?> type) {
         this.bean = bean;
         this.type = type;
-        this.isSignle = true;
+        this.isSingle = true;
     }
 
     public BeanDefine(Object bean, Class<?> type, boolean isSingle) {
         this.bean = bean;
         this.type = type;
-        this.isSignle = isSingle;
+        this.isSingle = isSingle;
     }
 
     public Object getBean() {
@@ -44,12 +44,12 @@ public class BeanDefine {
         this.type = type;
     }
 
-    public boolean isSignle() {
-        return isSignle;
+    public boolean isSingle() {
+        return isSingle;
     }
 
-    public void setSignle(boolean isSignle) {
-        this.isSignle = isSignle;
+    public void setSignle(boolean isSingle) {
+        this.isSingle = isSingle;
     }
 
 }
