@@ -109,13 +109,9 @@ public abstract class AbstractClassReader implements ClassReader {
      * @return
      */
     private File[] accept(File file, final boolean recursive) {
-        File[] dirfiles = file.listFiles(new FileFilter() {
-            // 自定义过滤规则 如果可以循环(包含子目录) 或则是以.class结尾的文件(编译好的java类文件)
-            public boolean accept(File file) {
-                return (recursive && file.isDirectory()) || (file.getName().endsWith(".class"));
-            }
-        });
-        return dirfiles;
+        // 自定义过滤规则 如果可以循环(包含子目录) 或则是以.class结尾的文件(编译好的java类文件)
+        File[] dirFiles = file.listFiles(file1 -> (recursive && file1.isDirectory()) || (file1.getName().endsWith(".class")));
+        return dirFiles;
     }
 
     @Override
