@@ -5,7 +5,7 @@
 
     <groupId>com.bladejava</groupId>
     <artifactId>blade-mvc</artifactId>
-    <version>2.0.0</version>
+    <version>2.0.1-alpha</version>
     <packaging>jar</packaging>
 
     <name>blade</name>
@@ -125,19 +125,6 @@
     </repositories>
 
     <build>
-        <resources>
-            <resource>
-                <directory>src/main/java</directory>
-                <filtering>false</filtering>
-                <includes>
-                    <include>**/*.properties</include>
-                </includes>
-            </resource>
-            <resource>
-                <directory>src/main/resources</directory>
-                <filtering>false</filtering>
-            </resource>
-        </resources>
         <plugins>
             <!--  Compile  -->
             <plugin>
@@ -163,30 +150,6 @@
     </build>
 
     <profiles>
-        <profile>
-            <id>dev</id>
-            <properties>
-                <activatedProperties>dev</activatedProperties>
-            </properties>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <build>
-                <resources>
-                    <resource>
-                        <directory>src/main/test</directory>
-                        <filtering>false</filtering>
-                        <includes>
-                            <include>**/*.properties</include>
-                        </includes>
-                    </resource>
-                    <resource>
-                        <directory>src/test/resources</directory>
-                        <filtering>false</filtering>
-                    </resource>
-                </resources>
-            </build>
-        </profile>
         <profile>
             <id>release</id>
             <distributionManagement>

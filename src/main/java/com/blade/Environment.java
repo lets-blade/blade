@@ -12,7 +12,6 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLDecoder;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -67,10 +66,8 @@ public class Environment {
      * @return
      */
     public Environment of(@NonNull URL url) {
-        String location = url.getPath();
         try {
-            location = URLDecoder.decode(location, "utf-8");
-            return of(url.openStream(), location);
+            return of(url.openStream());
         } catch (UnsupportedEncodingException e) {
         } catch (IOException e) {
             throw new IllegalStateException(e);
@@ -86,7 +83,7 @@ public class Environment {
      */
     public static Environment of(@NonNull File file) {
         try {
-            return of(Files.newInputStream(Paths.get(file.getPath())), file.getName());
+            return of(Files.newInputStream(Paths.get(file.getPath())));
         } catch (IOException e) {
             throw new IllegalStateException(e);
         }
@@ -126,10 +123,10 @@ public class Environment {
         if (null == is) {
             return new Environment();
         }
-        return of(is, classpath);
+        return of(is);
     }
 
-    private static Environment of(@NonNull InputStream is, String location) {
+    private static Environment of(@NonNull InputStream is) {
         try {
             Environment environment = new Environment();
             environment.props.load(is);

@@ -42,9 +42,9 @@ public class Blade {
     private NettyServer nettyServer = new NettyServer();
     private Class<?> bootClass;
 
-    private List<WebHook> middlewares = new ArrayList<>();
+    private List<WebHook> middleware = new ArrayList<>();
 
-    private Set<String> pkgs = new LinkedHashSet<>(Arrays.asList(PLUGIN_PACKAGE_NAME));
+    private Set<String> packages = new LinkedHashSet<>(Arrays.asList(PLUGIN_PACKAGE_NAME));
     private Set<String> statics = new HashSet<>(Arrays.asList("/favicon.ico", "/static/", "/upload/", "/webjars/"));
 
     private Ioc ioc = new SimpleIoc();
@@ -58,10 +58,6 @@ public class Blade {
     private Consumer<Exception> startupExceptionHandler = (e) -> log.error("Failed to start Blade", e);
 
     private CountDownLatch latch = new CountDownLatch(1);
-
-    public static Blade of() {
-        return new Blade();
-    }
 
     public static Blade me() {
         return new Blade();
@@ -174,12 +170,12 @@ public class Blade {
     }
 
     public Blade scanPackages(@NonNull String... pkgs) {
-        this.pkgs.addAll(Arrays.asList(pkgs));
+        this.packages.addAll(Arrays.asList(pkgs));
         return this;
     }
 
     public Set<String> scanPackages() {
-        return pkgs;
+        return packages;
     }
 
     public Blade bootConf(@NonNull String bootConf) {
@@ -211,13 +207,13 @@ public class Blade {
 
     public Blade use(@NonNull WebHook... middlewares) {
         if (!BladeKit.isEmpty(middlewares)) {
-            this.middlewares.addAll(Arrays.asList(middlewares));
+            this.middleware.addAll(Arrays.asList(middlewares));
         }
         return this;
     }
 
     public List<WebHook> middlewares() {
-        return this.middlewares;
+        return this.middleware;
     }
 
     public Blade appName(@NonNull String appName) {

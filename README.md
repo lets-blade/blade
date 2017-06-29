@@ -42,14 +42,14 @@ Grab via `Maven`：
 <dependency>
 	<groupId>com.bladejava</groupId>
 	<artifactId>blade-mvc</artifactId>
-	<version>2.0.0</version>
+	<version>2.0.1-alpha</version>
 </dependency>
 ```
 
 or `Gradle`:
 
 ```sh
-compile 'com.bladejava:blade-mvc:2.0.0'
+compile 'com.bladejava:blade-mvc:2.0.1-alpha'
 ```
 
 Create `Main` method like this：
