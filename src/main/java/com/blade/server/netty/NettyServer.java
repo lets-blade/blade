@@ -77,7 +77,7 @@ public class NettyServer implements Server {
         this.environment = blade.environment();
 
         long initStart = System.currentTimeMillis();
-        log.info("Environment: jdk.version\t\t=> {}", System.getProperty("java.version"));
+        log.info("Environment: jdk.version\t\t\t=> {}", System.getProperty("java.version"));
         log.info("Environment: user.dir\t\t\t=> {}", System.getProperty("user.dir"));
         log.info("Environment: java.io.tmpdir\t\t=> {}", System.getProperty("java.io.tmpdir"));
         log.info("Environment: user.timezone\t\t=> {}", System.getProperty("user.timezone"));
