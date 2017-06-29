@@ -281,7 +281,7 @@ public class Blade {
         try {
             latch.await();
         } catch (Exception e) {
-            log.error("awit error", e);
+            log.error("await error", e);
             Thread.currentThread().interrupt();
         }
         return this;
