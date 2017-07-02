@@ -158,7 +158,7 @@ public class HttpResponse implements Response {
     }
 
     @Override
-    public void donwload(@NonNull String fileName, @NonNull File file) throws Exception {
+    public void download(@NonNull String fileName, @NonNull File file) throws Exception {
         try {
             if (null == file || !file.exists() || !file.isFile()) {
                 Assert.throwException("please check the file is effective!");

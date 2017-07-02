@@ -224,7 +224,7 @@ public interface Response {
      * @param fileName give client file name
      * @param file
      */
-    void donwload(String fileName, File file) throws Exception;
+    void download(String fileName, File file) throws Exception;
 
     /**
      * Render view
