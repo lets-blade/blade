@@ -10,7 +10,6 @@ import com.blade.mvc.http.Request;
 import com.blade.mvc.http.Response;
 import com.blade.mvc.route.Route;
 import com.blade.mvc.ui.ModelAndView;
-import com.blade.mvc.ui.template.TemplateEngine;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -18,11 +17,9 @@ import java.lang.reflect.Method;
 public class RouteViewResolve {
 
     private Ioc ioc;
-    private TemplateEngine templateEngine;
 
     public RouteViewResolve(Blade blade) {
         this.ioc = blade.ioc();
-        this.templateEngine = blade.templateEngine();
     }
 
     public boolean handle(Request request, Response response, Route route) throws Exception {

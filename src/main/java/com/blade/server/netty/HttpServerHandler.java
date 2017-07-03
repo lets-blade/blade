@@ -31,7 +31,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import static com.blade.mvc.Const.*;
+import static com.blade.mvc.Const.ENV_KEY_PAGE_404;
+import static com.blade.mvc.Const.ENV_KEY_PAGE_500;
 import static io.netty.handler.codec.http.HttpUtil.is100ContinueExpected;
 
 /**
@@ -50,15 +51,12 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
     private final StaticFileHandler staticFileHandler;
     private final SessionHandler sessionHandler;
 
-    private final boolean openMonitor;
-
     private String page404, page500;
 
-    public HttpServerHandler(Blade blade) {
+    HttpServerHandler(Blade blade) {
         this.blade = blade;
         this.statics = blade.getStatics();
 
-        this.openMonitor = blade.environment().getBoolean(ENV_KEY_MONITOR_ENABLE, false);
         this.page404 = blade.environment().get(ENV_KEY_PAGE_404, null);
         this.page500 = blade.environment().get(ENV_KEY_PAGE_500, null);
 
@@ -116,7 +114,7 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
         request.initPathParams(route);
 
         // middleware
-        if (!invokeMiddlewares(routeMatcher.getMiddleware(), request, response)) {
+        if (!invokeMiddleware(routeMatcher.getMiddleware(), request, response)) {
             this.sendFinish(response);
             return;
         }
@@ -124,7 +122,8 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
         // execute
         this.routeHandle(request, response, route);
 
-        invokeHook(routeMatcher.getAfter(uri), request, response);
+        // webHook
+        this.invokeHook(routeMatcher.getAfter(uri), request, response);
 
         this.sendFinish(response);
         WebContext.remove();
@@ -149,12 +148,12 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
             return;
         }
         Response response = WebContext.response();
-        response.status(500);
+        if (null != response) {
+            response.status(500);
+        }
 
         if (cause instanceof BladeException) {
             String error = cause.getMessage();
-
-            String contentType = null != response ? response.contentType() : CONTENT_TYPE_TEXT;
 
             StringWriter sw = new StringWriter();
             PrintWriter writer = new PrintWriter(sw);
@@ -205,13 +204,13 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
         }
     }
 
-    private boolean invokeMiddlewares(List<Route> middlewares, Request request, Response response) {
-        if (BladeKit.isEmpty(middlewares)) {
+    private boolean invokeMiddleware(List<Route> middleware, Request request, Response response) {
+        if (BladeKit.isEmpty(middleware)) {
             return true;
         }
         Invoker invoker = new Invoker(request, response);
-        for (Route middleware : middlewares) {
-            WebHook webHook = (WebHook) middleware.getTarget();
+        for (Route route : middleware) {
+            WebHook webHook = (WebHook) route.getTarget();
             boolean flag = webHook.before(invoker);
             if (!flag) return false;
         }
@@ -221,10 +220,11 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
     /**
      * invoke hooks
      *
-     * @param hooks
-     * @param request
-     * @param response
+     * @param hooks     webHook list
+     * @param request   http request
+     * @param response  http response
      * @return
+     * @throws BladeException
      */
     private boolean invokeHook(List<Route> hooks, Request request, Response response) throws BladeException {
         for (Route route : hooks) {
