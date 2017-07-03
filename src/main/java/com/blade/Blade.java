@@ -44,7 +44,7 @@ public class Blade {
 
     private List<WebHook> middleware = new ArrayList<>();
 
-    private Set<String> packages = new LinkedHashSet<>(Arrays.asList(PLUGIN_PACKAGE_NAME));
+    private Set<String> packages = new LinkedHashSet<>(Collections.singletonList(PLUGIN_PACKAGE_NAME));
     private Set<String> statics = new HashSet<>(Arrays.asList("/favicon.ico", "/static/", "/upload/", "/webjars/"));
 
     private Ioc ioc = new SimpleIoc();
@@ -204,7 +204,7 @@ public class Blade {
         return this;
     }
 
-    public List<WebHook> middlewares() {
+    public List<WebHook> middleware() {
         return this.middleware;
     }
 

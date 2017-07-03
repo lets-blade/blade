@@ -98,7 +98,7 @@ public class NettyServer implements Server {
 
     private void initIoc() {
         RouteMatcher routeMatcher = blade.routeMatcher();
-        routeMatcher.initMiddlewares(blade.middlewares());
+        routeMatcher.initMiddlewares(blade.middleware());
 
         routeBuilder = new RouteBuilder(routeMatcher);
 
@@ -137,15 +137,6 @@ public class NettyServer implements Server {
 
         ServerBootstrap b = new ServerBootstrap();
         b.option(ChannelOption.SO_BACKLOG, backlog);
-//        b.option(ChannelOption.TCP_NODELAY, tcpNodelay);
-//        b.option(ChannelOption.SO_KEEPALIVE, keepAlive);
-
-//        b.childOption(ChannelOption.SO_RCVBUF, receiveBufferSize);
-//        b.childOption(ChannelOption.SO_SNDBUF, sendBufferSize);
-//        b.childOption(ChannelOption.WRITE_BUFFER_WATER_MARK, new WriteBufferWaterMark(lowWaterMark, highWaterMark));
-//        b.childOption(ChannelOption.SO_REUSEADDR, reuseAddress);
-//        b.childOption(ChannelOption.CONNECT_TIMEOUT_MILLIS, (int) TimeUnit.SECONDS.toMillis(connectTimeout));
-
         b.group(bossGroup, workerGroup)
                 .channel(NioServerSocketChannel.class)
                 .handler(new LoggingHandler(LogLevel.DEBUG))
@@ -192,7 +183,9 @@ public class NettyServer implements Server {
 
         Environment bootEnv = Environment.of(bootConf);
 
-        bootEnv.props().forEach((key, value) -> environment.set(key.toString(), value));
+        if (bootEnv != null) {
+            bootEnv.props().forEach((key, value) -> environment.set(key.toString(), value));
+        }
 
         blade.register(environment);
 
@@ -268,6 +261,7 @@ public class NettyServer implements Server {
         if (workerExecutors != null) {
             workerExecutors.shutdown();
         }
+
     }
 
     @Override

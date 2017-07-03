@@ -80,10 +80,6 @@ public class RouteMatcher {
         }
     }
 
-    public void addRoutes(List<Route> routes) {
-        routes.forEach(this::addRoute);
-    }
-
     public Route addRoute(HttpMethod httpMethod, String path, RouteHandler handler, String methodName) throws NoSuchMethodException {
         Class<?> handleType = handler.getClass();
         Method method = handleType.getMethod(methodName, Request.class, Response.class);
@@ -132,12 +128,6 @@ public class RouteMatcher {
         }
     }
 
-    public void addRoute(String[] paths, RouteHandler handler, HttpMethod httpMethod) {
-        for (String path : paths) {
-            addRoute(path, handler, httpMethod);
-        }
-    }
-
     public void route(String path, Class<?> clazz, String methodName) {
         Assert.notNull(methodName, "Method name not is null");
         HttpMethod httpMethod = HttpMethod.ALL;
@@ -156,35 +146,17 @@ public class RouteMatcher {
             Assert.notNull(methodName, "Method name not is null");
             Assert.notNull(httpMethod, "Request Method not is null");
 
-            Method[] methods = classMethosPool.get(clazz.getName());
-            if (null == methods) {
-                methods = clazz.getMethods();
-                classMethosPool.put(clazz.getName(), methods);
-            }
+            Method[] methods = classMethosPool.computeIfAbsent(clazz.getName(), k -> clazz.getMethods());
             if (null != methods) {
                 for (Method method : methods) {
                     if (method.getName().equals(methodName)) {
-                        Object controller = controllerPool.get(clazz);
-                        if (null == controller) {
-                            controller = ReflectKit.newInstance(clazz);
-                            controllerPool.put(clazz, controller);
-                        }
+                        Object controller = controllerPool.computeIfAbsent(clazz, k -> ReflectKit.newInstance(clazz));
                         addRoute(httpMethod, path, controller, clazz, method);
                     }
                 }
             }
         } catch (Exception e) {
             log.error("", e);
-        }
-    }
-
-    public void buildRoute(String path, Class<?> clazz, Method method, HttpMethod httpMethod) {
-        addRoute(httpMethod, path, null, clazz, method);
-    }
-
-    public void delRoute(String key) {
-        if (StringKit.isNotBlank(key)) {
-            routes.remove(key);
         }
     }
 
@@ -207,16 +179,24 @@ public class RouteMatcher {
             if (null == pattern) {
                 return null;
             }
-            Matcher matcher = pattern.matcher(path);
-            boolean matched = matcher.matches();
+            Matcher matcher = null;
+            if (path != null) {
+                matcher = pattern.matcher(path);
+            }
+            boolean matched = false;
+            if (matcher != null) {
+                matched = matcher.matches();
+            }
             if (!matched) {
                 requestMethod = HttpMethod.ALL;
                 pattern = regexRoutePatterns.get(requestMethod);
                 if (null == pattern) {
                     return null;
                 }
-                matcher = pattern.matcher(path);
-                matched = matcher.matches();
+                if (path != null) {
+                    matcher = pattern.matcher(path);
+                }
+                matched = matcher != null && matcher.matches();
             }
             if (matched) {
                 int i;
@@ -246,29 +226,14 @@ public class RouteMatcher {
      */
     public List<Route> getBefore(String path) {
         String cleanPath = parsePath(path);
-        List<Route> befores = hooks.values().stream()
+        List<Route> collect = hooks.values().stream()
                 .flatMap(routes -> routes.stream())
-                .sorted(Comparator.comparingInt(route -> route.getSort()))
-                .filter(route -> {
-                    return route.getHttpMethod() == HttpMethod.BEFORE && matchesPath(route.getPath(), cleanPath);
-                })
-                .collect(Collectors.toList());
-
-        this.giveMatch(path, befores);
-        return befores;
-    }
-
-    public List<Route> getBefore2(String path) {
-        String cleanPath = parsePath(path);
-
-        List<Route> befores = hooks.values().parallelStream()
-                .flatMap(routes -> routes.stream())
-                .sorted(Comparator.comparingInt(route -> route.getSort()))
+                .sorted(Comparator.comparingInt(Route::getSort))
                 .filter(route -> route.getHttpMethod() == HttpMethod.BEFORE && matchesPath(route.getPath(), cleanPath))
                 .collect(Collectors.toList());
 
-        this.giveMatch(path, befores);
-        return befores;
+        this.giveMatch(path, collect);
+        return collect;
     }
 
     /**
@@ -281,7 +246,7 @@ public class RouteMatcher {
 
         List<Route> afters = hooks.values().stream()
                 .flatMap(routes -> routes.stream())
-                .sorted(Comparator.comparingInt(route -> route.getSort()))
+                .sorted(Comparator.comparingInt(Route::getSort))
                 .filter(route -> route.getHttpMethod() == HttpMethod.AFTER && matchesPath(route.getPath(), cleanPath))
                 .collect(Collectors.toList());
 
@@ -346,7 +311,7 @@ public class RouteMatcher {
         routeHandlers.addAll(hooks.values().stream().findAny().orElse(new ArrayList<>()));
 
         Stream.of(routes.values(), hooks.values().stream().findAny().orElse(new ArrayList<>()))
-                .flatMap(c -> c.stream()).forEach(this::registerRoute);
+                .flatMap(Collection::stream).forEach(this::registerRoute);
 
         patternBuilders.keySet().stream()
                 .filter(BladeKit::notIsWebHook)
@@ -360,9 +325,12 @@ public class RouteMatcher {
                 });
     }
 
-    public void registerRoute(Route route) {
+    private void registerRoute(Route route) {
         String path = parsePath(route.getPath());
-        Matcher matcher = PATH_VARIABLE_PATTERN.matcher(path);
+        Matcher matcher = null;
+        if (path != null) {
+            matcher = PATH_VARIABLE_PATTERN.matcher(path);
+        }
         boolean find = false;
         List<String> uriVariableNames = new ArrayList<>();
         while (matcher.find()) {
@@ -385,9 +353,7 @@ public class RouteMatcher {
             patternBuilders.get(httpMethod).append("(").append(matcher.replaceAll(PATH_VARIABLE_REPLACE)).append(")|");
         } else {
             String routeKey = path + '#' + httpMethod.toString();
-            if (staticRoutes.get(routeKey) == null) {
-                staticRoutes.put(routeKey, route);
-            }
+            staticRoutes.putIfAbsent(routeKey, route);
         }
     }
 
