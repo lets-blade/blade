@@ -73,12 +73,8 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
         super.channelRegistered(ctx);
     }
 
-    private FullHttpRequest fullHttpRequest;
-
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest fullHttpRequest) throws Exception {
-
-        this.fullHttpRequest = fullHttpRequest;
 
         if (is100ContinueExpected(fullHttpRequest)) {
             ctx.write(new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.CONTINUE));
@@ -87,7 +83,7 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
         Request request = HttpRequest.build(ctx, fullHttpRequest, sessionHandler);
         Response response = HttpResponse.build(ctx, blade.templateEngine());
 
-        // reuqest uri
+        // request uri
         String uri = request.uri();
         log.debug("{}\t{}\t{}", request.protocol(), request.method(), uri);
 
@@ -119,8 +115,8 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
         }
         request.initPathParams(route);
 
-        // middlewares八
-        if (!invokeMiddlewares(routeMatcher.getMiddlewares(), request, response)) {
+        // middleware
+        if (!invokeMiddlewares(routeMatcher.getMiddleware(), request, response)) {
             this.sendFinish(response);
             return;
         }
@@ -142,7 +138,6 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         super.channelInactive(ctx);
-        fullHttpRequest = null;
     }
 
     @Override

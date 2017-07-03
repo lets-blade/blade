@@ -145,19 +145,11 @@ public class Blade {
 
     public Blade devMode(boolean devMode) {
         this.environment(ENV_KEY_DEV_MODE, devMode);
-        if (!devMode) {
-            this.enableMonitor(false);
-        }
         return this;
     }
 
     public Class<?> bootClass() {
         return this.bootClass;
-    }
-
-    public Blade enableMonitor(@NonNull boolean enableMonitor) {
-        this.environment(ENV_KEY_MONITOR_ENABLE, enableMonitor);
-        return this;
     }
 
     public Blade enableCors(boolean enableCors) {

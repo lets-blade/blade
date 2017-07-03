@@ -1,7 +1,6 @@
 package io.example.blog.controller;
 
 import com.blade.ioc.annotation.Inject;
-import com.blade.kit.StringKit;
 import com.blade.mvc.Const;
 import com.blade.mvc.annotation.*;
 import com.blade.mvc.http.Request;
@@ -76,7 +75,7 @@ public class IndexController {
     @GetRoute(value = "download")
     public void download(Response response) throws Exception {
         String path = Const.CLASSPATH + "static/a.txt";
-        response.donwload("文件.txt", new File(path));
+        response.download("文件.txt", new File(path));
     }
 
     @GetRoute(value = "redirect")

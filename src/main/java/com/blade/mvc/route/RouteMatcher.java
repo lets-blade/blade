@@ -289,7 +289,7 @@ public class RouteMatcher {
         return afters;
     }
 
-    public List<Route> getMiddlewares() {
+    public List<Route> getMiddleware() {
         return this.middlewares;
     }
 

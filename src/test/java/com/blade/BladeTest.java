@@ -12,7 +12,7 @@ public class BladeTest extends BaseTestCase {
     @Test
     public void testAppName() {
         start(
-                app.appName("demo1").enableMonitor(false)
+                app.appName("demo1")
         );
     }
 
