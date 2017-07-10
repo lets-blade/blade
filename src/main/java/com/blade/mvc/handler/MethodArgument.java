@@ -20,7 +20,10 @@ import java.util.Optional;
 
 public final class MethodArgument {
 
-    public static Object[] getArgs(Request request, Response response, Method actionMethod) throws Exception {
+    public static Object[] getArgs(Invoker invoker) throws Exception {
+        Method actionMethod = invoker.getAction();
+        Request request = invoker.request();
+        Response response = invoker.response();
         actionMethod.setAccessible(true);
 
         Parameter[] parameters = actionMethod.getParameters();
@@ -67,7 +70,7 @@ public final class MethodArgument {
                     args[i] = request.query(paramName);
                 } else {
                     if (argType == Invoker.class) {
-                        args[i] = new Invoker(request, response);
+                        args[i] = invoker;
                         continue;
                     } else if (argType == Request.class) {
                         args[i] = request;

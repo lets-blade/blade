@@ -4,6 +4,7 @@ import com.blade.Blade;
 import com.blade.exception.BladeException;
 import com.blade.kit.BladeKit;
 import com.blade.mvc.WebContext;
+import com.blade.mvc.handler.MethodArgument;
 import com.blade.mvc.handler.RouteViewResolve;
 import com.blade.mvc.hook.Invoker;
 import com.blade.mvc.hook.WebHook;
@@ -27,6 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -85,14 +87,13 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
         String uri = request.uri();
         log.debug("{}\t{}\t{}", request.protocol(), request.method(), uri);
 
+        Invoker invoker = Invoker.builder()
+                .request(request)
+                .response(response)
+                .build();
+
         // write session
         WebContext.set(new WebContext(request, response));
-
-        // web hook
-        if (!invokeHook(routeMatcher.getBefore(uri), request, response)) {
-            this.sendFinish(response);
-            return;
-        }
 
         if (isStaticFile(uri)) {
             staticFileHandler.handle(ctx, request, response);
@@ -113,17 +114,31 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
         }
         request.initPathParams(route);
 
+        // get method parameters
+        Method actionMethod = route.getAction();
+        invoker.setRoute(route);
+        invoker.setAction(actionMethod);
+
+        Object[] parameters = MethodArgument.getArgs(invoker);
+        invoker.setParameters(parameters);
+
         // middleware
-        if (!invokeMiddleware(routeMatcher.getMiddleware(), request, response)) {
+        if (!invokeMiddleware(routeMatcher.getMiddleware(), invoker)) {
+            this.sendFinish(response);
+            return;
+        }
+
+        // web hook before
+        if (!invokeHook(routeMatcher.getBefore(uri), invoker)) {
             this.sendFinish(response);
             return;
         }
 
         // execute
-        this.routeHandle(request, response, route);
+        this.routeHandle(invoker);
 
         // webHook
-        this.invokeHook(routeMatcher.getAfter(uri), request, response);
+        this.invokeHook(routeMatcher.getAfter(uri), invoker);
 
         this.sendFinish(response);
         WebContext.remove();
@@ -184,31 +199,28 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
     /**
      * Actual routing method execution
      *
-     * @param request  request object
-     * @param response response object
-     * @param route    route object
+     * @param invoker invoker
      */
-    private boolean routeHandle(Request request, Response response, Route route) throws Exception {
-        Object target = route.getTarget();
+    private boolean routeHandle(Invoker invoker) throws Exception {
+        Object target = invoker.getRoute().getTarget();
         if (null == target) {
-            Class<?> clazz = route.getAction().getDeclaringClass();
+            Class<?> clazz = invoker.getAction().getDeclaringClass();
             target = blade.getBean(clazz);
-            route.setTarget(target);
+            invoker.getRoute().setTarget(target);
         }
-        if (route.getTargetType() == RouteHandler.class) {
+        if (invoker.getRoute().getTargetType() == RouteHandler.class) {
             RouteHandler routeHandler = (RouteHandler) target;
-            routeHandler.handle(request, response);
+            routeHandler.handle(invoker.request(), invoker.response());
             return false;
         } else {
-            return routeViewResolve.handle(request, response, route);
+            return routeViewResolve.handle(invoker);
         }
     }
 
-    private boolean invokeMiddleware(List<Route> middleware, Request request, Response response) {
+    private boolean invokeMiddleware(List<Route> middleware, Invoker invoker) {
         if (BladeKit.isEmpty(middleware)) {
             return true;
         }
-        Invoker invoker = new Invoker(request, response);
         for (Route route : middleware) {
             WebHook webHook = (WebHook) route.getTarget();
             boolean flag = webHook.before(invoker);
@@ -220,19 +232,18 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
     /**
      * invoke hooks
      *
-     * @param hooks     webHook list
-     * @param request   http request
-     * @param response  http response
+     * @param hooks   webHook list
+     * @param invoker http request
      * @return
      * @throws BladeException
      */
-    private boolean invokeHook(List<Route> hooks, Request request, Response response) throws BladeException {
+    private boolean invokeHook(List<Route> hooks, Invoker invoker) throws BladeException {
         for (Route route : hooks) {
             if (route.getTargetType() == RouteHandler.class) {
                 RouteHandler routeHandler = (RouteHandler) route.getTarget();
-                routeHandler.handle(request, response);
+                routeHandler.handle(invoker.request(), invoker.response());
             } else {
-                boolean flag = routeViewResolve.invokeHook(request, response, route);
+                boolean flag = routeViewResolve.invokeHook(invoker);
                 if (!flag) return false;
             }
         }
