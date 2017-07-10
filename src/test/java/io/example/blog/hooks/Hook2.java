@@ -2,7 +2,7 @@ package io.example.blog.hooks;
 
 import com.blade.ioc.annotation.Bean;
 import com.blade.ioc.annotation.Order;
-import com.blade.mvc.hook.Invoker;
+import com.blade.mvc.hook.Signature;
 import com.blade.mvc.hook.WebHook;
 import com.blade.mvc.http.Request;
 
@@ -15,14 +15,14 @@ import com.blade.mvc.http.Request;
 public class Hook2 implements WebHook {
 
     @Override
-    public boolean before(Invoker invoker) {
+    public boolean before(Signature signature) {
         System.out.println("进入web hook2");
-        Request request = invoker.request();
+        Request request = signature.request();
         int stop = request.queryInt("stop", 0);
         if (stop == 1) {
             return false;
         }
-        return invoker.next();
+        return signature.next();
     }
 
 }

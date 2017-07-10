@@ -9,9 +9,9 @@ package com.blade.mvc.hook;
 @FunctionalInterface
 public interface WebHook {
 
-    boolean before(Invoker invoker);
+    boolean before(Signature signature);
 
-    default boolean after(Invoker invoker) {
+    default boolean after(Signature signature) {
         return true;
     }
 

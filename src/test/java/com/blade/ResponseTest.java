@@ -59,7 +59,7 @@ public class ResponseTest extends BaseTestCase {
     public void testContentType() throws Exception {
         start(
                 app.get("/c1", ((request, response) -> response.text(response.contentType())))
-                        .get("/c2", ((request, response) -> response.contentType("a/b").text(request.contentType())))
+                        .get("/c2", ((request, response) -> response.contentType("a/b").text(response.contentType())))
         );
         String c1 = bodyToString("/c1");
         String c2 = bodyToString("/c2");

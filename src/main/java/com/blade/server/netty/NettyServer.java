@@ -4,6 +4,7 @@ import com.blade.Blade;
 import com.blade.Environment;
 import com.blade.event.BeanProcessor;
 import com.blade.event.EventType;
+import com.blade.exception.ExceptionResolve;
 import com.blade.ioc.BeanDefine;
 import com.blade.ioc.DynamicContext;
 import com.blade.ioc.Ioc;
@@ -166,15 +167,16 @@ public class NettyServer implements Server {
             Object controller = blade.ioc().getBean(clazz);
             routeBuilder.addRouter(clazz, controller);
         }
-        if (ReflectKit.hasInterface(clazz, WebHook.class)) {
-            if (null != clazz.getAnnotation(Bean.class)) {
-                Object hook = blade.ioc().getBean(clazz);
-                routeBuilder.addWebHook(clazz, hook);
-            }
+        if (ReflectKit.hasInterface(clazz, WebHook.class) && null != clazz.getAnnotation(Bean.class)) {
+            Object hook = blade.ioc().getBean(clazz);
+            routeBuilder.addWebHook(clazz, hook);
         }
-        if (ReflectKit.hasInterface(clazz, BeanProcessor.class))
+        if (ReflectKit.hasInterface(clazz, BeanProcessor.class) && null != clazz.getAnnotation(Bean.class)) {
             beanProcessors.add((BeanProcessor) blade.ioc().getBean(clazz));
-
+        }
+        if (ReflectKit.hasInterface(clazz, ExceptionResolve.class) && null != clazz.getAnnotation(Bean.class)) {
+            HttpServerHandler.exceptionResolve = (ExceptionResolve) blade.ioc().getBean(clazz);
+        }
     }
 
     private void loadConfig(String[] args) {

@@ -3,7 +3,7 @@ package com.blade.mvc.route;
 import com.blade.exception.BladeException;
 import com.blade.ioc.annotation.Order;
 import com.blade.kit.*;
-import com.blade.mvc.hook.Invoker;
+import com.blade.mvc.hook.Signature;
 import com.blade.mvc.hook.WebHook;
 import com.blade.mvc.http.HttpMethod;
 import com.blade.mvc.http.Request;
@@ -371,7 +371,7 @@ public class RouteMatcher {
 
     public void initMiddlewares(List<WebHook> hooks) {
         this.middlewares = hooks.stream().map(webHook -> {
-            Method method = ReflectKit.getMethod(WebHook.class, "before", Invoker.class);
+            Method method = ReflectKit.getMethod(WebHook.class, "before", Signature.class);
             return new Route(HttpMethod.BEFORE, "/.*", webHook, WebHook.class, method);
         }).collect(Collectors.toList());
     }

@@ -13,6 +13,7 @@ public class Hello {
 //                .devMode(false)
 //                .environment(Const.ENV_KEY_NETTY_WORKERS, Runtime.getRuntime().availableProcessors())
                 .get("/hello", ((request, response) -> response.text("Hello World.")))
+                .use()
                 .start(Hello.class, args);
     }
 }

@@ -3,7 +3,7 @@ package com.blade.mvc.middlewares;
 import com.blade.kit.StringKit;
 import com.blade.kit.UUID;
 import com.blade.mvc.WebContext;
-import com.blade.mvc.hook.Invoker;
+import com.blade.mvc.hook.Signature;
 import com.blade.mvc.hook.WebHook;
 import com.blade.mvc.http.Request;
 import com.blade.mvc.http.Response;
@@ -51,8 +51,8 @@ public class XssMiddleware implements WebHook {
     }
 
     @Override
-    public boolean before(Invoker invoker) {
-        Request request = invoker.request();
+    public boolean before(Signature signature) {
+        Request request = signature.request();
         if ("GET".equals(request.method())) {
             request.attribute(CSRF_PARAM_NAME, TOKEN_KEY);
             request.attribute(CSRF_HEADER_NAME, TOKEN_KEY);

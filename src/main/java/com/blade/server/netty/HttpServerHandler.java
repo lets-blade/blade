@@ -2,11 +2,11 @@ package com.blade.server.netty;
 
 import com.blade.Blade;
 import com.blade.exception.BladeException;
+import com.blade.exception.ExceptionResolve;
 import com.blade.kit.BladeKit;
 import com.blade.mvc.WebContext;
-import com.blade.mvc.handler.MethodArgument;
 import com.blade.mvc.handler.RouteViewResolve;
-import com.blade.mvc.hook.Invoker;
+import com.blade.mvc.hook.Signature;
 import com.blade.mvc.hook.WebHook;
 import com.blade.mvc.http.HttpRequest;
 import com.blade.mvc.http.HttpResponse;
@@ -28,7 +28,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -44,6 +43,8 @@ import static io.netty.handler.codec.http.HttpUtil.is100ContinueExpected;
 @Slf4j
 @ChannelHandler.Sharable
 public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
+
+    public static ExceptionResolve exceptionResolve;
 
     private final Blade blade;
     private final RouteMatcher routeMatcher;
@@ -75,7 +76,6 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest fullHttpRequest) throws Exception {
-
         if (is100ContinueExpected(fullHttpRequest)) {
             ctx.write(new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.CONTINUE));
         }
@@ -83,65 +83,67 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
         Request request = HttpRequest.build(ctx, fullHttpRequest, sessionHandler);
         Response response = HttpResponse.build(ctx, blade.templateEngine());
 
-        // request uri
-        String uri = request.uri();
-        log.debug("{}\t{}\t{}", request.protocol(), request.method(), uri);
+        // route signature
+        Signature signature = Signature.builder().request(request).response(response).build();
 
-        Invoker invoker = Invoker.builder()
-                .request(request)
-                .response(response)
-                .build();
+        try {
+            // request uri
+            String uri = request.uri();
+            log.debug("{}\t{}\t{}", request.protocol(), request.method(), uri);
 
-        // write session
-        WebContext.set(new WebContext(request, response));
+            // write session
+            WebContext.set(new WebContext(request, response));
 
-        if (isStaticFile(uri)) {
-            staticFileHandler.handle(ctx, request, response);
-            return;
-        }
-
-        Route route = routeMatcher.lookupRoute(request.method(), uri);
-        if (null == route) {
-            // 404
-            response.notFound();
-            String html = String.format(DefaultUI.VIEW_404, uri);
-            if (null != page404) {
-                response.render(page404);
-            } else {
-                response.html(html);
+            if (isStaticFile(uri)) {
+                staticFileHandler.handle(ctx, request, response);
+                return;
             }
-            return;
-        }
-        request.initPathParams(route);
 
-        // get method parameters
-        Method actionMethod = route.getAction();
-        invoker.setRoute(route);
-        invoker.setAction(actionMethod);
+            Route route = routeMatcher.lookupRoute(request.method(), uri);
+            if (null == route) {
+                // 404
+                response.notFound();
+                String html = String.format(DefaultUI.VIEW_404, uri);
+                if (null != page404) {
+                    response.render(page404);
+                } else {
+                    response.html(html);
+                }
+                return;
+            }
+            request.initPathParams(route);
 
-        Object[] parameters = MethodArgument.getArgs(invoker);
-        invoker.setParameters(parameters);
+            // get method parameters
+            signature.setRoute(route);
 
-        // middleware
-        if (!invokeMiddleware(routeMatcher.getMiddleware(), invoker)) {
+            // middleware
+            if (!invokeMiddleware(routeMatcher.getMiddleware(), signature)) {
+                this.sendFinish(response);
+                return;
+            }
+
+            // web hook before
+            if (!invokeHook(routeMatcher.getBefore(uri), signature)) {
+                this.sendFinish(response);
+                return;
+            }
+
+            // execute
+            signature.setRoute(route);
+            this.routeHandle(signature);
+
+            // webHook
+            this.invokeHook(routeMatcher.getAfter(uri), signature);
+
+        } catch (Exception e) {
+            if (null != exceptionResolve && !exceptionResolve.handle(e, signature)) {
+            } else {
+                throw e;
+            }
+        } finally {
             this.sendFinish(response);
-            return;
+            WebContext.remove();
         }
-
-        // web hook before
-        if (!invokeHook(routeMatcher.getBefore(uri), invoker)) {
-            this.sendFinish(response);
-            return;
-        }
-
-        // execute
-        this.routeHandle(invoker);
-
-        // webHook
-        this.invokeHook(routeMatcher.getAfter(uri), invoker);
-
-        this.sendFinish(response);
-        WebContext.remove();
     }
 
     @Override
@@ -157,7 +159,6 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         log.error("error", cause);
-
         if (!ctx.channel().isActive()) {
             ctx.close();
             return;
@@ -199,31 +200,31 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
     /**
      * Actual routing method execution
      *
-     * @param invoker invoker
+     * @param signature signature
      */
-    private boolean routeHandle(Invoker invoker) throws Exception {
-        Object target = invoker.getRoute().getTarget();
+    private boolean routeHandle(Signature signature) throws Exception {
+        Object target = signature.getRoute().getTarget();
         if (null == target) {
-            Class<?> clazz = invoker.getAction().getDeclaringClass();
+            Class<?> clazz = signature.getAction().getDeclaringClass();
             target = blade.getBean(clazz);
-            invoker.getRoute().setTarget(target);
+            signature.getRoute().setTarget(target);
         }
-        if (invoker.getRoute().getTargetType() == RouteHandler.class) {
+        if (signature.getRoute().getTargetType() == RouteHandler.class) {
             RouteHandler routeHandler = (RouteHandler) target;
-            routeHandler.handle(invoker.request(), invoker.response());
+            routeHandler.handle(signature.request(), signature.response());
             return false;
         } else {
-            return routeViewResolve.handle(invoker);
+            return routeViewResolve.handle(signature);
         }
     }
 
-    private boolean invokeMiddleware(List<Route> middleware, Invoker invoker) {
+    private boolean invokeMiddleware(List<Route> middleware, Signature signature) throws BladeException {
         if (BladeKit.isEmpty(middleware)) {
             return true;
         }
         for (Route route : middleware) {
             WebHook webHook = (WebHook) route.getTarget();
-            boolean flag = webHook.before(invoker);
+            boolean flag = webHook.before(signature);
             if (!flag) return false;
         }
         return true;
@@ -232,18 +233,18 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
     /**
      * invoke hooks
      *
-     * @param hooks   webHook list
-     * @param invoker http request
+     * @param hooks     webHook list
+     * @param signature http request
      * @return
      * @throws BladeException
      */
-    private boolean invokeHook(List<Route> hooks, Invoker invoker) throws BladeException {
+    private boolean invokeHook(List<Route> hooks, Signature signature) throws BladeException {
         for (Route route : hooks) {
             if (route.getTargetType() == RouteHandler.class) {
                 RouteHandler routeHandler = (RouteHandler) route.getTarget();
-                routeHandler.handle(invoker.request(), invoker.response());
+                routeHandler.handle(signature.request(), signature.response());
             } else {
-                boolean flag = routeViewResolve.invokeHook(invoker);
+                boolean flag = routeViewResolve.invokeHook(signature, route);
                 if (!flag) return false;
             }
         }
@@ -251,10 +252,9 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
     }
 
     private void sendFinish(Response response) {
-        if (response.isCommit()) {
-            return;
+        if (!response.isCommit()) {
+            response.body(Unpooled.EMPTY_BUFFER);
         }
-        response.body(Unpooled.EMPTY_BUFFER);
     }
 
 }

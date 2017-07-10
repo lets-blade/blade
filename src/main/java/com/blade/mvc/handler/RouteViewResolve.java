@@ -6,8 +6,9 @@ import com.blade.ioc.Ioc;
 import com.blade.kit.ReflectKit;
 import com.blade.mvc.annotation.JSON;
 import com.blade.mvc.annotation.Path;
-import com.blade.mvc.hook.Invoker;
+import com.blade.mvc.hook.Signature;
 import com.blade.mvc.http.Response;
+import com.blade.mvc.route.Route;
 import com.blade.mvc.ui.ModelAndView;
 
 import java.lang.reflect.InvocationTargetException;
@@ -21,25 +22,25 @@ public class RouteViewResolve {
         this.ioc = blade.ioc();
     }
 
-    public boolean handle(Invoker invoker) throws Exception {
+    public boolean handle(Signature signature) throws Exception {
         try {
-            Method actionMethod = invoker.getAction();
-            Object target = invoker.getRoute().getTarget();
+            Method actionMethod = signature.getAction();
+            Object target = signature.getRoute().getTarget();
             Class<?> returnType = actionMethod.getReturnType();
 
-            Response response = invoker.response();
+            Response response = signature.response();
 
             Path path = target.getClass().getAnnotation(Path.class);
             JSON JSON = actionMethod.getAnnotation(JSON.class);
             boolean isRestful = (null != JSON) || (null != path && path.restful());
-            if (isRestful && !invoker.request().userAgent().contains("MSIE")) {
-                invoker.response().contentType("application/json; charset=UTF-8");
+            if (isRestful && !signature.request().userAgent().contains("MSIE")) {
+                signature.response().contentType("application/json; charset=UTF-8");
             }
 
             int len = actionMethod.getParameterTypes().length;
             Object returnParam;
             if (len > 0) {
-                returnParam = ReflectKit.invokeMehod(target, actionMethod, invoker.getParameters());
+                returnParam = ReflectKit.invokeMehod(target, actionMethod, signature.getParameters());
             } else {
                 returnParam = ReflectKit.invokeMehod(target, actionMethod);
             }
@@ -70,13 +71,13 @@ public class RouteViewResolve {
         return false;
     }
 
-    public boolean invokeHook(Invoker invoker) throws BladeException {
-        Method actionMethod = invoker.getAction();
-        Object target = invoker.getRoute().getTarget();
+    public boolean invokeHook(Signature routeSignature, Route route) throws BladeException {
+        Method actionMethod = route.getAction();
+        Object target = route.getTarget();
         if (null == target) {
-            Class<?> clazz = invoker.getAction().getDeclaringClass();
+            Class<?> clazz = route.getAction().getDeclaringClass();
             target = ioc.getBean(clazz);
-            invoker.getRoute().setTarget(target);
+            route.setTarget(target);
         }
 
         // execute
@@ -85,7 +86,16 @@ public class RouteViewResolve {
         try {
             Object returnParam;
             if (len > 0) {
-                returnParam = ReflectKit.invokeMehod(target, actionMethod, invoker.getParameters());
+                Signature signature = Signature.builder()
+                        .route(route)
+                        .request(routeSignature.request())
+                        .response(routeSignature.response())
+                        .parameters(routeSignature.getParameters())
+                        .action(actionMethod)
+                        .build();
+
+                Object[] args = MethodArgument.getArgs(signature);
+                returnParam = ReflectKit.invokeMehod(target, actionMethod, args);
             } else {
                 returnParam = ReflectKit.invokeMehod(target, actionMethod);
             }

@@ -3,7 +3,7 @@ package com.blade.mvc.handler;
 import com.blade.exception.BladeException;
 import com.blade.kit.*;
 import com.blade.mvc.annotation.*;
-import com.blade.mvc.hook.Invoker;
+import com.blade.mvc.hook.Signature;
 import com.blade.mvc.http.HttpSession;
 import com.blade.mvc.http.Request;
 import com.blade.mvc.http.Response;
@@ -20,29 +20,31 @@ import java.util.Optional;
 
 public final class MethodArgument {
 
-    public static Object[] getArgs(Invoker invoker) throws Exception {
-        Method actionMethod = invoker.getAction();
-        Request request = invoker.request();
-        Response response = invoker.response();
+    public static Object[] getArgs(Signature signature) throws Exception {
+        Method actionMethod = signature.getAction();
+        Request request = signature.request();
+        Response response = signature.response();
         actionMethod.setAccessible(true);
 
         Parameter[] parameters = actionMethod.getParameters();
         Object[] args = new Object[parameters.length];
-        String[] paramaterNames = AsmKit.getMethodParamNames(actionMethod);
+        String[] parameterNames = AsmKit.getMethodParamNames(actionMethod);
 
         for (int i = 0, len = parameters.length; i < len; i++) {
             Parameter parameter = parameters[i];
-            String paramName = paramaterNames[i];
-            int annoLen = parameter.getAnnotations().length;
+            String paramName = parameterNames[i];
+            int annotations = parameter.getAnnotations().length;
             Class<?> argType = parameter.getType();
-            if (annoLen > 0) {
+            if (annotations > 0) {
                 QueryParam queryParam = parameter.getAnnotation(QueryParam.class);
                 if (null != queryParam) {
                     args[i] = getQueryParam(argType, queryParam, paramName, request);
+                    continue;
                 }
                 BodyParam bodyParam = parameter.getAnnotation(BodyParam.class);
                 if (null != bodyParam) {
                     args[i] = getBodyParam(argType, request);
+                    continue;
                 }
                 PathParam pathParam = parameter.getAnnotation(PathParam.class);
                 if (null != pathParam) {
@@ -58,36 +60,44 @@ public final class MethodArgument {
                 CookieParam cookieParam = parameter.getAnnotation(CookieParam.class);
                 if (null != cookieParam) {
                     args[i] = getCookie(argType, cookieParam, paramName, request);
+                    continue;
                 }
                 // form multipart
                 MultipartParam multipartParam = parameter.getAnnotation(MultipartParam.class);
                 if (null != multipartParam && argType == FileItem.class) {
                     String name = StringKit.isBlank(multipartParam.value()) ? paramName : multipartParam.value();
                     args[i] = request.fileItem(name).orElse(null);
+                    continue;
                 }
+            }
+
+            if (ReflectKit.isPrimitive(argType)) {
+                args[i] = request.query(paramName);
             } else {
-                if (ReflectKit.isPrimitive(argType)) {
-                    args[i] = request.query(paramName);
+                if (argType == Signature.class) {
+                    args[i] = signature;
+                    continue;
+                } else if (argType == Request.class) {
+                    args[i] = request;
+                    continue;
+                } else if (argType == Response.class) {
+                    args[i] = response;
+                    continue;
+                } else if (argType == Session.class || argType == HttpSession.class) {
+                    args[i] = request.session();
+                    continue;
+                } else if (argType == FileItem.class) {
+                    args[i] = new ArrayList<>(request.fileItems().values()).get(0);
+                    continue;
+                } else if (argType == ModelAndView.class) {
+                    args[i] = new ModelAndView();
+                    continue;
+                } else if (argType == Map.class) {
+                    args[i] = request.parameters();
+                    continue;
                 } else {
-                    if (argType == Invoker.class) {
-                        args[i] = invoker;
-                        continue;
-                    } else if (argType == Request.class) {
-                        args[i] = request;
-                        continue;
-                    } else if (argType == Response.class) {
-                        args[i] = response;
-                    } else if (argType == Session.class || argType == HttpSession.class) {
-                        args[i] = request.session();
-                    } else if (argType == FileItem.class) {
-                        args[i] = new ArrayList<>(request.fileItems().values()).get(0);
-                    } else if (argType == ModelAndView.class) {
-                        args[i] = new ModelAndView();
-                    } else if (argType == Map.class) {
-                        args[i] = request.parameters();
-                    } else {
-                        args[i] = parseModel(argType, request, null);
-                    }
+                    args[i] = parseModel(argType, request, null);
+                    continue;
                 }
             }
         }
@@ -175,7 +185,7 @@ public final class MethodArgument {
                     String fieldName = name + "[" + field.getName() + "]";
                     fieldValue = request.query(fieldName);
                 }
-                if (fieldValue.isPresent()) {
+                if (fieldValue.isPresent() && StringKit.isNotBlank(fieldValue.get())) {
                     Object value = ReflectKit.convert(field.getType(), fieldValue.get());
                     field.set(obj, value);
                     hasField = true;
