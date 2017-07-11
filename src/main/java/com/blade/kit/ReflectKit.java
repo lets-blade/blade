@@ -69,17 +69,17 @@ public class ReflectKit {
     public static <T> T cast(Object value, Class<T> type) {
         if (value != null && !type.isAssignableFrom(value.getClass())) {
             if (is(type, int.class, Integer.class)) {
-                value = Integer.parseInt(String.valueOf(value));
+                value = Integer.parseInt(value.toString());
             } else if (is(type, long.class, Long.class)) {
-                value = Long.parseLong(String.valueOf(value));
+                value = Long.parseLong(value.toString());
             } else if (is(type, float.class, Float.class)) {
-                value = Float.parseFloat(String.valueOf(value));
+                value = Float.parseFloat(value.toString());
             } else if (is(type, double.class, Double.class)) {
-                value = Double.parseDouble(String.valueOf(value));
+                value = Double.parseDouble(value.toString());
             } else if (is(type, boolean.class, Boolean.class)) {
-                value = Boolean.parseBoolean(String.valueOf(value));
+                value = Boolean.parseBoolean(value.toString());
             } else if (is(type, String.class)) {
-                value = String.valueOf(value);
+                value = value.toString();
             }
         }
         return (T) value;

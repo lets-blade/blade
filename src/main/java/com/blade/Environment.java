@@ -195,7 +195,7 @@ public class Environment {
 
     public Optional<Integer> getInt(@NonNull String key) {
         if (getObject(key).isPresent()) {
-            return Optional.of(Integer.valueOf(getObject(key).get().toString()));
+            return Optional.of(Integer.parseInt(getObject(key).get().toString()));
         }
         return Optional.empty();
     }
@@ -209,7 +209,7 @@ public class Environment {
 
     public Optional<Long> getLong(@NonNull String key) {
         if (getObject(key).isPresent()) {
-            return Optional.of(Long.valueOf(getObject(key).get().toString()));
+            return Optional.of(Long.parseLong(getObject(key).get().toString()));
         }
         return Optional.empty();
     }
@@ -223,7 +223,7 @@ public class Environment {
 
     public Optional<Boolean> getBoolean(@NonNull String key) {
         if (getObject(key).isPresent()) {
-            return Optional.of(Boolean.valueOf(getObject(key).get().toString()));
+            return Optional.of(Boolean.parseBoolean(getObject(key).get().toString()));
         }
         return Optional.empty();
     }
@@ -237,7 +237,7 @@ public class Environment {
 
     public Optional<Double> getDouble(@NonNull String key) {
         if (getObject(key).isPresent()) {
-            return Optional.of(Double.valueOf(getObject(key).get().toString()));
+            return Optional.of(Double.parseDouble(getObject(key).get().toString()));
         }
         return Optional.empty();
     }
