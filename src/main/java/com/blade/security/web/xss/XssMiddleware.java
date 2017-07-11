@@ -1,4 +1,4 @@
-package com.blade.security.web;
+package com.blade.security.web.xss;
 
 import com.blade.mvc.hook.Signature;
 import com.blade.mvc.hook.WebHook;

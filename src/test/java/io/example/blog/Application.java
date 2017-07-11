@@ -1,7 +1,7 @@
 package io.example.blog;
 
 import com.blade.Blade;
-import com.blade.mvc.middlewares.CsrfMiddleware;
+import com.blade.security.web.csrf.CsrfMiddleware;
 
 import java.util.HashMap;
 import java.util.Map;

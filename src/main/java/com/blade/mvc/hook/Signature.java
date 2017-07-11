@@ -48,7 +48,7 @@ public class Signature {
         }
     }
 
-    public void initParameters() throws BladeException {
+    private void initParameters() throws BladeException {
         try {
             if (null != this.action) {
                 this.parameters = MethodArgument.getArgs(this);

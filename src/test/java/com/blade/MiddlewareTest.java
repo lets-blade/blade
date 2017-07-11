@@ -1,13 +1,16 @@
 package com.blade;
 
-import com.blade.mvc.middlewares.CsrfMiddleware;
 import org.junit.Test;
 
 /**
+ * Middleware Test
+ *
  * @author biezhi
  *         2017/6/5
  */
 public class MiddlewareTest extends BaseTestCase {
+
+    private String defaultKey = "csrf_token";
 
     @Test
     public void testMiddleware() throws Exception {
@@ -15,9 +18,7 @@ public class MiddlewareTest extends BaseTestCase {
                 app.use((invoker) -> {
                     System.out.println(invoker.request().uri());
                     return invoker.next();
-                }).get("/login", ((request, response) -> {
-                    response.text(request.attribute(CsrfMiddleware.CSRF_TOKEN));
-                }))
+                }).get("/login", ((request, response) -> response.text(request.attribute(defaultKey))))
         );
         String token = bodyToString("/login");
         System.out.println(token);
