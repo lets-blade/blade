@@ -1,6 +1,5 @@
 package com.blade;
 
-import com.blade.event.Event;
 import com.blade.event.EventType;
 import org.junit.Test;
 
