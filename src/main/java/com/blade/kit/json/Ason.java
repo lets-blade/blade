@@ -26,7 +26,7 @@ public class Ason<K, V> extends LinkedHashMap<K, V> {
     public Integer getInt(String key) {
         String val = getString(key);
         if (StringKit.isNotBlank(val)) {
-            return Integer.valueOf(val);
+            return Integer.parseInt(val);
         }
         return null;
     }
@@ -34,7 +34,7 @@ public class Ason<K, V> extends LinkedHashMap<K, V> {
     public Long getLong(String key) {
         String val = getString(key);
         if (StringKit.isNotBlank(val)) {
-            return Long.valueOf(val);
+            return Long.parseLong(val);
         }
         return null;
     }
@@ -42,7 +42,7 @@ public class Ason<K, V> extends LinkedHashMap<K, V> {
     public Boolean getBoolean(String key) {
         String val = getString(key);
         if (StringKit.isNotBlank(val)) {
-            return Boolean.valueOf(val);
+            return Boolean.parseBoolean(val);
         }
         return null;
     }
@@ -50,7 +50,7 @@ public class Ason<K, V> extends LinkedHashMap<K, V> {
     public Double getDouble(String key) {
         String val = getString(key);
         if (StringKit.isNotBlank(val)) {
-            return Double.valueOf(val);
+            return Double.parseDouble(val);
         }
         return null;
     }
@@ -58,7 +58,7 @@ public class Ason<K, V> extends LinkedHashMap<K, V> {
     public Float getFloat(String key) {
         String val = getString(key);
         if (StringKit.isNotBlank(val)) {
-            return Float.valueOf(val);
+            return Float.parseFloat(val);
         }
         return null;
     }
@@ -66,7 +66,7 @@ public class Ason<K, V> extends LinkedHashMap<K, V> {
     public Short getShort(String key) {
         String val = getString(key);
         if (StringKit.isNotBlank(val)) {
-            return Short.valueOf(val);
+            return Short.parseShort(val);
         }
         return null;
     }

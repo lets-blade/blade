@@ -90,7 +90,7 @@ public interface Request {
      */
     default Integer pathInt(@NonNull String name) {
         String val = pathString(name);
-        return StringKit.isNotBlank(val) ? Integer.valueOf(val) : null;
+        return StringKit.isNotBlank(val) ? Integer.parseInt(val) : null;
     }
 
     /**
@@ -101,7 +101,7 @@ public interface Request {
      */
     default Long pathLong(@NonNull String name) {
         String val = pathString(name);
-        return StringKit.isNotBlank(val) ? Long.valueOf(val) : null;
+        return StringKit.isNotBlank(val) ? Long.parseLong(val) : null;
     }
 
     /**
@@ -150,7 +150,7 @@ public interface Request {
     default Optional<Integer> queryInt(@NonNull String name) {
         Optional<String> value = query(name);
         if (value.isPresent())
-            return Optional.of(Integer.valueOf(value.get()));
+            return Optional.of(Integer.parseInt(value.get()));
         return Optional.empty();
     }
 
@@ -164,7 +164,7 @@ public interface Request {
     default int queryInt(@NonNull String name, int defaultValue) {
         Optional<String> value = query(name);
         if (value.isPresent())
-            return Integer.valueOf(value.get());
+            return Integer.parseInt(value.get());
         return defaultValue;
     }
 
@@ -177,7 +177,7 @@ public interface Request {
     default Optional<Long> queryLong(@NonNull String name) {
         Optional<String> value = query(name);
         if (value.isPresent())
-            return Optional.of(Long.valueOf(value.get()));
+            return Optional.of(Long.parseLong(value.get()));
         return Optional.empty();
     }
 
@@ -191,7 +191,7 @@ public interface Request {
     default long queryLong(@NonNull String name, long defaultValue) {
         Optional<String> value = query(name);
         if (value.isPresent())
-            return Long.valueOf(value.get());
+            return Long.parseLong(value.get());
         return defaultValue;
     }
 
@@ -204,7 +204,7 @@ public interface Request {
     default Optional<Double> queryDouble(@NonNull String name) {
         Optional<String> value = query(name);
         if (value.isPresent())
-            return Optional.of(Double.valueOf(value.get()));
+            return Optional.of(Double.parseDouble(value.get()));
         return Optional.empty();
     }
 
@@ -218,7 +218,7 @@ public interface Request {
     default double queryDouble(@NonNull String name, double defaultValue) {
         Optional<String> value = query(name);
         if (value.isPresent())
-            return Double.valueOf(value.get());
+            return Double.parseDouble(value.get());
         return defaultValue;
     }
 

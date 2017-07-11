@@ -223,7 +223,7 @@ public class JsonSerializer {
                     return (l);
                 } catch (NumberFormatException exInt) {
                     try {
-                        return (Double.valueOf(substr));
+                        return (Double.parseDouble(substr));
                     } catch (NumberFormatException ignore) {
                     }
                 }
