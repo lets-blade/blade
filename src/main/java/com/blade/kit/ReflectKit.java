@@ -51,7 +51,7 @@ public class ReflectKit {
      * @throws IllegalArgumentException
      * @throws IllegalAccessException
      */
-    public static Object invokeMehod(Object bean, Method method, Object... args) throws Exception {
+    public static Object invokeMethod(Object bean, Method method, Object... args) throws Exception {
         Class<?>[] types = method.getParameterTypes();
         int argCount = args == null ? 0 : args.length;
         // 参数个数对不上

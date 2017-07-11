@@ -13,7 +13,7 @@ import io.netty.util.concurrent.FastThreadLocal;
  */
 public class WebContext {
 
-    // used netty fast theadLocal
+    // used netty fast threadLocal
     private static final FastThreadLocal<WebContext> fastThreadLocal = new FastThreadLocal<>();
 
     private static Blade blade;

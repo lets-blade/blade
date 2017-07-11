@@ -52,12 +52,11 @@ public class StaticFileHandler implements RequestHandler<Boolean> {
     }
 
     /**
-     * print static file to clinet
+     * print static file to client
      *
      * @param ctx
      * @param request
      * @param response
-     * @param uri
      * @throws Exception
      */
     @Override
@@ -313,7 +312,7 @@ public class StaticFileHandler implements RequestHandler<Boolean> {
         LocalDateTime localTime = LocalDateTime.now();
         String date = DateKit.gmtDate(localTime);
         response.headers().set(DATE, date);
-        String lastModifed = date;
+        String lastModified = date;
         LocalDateTime newTime = localTime.plusSeconds(HTTP_CACHE_SECONDS);
         date = DateKit.gmtDate(newTime);
 
@@ -321,9 +320,9 @@ public class StaticFileHandler implements RequestHandler<Boolean> {
         response.headers().set(EXPIRES, date);
         response.headers().set(CACHE_CONTROL, "private, max-age=" + HTTP_CACHE_SECONDS);
         if (null != fileToCache) {
-            lastModifed = DateKit.gmtDate(new Date(fileToCache.lastModified()));
+            lastModified = DateKit.gmtDate(new Date(fileToCache.lastModified()));
         }
-        response.headers().set(LAST_MODIFIED, lastModifed);
+        response.headers().set(LAST_MODIFIED, lastModified);
     }
 
     /**

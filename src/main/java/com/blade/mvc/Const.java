@@ -43,7 +43,7 @@ public interface Const {
     String ENV_KEY_NETTY_WORKERS           = "server.netty.workers";
     String ENV_KEY_NETTY_SO_BACKLOG        = "server.netty.backlog";
     String ENV_KEY_NETTY_CONN_TIMEOUT      = "server.netty.child.conn-timeout";
-    String ENV_KEY_NETTY_REECEIVE_BUF      = "server.netty.child.receive-buf";
+    String ENV_KEY_NETTY_RECEIVE_BUF      = "server.netty.child.receive-buf";
     String ENV_KEY_NETTY_SEND_BUF          = "server.netty.child.send-buf";
     String ENV_KEY_NETTY_CHILD_TCP_NODELAY = "server.netty.child.tcp-nodelay";
     String ENV_KEY_NETTY_CHILD_KEEPALIVE   = "server.netty.child.keep-alive";

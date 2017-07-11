@@ -217,7 +217,7 @@ public interface Response {
     }
 
     /**
-     * download some file to clinet
+     * download some file to client
      *
      * @param fileName give client file name
      * @param file

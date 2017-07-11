@@ -168,7 +168,7 @@ public class RouteBuilder {
      * @param clazz      route target execution class
      * @param execMethod route execution method
      * @param path       route path
-     * @param method     route httpmethod
+     * @param method     route httpMethod
      */
     private void buildRoute(Class<?> clazz, Object controller, Method execMethod, String path, HttpMethod method) {
         routeMatcher.addRoute(method, path, controller, clazz, execMethod);
