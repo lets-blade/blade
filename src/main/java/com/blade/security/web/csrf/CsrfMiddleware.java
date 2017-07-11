@@ -1,5 +1,6 @@
 package com.blade.security.web.csrf;
 
+import com.blade.kit.StringKit;
 import com.blade.kit.UUID;
 import com.blade.mvc.WebContext;
 import com.blade.mvc.hook.Signature;
@@ -52,7 +53,7 @@ public class CsrfMiddleware implements WebHook {
         } else {
             Method method = signature.getAction();
             ValidToken validToken = method.getAnnotation(ValidToken.class);
-            if (null != validToken || signature.getRequest().query(csrfConfig.getKey()).isPresent()) {
+            if (null != validToken || StringKit.equals(Boolean.TRUE.toString(), signature.getRequest().header(csrfConfig.getValidId()))) {
                 return validation();
             }
         }

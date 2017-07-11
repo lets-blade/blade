@@ -1,5 +1,6 @@
 package com.blade.security.web.csrf;
 
+import com.blade.kit.StringKit;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -24,6 +25,9 @@ public class CsrfConfig {
 
     @Builder.Default
     private String header = "_csrf.header";
+
+    @Builder.Default
+    private String validId = "_csrf.valid";
 
     @Builder.Default
     private String key = "csrf_token";

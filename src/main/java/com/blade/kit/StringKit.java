@@ -119,4 +119,10 @@ public final class StringKit {
         return MimeType.get(ext);
     }
 
+    public static boolean equals(String str1, String str2) {
+        if (null == str1) {
+            return false;
+        }
+        return str1.equals(str2);
+    }
 }
