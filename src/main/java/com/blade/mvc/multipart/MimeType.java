@@ -165,7 +165,7 @@ public interface MimeType {
         put("vcf", "text/x-vcard");
     }};
 
-    public static String get(String ext) {
+    static String get(String ext) {
         if (mimeTypes.containsKey(ext)) {
             return mimeTypes.get(ext);
         } else {

@@ -5,8 +5,7 @@ import com.blade.kit.ReflectKit;
 import com.blade.mvc.annotation.*;
 import com.blade.mvc.hook.Signature;
 import com.blade.mvc.http.HttpMethod;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Method;
 
@@ -16,9 +15,8 @@ import java.lang.reflect.Method;
  * @author <a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since 1.5
  */
+@Slf4j
 public class RouteBuilder {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(RouteBuilder.class);
 
     private RouteMatcher routeMatcher;
 
@@ -27,14 +25,14 @@ public class RouteBuilder {
     }
 
     public void addWebHook(final Class<?> webHook, Object hook) {
-        Path path = webHook.getAnnotation(Path.class);
+        Path   path    = webHook.getAnnotation(Path.class);
         String pattern = "/.*";
         if (null != path) {
             pattern = path.value();
         }
 
         Method before = ReflectKit.getMethod(webHook, "before", Signature.class);
-        Method after = ReflectKit.getMethod(webHook, "after", Signature.class);
+        Method after  = ReflectKit.getMethod(webHook, "after", Signature.class);
         buildRoute(webHook, hook, before, pattern, HttpMethod.BEFORE);
         buildRoute(webHook, hook, after, pattern, HttpMethod.AFTER);
     }
@@ -59,23 +57,22 @@ public class RouteBuilder {
         }
 
         if (null == nameSpace) {
-            LOGGER.warn("Route [{}] not controller annotation", router.getName());
+            log.warn("Route [{}] not controller annotation", router.getName());
             return;
         }
 
         for (Method method : methods) {
-            com.blade.mvc.annotation.Route mapping = method.getAnnotation(com.blade.mvc.annotation.Route.class);
-            GetRoute getRoute = method.getAnnotation(GetRoute.class);
-            PostRoute postRoute = method.getAnnotation(PostRoute.class);
-            PutRoute putRoute = method.getAnnotation(PutRoute.class);
-            DeleteRoute deleteRoute = method.getAnnotation(DeleteRoute.class);
+            com.blade.mvc.annotation.Route mapping     = method.getAnnotation(com.blade.mvc.annotation.Route.class);
+            GetRoute                       getRoute    = method.getAnnotation(GetRoute.class);
+            PostRoute                      postRoute   = method.getAnnotation(PostRoute.class);
+            PutRoute                       putRoute    = method.getAnnotation(PutRoute.class);
+            DeleteRoute                    deleteRoute = method.getAnnotation(DeleteRoute.class);
 
             this.parseRoute(mapping, nameSpace, suffix, router, controller, method);
             this.parseGetRoute(getRoute, nameSpace, suffix, router, controller, method);
             this.parsePostRoute(postRoute, nameSpace, suffix, router, controller, method);
             this.parsePutRoute(putRoute, nameSpace, suffix, router, controller, method);
             this.parseDeleteRoute(deleteRoute, nameSpace, suffix, router, controller, method);
-
         }
     }
 
@@ -85,7 +82,7 @@ public class RouteBuilder {
         if (null != mapping) {
             // build multiple route
             HttpMethod methodType = mapping.method();
-            String[] paths = mapping.value();
+            String[]   paths      = mapping.value();
             if (paths.length > 0) {
                 for (String path : paths) {
                     String pathV = getRoutePath(path, nameSpace, suffix);

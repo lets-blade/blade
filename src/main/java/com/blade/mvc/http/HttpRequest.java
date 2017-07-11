@@ -110,14 +110,14 @@ public class HttpRequest implements Request {
             if (fileUpload.isInMemory()) {
                 FileItem fileItem = new FileItem(fileUpload.getName(), fileUpload.getFilename(),
                         contentType, fileUpload.length());
-                fileItem.data(fileUpload.getByteBuf().array());
-                fileItems.put(fileItem.name(), fileItem);
+                fileItem.setData(fileUpload.getByteBuf().array());
+                fileItems.put(fileItem.getName(), fileItem);
             } else {
                 FileItem fileItem = new FileItem(fileUpload.getName(), fileUpload.getFilename(),
                         contentType, fileUpload.length());
                 byte[] bytes = Files.readAllBytes(fileUpload.getFile().toPath());
-                fileItem.data(bytes);
-                fileItems.put(fileItem.name(), fileItem);
+                fileItem.setData(bytes);
+                fileItems.put(fileItem.getName(), fileItem);
             }
         }
     }

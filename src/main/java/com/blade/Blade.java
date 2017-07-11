@@ -10,7 +10,7 @@ import com.blade.kit.BladeKit;
 import com.blade.mvc.Const;
 import com.blade.mvc.hook.WebHook;
 import com.blade.mvc.http.HttpMethod;
-import com.blade.mvc.http.SessionManager;
+import com.blade.mvc.SessionManager;
 import com.blade.mvc.route.RouteHandler;
 import com.blade.mvc.route.RouteMatcher;
 import com.blade.mvc.ui.template.DefaultEngine;

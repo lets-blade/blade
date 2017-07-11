@@ -4,6 +4,7 @@ import com.blade.Blade;
 import com.blade.event.EventManager;
 import com.blade.event.EventType;
 import com.blade.kit.UUID;
+import com.blade.mvc.SessionManager;
 import com.blade.mvc.WebContext;
 import com.blade.mvc.http.*;
 
@@ -21,11 +22,11 @@ import static com.blade.mvc.Const.ENV_KEY_SESSION_TIMEOUT;
  */
 public class SessionHandler {
 
-    private final Blade blade;
+    private final Blade          blade;
     private final SessionManager sessionManager;
-    private final EventManager eventManager;
-    private final String sessionKey;
-    private final int timeout;
+    private final EventManager   eventManager;
+    private final String         sessionKey;
+    private final int            timeout;
 
     public SessionHandler(Blade blade) {
         this.blade = blade;

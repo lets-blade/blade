@@ -1,17 +1,19 @@
 package com.blade.mvc.http;
 
 /**
+ * Cookie
+ *
  * @author biezhi
  *         2017/6/1
  */
 public class Cookie {
 
-    private String name;
-    private String value;
-    private String domain = "";
-    private String path = "/";
-    private long maxAge = -1;
-    private boolean secure = false;
+    private String  name     = null;
+    private String  value    = null;
+    private String  domain   = "";
+    private String  path     = "/";
+    private long    maxAge   = -1;
+    private boolean secure   = false;
     private boolean httpOnly = false;
 
     public String name() {

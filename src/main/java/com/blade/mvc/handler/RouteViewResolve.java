@@ -24,20 +24,20 @@ public class RouteViewResolve {
 
     public boolean handle(Signature signature) throws Exception {
         try {
-            Method actionMethod = signature.getAction();
-            Object target = signature.getRoute().getTarget();
-            Class<?> returnType = actionMethod.getReturnType();
+            Method   actionMethod = signature.getAction();
+            Object   target       = signature.getRoute().getTarget();
+            Class<?> returnType   = actionMethod.getReturnType();
 
             Response response = signature.response();
 
-            Path path = target.getClass().getAnnotation(Path.class);
-            JSON JSON = actionMethod.getAnnotation(JSON.class);
+            Path    path      = target.getClass().getAnnotation(Path.class);
+            JSON    JSON      = actionMethod.getAnnotation(JSON.class);
             boolean isRestful = (null != JSON) || (null != path && path.restful());
             if (isRestful && !signature.request().userAgent().contains("MSIE")) {
                 signature.response().contentType("application/json; charset=UTF-8");
             }
 
-            int len = actionMethod.getParameterTypes().length;
+            int    len = actionMethod.getParameterTypes().length;
             Object returnParam;
             if (len > 0) {
                 returnParam = ReflectKit.invokeMehod(target, actionMethod, signature.getParameters());
@@ -73,7 +73,7 @@ public class RouteViewResolve {
 
     public boolean invokeHook(Signature routeSignature, Route route) throws BladeException {
         Method actionMethod = route.getAction();
-        Object target = route.getTarget();
+        Object target       = route.getTarget();
         if (null == target) {
             Class<?> clazz = route.getAction().getDeclaringClass();
             target = ioc.getBean(clazz);
@@ -86,13 +86,10 @@ public class RouteViewResolve {
         try {
             Object returnParam;
             if (len > 0) {
-                Signature signature = Signature.builder()
-                        .route(route)
-                        .request(routeSignature.request())
-                        .response(routeSignature.response())
+                Signature signature = Signature.builder().route(route)
+                        .request(routeSignature.request()).response(routeSignature.response())
                         .parameters(routeSignature.getParameters())
-                        .action(actionMethod)
-                        .build();
+                        .action(actionMethod).build();
 
                 Object[] args = MethodArgument.getArgs(signature);
                 returnParam = ReflectKit.invokeMehod(target, actionMethod, args);

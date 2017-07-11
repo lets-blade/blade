@@ -1,19 +1,26 @@
 package com.blade.mvc.http;
 
+import lombok.Setter;
+
 import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * HttpSession
+ *
  * @author biezhi
  *         2017/5/31
  */
 public class HttpSession implements Session {
 
-    private Map<String, Object> attrs = new HashMap<>();
-    private String id;
-    private String ip;
-    private long created;
-    private long expired;
+    private Map<String, Object> attributes = new HashMap<>();
+    private String              id         = null;
+    @Setter
+    private String              ip         = null;
+    @Setter
+    private long                created    = -1;
+    @Setter
+    private long                expired    = -1;
 
     public HttpSession(String id) {
         this.id = id;
@@ -24,37 +31,25 @@ public class HttpSession implements Session {
         return id;
     }
 
-    public void setIp(String ip) {
-        this.ip = ip;
-    }
-
-    public void setCreated(long created) {
-        this.created = created;
-    }
-
-    public void setExpired(long expired) {
-        this.expired = expired;
-    }
-
     @Override
     public <T> T attribute(String name) {
-        Object object = this.attrs.get(name);
+        Object object = this.attributes.get(name);
         return null != object ? (T) object : null;
     }
 
     @Override
     public void attribute(String name, Object value) {
-        this.attrs.put(name, value);
+        this.attributes.put(name, value);
     }
 
     @Override
     public Map<String, Object> attributes() {
-        return attrs;
+        return attributes;
     }
 
     @Override
     public void removeAttribute(String name) {
-        this.attrs.remove(name);
+        this.attributes.remove(name);
     }
 
     @Override

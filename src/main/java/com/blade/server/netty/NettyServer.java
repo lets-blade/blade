@@ -88,7 +88,7 @@ public class NettyServer implements Server {
 
     private void initIoc() {
         RouteMatcher routeMatcher = blade.routeMatcher();
-        routeMatcher.initMiddlewares(blade.middleware());
+        routeMatcher.initMiddleware(blade.middleware());
 
         routeBuilder = new RouteBuilder(routeMatcher);
 

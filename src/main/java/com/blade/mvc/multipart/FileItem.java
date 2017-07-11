@@ -2,6 +2,7 @@ package com.blade.mvc.multipart;
 
 
 import com.blade.kit.json.JsonIgnore;
+import lombok.Data;
 
 /**
  * HTTP multipart/form-data Request
@@ -9,13 +10,13 @@ import com.blade.kit.json.JsonIgnore;
  * @author <a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since 1.5
  */
+@Data
 public class FileItem {
 
     private String name;
     private String fileName;
     private String contentType;
-    private long length;
-
+    private long   length;
     @JsonIgnore
     private byte[] data;
 
@@ -24,30 +25,6 @@ public class FileItem {
         this.fileName = fileName;
         this.contentType = contentType;
         this.length = length;
-    }
-
-    public String name() {
-        return name;
-    }
-
-    public String fileName() {
-        return fileName;
-    }
-
-    public String contentType() {
-        return contentType;
-    }
-
-    public long length() {
-        return length;
-    }
-
-    public byte[] data() {
-        return data;
-    }
-
-    public void data(byte[] data) {
-        this.data = data;
     }
 
     @Override
