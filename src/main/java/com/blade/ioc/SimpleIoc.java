@@ -26,6 +26,7 @@ public class SimpleIoc implements Ioc {
     /**
      * Add user-defined objects
      */
+    @Override
     public void addBean(String name, Object bean) {
         BeanDefine beanDefine = new BeanDefine(bean);
         addBean(name, beanDefine);
