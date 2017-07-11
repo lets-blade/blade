@@ -1,7 +1,7 @@
 package com.blade.mvc.ui;
 
 /**
- * rest返回对象
+ * RestResponse
  *
  * @param <T>
  * @since 1.7.1-alpha

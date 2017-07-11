@@ -1,7 +1,5 @@
 package com.blade.mvc.ui;
 
-import com.blade.Blade;
-
 import java.util.List;
 
 public class HtmlCreator {

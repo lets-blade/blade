@@ -30,7 +30,6 @@ public class BladeTemplate {
     }
 
     private final String str;
-
     private final Map<String, Object> arguments = new HashMap<>();
 
     private BladeTemplate(String str) {
@@ -122,11 +121,11 @@ public class BladeTemplate {
     public String fmt() {
 
         final StringBuilder result = new StringBuilder(str.length());
-        final StringBuilder param = new StringBuilder(16);
+        final StringBuilder param  = new StringBuilder(16);
 
         State state = State.FREE_TEXT;
 
-        int i = 0;
+        int  i = 0;
         char chr;
         while (i < str.length()) {
             chr = str.charAt(i);
@@ -198,7 +197,7 @@ public class BladeTemplate {
 
         // Object name is the parameter that should be found in the map.
         // If it's followed by points, the points remain in the "param" buffer.
-        final String objectName = takeUntilDotOrEnd(param);
+        final String objectName  = takeUntilDotOrEnd(param);
         final Object objectValue = arguments.get(objectName);
 
 
@@ -246,7 +245,7 @@ public class BladeTemplate {
     private static String takeUntilDotOrEnd(StringBuilder buff) {
 
         final int firstPointIdx = buff.indexOf(".");
-        String result;
+        String    result;
 
         if (-1 == firstPointIdx) {
             result = buff.toString();
@@ -294,7 +293,7 @@ public class BladeTemplate {
         } catch (NoSuchMethodException e) {
             try {
                 // Maybe improve this
-                final String capital = methodName.substring(0, 1).toUpperCase();
+                final String capital         = methodName.substring(0, 1).toUpperCase();
                 final String nameCapitalized = "get" + capital + methodName.substring(1);
                 method = object.getClass().getMethod(nameCapitalized);
             } catch (NoSuchMethodException e1) {

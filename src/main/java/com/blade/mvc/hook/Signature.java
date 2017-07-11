@@ -22,9 +22,9 @@ import java.lang.reflect.Method;
 @ToString
 public class Signature {
 
-    private Route route;
-    private Method action;
-    private Request request;
+    private Route    route;
+    private Method   action;
+    private Request  request;
     private Response response;
     private Object[] parameters;
 

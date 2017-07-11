@@ -32,9 +32,9 @@ public interface DefaultUI {
             " ~   ~~~ ~ ~ ~   ~~~"
     };
 
-    public static void printBanner() {
-        StringBuffer text = new StringBuffer();
-        String space = "\t\t\t\t\t\t\t   ";
+    static void printBanner() {
+        StringBuffer text  = new StringBuffer();
+        String       space = "\t\t\t\t\t\t\t   ";
         for (String s : banner) {
             text.append("\r\n").append(space).append(s);
         }

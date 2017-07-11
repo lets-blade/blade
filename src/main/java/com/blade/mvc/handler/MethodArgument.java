@@ -21,20 +21,20 @@ import java.util.Optional;
 public final class MethodArgument {
 
     public static Object[] getArgs(Signature signature) throws Exception {
-        Method actionMethod = signature.getAction();
-        Request request = signature.request();
-        Response response = signature.response();
+        Method   actionMethod = signature.getAction();
+        Request  request      = signature.request();
+        Response response     = signature.response();
         actionMethod.setAccessible(true);
 
-        Parameter[] parameters = actionMethod.getParameters();
-        Object[] args = new Object[parameters.length];
-        String[] parameterNames = AsmKit.getMethodParamNames(actionMethod);
+        Parameter[] parameters     = actionMethod.getParameters();
+        Object[]    args           = new Object[parameters.length];
+        String[]    parameterNames = AsmKit.getMethodParamNames(actionMethod);
 
         for (int i = 0, len = parameters.length; i < len; i++) {
-            Parameter parameter = parameters[i];
-            String paramName = parameterNames[i];
-            int annotations = parameter.getAnnotations().length;
-            Class<?> argType = parameter.getType();
+            Parameter parameter   = parameters[i];
+            String    paramName   = parameterNames[i];
+            int       annotations = parameter.getAnnotations().length;
+            Class<?>  argType     = parameter.getType();
             if (annotations > 0) {
                 QueryParam queryParam = parameter.getAnnotation(QueryParam.class);
                 if (null != queryParam) {
@@ -117,8 +117,8 @@ public final class MethodArgument {
         String name = StringKit.isBlank(queryParam.name()) ? paramName : queryParam.name();
 
         if (ReflectKit.isPrimitive(argType)) {
-            Optional<String> val = request.query(name);
-            boolean required = queryParam.required();
+            Optional<String> val      = request.query(name);
+            boolean          required = queryParam.required();
             if (!val.isPresent()) {
                 val = Optional.of(queryParam.defaultValue());
             }
@@ -132,9 +132,9 @@ public final class MethodArgument {
     }
 
     private static Object getCookie(Class<?> argType, CookieParam cookieParam, String paramName, Request request) throws BladeException {
-        String cookieName = StringKit.isBlank(cookieParam.value()) ? paramName : cookieParam.value();
-        Optional<String> val = request.cookie(cookieName);
-        boolean required = cookieParam.required();
+        String           cookieName = StringKit.isBlank(cookieParam.value()) ? paramName : cookieParam.value();
+        Optional<String> val        = request.cookie(cookieName);
+        boolean          required   = cookieParam.required();
         if (!val.isPresent()) {
             val = Optional.of(cookieParam.defaultValue());
         }
@@ -145,8 +145,8 @@ public final class MethodArgument {
     }
 
     private static Object getHeader(Class<?> argType, HeaderParam headerParam, String paramName, Request request) throws BladeException {
-        String key = StringKit.isBlank(headerParam.value()) ? paramName : headerParam.value();
-        String val = request.header(key);
+        String  key      = StringKit.isBlank(headerParam.value()) ? paramName : headerParam.value();
+        String  val      = request.header(key);
         boolean required = headerParam.required();
         if (StringKit.isBlank(val)) {
             val = headerParam.defaultValue();
@@ -159,7 +159,7 @@ public final class MethodArgument {
 
     private static Object getPathParam(Class<?> argType, PathParam pathParam, String paramName, Request request) {
         String name = StringKit.isBlank(pathParam.name()) ? paramName : pathParam.name();
-        String val = request.pathString(name);
+        String val  = request.pathString(name);
         if (StringKit.isBlank(val)) {
             val = pathParam.defaultValue();
         }
@@ -172,7 +172,7 @@ public final class MethodArgument {
             if (null == fields || fields.length == 0) {
                 return null;
             }
-            Object obj = ReflectKit.newInstance(argType);
+            Object  obj      = ReflectKit.newInstance(argType);
             boolean hasField = false;
 
             for (Field field : fields) {
