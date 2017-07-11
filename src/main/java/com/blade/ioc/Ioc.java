@@ -13,9 +13,9 @@ public interface Ioc {
 
     void addBean(Object bean);
 
-    <T> T addBean(Class<T> type);
-
     void addBean(String name, Object bean);
+
+    <T> T addBean(Class<T> type);
 
     void setBean(Class<?> type, Object proxyBean);
 
