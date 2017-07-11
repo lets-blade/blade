@@ -6,6 +6,11 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.RandomAccessFile;
 
+/**
+ * File progressive future listener
+ *
+ * @author biezhi
+ */
 @Slf4j
 public class ProgressiveFutureListener implements ChannelProgressiveFutureListener {
 
@@ -18,9 +23,9 @@ public class ProgressiveFutureListener implements ChannelProgressiveFutureListen
     @Override
     public void operationProgressed(ChannelProgressiveFuture future, long progress, long total) {
         if (total < 0) { // total unknown
-            log.debug(future.channel() + " Transfer progress: " + progress);
+            log.debug("{} Transfer progress: {}", future.channel(), progress);
         } else {
-            log.debug(future.channel() + " Transfer progress: " + progress + " / " + total);
+            log.debug("{} Transfer progress: {}/{}", future.channel(), progress, total);
         }
     }
 
@@ -28,7 +33,7 @@ public class ProgressiveFutureListener implements ChannelProgressiveFutureListen
     public void operationComplete(ChannelProgressiveFuture future) {
         try {
             raf.close();
-            log.debug(future.channel() + " Transfer complete.");
+            log.debug("{} Transfer complete.", future.channel());
         } catch (Exception e) {
             log.error("RandomAccessFile close error", e);
         }

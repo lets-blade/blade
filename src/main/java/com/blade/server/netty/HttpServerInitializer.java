@@ -1,6 +1,7 @@
 package com.blade.server.netty;
 
 import com.blade.Blade;
+import com.blade.exception.ExceptionResolve;
 import com.blade.mvc.Const;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
@@ -22,15 +23,15 @@ public class HttpServerInitializer extends ChannelInitializer<SocketChannel> {
 
     private final Blade blade;
     private final SslContext sslCtx;
+    private ExceptionResolve exceptionResolve;
 
     private boolean enableGzip;
-    private boolean enableMonitor;
     private boolean enableCors;
 
-    public HttpServerInitializer(Blade blade, SslContext sslCtx) {
+    public HttpServerInitializer(Blade blade, ExceptionResolve exceptionResolve, SslContext sslCtx) {
         this.blade = blade;
         this.sslCtx = null;
-        this.enableMonitor = blade.environment().getBoolean(Const.ENV_KEY_MONITOR_ENABLE, true);
+        this.exceptionResolve = exceptionResolve;
         this.enableGzip = blade.environment().getBoolean(Const.ENV_KEY_GZIP_ENABLE, false);
         this.enableCors = blade.environment().getBoolean(Const.ENV_KEY_CORS_ENABLE, false);
     }
@@ -52,6 +53,6 @@ public class HttpServerInitializer extends ChannelInitializer<SocketChannel> {
             CorsConfig corsConfig = CorsConfigBuilder.forAnyOrigin().allowNullOrigin().allowCredentials().build();
             p.addLast(new CorsHandler(corsConfig));
         }
-        p.addLast(new HttpServerHandler(blade));
+        p.addLast(new HttpServerHandler(blade, exceptionResolve));
     }
 }

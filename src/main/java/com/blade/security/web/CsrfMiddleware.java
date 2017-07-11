@@ -1,4 +1,4 @@
-package com.blade.mvc.middlewares;
+package com.blade.security.web;
 
 import com.blade.kit.StringKit;
 import com.blade.kit.UUID;
@@ -9,8 +9,7 @@ import com.blade.mvc.http.Request;
 import com.blade.mvc.http.Response;
 import com.blade.mvc.route.Route;
 import com.blade.mvc.route.RouteHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -22,12 +21,13 @@ import java.util.Optional;
 import java.util.Set;
 
 /**
+ * Csrf middleware
+ *
  * @author biezhi
  *         2017/6/5
  */
+@Slf4j
 public class CsrfMiddleware implements WebHook {
-
-    private static final Logger log = LoggerFactory.getLogger(CsrfMiddleware.class);
 
     private final static Set<String> tokens = new HashSet<>();
 

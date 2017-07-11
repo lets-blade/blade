@@ -1,12 +1,12 @@
-package com.blade.server;
+package com.blade.kit;
 
 import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.LongAdder;
 
 public class NamedThreadFactory implements ThreadFactory {
 
     private final String prefix;
-    private final AtomicInteger threadNumber = new AtomicInteger(1);
+    private final LongAdder threadNumber = new LongAdder();
 
     public NamedThreadFactory(String prefix) {
         this.prefix = prefix;
@@ -14,6 +14,7 @@ public class NamedThreadFactory implements ThreadFactory {
 
     @Override
     public Thread newThread(Runnable runnable) {
-        return new Thread(runnable, prefix + " thread-" + threadNumber.getAndIncrement());
+        threadNumber.add(1);
+        return new Thread(runnable, prefix + " thread-" + threadNumber.intValue());
     }
 }

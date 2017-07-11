@@ -12,6 +12,7 @@ import com.blade.ioc.OrderComparator;
 import com.blade.ioc.annotation.Bean;
 import com.blade.ioc.reader.ClassInfo;
 import com.blade.kit.BladeKit;
+import com.blade.kit.NamedThreadFactory;
 import com.blade.kit.ReflectKit;
 import com.blade.kit.StringKit;
 import com.blade.mvc.WebContext;
@@ -21,7 +22,6 @@ import com.blade.mvc.route.RouteBuilder;
 import com.blade.mvc.route.RouteMatcher;
 import com.blade.mvc.ui.DefaultUI;
 import com.blade.mvc.ui.template.DefaultEngine;
-import com.blade.server.NamedThreadFactory;
 import com.blade.server.Server;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
@@ -56,21 +56,12 @@ public class NettyServer implements Server {
     private int threadCount;
     private int workers;
     private int backlog;
-    private int linger;
-    private int receiveBufferSize;
-    private int sendBufferSize;
-    private int connectTimeout;
-    private int highWaterMark;
-    private int lowWaterMark;
-
-    private boolean tcpNodelay;
-    private boolean keepAlive;
-    private boolean reuseAddress;
 
     private EventLoopGroup bossGroup, workerGroup;
     private Channel channel;
 
     private RouteBuilder routeBuilder;
+    private ExceptionResolve exceptionResolve;
 
     @Override
     public void start(Blade blade, String[] args) throws Exception {
@@ -141,7 +132,7 @@ public class NettyServer implements Server {
         b.group(bossGroup, workerGroup)
                 .channel(NioServerSocketChannel.class)
                 .handler(new LoggingHandler(LogLevel.DEBUG))
-                .childHandler(new HttpServerInitializer(blade, sslCtx));
+                .childHandler(new HttpServerInitializer(blade, exceptionResolve, sslCtx));
 
         String address = environment.get(ENV_KEY_SERVER_ADDRESS, DEFAULT_SERVER_ADDRESS);
         int port = environment.getInt(ENV_KEY_SERVER_PORT, DEFAULT_SERVER_PORT);
@@ -175,7 +166,7 @@ public class NettyServer implements Server {
             beanProcessors.add((BeanProcessor) blade.ioc().getBean(clazz));
         }
         if (ReflectKit.hasInterface(clazz, ExceptionResolve.class) && null != clazz.getAnnotation(Bean.class)) {
-            HttpServerHandler.exceptionResolve = (ExceptionResolve) blade.ioc().getBean(clazz);
+            this.exceptionResolve = (ExceptionResolve) blade.ioc().getBean(clazz);
         }
     }
 
@@ -240,17 +231,10 @@ public class NettyServer implements Server {
         threadCount = environment.getInt(ENV_KEY_NETTY_THREAD_COUNT, 1);
         workers = environment.getInt(ENV_KEY_NETTY_WORKERS, 0);
         backlog = environment.getInt(ENV_KEY_NETTY_SO_BACKLOG, 1024);
-        tcpNodelay = environment.getBoolean(ENV_KEY_NETTY_CHILD_TCP_NODELAY, true);
-        keepAlive = environment.getBoolean(ENV_KEY_NETTY_CHILD_KEEPALIVE, true);
-        linger = environment.getInt(ENV_KEY_NETTY_CHILD_LINGER, -1);
-        connectTimeout = environment.getInt(ENV_KEY_NETTY_CONN_TIMEOUT, 10_000);
-        receiveBufferSize = environment.getInt(ENV_KEY_NETTY_REECEIVE_BUF, 32);
-        sendBufferSize = environment.getInt(ENV_KEY_NETTY_SEND_BUF, 32);
     }
 
     @Override
     public void stop() {
-
         if (this.bossGroup != null) {
             this.bossGroup.shutdownGracefully();
         }
@@ -263,7 +247,6 @@ public class NettyServer implements Server {
         if (workerExecutors != null) {
             workerExecutors.shutdown();
         }
-
     }
 
     @Override

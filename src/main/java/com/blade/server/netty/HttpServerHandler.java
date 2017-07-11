@@ -44,7 +44,7 @@ import static io.netty.handler.codec.http.HttpUtil.is100ContinueExpected;
 @ChannelHandler.Sharable
 public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
 
-    public static ExceptionResolve exceptionResolve;
+    public ExceptionResolve exceptionResolve;
 
     private final Blade blade;
     private final RouteMatcher routeMatcher;
@@ -56,9 +56,10 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
 
     private String page404, page500;
 
-    HttpServerHandler(Blade blade) {
+    HttpServerHandler(Blade blade, ExceptionResolve exceptionResolve) {
         this.blade = blade;
         this.statics = blade.getStatics();
+        this.exceptionResolve = exceptionResolve;
 
         this.page404 = blade.environment().get(ENV_KEY_PAGE_404, null);
         this.page500 = blade.environment().get(ENV_KEY_PAGE_500, null);
