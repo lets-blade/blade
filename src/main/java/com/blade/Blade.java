@@ -7,6 +7,7 @@ import com.blade.ioc.Ioc;
 import com.blade.ioc.SimpleIoc;
 import com.blade.kit.Assert;
 import com.blade.kit.BladeKit;
+import com.blade.mvc.Const;
 import com.blade.mvc.hook.WebHook;
 import com.blade.mvc.http.HttpMethod;
 import com.blade.mvc.http.SessionManager;
@@ -36,16 +37,16 @@ import static com.blade.mvc.Const.*;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Blade {
 
-    private List<WebHook>       middleware              = new ArrayList<>();
-    private Set<String>         packages                = new LinkedHashSet<>(Collections.singletonList(PLUGIN_PACKAGE_NAME));
-    private Set<String>         statics                 = new HashSet<>(Arrays.asList("/favicon.ico", "/static/", "/upload/", "/webjars/"));
-    private Ioc                 ioc                     = new SimpleIoc();
-    private TemplateEngine      templateEngine          = new DefaultEngine();
-    private EventManager        eventManager            = new EventManager();
-    private SessionManager      sessionManager          = new SessionManager();
-    private CountDownLatch      latch                   = new CountDownLatch(1);
-    private NettyServer         nettyServer             = new NettyServer();
-    private RouteMatcher        routeMatcher            = new RouteMatcher();
+    private List<WebHook>  middleware     = new ArrayList<>();
+    private Set<String>    packages       = new LinkedHashSet<>(Collections.singletonList(PLUGIN_PACKAGE_NAME));
+    private Set<String>    statics        = new HashSet<>(Const.DEFAULT_STATICS);
+    private Ioc            ioc            = new SimpleIoc();
+    private TemplateEngine templateEngine = new DefaultEngine();
+    private EventManager   eventManager   = new EventManager();
+    private SessionManager sessionManager = new SessionManager();
+    private CountDownLatch latch          = new CountDownLatch(1);
+    private NettyServer    nettyServer    = new NettyServer();
+    private RouteMatcher   routeMatcher   = new RouteMatcher();
     private Environment         environment             = Environment.empty();
     private Consumer<Exception> startupExceptionHandler = (e) -> log.error("Failed to start Blade", e);
     private boolean             started                 = false;

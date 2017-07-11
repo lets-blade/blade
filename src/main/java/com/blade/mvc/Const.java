@@ -1,6 +1,7 @@
 package com.blade.mvc;
 
-import io.netty.handler.codec.http.HttpVersion;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author biezhi
@@ -8,19 +9,19 @@ import io.netty.handler.codec.http.HttpVersion;
  */
 public interface Const {
 
-    int    DEFAULT_SERVER_PORT    = 9000;
-    String DEFAULT_SERVER_ADDRESS = "0.0.0.0";
-    String VERSION                = "2.0.1-alpha";
-    String WEB_JARS               = "/webjars/";
-    String CLASSPATH              = Const.class.getResource("/").getPath();
-    String PLUGIN_PACKAGE_NAME    = "com.blade.plugin";
-    String CONTENT_TYPE_HTML      = "text/html; charset=UTF-8";
-    String CONTENT_TYPE_JSON      = "application/json; charset=UTF-8";
-    String CONTENT_TYPE_TEXT      = "text/plain; charset=UTF-8";
-    String HTTP_DATE_FORMAT       = "EEE, dd MMM yyyy HH:mm:ss zzz";
+    int          DEFAULT_SERVER_PORT    = 9000;
+    String       DEFAULT_SERVER_ADDRESS = "0.0.0.0";
+    String       VERSION                = "2.0.1-alpha";
+    String       WEB_JARS               = "/webjars/";
+    String       CLASSPATH              = Const.class.getResource("/").getPath();
+    String       PLUGIN_PACKAGE_NAME    = "com.blade.plugin";
+    String       CONTENT_TYPE_HTML      = "text/html; charset=UTF-8";
+    String       CONTENT_TYPE_JSON      = "application/json; charset=UTF-8";
+    String       CONTENT_TYPE_TEXT      = "text/plain; charset=UTF-8";
+    String       HTTP_DATE_FORMAT       = "EEE, dd MMM yyyy HH:mm:ss zzz";
+    List<String> DEFAULT_STATICS        = Arrays.asList("/favicon.ico", "/static/", "/upload/", "/webjars/");
 
-
-    //-------------environment key---------------//
+    // Env key
     String ENV_KEY_DEV_MODE                = "app.devMode";
     String ENV_KEY_APP_NAME                = "app.name";
     String ENV_KEY_GZIP_ENABLE             = "http.gzip.enable";
