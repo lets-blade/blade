@@ -1,7 +1,5 @@
 package com.blade.security.web.csrf;
 
-import com.blade.mvc.route.RouteHandler;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -9,8 +7,9 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-public @interface ValidToken {
+public @interface CsrfToken {
 
-    Class<? extends RouteHandler> value() default RouteHandler.class;
+    boolean valid() default false;
 
+    boolean newToken() default false;
 }

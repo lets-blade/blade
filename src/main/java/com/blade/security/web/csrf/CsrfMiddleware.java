@@ -43,19 +43,21 @@ public class CsrfMiddleware implements WebHook {
     @Override
     public boolean before(Signature signature) {
         Request request = signature.request();
-        if ("GET".equals(request.method())) {
+        Method method = signature.getAction();
+        CsrfToken csrfToken = method.getAnnotation(CsrfToken.class);
+        if (null == csrfToken) {
+            return true;
+        }
+        if (csrfToken.newToken()) {
             request.attribute(csrfConfig.getParam(), csrfConfig.getKey());
             request.attribute(csrfConfig.getHeader(), csrfConfig.getKey());
             String token = UUID.UU64();
             request.attribute(csrfConfig.getKey(), token);
             log.debug("Generate token [{}]", token);
             tokens.add(token);
-        } else {
-            Method method = signature.getAction();
-            ValidToken validToken = method.getAnnotation(ValidToken.class);
-            if (null != validToken || StringKit.equals(Boolean.TRUE.toString(), signature.getRequest().header(csrfConfig.getValidId()))) {
-                return validation();
-            }
+        }
+        if (csrfToken.valid() || StringKit.equals(Boolean.TRUE.toString(), signature.getRequest().header(csrfConfig.getValidId()))) {
+            return validation();
         }
         return true;
     }
