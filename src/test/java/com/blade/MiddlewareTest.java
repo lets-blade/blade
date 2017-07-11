@@ -1,6 +1,10 @@
 package com.blade;
 
+import com.blade.security.web.auth.BasicAuthMiddleware;
 import org.junit.Test;
+import sun.misc.BASE64Encoder;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * Middleware Test
@@ -10,18 +14,29 @@ import org.junit.Test;
  */
 public class MiddlewareTest extends BaseTestCase {
 
-    private String defaultKey = "csrf_token";
-
     @Test
     public void testMiddleware() throws Exception {
         start(
                 app.use((invoker) -> {
-                    System.out.println(invoker.request().uri());
+                    invoker.request().attribute("middleware", "2017");
                     return invoker.next();
-                }).get("/login", ((request, response) -> response.text(request.attribute(defaultKey))))
+                }).get("/", ((request, response) -> response.text(request.attribute("middleware"))))
         );
-        String token = bodyToString("/login");
-        System.out.println(token);
+        String result = bodyToString("/");
+        assertEquals(2017, result);
     }
 
+    @Test
+    public void testAuthMiddleware() throws Exception {
+        start(
+                app.use(new BasicAuthMiddleware()).get("/", ((request, response) -> response.text("Hello")))
+        );
+
+        int code = get("/").code();
+        assertEquals(401, code);
+
+        String basicAuth = new BASE64Encoder().encode("blade:blade".getBytes());
+        String result    = get("/").header("Authorization", "Basic " + basicAuth).body();
+        assertEquals("Hello", result);
+    }
 }
