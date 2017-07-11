@@ -48,19 +48,17 @@ import static com.blade.mvc.Const.*;
 @Slf4j
 public class NettyServer implements Server {
 
-    private Blade blade;
-    private Environment environment;
-
-    private ExecutorService bossExecutors;
-    private ExecutorService workerExecutors;
-    private int threadCount;
-    private int workers;
-    private int backlog;
-
-    private EventLoopGroup bossGroup, workerGroup;
-    private Channel channel;
-
-    private RouteBuilder routeBuilder;
+    private Blade            blade;
+    private Environment      environment;
+    private EventLoopGroup   bossGroup;
+    private EventLoopGroup   workerGroup;
+    private ExecutorService  bossExecutors;
+    private ExecutorService  workerExecutors;
+    private int              threadCount;
+    private int              workers;
+    private int              backlog;
+    private Channel          channel;
+    private RouteBuilder     routeBuilder;
     private ExceptionResolve exceptionResolve;
 
     @Override
@@ -121,7 +119,7 @@ public class NettyServer implements Server {
     private void startServer(long startTime) throws Exception {
         // Configure SSL.
         SslContext sslCtx = null;
-        boolean SSL = false;
+        boolean    SSL    = false;
 
         // Configure the server.
         this.bossGroup = new NioEventLoopGroup(threadCount, bossExecutors);
@@ -135,7 +133,7 @@ public class NettyServer implements Server {
                 .childHandler(new HttpServerInitializer(blade, exceptionResolve, sslCtx));
 
         String address = environment.get(ENV_KEY_SERVER_ADDRESS, DEFAULT_SERVER_ADDRESS);
-        int port = environment.getInt(ENV_KEY_SERVER_PORT, DEFAULT_SERVER_PORT);
+        int    port    = environment.getInt(ENV_KEY_SERVER_PORT, DEFAULT_SERVER_PORT);
 
         channel = b.bind(address, port).sync().channel();
         String appName = environment.get(ENV_KEY_APP_NAME, "Blade");
@@ -186,11 +184,11 @@ public class NettyServer implements Server {
         if (!BladeKit.isEmpty(args)) {
             for (int i = 0; i < args.length; i++) {
                 if (args[i].startsWith(TERMINAL_SERVER_ADDRESS)) {
-                    int pos = args[i].indexOf(TERMINAL_SERVER_ADDRESS) + TERMINAL_SERVER_ADDRESS.length();
+                    int    pos     = args[i].indexOf(TERMINAL_SERVER_ADDRESS) + TERMINAL_SERVER_ADDRESS.length();
                     String address = args[i].substring(pos);
                     environment.set(ENV_KEY_SERVER_ADDRESS, address);
                 } else if (args[i].startsWith(TERMINAL_SERVER_PORT)) {
-                    int pos = args[i].indexOf(TERMINAL_SERVER_PORT) + TERMINAL_SERVER_PORT.length();
+                    int    pos  = args[i].indexOf(TERMINAL_SERVER_PORT) + TERMINAL_SERVER_PORT.length();
                     String port = args[i].substring(pos);
                     environment.set(ENV_KEY_SERVER_PORT, port);
                 }
@@ -222,7 +220,7 @@ public class NettyServer implements Server {
         }
         DefaultEngine.TEMPLATE_PATH = templatePath;
 
-        String boosGroupName = environment.get(ENV_KEY_NETTY_BOOS_GROUP_NAME, "pool");
+        String boosGroupName   = environment.get(ENV_KEY_NETTY_BOOS_GROUP_NAME, "pool");
         String workerGroupName = environment.get(ENV_KEY_NETTY_WORKER_GROUP_NAME, "pool");
 
         bossExecutors = Executors.newCachedThreadPool(new NamedThreadFactory("boss@" + boosGroupName));

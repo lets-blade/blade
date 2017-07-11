@@ -4,15 +4,15 @@ import com.blade.Blade;
 
 public class Event {
 
-    public EventType eventEventType;
-    public Blade blade;
+    public EventType eventType;
+    public Blade     blade;
 
-    public Event(EventType eventEventType) {
-        this.eventEventType = eventEventType;
+    public Event(EventType eventType) {
+        this.eventType = eventType;
     }
 
-    public Event(EventType eventEventType, Blade blade) {
-        this.eventEventType = eventEventType;
+    public Event(EventType eventType, Blade blade) {
+        this.eventType = eventType;
         this.blade = blade;
     }
 

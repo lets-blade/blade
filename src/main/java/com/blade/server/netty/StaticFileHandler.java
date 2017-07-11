@@ -83,7 +83,7 @@ public class StaticFileHandler implements RequestHandler<Boolean> {
                 } catch (IOException e) {
                     throw new BladeException(e);
                 }
-                FullHttpResponse httpResponse = new DefaultFullHttpResponse(Const.HTTP_VERSION, OK, Unpooled.copiedBuffer(content, CharsetUtil.UTF_8));
+                FullHttpResponse httpResponse = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, OK, Unpooled.copiedBuffer(content, CharsetUtil.UTF_8));
                 setDateAndCacheHeaders(httpResponse, null);
                 String contentType = StringKit.mimeType(uri);
                 if (null != contentType) httpResponse.headers().set(CONTENT_TYPE, contentType);

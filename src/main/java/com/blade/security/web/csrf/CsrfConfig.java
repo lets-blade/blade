@@ -18,18 +18,14 @@ import lombok.NoArgsConstructor;
 public class CsrfConfig {
 
     @Builder.Default
-    private String token = "_csrf.token";
-
+    private String token   = "_csrf.token";
     @Builder.Default
-    private String param = "_csrf.param";
-
+    private String param   = "_csrf.param";
     @Builder.Default
-    private String header = "_csrf.header";
-
+    private String header  = "_csrf.header";
     @Builder.Default
     private String validId = "_csrf.valid";
-
     @Builder.Default
-    private String key = "csrf_token";
+    private String key     = "csrf_token";
 
 }

@@ -18,6 +18,7 @@ import io.netty.handler.codec.http.*;
 import io.netty.handler.codec.http.cookie.Cookie;
 import io.netty.handler.codec.http.cookie.ServerCookieEncoder;
 import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,28 +33,21 @@ import static io.netty.handler.codec.http.HttpResponseStatus.OK;
 import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
 /**
+ * HttpResponse
+ *
  * @author biezhi
  *         2017/5/31
  */
+@Slf4j
 public class HttpResponse implements Response {
 
-    private static final Logger log = LoggerFactory.getLogger(HttpResponse.class);
-
-    private ChannelHandlerContext ctx;
-
-    private String contentType = Const.CONTENT_TYPE_HTML;
-    private HttpResponseStatus status = HttpResponseStatus.OK;
-    private Object content = Unpooled.EMPTY_BUFFER;
-    private HttpHeaders headers = new DefaultHttpHeaders();
-    private Set<Cookie> cookies = new HashSet<>();
-
-    private int statusCode = 200;
-    private boolean isCommit;
-
-    private TemplateEngine templateEngine;
-
-    public HttpResponse() {
-    }
+    private String                contentType    = Const.CONTENT_TYPE_HTML;
+    private HttpHeaders           headers        = new DefaultHttpHeaders();
+    private Set<Cookie>           cookies        = new HashSet<>();
+    private int                   statusCode     = 200;
+    private boolean               isCommit       = false;
+    private ChannelHandlerContext ctx            = null;
+    private TemplateEngine        templateEngine = null;
 
     @Override
     public int statusCode() {
@@ -164,12 +158,12 @@ public class HttpResponse implements Response {
                 Assert.throwException("please check the file is effective!");
             }
 
-            RandomAccessFile raf = new RandomAccessFile(file, "r");
-            long fileLength = raf.length();
+            RandomAccessFile raf        = new RandomAccessFile(file, "r");
+            long             fileLength = raf.length();
             this.contentType = StringKit.mimeType(file.getName());
 
             io.netty.handler.codec.http.HttpResponse httpResponse = new DefaultHttpResponse(HTTP_1_1, OK);
-            HttpHeaders httpHeaders = httpResponse.headers().add(getDefaultHeader());
+            HttpHeaders                              httpHeaders  = httpResponse.headers().add(getDefaultHeader());
 
             boolean keepAlive = WebContext.request().keepAlive();
             if (keepAlive) {
@@ -202,8 +196,8 @@ public class HttpResponse implements Response {
         StringWriter sw = new StringWriter();
         try {
             templateEngine.render(modelAndView, sw);
-            ByteBuf buffer = Unpooled.wrappedBuffer(sw.toString().getBytes());
-            FullHttpResponse response = new DefaultFullHttpResponse(Const.HTTP_VERSION, HttpResponseStatus.valueOf(statusCode), buffer);
+            ByteBuf          buffer   = Unpooled.wrappedBuffer(sw.toString().getBytes());
+            FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(statusCode), buffer);
             this.send(response);
         } catch (Exception e) {
             log.error("render error", e);
@@ -213,7 +207,7 @@ public class HttpResponse implements Response {
     @Override
     public void redirect(@NonNull String newUri) {
         headers.set(HttpHeaders.Names.LOCATION, newUri);
-        FullHttpResponse response = new DefaultFullHttpResponse(Const.HTTP_VERSION, HttpResponseStatus.FOUND);
+        FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.FOUND);
         this.send(response);
     }
 

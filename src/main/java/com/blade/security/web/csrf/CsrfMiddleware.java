@@ -24,8 +24,8 @@ import java.util.function.Consumer;
 @Slf4j
 public class CsrfMiddleware implements WebHook {
 
-    private final Set<String> tokens = new HashSet<>(64);
-    private CsrfConfig csrfConfig = CsrfConfig.builder().build();
+    private Set<String>        tokens     = new HashSet<>(64);
+    private CsrfConfig         csrfConfig = CsrfConfig.builder().build();
     private Consumer<Response> csrfHandle = response -> response.badRequest().text("Bad Request.");
 
     public CsrfMiddleware() {
@@ -42,8 +42,8 @@ public class CsrfMiddleware implements WebHook {
 
     @Override
     public boolean before(Signature signature) {
-        Request request = signature.request();
-        Method method = signature.getAction();
+        Request   request   = signature.request();
+        Method    method    = signature.getAction();
         CsrfToken csrfToken = method.getAnnotation(CsrfToken.class);
         if (null == csrfToken) {
             return true;
@@ -63,8 +63,8 @@ public class CsrfMiddleware implements WebHook {
     }
 
     public boolean validation() {
-        Request request = WebContext.request();
-        Response response = WebContext.response();
+        Request          request       = WebContext.request();
+        Response         response      = WebContext.response();
         Optional<String> tokenOptional = request.query(csrfConfig.getKey());
 
         if (!tokenOptional.isPresent()) {

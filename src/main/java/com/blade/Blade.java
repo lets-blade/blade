@@ -36,28 +36,20 @@ import static com.blade.mvc.Const.*;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Blade {
 
-    private boolean started = false;
-
-    private RouteMatcher routeMatcher = new RouteMatcher();
-    private NettyServer nettyServer = new NettyServer();
-    private Class<?> bootClass;
-
-    private List<WebHook> middleware = new ArrayList<>();
-
-    private Set<String> packages = new LinkedHashSet<>(Collections.singletonList(PLUGIN_PACKAGE_NAME));
-    private Set<String> statics = new HashSet<>(Arrays.asList("/favicon.ico", "/static/", "/upload/", "/webjars/"));
-
-    private Ioc ioc = new SimpleIoc();
-    private TemplateEngine templateEngine = new DefaultEngine();
-
-    private Environment environment = Environment.empty();
-
-    private EventManager eventManager = new EventManager();
-    private SessionManager sessionManager = new SessionManager();
-
+    private List<WebHook>       middleware              = new ArrayList<>();
+    private Set<String>         packages                = new LinkedHashSet<>(Collections.singletonList(PLUGIN_PACKAGE_NAME));
+    private Set<String>         statics                 = new HashSet<>(Arrays.asList("/favicon.ico", "/static/", "/upload/", "/webjars/"));
+    private Ioc                 ioc                     = new SimpleIoc();
+    private TemplateEngine      templateEngine          = new DefaultEngine();
+    private EventManager        eventManager            = new EventManager();
+    private SessionManager      sessionManager          = new SessionManager();
+    private CountDownLatch      latch                   = new CountDownLatch(1);
+    private NettyServer         nettyServer             = new NettyServer();
+    private RouteMatcher        routeMatcher            = new RouteMatcher();
+    private Environment         environment             = Environment.empty();
     private Consumer<Exception> startupExceptionHandler = (e) -> log.error("Failed to start Blade", e);
-
-    private CountDownLatch latch = new CountDownLatch(1);
+    private boolean             started                 = false;
+    private Class<?>            bootClass               = null;
 
     public static Blade me() {
         return new Blade();
@@ -241,6 +233,7 @@ public class Blade {
 
     public Blade start(Class<?> bootClass, @NonNull String address, int port, String... args) {
         try {
+            environment.set(ENV_KEY_SERVER_ADDRESS, address);
             Assert.greaterThan(port, 0, "server port not is negative number.");
             this.bootClass = bootClass;
             eventManager.fireEvent(EventType.SERVER_STARTING, this);

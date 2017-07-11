@@ -44,17 +44,15 @@ import static io.netty.handler.codec.http.HttpUtil.is100ContinueExpected;
 @ChannelHandler.Sharable
 public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
 
-    public ExceptionResolve exceptionResolve;
-
-    private final Blade blade;
-    private final RouteMatcher routeMatcher;
-    private final RouteViewResolve routeViewResolve;
-    private final Set<String> statics;
-
+    private final Blade             blade;
+    private final RouteMatcher      routeMatcher;
+    private final Set<String>       statics;
+    private final String            page404;
+    private final String            page500;
+    private final SessionHandler    sessionHandler;
     private final StaticFileHandler staticFileHandler;
-    private final SessionHandler sessionHandler;
-
-    private String page404, page500;
+    private final RouteViewResolve  routeViewResolve;
+    private final ExceptionResolve  exceptionResolve;
 
     HttpServerHandler(Blade blade, ExceptionResolve exceptionResolve) {
         this.blade = blade;
@@ -81,7 +79,7 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
             ctx.write(new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.CONTINUE));
         }
 
-        Request request = HttpRequest.build(ctx, fullHttpRequest, sessionHandler);
+        Request  request  = HttpRequest.build(ctx, fullHttpRequest, sessionHandler);
         Response response = HttpResponse.build(ctx, blade.templateEngine());
 
         // route signature
@@ -172,8 +170,8 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
         if (cause instanceof BladeException) {
             String error = cause.getMessage();
 
-            StringWriter sw = new StringWriter();
-            PrintWriter writer = new PrintWriter(sw);
+            StringWriter sw     = new StringWriter();
+            PrintWriter  writer = new PrintWriter(sw);
 
             if (null != page500) {
                 cause.printStackTrace(writer);
@@ -225,7 +223,7 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
         }
         for (Route route : middleware) {
             WebHook webHook = (WebHook) route.getTarget();
-            boolean flag = webHook.before(signature);
+            boolean flag    = webHook.before(signature);
             if (!flag) return false;
         }
         return true;

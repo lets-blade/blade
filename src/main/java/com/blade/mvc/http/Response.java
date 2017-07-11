@@ -4,19 +4,17 @@ import com.blade.kit.JsonKit;
 import com.blade.mvc.Const;
 import com.blade.mvc.WebContext;
 import com.blade.mvc.ui.ModelAndView;
-import com.blade.mvc.ui.RestResponse;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.handler.codec.http.DefaultFullHttpResponse;
 import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.handler.codec.http.HttpResponseStatus;
+import io.netty.handler.codec.http.HttpVersion;
 import io.netty.util.CharsetUtil;
 import lombok.NonNull;
 
 import java.io.File;
-import java.nio.Buffer;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Http Response
@@ -157,7 +155,7 @@ public interface Response {
      * @return Return Response
      */
     default void text(@NonNull String text) {
-        FullHttpResponse response = new DefaultFullHttpResponse(Const.HTTP_VERSION, HttpResponseStatus.valueOf(statusCode()), Unpooled.wrappedBuffer(text.getBytes(CharsetUtil.UTF_8)));
+        FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(statusCode()), Unpooled.wrappedBuffer(text.getBytes(CharsetUtil.UTF_8)));
         this.contentType(Const.CONTENT_TYPE_TEXT);
         this.send(response);
     }
@@ -169,7 +167,7 @@ public interface Response {
      * @return Return Response
      */
     default void html(@NonNull String html) {
-        FullHttpResponse response = new DefaultFullHttpResponse(Const.HTTP_VERSION, HttpResponseStatus.valueOf(statusCode()), Unpooled.wrappedBuffer(html.getBytes(CharsetUtil.UTF_8)));
+        FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(statusCode()), Unpooled.wrappedBuffer(html.getBytes(CharsetUtil.UTF_8)));
         this.contentType(Const.CONTENT_TYPE_HTML);
         this.send(response);
     }
@@ -181,7 +179,7 @@ public interface Response {
      * @return Return Response
      */
     default void json(@NonNull String json) {
-        FullHttpResponse response = new DefaultFullHttpResponse(Const.HTTP_VERSION, HttpResponseStatus.valueOf(statusCode()), Unpooled.wrappedBuffer(json.getBytes(CharsetUtil.UTF_8)));
+        FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(statusCode()), Unpooled.wrappedBuffer(json.getBytes(CharsetUtil.UTF_8)));
         if (!WebContext.request().isIE()) {
             this.contentType(Const.CONTENT_TYPE_JSON);
         }
@@ -204,17 +202,17 @@ public interface Response {
      * @param data
      */
     default void body(@NonNull String data) {
-        FullHttpResponse response = new DefaultFullHttpResponse(Const.HTTP_VERSION, HttpResponseStatus.valueOf(statusCode()), Unpooled.wrappedBuffer(data.getBytes(CharsetUtil.UTF_8)));
+        FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(statusCode()), Unpooled.wrappedBuffer(data.getBytes(CharsetUtil.UTF_8)));
         this.send(response);
     }
 
     default void body(@NonNull byte[] data) {
-        FullHttpResponse response = new DefaultFullHttpResponse(Const.HTTP_VERSION, HttpResponseStatus.valueOf(statusCode()), Unpooled.wrappedBuffer(data));
+        FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(statusCode()), Unpooled.wrappedBuffer(data));
         this.send(response);
     }
 
     default void body(@NonNull ByteBuf byteBuf) {
-        FullHttpResponse response = new DefaultFullHttpResponse(Const.HTTP_VERSION, HttpResponseStatus.valueOf(statusCode()), byteBuf);
+        FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(statusCode()), byteBuf);
         this.send(response);
     }
 

@@ -34,36 +34,28 @@ public class HttpRequest implements Request {
     private static final HttpDataFactory HTTP_DATA_FACTORY = new DefaultHttpDataFactory(DefaultHttpDataFactory.MINSIZE); // Disk if size exceed
 
     static {
-        DiskFileUpload.deleteOnExitTemporaryFile = true; // should delete file
-        // on exit (in normal
-        // exit)
-        DiskFileUpload.baseDirectory = null; // system temp directory
-        DiskAttribute.deleteOnExitTemporaryFile = true; // should delete file on
-        // exit (in normal exit)
-        DiskAttribute.baseDirectory = null; // system temp directory
+        DiskFileUpload.deleteOnExitTemporaryFile = true;
+        DiskFileUpload.baseDirectory = null;
+        DiskAttribute.deleteOnExitTemporaryFile = true;
+        DiskAttribute.baseDirectory = null;
     }
 
-    private HttpPostRequestDecoder decoder;
     private SessionHandler sessionHandler;
-    private Route route;
+    private Route          route;
+    private ByteBuf        body;
+    private String         host;
+    private String         uri;
+    private String         url;
+    private String         protocol;
+    private String         method;
+    private boolean        keepAlive;
 
-    private ByteBuf body;
-
-    private String host;
-    private String uri;
-    private String url;
-    private String protocol;
-    private String method;
-    private String contextPath;
-    private boolean keepAlive;
-
-
-    private Map<String, String> headers = new HashMap<>();
-    private Map<String, Object> attrs = new HashMap<>();
+    private Map<String, String>       headers    = new HashMap<>();
+    private Map<String, Object>       attributes = new HashMap<>();
     private Map<String, List<String>> parameters = new HashMap<>();
-    private Map<String, String> pathParams = new HashMap<>();
-    private Map<String, Cookie> cookies = new HashMap<>();
-    private Map<String, FileItem> fileItems = new HashMap<>();
+    private Map<String, String>       pathParams = new HashMap<>();
+    private Map<String, Cookie>       cookies    = new HashMap<>();
+    private Map<String, FileItem>     fileItems  = new HashMap<>();
 
     private void init(FullHttpRequest fullHttpRequest) {
         // headers
@@ -250,7 +242,7 @@ public class HttpRequest implements Request {
 
     @Override
     public Map<String, Object> attributes() {
-        return this.attrs;
+        return this.attributes;
     }
 
     @Override

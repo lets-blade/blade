@@ -11,9 +11,9 @@ import java.util.stream.Stream;
 
 public class EventManager {
 
-    private Map<EventType, List<EventListener>> listenerMap;
+    private Map<EventType, List<EventListener>> listenerMap = null;
+    private OrderComparator<EventListener>      comparator  = new OrderComparator<>();
 
-    private OrderComparator<EventListener> comparator = new OrderComparator<>();
     public EventManager() {
         this.listenerMap = Stream.of(EventType.values()).collect(Collectors.toMap(v -> v, v -> new LinkedList<>()));
     }
@@ -25,7 +25,7 @@ public class EventManager {
     public void fireEvent(EventType type, Blade blade) {
         listenerMap.get(type).stream()
                 .sorted(comparator)
-                .forEach(listener -> listener.handleEvent(new Event(type, blade)));
+                .forEach(listener -> listener.trigger(new Event(type, blade)));
     }
 
     public void fireEvent(EventType type) {
