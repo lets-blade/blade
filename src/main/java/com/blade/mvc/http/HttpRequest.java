@@ -264,8 +264,8 @@ public class HttpRequest implements Request {
         HttpRequest httpRequest = new HttpRequest();
         httpRequest.sessionHandler = sessionHandler;
         httpRequest.keepAlive = HttpUtil.isKeepAlive(fullHttpRequest);
-        String remoteAddr = ctx.channel().remoteAddress().toString();
-        httpRequest.host = StringKit.isNotBlank(remoteAddr) ? remoteAddr.substring(1) : "Unknown";
+        String remoteAddress = ctx.channel().remoteAddress().toString();
+        httpRequest.host = StringKit.isNotBlank(remoteAddress) ? remoteAddress.substring(1) : "Unknown";
         httpRequest.url = fullHttpRequest.uri();
         int pathEndPos = httpRequest.url.indexOf('?');
         httpRequest.uri = pathEndPos < 0 ? httpRequest.url : httpRequest.url.substring(0, pathEndPos);

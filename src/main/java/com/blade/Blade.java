@@ -30,8 +30,7 @@ import static com.blade.mvc.Const.*;
 /**
  * Blade Core
  *
- * @author biezhi
- *         2017/5/31
+ * @author biezhi 2017/5/31
  */
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -274,5 +273,4 @@ public class Blade {
         nettyServer.stop();
         eventManager.fireEvent(EventType.SERVER_STOPPED, this);
     }
-
 }
