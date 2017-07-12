@@ -10,8 +10,12 @@ import java.lang.annotation.Target;
 public @interface PutRoute {
 
     /**
-     * @return Request url
+     * @return request url
      */
     String[] value() default "/";
 
+    /**
+     * @return route description
+     */
+    String description() default "";
 }

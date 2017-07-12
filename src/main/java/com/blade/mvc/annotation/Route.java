@@ -41,4 +41,8 @@ public @interface Route {
      */
     HttpMethod method() default HttpMethod.ALL;
 
+    /**
+     * @return Route description
+     */
+    String description() default "";
 }

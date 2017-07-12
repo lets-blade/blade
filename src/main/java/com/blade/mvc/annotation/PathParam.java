@@ -17,4 +17,9 @@ public @interface PathParam {
 
     String defaultValue() default "";
 
+    /**
+     * @return route description
+     */
+    String description() default "";
+
 }

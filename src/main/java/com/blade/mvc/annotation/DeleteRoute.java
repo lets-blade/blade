@@ -11,4 +11,8 @@ public @interface DeleteRoute {
 
     String[] value() default "/";
 
+    /**
+     * @return route description
+     */
+    String description() default "";
 }

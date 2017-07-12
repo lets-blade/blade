@@ -23,6 +23,13 @@ public @interface Path {
      */
     String suffix() default "";
 
+    /**
+     * @return is restful api
+     */
     boolean restful() default false;
 
+    /**
+     * @return path description
+     */
+    String description() default "";
 }

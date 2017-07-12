@@ -19,4 +19,9 @@ public @interface QueryParam {
 
     String defaultValue() default "";
 
+    /**
+     * @return route description
+     */
+    String description() default "";
+
 }
