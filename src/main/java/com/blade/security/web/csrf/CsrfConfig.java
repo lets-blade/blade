@@ -1,6 +1,5 @@
 package com.blade.security.web.csrf;
 
-import com.blade.kit.StringKit;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

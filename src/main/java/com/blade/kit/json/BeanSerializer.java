@@ -65,10 +65,10 @@ public class BeanSerializer {
                 } else {
                     value = serialize(field.get(bean));
                 }
-                int positon = indexs.size();
-                indexs.add(positon, pos++);
-                values.add(positon, value);
-                keys.add(positon, key);
+                int position = indexs.size();
+                indexs.add(position, pos++);
+                values.add(position, value);
+                keys.add(position, key);
             } catch (Exception ignore) {
             }
         }

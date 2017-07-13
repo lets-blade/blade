@@ -58,9 +58,9 @@ public class JsonSerializer {
     }
 
     /**
-     * Deserializing a json string to data object
+     * deserialize a json string to data object
      *
-     * @param json the json string which will be deserialized
+     * @param json the json string which will be deserialize
      * @return the data object made from json
      * @throws ParseException thrown when parsing a illegal json text
      */

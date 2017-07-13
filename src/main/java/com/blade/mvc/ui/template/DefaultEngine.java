@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * default template implment
+ * default template implement
  *
  * @author biezhi
  *         2017/5/31

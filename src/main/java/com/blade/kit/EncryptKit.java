@@ -17,12 +17,12 @@ import java.security.*;
  * @author    <a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since 1.0
  */
-public class EncrypKit {
+public class EncryptKit {
 
     private static final char hexDigits[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
 
-    private EncrypKit() {
-        throw new IllegalStateException("EncrypKit shouldn't be constructed!");
+    private EncryptKit() {
+        throw new IllegalStateException("EncryptKit shouldn't be constructed!");
     }
 
     /*********************** 哈希加密相关 ***********************/

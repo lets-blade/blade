@@ -48,7 +48,7 @@ public class BeanDefine {
         return isSingle;
     }
 
-    public void setSignle(boolean isSingle) {
+    public void setSingle(boolean isSingle) {
         this.isSingle = isSingle;
     }
 

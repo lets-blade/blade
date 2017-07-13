@@ -40,9 +40,9 @@ public class RouteViewResolve {
             int    len = actionMethod.getParameterTypes().length;
             Object returnParam;
             if (len > 0) {
-                returnParam = ReflectKit.invokeMehod(target, actionMethod, signature.getParameters());
+                returnParam = ReflectKit.invokeMethod(target, actionMethod, signature.getParameters());
             } else {
-                returnParam = ReflectKit.invokeMehod(target, actionMethod);
+                returnParam = ReflectKit.invokeMethod(target, actionMethod);
             }
 
             if (null != returnParam) {
@@ -92,9 +92,9 @@ public class RouteViewResolve {
                         .action(actionMethod).build();
 
                 Object[] args = MethodArgument.getArgs(signature);
-                returnParam = ReflectKit.invokeMehod(target, actionMethod, args);
+                returnParam = ReflectKit.invokeMethod(target, actionMethod, args);
             } else {
-                returnParam = ReflectKit.invokeMehod(target, actionMethod);
+                returnParam = ReflectKit.invokeMethod(target, actionMethod);
             }
 
             if (null != returnParam) {

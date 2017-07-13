@@ -207,7 +207,7 @@ public class BladeTemplate {
             // we recurse
             toAppend = valueInChain(objectValue, param);
         } else {
-            // We evaluate if the obejct is an array
+            // We evaluate if the object is an array
             // If it's an array we print it nicely
             toAppend = evaluateIfArray(objectValue);
         }
