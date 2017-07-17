@@ -7,10 +7,9 @@ import com.blade.ioc.Ioc;
 import com.blade.ioc.SimpleIoc;
 import com.blade.kit.Assert;
 import com.blade.kit.BladeKit;
-import com.blade.mvc.Const;
+import com.blade.mvc.SessionManager;
 import com.blade.mvc.hook.WebHook;
 import com.blade.mvc.http.HttpMethod;
-import com.blade.mvc.SessionManager;
 import com.blade.mvc.route.RouteHandler;
 import com.blade.mvc.route.RouteMatcher;
 import com.blade.mvc.ui.template.DefaultEngine;
@@ -89,6 +88,12 @@ public class Blade {
         return this;
     }
 
+    /**
+     * Setting blade mvc default templateEngine
+     *
+     * @param templateEngine TemplateEngine object
+     * @return blade
+     */
     public Blade templateEngine(@NonNull TemplateEngine templateEngine) {
         this.templateEngine = templateEngine;
         return this;
@@ -102,26 +107,57 @@ public class Blade {
         return routeMatcher;
     }
 
+    /**
+     * Register bean to ioc container
+     *
+     * @param bean bean object
+     * @return blade
+     */
     public Blade register(@NonNull Object bean) {
         ioc.addBean(bean);
         return this;
     }
 
+    /**
+     * Register bean to ioc container
+     *
+     * @param cls bean class, the class must provide a no args constructor
+     * @return blade
+     */
     public Blade register(@NonNull Class<?> cls) {
         ioc.addBean(cls);
         return this;
     }
 
+    /**
+     * Add multiple static resource file
+     * the default provides the static, upload
+     *
+     * @param folders static resource directory
+     * @return blade
+     */
     public Blade addStatics(@NonNull String... folders) {
         statics.addAll(Arrays.asList(folders));
         return this;
     }
 
+    /**
+     * Set whether to show the file directory, default doesn't show
+     *
+     * @param fileList show the file directory
+     * @return blade
+     */
     public Blade showFileList(boolean fileList) {
         this.environment(ENV_KEY_STATIC_LIST, fileList);
         return this;
     }
 
+    /**
+     * Set whether open gzip, default disabled
+     *
+     * @param gzipEnable enabled gzip
+     * @return blade
+     */
     public Blade gzip(boolean gzipEnable) {
         this.environment(ENV_KEY_GZIP_ENABLE, gzipEnable);
         return this;
@@ -135,6 +171,13 @@ public class Blade {
         return environment.getBoolean(ENV_KEY_DEV_MODE, true);
     }
 
+    /**
+     * Whether encoding setting mode for developers
+     * The default mode is developers
+     *
+     * @param devMode developer mode
+     * @return blade
+     */
     public Blade devMode(boolean devMode) {
         this.environment(ENV_KEY_DEV_MODE, devMode);
         return this;
@@ -144,6 +187,12 @@ public class Blade {
         return this.bootClass;
     }
 
+    /**
+     * Set whether to enable cors
+     *
+     * @param enableCors enable cors
+     * @return blade
+     */
     public Blade enableCors(boolean enableCors) {
         this.environment(ENV_KEY_CORS_ENABLE, enableCors);
         return this;
@@ -153,8 +202,14 @@ public class Blade {
         return statics;
     }
 
-    public Blade scanPackages(@NonNull String... pkgs) {
-        this.packages.addAll(Arrays.asList(pkgs));
+    /**
+     * When set to start blade scan packages
+     *
+     * @param packages package name
+     * @return blade
+     */
+    public Blade scanPackages(@NonNull String... packages) {
+        this.packages.addAll(Arrays.asList(packages));
         return this;
     }
 
@@ -162,11 +217,27 @@ public class Blade {
         return packages;
     }
 
+    /**
+     * Set to start blade configuration file by default
+     * Boot config properties file in classpath directory.
+     * <p>
+     * Without setting will read the classpath -> app.properties
+     *
+     * @param bootConf boot config file name
+     * @return blade
+     */
     public Blade bootConf(@NonNull String bootConf) {
         this.environment(ENV_KEY_BOOT_CONF, bootConf);
         return this;
     }
 
+    /**
+     * Set the environment variable for global use here
+     *
+     * @param key   environment key
+     * @param value environment value
+     * @return blade
+     */
     public Blade environment(@NonNull String key, @NonNull Object value) {
         environment.set(key, value);
         return this;
@@ -176,12 +247,26 @@ public class Blade {
         return environment;
     }
 
+    /**
+     * Set to start the web server to monitor port, the default is 9000
+     *
+     * @param port web server port
+     * @return blade
+     */
     public Blade listen(int port) {
         Assert.greaterThan(port, 0, "server port not is negative number.");
         this.environment(ENV_KEY_SERVER_PORT, port);
         return this;
     }
 
+    /**
+     * Set to start the web server to listen the IP address and port
+     * The default will listen 0.0.0.0:9000
+     *
+     * @param address ip address
+     * @param port    web server port
+     * @return blade
+     */
     public Blade listen(@NonNull String address, int port) {
         Assert.greaterThan(port, 0, "server port not is negative number.");
         this.environment(ENV_KEY_SERVER_ADDRESS, address);
@@ -189,6 +274,12 @@ public class Blade {
         return this;
     }
 
+    /**
+     * The use of multiple middleware, if any
+     *
+     * @param middleware middleware object array
+     * @return blade
+     */
     public Blade use(@NonNull WebHook... middleware) {
         if (!BladeKit.isEmpty(middleware)) {
             this.middleware.addAll(Arrays.asList(middleware));
@@ -200,11 +291,25 @@ public class Blade {
         return this.middleware;
     }
 
+    /**
+     * Set in the name of the app blade application
+     *
+     * @param appName application name
+     * @return blade
+     */
     public Blade appName(@NonNull String appName) {
         this.environment(ENV_KEY_APP_NAME, appName);
         return this;
     }
 
+    /**
+     * Add a event listener
+     * When the trigger event is executed eventListener
+     *
+     * @param eventType     event type
+     * @param eventListener event listener
+     * @return blade
+     */
     public Blade event(@NonNull EventType eventType, @NonNull EventListener eventListener) {
         eventManager.addEventListener(eventType, eventListener);
         return this;
@@ -231,6 +336,15 @@ public class Blade {
         return this.start(mainCls, DEFAULT_SERVER_ADDRESS, DEFAULT_SERVER_PORT, args);
     }
 
+    /**
+     * Start the blade web server
+     *
+     * @param bootClass Start the boot class, used to scan the class in all of the packages
+     * @param address   web server bind ip address
+     * @param port      web server bind port
+     * @param args      launch parameters
+     * @return blade
+     */
     public Blade start(Class<?> bootClass, @NonNull String address, int port, String... args) {
         try {
             environment.set(ENV_KEY_SERVER_ADDRESS, address);
