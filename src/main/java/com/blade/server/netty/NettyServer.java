@@ -199,9 +199,7 @@ public class NettyServer implements Server {
     private void initConfig() {
 
         if (null != blade.bootClass()) {
-            if (blade.scanPackages().size() == 1 && blade.scanPackages().contains(PLUGIN_PACKAGE_NAME)) {
-                blade.scanPackages(blade.bootClass().getPackage().getName());
-            }
+            blade.scanPackages(blade.bootClass().getPackage().getName());
         }
 
         DefaultUI.printBanner();
