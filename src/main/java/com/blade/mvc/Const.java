@@ -48,7 +48,7 @@ public interface Const {
     String ENV_KEY_PAGE_404                = "mvc.view.404";
     String ENV_KEY_PAGE_500                = "mvc.view.500";
     String ENV_KEY_STATIC_DIRS             = "mvc.statics";
-    String ENV_KEY_STATIC_LIST             = "mvc.statics.list";
+    String ENV_KEY_STATIC_LIST             = "mvc.statics.show-list";
     String ENV_KEY_TEMPLATE_PATH           = "mvc.template.path";
     String ENV_KEY_SERVER_ADDRESS          = "server.address";
     String ENV_KEY_SERVER_PORT             = "server.port";
