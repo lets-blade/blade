@@ -11,9 +11,7 @@ import com.blade.mvc.http.Session;
 import com.blade.mvc.multipart.FileItem;
 import com.blade.mvc.ui.ModelAndView;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
+import java.lang.reflect.*;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Optional;
@@ -94,6 +92,12 @@ public final class MethodArgument {
                     continue;
                 } else if (argType == Map.class) {
                     args[i] = request.parameters();
+                    continue;
+                } else if (argType == Optional.class) {
+                    ParameterizedType firstParam           = (ParameterizedType) parameter.getParameterizedType();
+                    Type              paramsOfFirstGeneric = firstParam.getActualTypeArguments()[0];
+                    Class<?>          modelType            = ReflectKit.form(paramsOfFirstGeneric.getTypeName());
+                    args[i] = Optional.ofNullable(parseModel(modelType, request, null));
                     continue;
                 } else {
                     args[i] = parseModel(argType, request, null);

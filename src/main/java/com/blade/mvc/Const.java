@@ -19,14 +19,16 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
+ * Blade Const
+ *
  * @author biezhi
- *         2017/6/2
+ * 2017/6/2
  */
 public interface Const {
 
     int          DEFAULT_SERVER_PORT    = 9000;
     String       DEFAULT_SERVER_ADDRESS = "0.0.0.0";
-    String       VERSION                = "2.0.1-alpha1";
+    String       VERSION                = "2.0.1-alpha2";
     String       WEB_JARS               = "/webjars/";
     String       CLASSPATH              = Const.class.getResource("/").getPath();
     String       CONTENT_TYPE_HTML      = "text/html; charset=UTF-8";

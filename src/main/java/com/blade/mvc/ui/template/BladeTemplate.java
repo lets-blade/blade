@@ -1,3 +1,4 @@
+
 package com.blade.mvc.ui.template;
 
 import java.io.IOException;
@@ -72,12 +73,12 @@ public class BladeTemplate {
         return template(readFromFile(strPath, encoding), args);
     }
 
-    public void failIfArgExists(String argName) {
+    private void failIfArgExists(String argName) {
         if (arguments.containsKey(argName))
             throw UncheckedTemplateException.argumentAlreadyExist(argName);
     }
 
-    public static String readFromFile(String strPath, Charset encoding) {
+    private static String readFromFile(String strPath, Charset encoding) {
         try {
             byte[] encodedBytes = readAllBytes(Paths.get(strPath));
             return new String(encodedBytes, encoding);
@@ -86,7 +87,7 @@ public class BladeTemplate {
         }
     }
 
-    public static String readFromFile(String strPath) {
+    private static String readFromFile(String strPath) {
         return readFromFile(strPath, Charset.forName("UTF8"));
     }
 
@@ -137,7 +138,7 @@ public class BladeTemplate {
                     result.append(chr);
                     break;
                 }
-                // We identify '#'. We skip the following '{'.
+                // We identify '$'. We skip the following '{'.
                 case PARAM_START: {
                     i++;
                     break;
@@ -191,7 +192,6 @@ public class BladeTemplate {
     // - The parameter can be a method chain argument: "#{address.getLine1.getNumber}"
     // in this case it is obtained by calling recursively the methods on the last obtained object
     private void appendParamValue(StringBuilder param, StringBuilder result) {
-
         if (param == null)
             throw UncheckedTemplateException.invalidArgumentName(param);
 
@@ -286,7 +286,7 @@ public class BladeTemplate {
         }
     }
 
-    public static Method getMethodOrGetter(Object object, String methodName) {
+    private static Method getMethodOrGetter(Object object, String methodName) {
         Method method;
         try {
             method = object.getClass().getMethod(methodName);

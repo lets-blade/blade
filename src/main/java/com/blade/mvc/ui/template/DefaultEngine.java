@@ -32,13 +32,13 @@ public class DefaultEngine implements TemplateEngine {
             Request request = WebContext.request();
             String body = IOKit.readToString(viewPath);
 
-            Map<String, Object> attrs = new HashMap<>();
-            attrs.putAll(request.attributes());
+            Map<String, Object> attributes = new HashMap<>();
+            attributes.putAll(request.attributes());
             Session session = request.session();
             if (null != session) {
-                attrs.putAll(session.attributes());
+                attributes.putAll(session.attributes());
             }
-            String result = BladeTemplate.template(body, attrs).fmt();
+            String result = BladeTemplate.template(body, attributes).fmt();
             writer.write(result);
         } catch (Exception e) {
             throw new BladeException(e);

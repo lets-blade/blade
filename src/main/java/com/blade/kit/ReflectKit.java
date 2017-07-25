@@ -167,4 +167,11 @@ public class ReflectKit {
         }
     }
 
+    public static Class<?> form(String typeName) {
+        try {
+            return Class.forName(typeName);
+        } catch (Exception e){
+            return null;
+        }
+    }
 }

@@ -38,7 +38,7 @@ import static io.netty.handler.codec.http.HttpUtil.is100ContinueExpected;
 
 /**
  * @author biezhi
- *         2017/5/31
+ * 2017/5/31
  */
 @Slf4j
 @ChannelHandler.Sharable
@@ -47,8 +47,8 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
     private final Blade             blade;
     private final RouteMatcher      routeMatcher;
     private final Set<String>       statics;
-    private final String            page404;
-    private final String            page500;
+    private final Optional<String>  page404;
+    private final Optional<String>  page500;
     private final SessionHandler    sessionHandler;
     private final StaticFileHandler staticFileHandler;
     private final RouteViewResolve  routeViewResolve;
@@ -59,8 +59,8 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
         this.statics = blade.getStatics();
         this.exceptionResolve = exceptionResolve;
 
-        this.page404 = blade.environment().get(ENV_KEY_PAGE_404, null);
-        this.page500 = blade.environment().get(ENV_KEY_PAGE_500, null);
+        this.page404 = Optional.ofNullable(blade.environment().get(ENV_KEY_PAGE_404, null));
+        this.page500 = Optional.ofNullable(blade.environment().get(ENV_KEY_PAGE_500, null));
 
         this.routeMatcher = blade.routeMatcher();
         this.routeViewResolve = new RouteViewResolve(blade);
@@ -102,10 +102,10 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
             if (null == route) {
                 // 404
                 response.notFound();
-                String html = String.format(DefaultUI.VIEW_404, uri);
-                if (null != page404) {
-                    response.render(page404);
+                if (page404.isPresent()) {
+                    response.render(page404.get());
                 } else {
+                    String html = String.format(DefaultUI.VIEW_404, uri);
                     response.html(html);
                 }
                 return;
@@ -162,33 +162,27 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
             ctx.close();
             return;
         }
-        Response response = WebContext.response();
-        if (null != response) {
-            response.status(500);
-        }
-
-        if (cause instanceof BladeException) {
-            String error = cause.getMessage();
-
-            StringWriter sw     = new StringWriter();
-            PrintWriter  writer = new PrintWriter(sw);
-
-            if (null != page500) {
-                cause.printStackTrace(writer);
-                WebContext.request().attribute("error", error);
-                WebContext.request().attribute("stackTrace", sw.toString());
-                response.render(page500);
-            } else {
+        Response     response = WebContext.response();
+        String       error    = cause.getMessage();
+        StringWriter sw       = new StringWriter();
+        PrintWriter  writer   = new PrintWriter(sw);
+        if (page500.isPresent()) {
+            cause.printStackTrace(writer);
+            WebContext.request().attribute("err_message", error);
+            WebContext.request().attribute("err_stackTrace", sw.toString());
+            response.render(page500.get());
+        } else {
+            if (blade.devMode()) {
                 writer.write(String.format(DefaultUI.ERROR_START, cause.getClass() + " : " + cause.getMessage()));
                 writer.write("\r\n");
                 cause.printStackTrace(writer);
                 writer.println(DefaultUI.HTML_FOOTER);
                 error = sw.toString();
                 response.html(error);
+            } else {
+                response.body("Internal Server Error");
             }
-            return;
         }
-        response.body("Internal Server Error");
     }
 
     private boolean isStaticFile(String uri) {

@@ -35,10 +35,10 @@ import java.util.Optional;
 import java.util.Properties;
 
 /**
- * properties config env
+ * Blade environment config
  *
  * @author biezhi
- *         2017/6/1
+ * 2017/6/1
  */
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PRIVATE)

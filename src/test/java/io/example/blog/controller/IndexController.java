@@ -12,10 +12,13 @@ import io.example.blog.model.Article;
 import io.example.blog.service.AService;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * @author biezhi
- *         2017/5/31
+ * 2017/5/31
  */
 @Path
 public class IndexController {
@@ -25,7 +28,6 @@ public class IndexController {
 
     @GetRoute(value = "/hello")
     public void index(Response response) {
-//        aService.sayHi();
         response.text("hello world!");
     }
 
@@ -33,10 +35,22 @@ public class IndexController {
     public String userPage(Request request, Session session) {
         request.attribute("name", "biezhi");
         request.attribute("github", "https://github.com/biezhi");
+
+        Map<String, String> map = new HashMap<>();
+        map.put("a", "222");
+        map.put("b", "333");
+        request.attribute("m.a", "asdadasd");
+        request.attribute("m", map);
+
         if (null != session) {
             session.attribute("loginUser", "admin");
         }
         return "user.html";
+    }
+
+    @PostRoute("update_article")
+    public void updateArticle(Optional<Article> article) {
+        System.out.println(article);
     }
 
     @PostRoute(value = "/save")
