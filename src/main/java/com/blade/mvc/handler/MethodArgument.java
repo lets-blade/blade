@@ -12,6 +12,7 @@ import com.blade.mvc.multipart.FileItem;
 import com.blade.mvc.ui.ModelAndView;
 
 import java.lang.reflect.*;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Optional;
@@ -19,9 +20,8 @@ import java.util.Optional;
 public final class MethodArgument {
 
     public static Object[] getArgs(Signature signature) throws Exception {
-        Method   actionMethod = signature.getAction();
-        Request  request      = signature.request();
-        Response response     = signature.response();
+        Method  actionMethod = signature.getAction();
+        Request request      = signature.request();
         actionMethod.setAccessible(true);
 
         Parameter[] parameters     = actionMethod.getParameters();
@@ -29,83 +29,80 @@ public final class MethodArgument {
         String[]    parameterNames = AsmKit.getMethodParamNames(actionMethod);
 
         for (int i = 0, len = parameters.length; i < len; i++) {
-            Parameter parameter   = parameters[i];
-            String    paramName   = parameterNames[i];
-            int       annotations = parameter.getAnnotations().length;
-            Class<?>  argType     = parameter.getType();
-            if (annotations > 0) {
-                QueryParam queryParam = parameter.getAnnotation(QueryParam.class);
-                if (null != queryParam) {
-                    args[i] = getQueryParam(argType, queryParam, paramName, request);
-                    continue;
-                }
-                BodyParam bodyParam = parameter.getAnnotation(BodyParam.class);
-                if (null != bodyParam) {
-                    args[i] = getBodyParam(argType, request);
-                    continue;
-                }
-                PathParam pathParam = parameter.getAnnotation(PathParam.class);
-                if (null != pathParam) {
-                    args[i] = getPathParam(argType, pathParam, paramName, request);
-                    continue;
-                }
-                HeaderParam headerParam = parameter.getAnnotation(HeaderParam.class);
-                if (null != headerParam) {
-                    args[i] = getHeader(argType, headerParam, paramName, request);
-                    continue;
-                }
-                // cookie param
-                CookieParam cookieParam = parameter.getAnnotation(CookieParam.class);
-                if (null != cookieParam) {
-                    args[i] = getCookie(argType, cookieParam, paramName, request);
-                    continue;
-                }
-                // form multipart
-                MultipartParam multipartParam = parameter.getAnnotation(MultipartParam.class);
-                if (null != multipartParam && argType == FileItem.class) {
-                    String name = StringKit.isBlank(multipartParam.value()) ? paramName : multipartParam.value();
-                    args[i] = request.fileItem(name).orElse(null);
-                    continue;
-                }
-            }
+            Parameter parameter = parameters[i];
 
+            String   paramName   = parameterNames[i];
+            int      annotations = parameter.getAnnotations().length;
+            Class<?> argType     = parameter.getType();
+            if (annotations > 0) {
+                args[i] = getAnnotationParam(parameter, paramName, request);
+                continue;
+            }
             if (ReflectKit.isPrimitive(argType)) {
                 args[i] = request.query(paramName);
-            } else {
-                if (argType == Signature.class) {
-                    args[i] = signature;
-                    continue;
-                } else if (argType == Request.class) {
-                    args[i] = request;
-                    continue;
-                } else if (argType == Response.class) {
-                    args[i] = response;
-                    continue;
-                } else if (argType == Session.class || argType == HttpSession.class) {
-                    args[i] = request.session();
-                    continue;
-                } else if (argType == FileItem.class) {
-                    args[i] = new ArrayList<>(request.fileItems().values()).get(0);
-                    continue;
-                } else if (argType == ModelAndView.class) {
-                    args[i] = new ModelAndView();
-                    continue;
-                } else if (argType == Map.class) {
-                    args[i] = request.parameters();
-                    continue;
-                } else if (argType == Optional.class) {
-                    ParameterizedType firstParam           = (ParameterizedType) parameter.getParameterizedType();
-                    Type              paramsOfFirstGeneric = firstParam.getActualTypeArguments()[0];
-                    Class<?>          modelType            = ReflectKit.form(paramsOfFirstGeneric.getTypeName());
-                    args[i] = Optional.ofNullable(parseModel(modelType, request, null));
-                    continue;
-                } else {
-                    args[i] = parseModel(argType, request, null);
-                    continue;
-                }
+                continue;
             }
+            args[i] = getCustomType(parameter, signature);
         }
         return args;
+    }
+
+    private static Object getCustomType(Parameter parameter, Signature signature) throws Exception {
+        Class<?> argType = parameter.getType();
+        if (argType == Signature.class) {
+            return signature;
+        } else if (argType == Request.class) {
+            return signature.request();
+        } else if (argType == Response.class) {
+            return signature.response();
+        } else if (argType == Session.class || argType == HttpSession.class) {
+            return signature.request().session();
+        } else if (argType == FileItem.class) {
+            return new ArrayList<>(signature.request().fileItems().values()).get(0);
+        } else if (argType == ModelAndView.class) {
+            return new ModelAndView();
+        } else if (argType == Map.class) {
+            return signature.request().parameters();
+        } else if (argType == Optional.class) {
+            ParameterizedType firstParam           = (ParameterizedType) parameter.getParameterizedType();
+            Type              paramsOfFirstGeneric = firstParam.getActualTypeArguments()[0];
+            Class<?>          modelType            = ReflectKit.form(paramsOfFirstGeneric.getTypeName());
+            return Optional.ofNullable(parseModel(modelType, signature.request(), null));
+        } else {
+            return parseModel(argType, signature.request(), null);
+        }
+    }
+
+    private static Object getAnnotationParam(Parameter parameter, String paramName, Request request) throws Exception {
+        Class<?>   argType    = parameter.getType();
+        QueryParam queryParam = parameter.getAnnotation(QueryParam.class);
+        if (null != queryParam) {
+            return getQueryParam(argType, queryParam, paramName, request);
+        }
+        BodyParam bodyParam = parameter.getAnnotation(BodyParam.class);
+        if (null != bodyParam) {
+            return getBodyParam(argType, request);
+        }
+        PathParam pathParam = parameter.getAnnotation(PathParam.class);
+        if (null != pathParam) {
+            return getPathParam(argType, pathParam, paramName, request);
+        }
+        HeaderParam headerParam = parameter.getAnnotation(HeaderParam.class);
+        if (null != headerParam) {
+            return getHeader(argType, headerParam, paramName, request);
+        }
+        // cookie param
+        CookieParam cookieParam = parameter.getAnnotation(CookieParam.class);
+        if (null != cookieParam) {
+            return getCookie(argType, cookieParam, paramName, request);
+        }
+        // form multipart
+        MultipartParam multipartParam = parameter.getAnnotation(MultipartParam.class);
+        if (null != multipartParam && argType == FileItem.class) {
+            String name = StringKit.isBlank(multipartParam.value()) ? paramName : multipartParam.value();
+            return request.fileItem(name).orElse(null);
+        }
+        return null;
     }
 
     private static Object getBodyParam(Class<?> argType, Request request) throws BladeException {
@@ -201,14 +198,15 @@ public final class MethodArgument {
         }
     }
 
-    public static Object getRequestParam(Class<?> parameterType, String val) {
+    private static Object getRequestParam(Class<?> parameterType, String val) {
         Object result = null;
         if (parameterType.equals(String.class)) {
             return val;
         }
         if (StringKit.isBlank(val)) {
             if (parameterType.equals(int.class) || parameterType.equals(double.class) ||
-                    parameterType.equals(long.class) || parameterType.equals(byte.class) || parameterType.equals(float.class)) {
+                    parameterType.equals(short.class) || parameterType.equals(long.class) ||
+                    parameterType.equals(byte.class) || parameterType.equals(float.class)) {
                 result = 0;
             }
             if (parameterType.equals(boolean.class)) {
@@ -232,6 +230,9 @@ public final class MethodArgument {
             }
             if (parameterType.equals(Byte.class) || parameterType.equals(byte.class)) {
                 result = Byte.parseByte(val);
+            }
+            if (parameterType.equals(BigDecimal.class)) {
+                result = new BigDecimal(val);
             }
         }
         return result;
