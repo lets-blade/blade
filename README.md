@@ -34,22 +34,20 @@ If you like it, please [star](https://github.com/biezhi/blade/stargazers) / [for
 
 ## Get Start
 
-To get started, first [include the Blade library](http://bladejava.com/docs/intro/getting_start) :
-
 Grab via `Maven`：
 
 ```xml
 <dependency>
 	<groupId>com.bladejava</groupId>
 	<artifactId>blade-mvc</artifactId>
-	<version>2.0.1-alpha1</version>
+	<version>2.0.1-alpha2</version>
 </dependency>
 ```
 
 or `Gradle`:
 
 ```sh
-compile 'com.bladejava:blade-mvc:2.0.1-alpha1'
+compile 'com.bladejava:blade-mvc:2.0.1-alpha2'
 ```
 
 Create `Main` method like this：
