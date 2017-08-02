@@ -7,6 +7,7 @@ import com.blade.mvc.Const;
 import com.blade.mvc.WebContext;
 import com.blade.mvc.ui.ModelAndView;
 import com.blade.mvc.ui.template.TemplateEngine;
+import com.blade.mvc.wrapper.OutputStreamWrapper;
 import com.blade.server.netty.ProgressiveFutureListener;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -19,12 +20,9 @@ import io.netty.handler.codec.http.cookie.Cookie;
 import io.netty.handler.codec.http.cookie.ServerCookieEncoder;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.RandomAccessFile;
-import java.io.StringWriter;
+import java.io.*;
+import java.nio.file.Files;
 import java.util.*;
 
 import static io.netty.handler.codec.http.HttpHeaderValues.KEEP_ALIVE;
@@ -36,7 +34,7 @@ import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
  * HttpResponse
  *
  * @author biezhi
- *         2017/5/31
+ * 2017/5/31
  */
 @Slf4j
 public class HttpResponse implements Response {
@@ -189,6 +187,13 @@ public class HttpResponse implements Response {
         } catch (Exception e) {
             throw e;
         }
+    }
+
+    @Override
+    public OutputStreamWrapper outputStream() throws IOException {
+        File file = Files.createTempFile("blade", ".temp").toFile();
+        OutputStream outputStream = new FileOutputStream(file);
+        return new OutputStreamWrapper(outputStream, file, ctx);
     }
 
     @Override

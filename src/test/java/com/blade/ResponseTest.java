@@ -1,6 +1,7 @@
 package com.blade;
 
 import com.blade.mvc.Const;
+import com.blade.mvc.wrapper.OutputStreamWrapper;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -11,7 +12,7 @@ import static org.junit.Assert.assertEquals;
  * HttpResponse TestCase
  *
  * @author biezhi
- *         2017/6/3
+ * 2017/6/3
  */
 public class ResponseTest extends BaseTestCase {
 
@@ -134,6 +135,22 @@ public class ResponseTest extends BaseTestCase {
 
         assertEquals(Const.CONTENT_TYPE_JSON, get("/json1").contentType());
         assertEquals(Const.CONTENT_TYPE_JSON, get("/json2").contentType());
+    }
+
+    @Test
+    public void testOutputStream() throws Exception {
+        start(
+                app.get("/", ((request, response) -> {
+                    try {
+                        OutputStreamWrapper out = response.outputStream();
+                        out.write("Hello 2018".getBytes());
+                        out.close();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }))
+        );
+        assertEquals("Hello 2018", bodyToString("/"));
     }
 
     @Test

@@ -4,6 +4,7 @@ import com.blade.kit.JsonKit;
 import com.blade.mvc.Const;
 import com.blade.mvc.WebContext;
 import com.blade.mvc.ui.ModelAndView;
+import com.blade.mvc.wrapper.OutputStreamWrapper;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.handler.codec.http.DefaultFullHttpResponse;
@@ -14,13 +15,14 @@ import io.netty.util.CharsetUtil;
 import lombok.NonNull;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Map;
 
 /**
  * Http Response
  *
  * @author biezhi
- *         2017/5/31
+ * 2017/5/31
  */
 public interface Response {
 
@@ -223,6 +225,14 @@ public interface Response {
      * @param file
      */
     void download(String fileName, File file) throws Exception;
+
+    /**
+     * create temp file outputStream
+     *
+     * @return
+     * @since 2.0.1-alpha3
+     */
+    OutputStreamWrapper outputStream() throws IOException;
 
     /**
      * Render view
