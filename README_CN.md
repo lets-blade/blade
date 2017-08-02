@@ -42,14 +42,14 @@ Blade是一款简洁优雅的轻量级MVC框架。如果你喜欢它请为它 [�
 <dependency>
 	<groupId>com.bladejava</groupId>
 	<artifactId>blade-mvc</artifactId>
-	<version>2.0.1-alpha2</version>
+	<version>2.0.1-alpha3</version>
 </dependency>
 ```
 
 或者  `Gradle`:
 
 ```sh
-compile 'com.bladejava:blade-mvc:2.0.1-alpha2'
+compile 'com.bladejava:blade-mvc:2.0.1-alpha3'
 ```
 
 编写 `Main`函数：

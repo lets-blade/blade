@@ -15,6 +15,7 @@
  */
 package com.blade.mvc;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
@@ -28,9 +29,9 @@ public interface Const {
 
     int          DEFAULT_SERVER_PORT    = 9000;
     String       DEFAULT_SERVER_ADDRESS = "0.0.0.0";
-    String       VERSION                = "2.0.1-alpha2";
+    String       VERSION                = "2.0.1-alpha3";
     String       WEB_JARS               = "/webjars/";
-    String       CLASSPATH              = Const.class.getResource("/").getPath();
+    String       CLASSPATH              = new File(Const.class.getProtectionDomain().getCodeSource().getLocation().getPath()).getPath();
     String       CONTENT_TYPE_HTML      = "text/html; charset=UTF-8";
     String       CONTENT_TYPE_JSON      = "application/json; charset=UTF-8";
     String       CONTENT_TYPE_TEXT      = "text/plain; charset=UTF-8";

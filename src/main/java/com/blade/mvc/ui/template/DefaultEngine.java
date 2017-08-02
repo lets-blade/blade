@@ -27,7 +27,7 @@ public class DefaultEngine implements TemplateEngine {
     public void render(ModelAndView modelAndView, Writer writer) throws BladeException {
         String view = modelAndView.getView();
         String viewPath = Const.CLASSPATH + TEMPLATE_PATH + File.separator + view;
-        viewPath = viewPath.replace("//", "/");
+        viewPath = viewPath.replace("[//]", "/");
         try {
             Request request = WebContext.request();
             String body = IOKit.readToString(viewPath);
