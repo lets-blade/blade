@@ -250,6 +250,14 @@ public class Environment {
         return defaultValue;
     }
 
+    public boolean hasKey(@NonNull String key){
+        return props.containsKey(key);
+    }
+
+    public boolean hasValue(@NonNull String value){
+        return props.containsValue(value);
+    }
+
     public Optional<Double> getDouble(@NonNull String key) {
         if (getObject(key).isPresent()) {
             return Optional.of(Double.parseDouble(getObject(key).get().toString()));
