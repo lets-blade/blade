@@ -282,10 +282,10 @@ public class RequestTest extends BaseTestCase {
                         })
         );
 
-        String body = post("/upload1").part("file1", "a.txt", new File(Const.CLASSPATH + "log_config.txt")).body();
+        String body = post("/upload1").part("file1", "a.txt", new File(Const.CLASSPATH + File.separator + "log_config.txt")).body();
         assertThat(body, is("{\"file1\":{\"name\":\"file1\",\"fileName\":\"a.txt\",\"contentType\":\"text/plain\",\"length\":1551}}"));
 
-        body = post("/upload2").part("file1", "a.txt", new File(Const.CLASSPATH + "log_config.txt")).body();
+        body = post("/upload2").part("file1", "a.txt", new File(Const.CLASSPATH + File.separator + "log_config.txt")).body();
         assertThat(body, is("{\"name\":\"file1\",\"fileName\":\"a.txt\",\"contentType\":\"text/plain\",\"length\":1551}"));
     }
 

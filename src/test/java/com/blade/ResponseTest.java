@@ -91,12 +91,11 @@ public class ResponseTest extends BaseTestCase {
     @Test
     public void testCookie() throws Exception {
         start(
-                app.get("/", ((request, response) -> {
-                    response.cookie("c1", "value1").json(response.cookies());
-                })).disableSession()
+                app.get("/cookie", ((request, response) -> response.cookie("c1", "value1"))).disableSession()
         );
-        String headers = bodyToString("/");
-        assertEquals("{\"c1\":\"value1\"}", headers);
+        System.out.println(get("/cookie").headers());
+        String cookie = get("/cookie").header("Set-Cookie");
+        assertEquals("c1=value1", cookie);
     }
 
     @Test

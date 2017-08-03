@@ -31,7 +31,7 @@ public interface Const {
     String       DEFAULT_SERVER_ADDRESS = "0.0.0.0";
     String       VERSION                = "2.0.1-alpha3";
     String       WEB_JARS               = "/webjars/";
-    String       CLASSPATH              = new File(Const.class.getProtectionDomain().getCodeSource().getLocation().getPath()).getPath();
+    String       CLASSPATH              = new File(Const.class.getResource("/").getPath()).getPath();
     String       CONTENT_TYPE_HTML      = "text/html; charset=UTF-8";
     String       CONTENT_TYPE_JSON      = "application/json; charset=UTF-8";
     String       CONTENT_TYPE_TEXT      = "text/plain; charset=UTF-8";

@@ -88,7 +88,7 @@ public class IndexController {
 
     @GetRoute(value = "download")
     public void download(Response response) throws Exception {
-        String path = Const.CLASSPATH + "static/a.txt";
+        String path = Const.CLASSPATH + File.separator + "static/a.txt";
         response.download("文件.txt", new File(path));
     }
 

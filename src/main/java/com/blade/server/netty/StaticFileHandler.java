@@ -37,7 +37,7 @@ import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
 /**
  * @author biezhi
- *         2017/5/31
+ * 2017/5/31
  */
 public class StaticFileHandler implements RequestHandler<Boolean> {
 
@@ -184,8 +184,8 @@ public class StaticFileHandler implements RequestHandler<Boolean> {
             return false;
         }
 
-        String ifModifiedSince = ifMdf;
-        Date ifModifiedSinceDate = format(ifModifiedSince, Const.HTTP_DATE_FORMAT);
+        String ifModifiedSince     = ifMdf;
+        Date   ifModifiedSinceDate = format(ifModifiedSince, Const.HTTP_DATE_FORMAT);
         // Only compare up to the second because the datetime format we send to the client
         // does not have milliseconds
         long ifModifiedSinceDateSeconds = ifModifiedSinceDate.getTime() / 1000;
@@ -204,9 +204,9 @@ public class StaticFileHandler implements RequestHandler<Boolean> {
     }
 
     public Date format(String date, String pattern) {
-        DateTimeFormatter fmt = DateTimeFormatter.ofPattern(pattern, Locale.US);
-        LocalDateTime formatted = LocalDateTime.parse(date, fmt);
-        Instant instant = formatted.atZone(ZoneId.systemDefault()).toInstant();
+        DateTimeFormatter fmt       = DateTimeFormatter.ofPattern(pattern, Locale.US);
+        LocalDateTime     formatted = LocalDateTime.parse(date, fmt);
+        Instant           instant   = formatted.atZone(ZoneId.systemDefault()).toInstant();
         return Date.from(instant);
     }
 
@@ -298,7 +298,7 @@ public class StaticFileHandler implements RequestHandler<Boolean> {
             return null;
         }
         // Convert to absolute path.
-        return Const.CLASSPATH + uri.substring(1);
+        return Const.CLASSPATH + File.separator + uri.substring(1);
     }
 
 
@@ -311,10 +311,10 @@ public class StaticFileHandler implements RequestHandler<Boolean> {
     private static void setDateAndCacheHeaders(HttpResponse response, File fileToCache) {
         // Date header
         LocalDateTime localTime = LocalDateTime.now();
-        String date = DateKit.gmtDate(localTime);
+        String        date      = DateKit.gmtDate(localTime);
         response.headers().set(DATE, date);
-        String lastModifed = date;
-        LocalDateTime newTime = localTime.plusSeconds(HTTP_CACHE_SECONDS);
+        String        lastModifed = date;
+        LocalDateTime newTime     = localTime.plusSeconds(HTTP_CACHE_SECONDS);
         date = DateKit.gmtDate(newTime);
 
         // Add cache headers
