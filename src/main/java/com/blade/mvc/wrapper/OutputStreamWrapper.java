@@ -42,6 +42,10 @@ public class OutputStreamWrapper {
         return file;
     }
 
+    public OutputStream getRaw() {
+        return outputStream;
+    }
+
     public void write(byte[] b) throws IOException {
         outputStream.write(b);
     }
