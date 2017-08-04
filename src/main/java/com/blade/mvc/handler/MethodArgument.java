@@ -30,11 +30,9 @@ public final class MethodArgument {
 
         for (int i = 0, len = parameters.length; i < len; i++) {
             Parameter parameter = parameters[i];
-
-            String   paramName   = parameterNames[i];
-            int      annotations = parameter.getAnnotations().length;
-            Class<?> argType     = parameter.getType();
-            if (annotations > 0) {
+            String    paramName = parameterNames[i];
+            Class<?>  argType   = parameter.getType();
+            if (containsAnnotation(parameter)) {
                 args[i] = getAnnotationParam(parameter, paramName, request);
                 continue;
             }
@@ -45,6 +43,16 @@ public final class MethodArgument {
             args[i] = getCustomType(parameter, signature);
         }
         return args;
+    }
+
+    private static boolean containsAnnotation(Parameter parameter) {
+        return parameter.getAnnotation(QueryParam.class) != null ||
+                parameter.getAnnotation(PathParam.class) != null ||
+                parameter.getAnnotation(Param.class) != null ||
+                parameter.getAnnotation(HeaderParam.class) != null ||
+                parameter.getAnnotation(BodyParam.class) != null ||
+                parameter.getAnnotation(CookieParam.class) != null ||
+                parameter.getAnnotation(MultipartParam.class) != null;
     }
 
     private static Object getCustomType(Parameter parameter, Signature signature) throws Exception {
