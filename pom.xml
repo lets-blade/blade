@@ -37,7 +37,7 @@
         <junit.version>4.12</junit.version>
         <slf4j-api.version>1.7.21</slf4j-api.version>
         <netty.version>4.1.11.Final</netty.version>
-        <blade-log.version>0.0.1</blade-log.version>
+        <blade-log.version>0.0.2</blade-log.version>
         <lombok.version>1.16.16</lombok.version>
     </properties>
 
