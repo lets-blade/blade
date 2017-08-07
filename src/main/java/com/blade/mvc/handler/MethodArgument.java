@@ -87,6 +87,10 @@ public final class MethodArgument {
         if (null != queryParam) {
             return getQueryParam(argType, queryParam, paramName, request);
         }
+        Param param = parameter.getAnnotation(Param.class);
+        if (null != param) {
+            return getParam(argType, param, paramName, request);
+        }
         BodyParam bodyParam = parameter.getAnnotation(BodyParam.class);
         if (null != bodyParam) {
             return getBodyParam(argType, request);
@@ -139,6 +143,24 @@ public final class MethodArgument {
             return parseModel(argType, request, name);
         }
     }
+
+    private static Object getParam(Class<?> argType, Param param, String paramName, Request request) throws BladeException {
+        String name = StringKit.isBlank(param.name()) ? paramName : param.name();
+        if (ReflectKit.isPrimitive(argType)) {
+            Optional<String> val      = request.query(name);
+            boolean          required = param.required();
+            if (!val.isPresent()) {
+                val = Optional.of(param.defaultValue());
+            }
+            if (required && !val.isPresent()) {
+                Assert.throwException(String.format("query param [%s] not is empty.", paramName));
+            }
+            return getRequestParam(argType, val.get());
+        } else {
+            return parseModel(argType, request, name);
+        }
+    }
+
 
     private static Object getCookie(Class<?> argType, CookieParam cookieParam, String paramName, Request request) throws BladeException {
         String           cookieName = StringKit.isBlank(cookieParam.value()) ? paramName : cookieParam.value();
