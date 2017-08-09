@@ -25,6 +25,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.util.*;
 
+import static com.blade.mvc.Const.X_POWER_BY;
 import static io.netty.handler.codec.http.HttpHeaderValues.KEEP_ALIVE;
 import static io.netty.handler.codec.http.HttpHeaders.Names.*;
 import static io.netty.handler.codec.http.HttpResponseStatus.OK;
@@ -191,7 +192,7 @@ public class HttpResponse implements Response {
 
     @Override
     public OutputStreamWrapper outputStream() throws IOException {
-        File file = Files.createTempFile("blade", ".temp").toFile();
+        File         file         = Files.createTempFile("blade", ".temp").toFile();
         OutputStream outputStream = new FileOutputStream(file);
         return new OutputStreamWrapper(outputStream, file, ctx);
     }
@@ -239,7 +240,7 @@ public class HttpResponse implements Response {
     private HttpHeaders getDefaultHeader() {
         headers.set(DATE, DateKit.gmtDate());
         headers.set(CONTENT_TYPE, this.contentType);
-        headers.set(SERVER, "blade/" + Const.VERSION);
+        headers.set(X_POWER_BY, "blade-" + Const.VERSION);
         this.cookies.forEach(cookie -> headers.add(SET_COOKIE, ServerCookieEncoder.LAX.encode(cookie)));
         return headers;
     }
