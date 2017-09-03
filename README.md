@@ -1,7 +1,7 @@
 
-[![](https://dn-biezhi.qbox.me/LOGO_BIG.png)](http://bladejava.com)
+[![](https://dn-biezhi.qbox.me/LOGO_BIG.png)](https://biezhi.gitbooks.io/blade-in-action)
 
-[Quick Start](https://bladejava.com/docs)&nbsp; | &nbsp;[Demo Project](https://github.com/blade-samples)&nbsp; | &nbsp;[Contribute](https://bladejava.com/docs/appendix/contribute)&nbsp; | &nbsp;[Donate](donate.md)&nbsp; | &nbsp;[FAQ](https://bladejava.com/docs/faqs) | &nbsp;[中文说明](https://github.com/biezhi/blade/blob/master/README_CN.md)
+[Quick Start](https://biezhi.gitbooks.io/blade-in-action/chapter1/1.1-create-blade-application.html)&nbsp; | &nbsp;[Video](https://www.youtube.com/watch?v=UQzz1XCFE9U&list=PLK2w-tGRdrj5TV2lxHFj8hcg4mbmRmnWX)&nbsp; | &nbsp;[Contribute](https://bladejava.com/docs/appendix/contribute)&nbsp; | &nbsp;[Donate](donate.md)&nbsp; | &nbsp;[FAQ](https://bladejava.com/docs/faqs) | &nbsp;[中文说明](https://github.com/biezhi/blade/blob/master/README_CN.md)
 
 [![Build Status](https://img.shields.io/travis/biezhi/blade.svg?style=flat-square)](https://travis-ci.org/biezhi/blade)
 [![maven-central](https://img.shields.io/maven-central/v/com.bladejava/blade-mvc.svg?style=flat-square)](http://search.maven.org/#search%7Cga%7C1%7Cblade-mvc)
@@ -12,7 +12,7 @@
 ## What Is Blade?
 
 Blade is a lightweight MVC framework. It is based on the principles of simplicity and elegance. 
-If you like it, please [star](https://github.com/biezhi/blade/stargazers) / [fork](https://github.com/biezhi/blade). Thx :blush:
+If you like it, give me a [star](https://github.com/biezhi/blade/stargazers) / [fork](https://github.com/biezhi/blade). Thx :blush:
 
 ## Features
 

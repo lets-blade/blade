@@ -1,7 +1,7 @@
 
-[![](https://dn-biezhi.qbox.me/LOGO_BIG.png)](http://bladejava.com)
+[![](https://dn-biezhi.qbox.me/LOGO_BIG.png)](https://biezhi.gitbooks.io/blade-in-action)
 
-[Quick Start](https://bladejava.com/docs)&nbsp; | &nbsp;[Demo Project](https://github.com/blade-samples)&nbsp; | &nbsp;[Contribute](https://bladejava.com/docs/appendix/contribute)&nbsp; | &nbsp;[Donate](donate.md)&nbsp; | &nbsp;[FAQ](https://bladejava.com/docs/faqs) | &nbsp;[中文说明](https://github.com/biezhi/blade/blob/master/README_CN.md)
+[快速开始](https://biezhi.gitbooks.io/blade-in-action/chapter1/1.1-create-blade-application.html)&nbsp; | &nbsp;[视频教程](https://biezhi.gitbooks.io/blade-in-action/#视频教程)&nbsp; | &nbsp;[参与贡献](https://bladejava.com/docs/appendix/contribute)&nbsp; | &nbsp;[捐赠](donate.md)&nbsp; | &nbsp;[FAQ](https://bladejava.com/docs/faqs) | &nbsp;[English](https://github.com/biezhi/blade/blob/master/README.md)
 
 [![Build Status](https://img.shields.io/travis/biezhi/blade.svg?style=flat-square)](https://travis-ci.org/biezhi/blade)
 [![maven-central](https://img.shields.io/maven-central/v/com.bladejava/blade-mvc.svg?style=flat-square)](http://search.maven.org/#search%7Cga%7C1%7Cblade-mvc)
@@ -11,7 +11,7 @@
 
 ## Blade是什么？
 
-Blade是一款简洁优雅的轻量级MVC框架。如果你喜欢它请为它 [点赞](https://github.com/biezhi/blade/stargazers)/[Fork](https://github.com/biezhi/blade) 谢谢 :blush:
+Blade是一款简洁优雅的轻量级MVC框架。如果你喜欢它可以给一个 [点赞](https://github.com/biezhi/blade/stargazers)/[Fork](https://github.com/biezhi/blade) 谢谢 :blush:
 
 ## 特性
 
