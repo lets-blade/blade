@@ -140,6 +140,7 @@ public final class MethodArgument {
             }
             return getRequestParam(argType, val.get());
         } else {
+            name = queryParam.name();
             return parseModel(argType, request, name);
         }
     }
@@ -157,6 +158,7 @@ public final class MethodArgument {
             }
             return getRequestParam(argType, val.get());
         } else {
+            name = param.name();
             return parseModel(argType, request, name);
         }
     }
@@ -212,7 +214,7 @@ public final class MethodArgument {
                     continue;
                 }
                 Optional<String> fieldValue = request.query(field.getName());
-                if (null != name) {
+                if (StringKit.isNotBlank(name)) {
                     String fieldName = name + "[" + field.getName() + "]";
                     fieldValue = request.query(fieldName);
                 }
