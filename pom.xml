@@ -5,7 +5,7 @@
 
     <groupId>com.bladejava</groupId>
     <artifactId>blade-mvc</artifactId>
-    <version>2.0.1-beta2</version>
+    <version>2.0.1</version>
     <packaging>jar</packaging>
 
     <name>blade</name>
@@ -36,8 +36,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <junit.version>4.12</junit.version>
         <slf4j-api.version>1.7.21</slf4j-api.version>
-        <netty.version>4.1.11.Final</netty.version>
-        <blade-log.version>0.0.2</blade-log.version>
+        <netty.version>4.1.15.Final</netty.version>
+        <blade-log.version>0.0.3</blade-log.version>
         <lombok.version>1.16.16</lombok.version>
     </properties>
 

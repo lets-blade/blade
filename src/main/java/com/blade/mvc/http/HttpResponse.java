@@ -202,7 +202,7 @@ public class HttpResponse implements Response {
         StringWriter sw = new StringWriter();
         try {
             templateEngine.render(modelAndView, sw);
-            ByteBuf          buffer   = Unpooled.wrappedBuffer(sw.toString().getBytes());
+            ByteBuf          buffer   = Unpooled.wrappedBuffer(sw.toString().getBytes("utf-8"));
             FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(statusCode), buffer);
             this.send(response);
         } catch (Exception e) {

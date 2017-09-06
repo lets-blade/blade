@@ -29,7 +29,7 @@ public interface Const {
 
     int          DEFAULT_SERVER_PORT    = 9000;
     String       DEFAULT_SERVER_ADDRESS = "0.0.0.0";
-    String       VERSION                = "2.0.1-beta2";
+    String       VERSION                = "2.0.1";
     String       WEB_JARS               = "/webjars/";
     String       CLASSPATH              = new File(Const.class.getResource("/").getPath()).getPath();
     String       CONTENT_TYPE_HTML      = "text/html; charset=UTF-8";

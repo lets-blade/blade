@@ -92,6 +92,14 @@ public final class DateKit {
         return Date.from(Instant.from(formatted.atStartOfDay(ZoneId.systemDefault())));
     }
 
+    public static LocalDate toLocalDate(String time, String pattern) {
+        return LocalDate.parse(time, DateTimeFormatter.ofPattern(pattern));
+    }
+
+    public static LocalDateTime toLocalDateTime(String time, String pattern) {
+        return LocalDateTime.parse(time, DateTimeFormatter.ofPattern(pattern));
+    }
+
     public static Date toDate(long unixTime) {
         return Date.from(Instant.ofEpochSecond(unixTime));
     }
