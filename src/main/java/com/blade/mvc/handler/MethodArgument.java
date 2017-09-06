@@ -12,7 +12,6 @@ import com.blade.mvc.multipart.FileItem;
 import com.blade.mvc.ui.ModelAndView;
 
 import java.lang.reflect.*;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Optional;
@@ -138,7 +137,7 @@ public final class MethodArgument {
             if (required && !val.isPresent()) {
                 Assert.throwException(String.format("query param [%s] not is empty.", paramName));
             }
-            return getRequestParam(argType, val.get());
+            return ReflectKit.convert(argType, val.get());
         } else {
             name = queryParam.name();
             return parseModel(argType, request, name);
@@ -156,7 +155,7 @@ public final class MethodArgument {
             if (required && !val.isPresent()) {
                 Assert.throwException(String.format("query param [%s] not is empty.", paramName));
             }
-            return getRequestParam(argType, val.get());
+            return ReflectKit.convert(argType, val.get());
         } else {
             name = param.name();
             return parseModel(argType, request, name);
@@ -174,7 +173,7 @@ public final class MethodArgument {
         if (required && !val.isPresent()) {
             Assert.throwException(String.format("cookie param [%s] not is empty.", paramName));
         }
-        return getRequestParam(argType, val.get());
+        return ReflectKit.convert(argType, val.get());
     }
 
     private static Object getHeader(Class<?> argType, HeaderParam headerParam, String paramName, Request request) throws BladeException {
@@ -187,7 +186,7 @@ public final class MethodArgument {
         if (required && StringKit.isBlank(val)) {
             Assert.throwException(String.format("header param [%s] not is empty.", paramName));
         }
-        return getRequestParam(argType, val);
+        return ReflectKit.convert(argType, val);
     }
 
     private static Object getPathParam(Class<?> argType, PathParam pathParam, String paramName, Request request) {
@@ -196,7 +195,7 @@ public final class MethodArgument {
         if (StringKit.isBlank(val)) {
             val = pathParam.defaultValue();
         }
-        return getRequestParam(argType, val);
+        return ReflectKit.convert(argType, val);
     }
 
     private static Object parseModel(Class<?> argType, Request request, String name) throws BladeException {
@@ -228,46 +227,6 @@ public final class MethodArgument {
         } catch (Exception e) {
             throw new BladeException(e);
         }
-    }
-
-    private static Object getRequestParam(Class<?> parameterType, String val) {
-        Object result = null;
-        if (parameterType.equals(String.class)) {
-            return val;
-        }
-        if (StringKit.isBlank(val)) {
-            if (parameterType.equals(int.class) || parameterType.equals(double.class) ||
-                    parameterType.equals(short.class) || parameterType.equals(long.class) ||
-                    parameterType.equals(byte.class) || parameterType.equals(float.class)) {
-                result = 0;
-            }
-            if (parameterType.equals(boolean.class)) {
-                result = false;
-            }
-        } else {
-            if (parameterType.equals(Integer.class) || parameterType.equals(int.class)) {
-                result = Integer.parseInt(val);
-            }
-            if (parameterType.equals(Long.class) || parameterType.equals(long.class)) {
-                result = Long.parseLong(val);
-            }
-            if (parameterType.equals(Double.class) || parameterType.equals(double.class)) {
-                result = Double.parseDouble(val);
-            }
-            if (parameterType.equals(Float.class) || parameterType.equals(float.class)) {
-                result = Float.parseFloat(val);
-            }
-            if (parameterType.equals(Boolean.class) || parameterType.equals(boolean.class)) {
-                result = Boolean.parseBoolean(val);
-            }
-            if (parameterType.equals(Byte.class) || parameterType.equals(byte.class)) {
-                result = Byte.parseByte(val);
-            }
-            if (parameterType.equals(BigDecimal.class)) {
-                result = new BigDecimal(val);
-            }
-        }
-        return result;
     }
 
 }
