@@ -246,6 +246,16 @@ public class Environment {
         }
         return defaultValue;
     }
+    
+    public Map<String, Object> getPrefix(@NonNull String key) {
+        Map<String, Object> map = new HashMap<>();
+        props.forEach((key_, value) -> {
+            if (key_.toString().startsWith(key)) {
+                map.put(key_.toString(), value);
+            }
+        });
+        return map;
+    }
 
     public boolean hasKey(@NonNull String key) {
         return props.containsKey(key);
