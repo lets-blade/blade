@@ -246,7 +246,7 @@ public class Environment {
         }
         return defaultValue;
     }
-    
+
     public Map<String, Object> getPrefix(@NonNull String key) {
         Map<String, Object> map = new HashMap<>();
         props.forEach((key_, value) -> {
