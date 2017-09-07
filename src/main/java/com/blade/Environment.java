@@ -21,10 +21,7 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
@@ -144,7 +141,7 @@ public class Environment {
     private static Environment of(@NonNull InputStream is) {
         try {
             Environment environment = new Environment();
-            environment.props.load(is);
+            environment.props.load(new InputStreamReader(is, "UTF-8"));
             return environment;
         } catch (IOException e) {
             throw new IllegalStateException(e);
@@ -177,13 +174,13 @@ public class Environment {
     }
 
     public Environment set(@NonNull String key, @NonNull Object value) {
-        props.put(key, value);
+        String val = value.toString();
+        props.put(key, val);
         return this;
     }
 
     public Environment add(@NonNull String key, @NonNull Object value) {
-        props.put(key, value);
-        return this;
+        return set(key, value);
     }
 
     public Environment addAll(@NonNull Map<String, String> map) {
@@ -250,11 +247,11 @@ public class Environment {
         return defaultValue;
     }
 
-    public boolean hasKey(@NonNull String key){
+    public boolean hasKey(@NonNull String key) {
         return props.containsKey(key);
     }
 
-    public boolean hasValue(@NonNull String value){
+    public boolean hasValue(@NonNull String value) {
         return props.containsValue(value);
     }
 
