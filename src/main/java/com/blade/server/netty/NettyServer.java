@@ -15,6 +15,7 @@ import com.blade.kit.BladeKit;
 import com.blade.kit.NamedThreadFactory;
 import com.blade.kit.ReflectKit;
 import com.blade.kit.StringKit;
+import com.blade.mvc.Const;
 import com.blade.mvc.WebContext;
 import com.blade.mvc.annotation.Path;
 import com.blade.mvc.hook.WebHook;
@@ -34,45 +35,48 @@ import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.ssl.SslContext;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.stream.Stream;
 
 import static com.blade.mvc.Const.*;
 
 /**
  * @author biezhi
- *         2017/5/31
+ * 2017/5/31
  */
 @Slf4j
 public class NettyServer implements Server {
 
-    private Blade            blade;
-    private Environment      environment;
-    private EventLoopGroup   bossGroup;
-    private EventLoopGroup   workerGroup;
-    private ExecutorService  bossExecutors;
-    private ExecutorService  workerExecutors;
-    private int              threadCount;
-    private int              workers;
-    private int              backlog;
-    private Channel          channel;
-    private RouteBuilder     routeBuilder;
-    private ExceptionResolve exceptionResolve;
+    private Blade               blade;
+    private Environment         environment;
+    private EventLoopGroup      bossGroup;
+    private EventLoopGroup      workerGroup;
+    private ExecutorService     bossExecutors;
+    private ExecutorService     workerExecutors;
+    private int                 threadCount;
+    private int                 workers;
+    private int                 backlog;
+    private Channel             channel;
+    private RouteBuilder        routeBuilder;
+    private ExceptionResolve    exceptionResolve;
+    private List<BeanProcessor> processors;
 
     @Override
     public void start(Blade blade, String[] args) throws Exception {
         this.blade = blade;
         this.environment = blade.environment();
+        this.processors = blade.processors();
 
         long initStart = System.currentTimeMillis();
-        log.info("Environment: jdk.version\t\t\t=> {}", System.getProperty("java.version"));
-        log.info("Environment: user.dir\t\t\t=> {}", System.getProperty("user.dir"));
-        log.info("Environment: java.io.tmpdir\t\t=> {}", System.getProperty("java.io.tmpdir"));
-        log.info("Environment: user.timezone\t\t=> {}", System.getProperty("user.timezone"));
-        log.info("Environment: file.encoding\t\t=> {}", System.getProperty("file.encoding"));
-        log.info("Environment: classpath\t\t\t=> {}", CLASSPATH);
+        log.info("Environment: jdk.version    => {}", System.getProperty("java.version"));
+        log.info("Environment: user.dir       => {}", System.getProperty("user.dir"));
+        log.info("Environment: java.io.tmpdir => {}", System.getProperty("java.io.tmpdir"));
+        log.info("Environment: user.timezone  => {}", System.getProperty("user.timezone"));
+        log.info("Environment: file.encoding  => {}", System.getProperty("file.encoding"));
+        log.info("Environment: classpath      => {}", CLASSPATH);
 
         this.loadConfig(args);
 
@@ -100,7 +104,7 @@ public class NettyServer implements Server {
 
         routeMatcher.register();
 
-        beanProcessors.stream().sorted(new OrderComparator<>()).forEach(b -> b.preHandle(blade));
+        this.processors.stream().sorted(new OrderComparator<>()).forEach(b -> b.preHandle(blade));
 
         Ioc ioc = blade.ioc();
         if (BladeKit.isNotEmpty(ioc.getBeans())) {
@@ -112,7 +116,7 @@ public class NettyServer implements Server {
             beanDefines.forEach(b -> BladeKit.injection(ioc, b));
         }
 
-        beanProcessors.stream().sorted(new OrderComparator<>()).forEach(b -> b.processor(blade));
+        this.processors.stream().sorted(new OrderComparator<>()).forEach(b -> b.processor(blade));
 
     }
 
@@ -145,7 +149,6 @@ public class NettyServer implements Server {
         blade.eventManager().fireEvent(EventType.SERVER_STARTED, blade);
     }
 
-    private List<BeanProcessor> beanProcessors = new ArrayList<>();
 
     private void parseCls(Class<?> clazz) {
         if (null != clazz.getAnnotation(Bean.class)) blade.register(clazz);
@@ -161,7 +164,7 @@ public class NettyServer implements Server {
             routeBuilder.addWebHook(clazz, hook);
         }
         if (ReflectKit.hasInterface(clazz, BeanProcessor.class) && null != clazz.getAnnotation(Bean.class)) {
-            beanProcessors.add((BeanProcessor) blade.ioc().getBean(clazz));
+            this.processors.add((BeanProcessor) blade.ioc().getBean(clazz));
         }
         if (ReflectKit.hasInterface(clazz, ExceptionResolve.class) && null != clazz.getAnnotation(Bean.class)) {
             this.exceptionResolve = (ExceptionResolve) blade.ioc().getBean(clazz);
@@ -177,6 +180,15 @@ public class NettyServer implements Server {
         if (bootEnv != null) {
             bootEnv.props().forEach((key, value) -> environment.set(key.toString(), value));
         }
+
+        Optional<String> envArg = Stream.of(args).filter(s -> s.startsWith(Const.TERMINAL_BLADE_ENV)).findFirst();
+        envArg.ifPresent(arg -> {
+            String      envName   = "app-" + arg.split("=")[1] + ".properties";
+            Environment customEnv = Environment.of(envName);
+            if (customEnv != null) {
+                customEnv.props().forEach((key, value) -> environment.set(key.toString(), value));
+            }
+        });
 
         blade.register(environment);
 

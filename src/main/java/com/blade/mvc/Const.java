@@ -70,7 +70,8 @@ public interface Const {
     String ENV_KEY_BOOT_CONF               = "boot_conf";
 
     // terminal
-    String TERMINAL_SERVER_ADDRESS = "-Dserver.address=";
-    String TERMINAL_SERVER_PORT    = "-Dserver.port=";
+    String TERMINAL_SERVER_ADDRESS = "--server.address=";
+    String TERMINAL_SERVER_PORT    = "--server.port=";
+    String TERMINAL_BLADE_ENV      = "--blade.env=";
 
 }

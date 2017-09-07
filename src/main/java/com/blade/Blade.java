@@ -15,6 +15,7 @@
  */
 package com.blade;
 
+import com.blade.event.BeanProcessor;
 import com.blade.event.EventListener;
 import com.blade.event.EventManager;
 import com.blade.event.EventType;
@@ -51,6 +52,7 @@ import static com.blade.mvc.Const.*;
 public class Blade {
 
     private List<WebHook>       middleware              = new ArrayList<>();
+    private List<BeanProcessor> processors              = new ArrayList<>();
     private Set<String>         packages                = new LinkedHashSet<>(PLUGIN_PACKAGE_NAME);
     private Set<String>         statics                 = new HashSet<>(DEFAULT_STATICS);
     private Ioc                 ioc                     = new SimpleIoc();
@@ -328,6 +330,15 @@ public class Blade {
     public Blade event(@NonNull EventType eventType, @NonNull EventListener eventListener) {
         eventManager.addEventListener(eventType, eventListener);
         return this;
+    }
+
+    public Blade onStarted(@NonNull BeanProcessor processor) {
+        processors.add(processor);
+        return this;
+    }
+
+    public List<BeanProcessor> processors() {
+        return processors;
     }
 
     public EventManager eventManager() {
