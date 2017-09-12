@@ -131,6 +131,8 @@ public class NettyServer implements Server {
 
         ServerBootstrap b = new ServerBootstrap();
         b.option(ChannelOption.SO_BACKLOG, backlog);
+        b.option(ChannelOption.SO_REUSEADDR, true);
+
         b.group(bossGroup, workerGroup)
                 .channel(NioServerSocketChannel.class)
                 .handler(new LoggingHandler(LogLevel.DEBUG))

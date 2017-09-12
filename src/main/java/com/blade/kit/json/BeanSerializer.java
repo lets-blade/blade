@@ -2,51 +2,54 @@ package com.blade.kit.json;
 
 import com.blade.kit.ReflectKit;
 import com.blade.kit.StringKit;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Map;
 
+@Slf4j
 public class BeanSerializer {
 
-    private static final Logger log = LoggerFactory.getLogger(BeanSerializer.class);
-
-    public static Object serialize(Object bean) throws NullPointerException {
+    public static Object serialize(SerializeMapping serializeMapping, Object bean) throws NullPointerException {
         if (bean == null) {
             return null;
         }
 
-        if (ReflectKit.isPrimitive(bean) || bean instanceof Number) {
+        if (ReflectKit.isPrimitive(bean)
+                || bean instanceof Number
+                || bean instanceof Date
+                || bean instanceof BigDecimal) {
             return bean;
         }
 
         if (bean instanceof Collection)
-            return serialize(((Collection) bean).toArray());
+            return serialize(serializeMapping, ((Collection) bean).toArray());
 
         if (bean.getClass().isArray()) {
-            int length = Array.getLength(bean);
-            ArrayList<Object> array = new ArrayList<>(length);
+            int               length = Array.getLength(bean);
+            ArrayList<Object> array  = new ArrayList<>(length);
             for (int i = 0; i < length; ++i)
-                array.add(serialize(Array.get(bean, i)));
+                array.add(serialize(serializeMapping, Array.get(bean, i)));
             return array;
         }
 
         if (bean instanceof Map) {
             Map map = (Map) bean;
-            map.forEach((key, value) -> map.put(key, serialize(value)));
+            map.forEach((key, value) -> map.put(key, serialize(serializeMapping, value)));
             return map;
         }
-        ArrayList<Integer> indexs = new ArrayList<>();
-        ArrayList<Object> values = new ArrayList<>();
-        ArrayList<String> keys = new ArrayList<>();
-        int pos = 0;
+        ArrayList<Integer> indexes = new ArrayList<>();
+        ArrayList<Object>  values = new ArrayList<>();
+        ArrayList<String>  keys   = new ArrayList<>();
+        int                pos    = 0;
         for (Field field : bean.getClass().getDeclaredFields()) {
-            Object value = null;
+            Object value;
             try {
                 String key = field.getName();
                 if ("this$0".equals(key) || "serialVersionUID".equals(key)) {
@@ -58,22 +61,41 @@ public class BeanSerializer {
                     continue;
                 }
                 JsonProperty jsonProperty = field.getAnnotation(JsonProperty.class);
+                JsonFormat   jsonFormat   = field.getAnnotation(JsonFormat.class);
+                SerializeMapping temp = SerializeMapping.builder()
+                        .bigDecimalKeep(serializeMapping.getBigDecimalKeep())
+                        .datePatten(serializeMapping.getDatePatten())
+                        .build();
+
+                if (null != jsonFormat) {
+                    switch (jsonFormat.type()) {
+                        case DATE_PATTEN:
+                            temp.setDatePatten(jsonFormat.value());
+                            break;
+                        case BIGDECIMAL_KEEP:
+                            temp.setBigDecimalKeep(Integer.parseInt(jsonFormat.value()));
+                            break;
+                        default:
+                            break;
+                    }
+                }
+
                 if (jsonProperty != null) {
-                    value = serialize(field.get(bean));
+                    value = serialize(temp, field.get(bean));
                     if (!jsonProperty.value().isEmpty())
                         key = jsonProperty.value();
                 } else {
-                    value = serialize(field.get(bean));
+                    value = serialize(temp, field.get(bean));
                 }
-                int positon = indexs.size();
-                indexs.add(positon, pos++);
-                values.add(positon, value);
-                keys.add(positon, key);
+                int position = indexes.size();
+                indexes.add(position, pos++);
+                values.add(position, value);
+                keys.add(position, key);
             } catch (Exception ignore) {
             }
         }
-        Ason<String, Object> ason = new Ason<>(indexs.size());
-        for (int i = 0; i < indexs.size(); ++i)
+        Ason<String, Object> ason = new Ason<>(indexes.size());
+        for (int i = 0; i < indexes.size(); ++i)
             ason.put(keys.get(i), values.get(i));
         return ason;
     }
@@ -96,7 +118,7 @@ public class BeanSerializer {
 
     public static <T> T deserialize(T template, Map map) {
         for (Field field : template.getClass().getDeclaredFields()) {
-            Object value = null;
+            Object value;
             try {
                 field.setAccessible(true);
                 JsonIgnore jsonIgnore = field.getAnnotation(JsonIgnore.class);
@@ -109,8 +131,8 @@ public class BeanSerializer {
                     if (name.isEmpty())
                         name = field.getName();
                     value = map.get(name);
-                    Object tmp = field.get(template);
-                    Class clazz = field.getType();
+                    Object tmp   = field.get(template);
+                    Class  clazz = field.getType();
 
                     if (Collection.class.isAssignableFrom(clazz)) {
                         Class genericType = Object.class;
@@ -159,12 +181,12 @@ public class BeanSerializer {
         if (template.getClass().isArray()) {
             if (!object.getClass().isArray())
                 return null;
-            int desLength = Array.getLength(template);
-            int srcLength = Array.getLength(object);
-            boolean isAppend = desLength == 0;
-            Class componentType = template.getClass().getComponentType();
-            int length = desLength > srcLength ? srcLength : desLength;
-            Object array = Array.newInstance(componentType, length);
+            int     desLength     = Array.getLength(template);
+            int     srcLength     = Array.getLength(object);
+            boolean isAppend      = desLength == 0;
+            Class   componentType = template.getClass().getComponentType();
+            int     length        = desLength > srcLength ? srcLength : desLength;
+            Object  array         = Array.newInstance(componentType, length);
             for (int i = 0; i < length; ++i)
                 if (isAppend)
                     Array.set(array, i, deserialize(componentType, Array.get(object, i)));
@@ -175,8 +197,8 @@ public class BeanSerializer {
 
         if (object instanceof Map) {
             if (template instanceof Map) {
-                Map des = (Map) template;
-                Map src = (Map) object;
+                Map     des      = (Map) template;
+                Map     src      = (Map) object;
                 boolean isAppend = des.isEmpty();
                 for (Object key : src.keySet()) {
                     if (isAppend) {
@@ -204,7 +226,7 @@ public class BeanSerializer {
                     continue;
                 }
                 JsonProperty jsonProperty = field.getAnnotation(JsonProperty.class);
-                String name = field.getName();
+                String       name         = field.getName();
                 if (jsonProperty != null) {
                     if (StringKit.isNotBlank(jsonProperty.value())) {
                         name = jsonProperty.value();

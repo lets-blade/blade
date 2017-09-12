@@ -3,18 +3,24 @@ package com.blade.kit;
 import com.blade.kit.json.Ason;
 import com.blade.kit.json.BeanSerializer;
 import com.blade.kit.json.JsonSerializer;
+import com.blade.kit.json.SerializeMapping;
+import lombok.NoArgsConstructor;
 
 /**
+ * Json kit
+ *
  * @author biezhi
- *         2017/6/2
+ * 2017/6/2
  */
+@NoArgsConstructor
 public final class JsonKit {
 
-    private JsonKit() {
+    public static String toString(Object object) {
+        return toString(object, SerializeMapping.defaultMapping());
     }
 
-    public static String toString(Object object) {
-        Object jsonObj = BeanSerializer.serialize(object);
+    public static String toString(Object object, SerializeMapping serializeMapping) {
+        Object jsonObj = BeanSerializer.serialize(serializeMapping, object);
         return JsonSerializer.serialize(jsonObj);
     }
 

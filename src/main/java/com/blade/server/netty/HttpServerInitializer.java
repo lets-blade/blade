@@ -45,7 +45,7 @@ public class HttpServerInitializer extends ChannelInitializer<SocketChannel> {
         if (enableGzip) {
             p.addLast(new HttpContentCompressor());
         }
-        p.addLast(new HttpServerCodec(/*36192 * 2, 36192 * 8, 36192 * 16*/));
+        p.addLast(new HttpServerCodec(36192 * 2, 36192 * 8, 36192 * 16, true));
         p.addLast(new HttpServerExpectContinueHandler());
         p.addLast(new HttpObjectAggregator(Integer.MAX_VALUE));
         p.addLast(new ChunkedWriteHandler());

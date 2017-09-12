@@ -14,7 +14,7 @@ import java.util.Locale;
  * date kit
  *
  * @author biezhi
- *         2017/6/2
+ * 2017/6/2
  */
 public final class DateKit {
 
@@ -50,7 +50,8 @@ public final class DateKit {
      * @return
      */
     public static String toString(Date date, String pattern) {
-        return LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault()).format(DateTimeFormatter.ofPattern(pattern));
+        Instant instant = new java.util.Date((date.getTime())).toInstant();
+        return LocalDateTime.ofInstant(instant, ZoneId.systemDefault()).format(DateTimeFormatter.ofPattern(pattern));
     }
 
     public static String toString(LocalDateTime date, String pattern) {
@@ -104,8 +105,8 @@ public final class DateKit {
         return Date.from(Instant.ofEpochSecond(unixTime));
     }
 
-    private static final DateTimeFormatter GMT_FMT = DateTimeFormatter.ofPattern(Const.HTTP_DATE_FORMAT, Locale.US);
-    private static final ZoneId GMT_ZONE_ID = ZoneId.of("GMT");
+    private static final DateTimeFormatter GMT_FMT     = DateTimeFormatter.ofPattern(Const.HTTP_DATE_FORMAT, Locale.US);
+    private static final ZoneId            GMT_ZONE_ID = ZoneId.of("GMT");
 
     public static String gmtDate() {
         return GMT_FMT.format(LocalDateTime.now().atZone(GMT_ZONE_ID));

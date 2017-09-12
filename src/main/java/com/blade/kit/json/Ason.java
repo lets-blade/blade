@@ -8,7 +8,7 @@ import java.util.LinkedHashMap;
  * Ason
  *
  * @author biezhi
- *         2017/6/6
+ * 2017/6/6
  */
 public class Ason<K, V> extends LinkedHashMap<K, V> {
 

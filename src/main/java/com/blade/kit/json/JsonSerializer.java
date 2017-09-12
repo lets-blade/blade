@@ -1,16 +1,17 @@
 package com.blade.kit.json;
 
-
 import com.blade.kit.ReflectKit;
 
 import java.lang.reflect.Array;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Map;
 
 public class JsonSerializer {
 
-    private int position;
+    private       int    position;
     private final char[] buffer;
 
     public static String serialize(Object object) throws IllegalArgumentException {
@@ -25,13 +26,16 @@ public class JsonSerializer {
         if (ReflectKit.isPrimitive(object)) {
             return object.toString();
         }
+        if (object instanceof Date || object instanceof BigDecimal) {
+            return serialize(object.toString());
+        }
         if (object instanceof Map) {
             StringBuilder sb = new StringBuilder();
             sb.append('{');
             Map map = (Map) object;
             for (Object key : map.keySet()) {
                 Object value = map.get(key);
-                sb.append(serialize((key))).append(':').append(serialize((value))).append(',');
+                sb.append(serialize(key)).append(':').append(serialize(value)).append(',');
             }
             int last = sb.length() - 1;
             if (sb.charAt(last) == ',') sb.deleteCharAt(last);
@@ -47,7 +51,7 @@ public class JsonSerializer {
             int last = Array.getLength(object) - 1;
             for (int i = 0; i <= last; ++i) {
                 Object value = Array.get(object, i);
-                sb.append(serialize((value))).append(',');
+                sb.append(serialize(value)).append(',');
             }
             last = sb.length() - 1;
             if (sb.charAt(last) == ',') sb.deleteCharAt(last);
@@ -58,7 +62,7 @@ public class JsonSerializer {
     }
 
     /**
-     * Deserializing a json string to data object
+     * Deserializer a json string to data object
      *
      * @param json the json string which will be deserialized
      * @return the data object made from json
