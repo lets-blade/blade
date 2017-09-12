@@ -1,5 +1,6 @@
 package com.blade.kit.json;
 
+import com.blade.kit.DateKit;
 import com.blade.kit.ReflectKit;
 import com.blade.kit.StringKit;
 import lombok.extern.slf4j.Slf4j;
@@ -45,9 +46,9 @@ public class BeanSerializer {
             return map;
         }
         ArrayList<Integer> indexes = new ArrayList<>();
-        ArrayList<Object>  values = new ArrayList<>();
-        ArrayList<String>  keys   = new ArrayList<>();
-        int                pos    = 0;
+        ArrayList<Object>  values  = new ArrayList<>();
+        ArrayList<String>  keys    = new ArrayList<>();
+        int                pos     = 0;
         for (Field field : bean.getClass().getDeclaredFields()) {
             Object value;
             try {
@@ -86,6 +87,14 @@ public class BeanSerializer {
                         key = jsonProperty.value();
                 } else {
                     value = serialize(temp, field.get(bean));
+                }
+
+                if (value instanceof Date) {
+                    value = DateKit.toString((Date) value, temp.getDatePatten());
+                }
+
+                if (value instanceof BigDecimal) {
+                    value = ((BigDecimal) value).setScale(temp.getBigDecimalKeep()).toString();
                 }
                 int position = indexes.size();
                 indexes.add(position, pos++);
