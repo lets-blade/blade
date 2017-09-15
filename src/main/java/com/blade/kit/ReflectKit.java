@@ -38,6 +38,7 @@ public class ReflectKit {
             if (type.equals(boolean.class)) {
                 return false;
             }
+            return null;
         }
 
         if (type.equals(int.class) || type.equals(Integer.class)) {
