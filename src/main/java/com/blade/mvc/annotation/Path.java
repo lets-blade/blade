@@ -1,5 +1,7 @@
 package com.blade.mvc.annotation;
 
+import com.blade.ioc.annotation.Bean;
+
 import java.lang.annotation.*;
 
 /**
@@ -11,6 +13,7 @@ import java.lang.annotation.*;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
+@Bean
 public @interface Path {
 
     /**
