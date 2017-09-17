@@ -34,6 +34,8 @@ public class DefaultEngine implements TemplateEngine {
 
             Map<String, Object> attributes = new HashMap<>();
             attributes.putAll(request.attributes());
+            attributes.putAll(modelAndView.getModel());
+
             Session session = request.session();
             if (null != session) {
                 attributes.putAll(session.attributes());
