@@ -140,6 +140,9 @@ public class HttpResponse implements Response {
             cookie.setValue("");
             cookie.setMaxAge(-1);
         });
+        Cookie nettyCookie = new DefaultCookie(name, "");
+        nettyCookie.setMaxAge(-1);
+        this.cookies.add(nettyCookie);
         return this;
     }
 
