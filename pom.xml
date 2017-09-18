@@ -161,6 +161,8 @@
                             <exclude>com/blade/ioc/annotation/*.class</exclude>
                             <exclude>com/blade/mvc/annotation/*.class</exclude>
                             <exclude>com/blade/kit/*.class</exclude>
+                            <exclude>io/example/blog/*.class</exclude>
+                            <exclude>netty_hello/*.class</exclude>
                         </excludes>
                     </instrumentation>
                     <check />
