@@ -5,4 +5,5 @@ package com.blade.event;
  * @date 2017/9/18
  */
 public class EventTest {
+
 }

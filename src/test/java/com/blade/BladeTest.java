@@ -11,9 +11,9 @@ public class BladeTest extends BaseTestCase {
 
     @Test
     public void testAppName() {
-        start(
-                app.appName("demo1")
-        );
+        Blade blade = Blade.me();
+        blade.appName("demo1");
+        blade.start();
     }
 
     @Test
