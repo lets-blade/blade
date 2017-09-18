@@ -117,7 +117,7 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
             if (null != exceptionHandler) {
                 exceptionHandler.handle(e);
             } else {
-                log.error("Blade Invoke Error", e);
+                throw e;
             }
         } finally {
             this.sendFinish(response);

@@ -23,8 +23,8 @@ public class ResponseTest extends BaseTestCase {
                 }))
                         .get("/noOk", ((request, response) -> response.status(666)))
         );
-        int code1 = get("/ok").code();
-        int code2 = get("/noOk").code();
+        int code1 = get("/ok").asString().getStatus();
+        int code2 = get("/noOk").asString().getStatus();
         assertEquals(200, code1);
         assertEquals(666, code2);
     }
@@ -34,7 +34,7 @@ public class ResponseTest extends BaseTestCase {
         start(
                 app.get("/", ((request, response) -> response.badRequest()))
         );
-        int code = get("/").code();
+        int code = get("/").asString().getStatus();
         assertEquals(400, code);
     }
 
@@ -43,7 +43,7 @@ public class ResponseTest extends BaseTestCase {
         start(
                 app.get("/", ((request, response) -> response.unauthorized()))
         );
-        int code = get("/").code();
+        int code = get("/").asString().getStatus();
         assertEquals(401, code);
     }
 
@@ -52,7 +52,7 @@ public class ResponseTest extends BaseTestCase {
         start(
                 app.get("/", ((request, response) -> response.notFound()))
         );
-        int code = get("/").code();
+        int code = get("/").asString().getStatus();
         assertEquals(404, code);
     }
 
@@ -93,8 +93,8 @@ public class ResponseTest extends BaseTestCase {
         start(
                 app.get("/cookie", ((request, response) -> response.cookie("c1", "value1"))).disableSession()
         );
-        System.out.println(get("/cookie").headers());
-        String cookie = get("/cookie").header("Set-Cookie");
+        System.out.println(get("/cookie").getHeaders());
+        String cookie = get("/cookie").asString().getHeaders().getFirst("Set-Cookie");
         assertEquals("c1=value1", cookie);
     }
 
@@ -106,7 +106,7 @@ public class ResponseTest extends BaseTestCase {
         String text = bodyToString("/");
         assertEquals("hello blade", text);
 
-        String contentType = get("/").contentType();
+        String contentType = get("/").asString().getHeaders().getFirst("Content-Type");
         assertEquals(Const.CONTENT_TYPE_TEXT, contentType);
     }
 
@@ -118,7 +118,7 @@ public class ResponseTest extends BaseTestCase {
         String text = bodyToString("/");
         assertEquals("<h1>hello blade</h1>", text);
 
-        String contentType = get("/").contentType();
+        String contentType = get("/").asString().getHeaders().getFirst("Content-Type");
         assertEquals(Const.CONTENT_TYPE_HTML, contentType);
     }
 
@@ -132,8 +132,8 @@ public class ResponseTest extends BaseTestCase {
         assertEquals("[1,2,3]", bodyToString("/json1"));
         assertEquals("[4,5,6]", bodyToString("/json2"));
 
-        assertEquals(Const.CONTENT_TYPE_JSON, get("/json1").contentType());
-        assertEquals(Const.CONTENT_TYPE_JSON, get("/json2").contentType());
+        assertEquals(Const.CONTENT_TYPE_JSON, get("/json1").asString().getHeaders().getFirst("Content-Type"));
+        assertEquals(Const.CONTENT_TYPE_JSON, get("/json2").asString().getHeaders().getFirst("Content-Type"));
     }
 
     @Test
@@ -163,7 +163,7 @@ public class ResponseTest extends BaseTestCase {
         String html = bodyToString("/");
         assertEquals("user is biezhi", html);
 
-        String contentType = get("/").contentType();
+        String contentType = get("/").asString().getHeaders().getFirst("Content-Type");
         assertEquals(Const.CONTENT_TYPE_HTML, contentType);
     }
 
@@ -173,7 +173,7 @@ public class ResponseTest extends BaseTestCase {
                 app.get("/", ((request, response) -> response.redirect("http://jd.com")))
         );
 
-        String contentType = get("/").body();
+        String contentType = get("/").asString().getHeaders().getFirst("Content-Type");
         System.out.println(contentType);
 //        assertEquals(Const.CONTENT_TYPE_HTML, contentType);
     }

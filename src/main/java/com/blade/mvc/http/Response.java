@@ -12,7 +12,6 @@ import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpVersion;
 import io.netty.util.CharsetUtil;
-import lombok.NonNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -156,7 +155,8 @@ public interface Response {
      * @param text text content
      * @return Return Response
      */
-    default void text(@NonNull String text) {
+    default void text(String text) {
+        if (null == text) return;
         FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(statusCode()), Unpooled.wrappedBuffer(text.getBytes(CharsetUtil.UTF_8)));
         this.contentType(Const.CONTENT_TYPE_TEXT);
         this.send(response);
@@ -168,7 +168,8 @@ public interface Response {
      * @param html html content
      * @return Return Response
      */
-    default void html(@NonNull String html) {
+    default void html(String html) {
+        if (null == html) return;
         FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(statusCode()), Unpooled.wrappedBuffer(html.getBytes(CharsetUtil.UTF_8)));
         this.contentType(Const.CONTENT_TYPE_HTML);
         this.send(response);
@@ -180,7 +181,8 @@ public interface Response {
      * @param json json content
      * @return Return Response
      */
-    default void json(@NonNull String json) {
+    default void json(String json) {
+        if (null == json) return;
         FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(statusCode()), Unpooled.wrappedBuffer(json.getBytes(CharsetUtil.UTF_8)));
         if (!WebContext.request().isIE()) {
             this.contentType(Const.CONTENT_TYPE_JSON);
@@ -194,7 +196,8 @@ public interface Response {
      * @param bean
      * @return
      */
-    default void json(@NonNull Object bean) {
+    default void json(Object bean) {
+        if (null == bean) return;
         this.json(JsonKit.toString(bean));
     }
 
@@ -203,17 +206,20 @@ public interface Response {
      *
      * @param data
      */
-    default void body(@NonNull String data) {
+    default void body(String data) {
+        if (null == data) return;
         FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(statusCode()), Unpooled.wrappedBuffer(data.getBytes(CharsetUtil.UTF_8)));
         this.send(response);
     }
 
-    default void body(@NonNull byte[] data) {
+    default void body(byte[] data) {
+        if (null == data) return;
         FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(statusCode()), Unpooled.wrappedBuffer(data));
         this.send(response);
     }
 
-    default void body(@NonNull ByteBuf byteBuf) {
+    default void body(ByteBuf byteBuf) {
+        if (null == byteBuf) return;
         FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(statusCode()), byteBuf);
         this.send(response);
     }
@@ -240,7 +246,8 @@ public interface Response {
      * @param view view page
      * @return Return Response
      */
-    default void render(@NonNull String view) {
+    default void render(String view) {
+        if (null == view) return;
         this.render(new ModelAndView(view));
     }
 

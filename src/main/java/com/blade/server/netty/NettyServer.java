@@ -181,15 +181,17 @@ public class NettyServer implements Server {
             bootEnv.props().forEach((key, value) -> environment.set(key.toString(), value));
         }
 
-        Optional<String> envArg = Stream.of(args).filter(s -> s.startsWith(Const.TERMINAL_BLADE_ENV)).findFirst();
-        envArg.ifPresent(arg -> {
-            String envName = "app-" + arg.split("=")[1] + ".properties";
-            log.info("current environment file is: {}", envName);
-            Environment customEnv = Environment.of(envName);
-            if (customEnv != null) {
-                customEnv.props().forEach((key, value) -> environment.set(key.toString(), value));
-            }
-        });
+        if(null != args){
+            Optional<String> envArg = Stream.of(args).filter(s -> s.startsWith(Const.TERMINAL_BLADE_ENV)).findFirst();
+            envArg.ifPresent(arg -> {
+                String envName = "app-" + arg.split("=")[1] + ".properties";
+                log.info("current environment file is: {}", envName);
+                Environment customEnv = Environment.of(envName);
+                if (customEnv != null) {
+                    customEnv.props().forEach((key, value) -> environment.set(key.toString(), value));
+                }
+            });
+        }
 
         blade.register(environment);
 

@@ -2,8 +2,7 @@ package com.blade;
 
 import org.junit.Test;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author biezhi
@@ -16,7 +15,8 @@ public class StaticFileTest extends BaseTestCase {
         start(
                 app.before("/static/*", ((request, response) -> response.unauthorized().body("")))
         );
-        assertThat(get("/static/a.txt").body(), is("hello blade"));
+        String body =getBodyString("/static/a.txt");
+        assertEquals("hello blade", body);
     }
 
 }

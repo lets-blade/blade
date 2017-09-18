@@ -83,7 +83,7 @@ public class IndexController {
 
     @GetRoute(value = "empty")
     public void empty() {
-//        System.out.println("empty request");
+        System.out.println("empty request");
     }
 
     @GetRoute(value = "download")
@@ -93,7 +93,7 @@ public class IndexController {
     }
 
     @GetRoute(value = "redirect")
-    public void redirect(@QueryParam String url, Response response) {
+    public void redirect(@Param String url, Response response) {
         response.redirect(url);
     }
 }
