@@ -1,6 +1,6 @@
 package com.blade;
 
-import com.blade.mvc.route.RouteHandler;
+import com.blade.mvc.handler.RouteHandler;
 import com.github.kevinsawicki.http.HttpRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.After;

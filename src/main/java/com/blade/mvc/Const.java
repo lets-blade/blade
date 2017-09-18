@@ -38,7 +38,7 @@ public interface Const {
     String       X_POWER_BY             = "X-Powered-By";
     String       HTTP_DATE_FORMAT       = "EEE, dd MMM yyyy HH:mm:ss zzz";
     List<String> PLUGIN_PACKAGE_NAME    = Arrays.asList("com.blade.plugin");
-    List<String> DEFAULT_STATICS        = Arrays.asList("/favicon.ico", "/static/", "/upload/", "/webjars/");
+    List<String> DEFAULT_STATICS        = Arrays.asList("/favicon.ico", "/robots.txt", "/static/", "/upload/", "/webjars/");
 
     // Env key
     String ENV_KEY_DEV_MODE                = "app.devMode";

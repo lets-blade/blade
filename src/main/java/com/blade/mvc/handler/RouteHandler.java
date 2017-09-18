@@ -1,4 +1,4 @@
-package com.blade.mvc.route;
+package com.blade.mvc.handler;
 
 import com.blade.mvc.http.Request;
 import com.blade.mvc.http.Response;

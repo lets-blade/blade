@@ -5,10 +5,7 @@ import com.blade.mvc.Const;
 import com.blade.mvc.WebContext;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.DefaultFileRegion;
-import io.netty.handler.codec.http.DefaultHttpResponse;
-import io.netty.handler.codec.http.HttpHeaders;
-import io.netty.handler.codec.http.HttpResponse;
-import io.netty.handler.codec.http.LastHttpContent;
+import io.netty.handler.codec.http.*;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -17,8 +14,6 @@ import java.io.OutputStream;
 import java.nio.channels.FileChannel;
 
 import static io.netty.handler.codec.http.HttpHeaders.Names.*;
-import static io.netty.handler.codec.http.HttpResponseStatus.OK;
-import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
 /**
  * OutputStream Wrapper
@@ -68,7 +63,7 @@ public class OutputStreamWrapper {
             FileChannel file       = new FileInputStream(this.file).getChannel();
             long        fileLength = file.size();
 
-            HttpResponse httpResponse = new DefaultHttpResponse(HTTP_1_1, OK);
+            HttpResponse httpResponse = new DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
             httpResponse.headers().set(CONTENT_LENGTH, fileLength);
             httpResponse.headers().set(DATE, DateKit.gmtDate());
             httpResponse.headers().set(SERVER, "blade/" + Const.VERSION);

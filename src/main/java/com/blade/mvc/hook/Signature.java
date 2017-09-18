@@ -1,6 +1,5 @@
 package com.blade.mvc.hook;
 
-import com.blade.exception.BladeException;
 import com.blade.mvc.handler.MethodArgument;
 import com.blade.mvc.http.Request;
 import com.blade.mvc.http.Response;
@@ -40,7 +39,7 @@ public class Signature {
         return true;
     }
 
-    public void setRoute(Route route) throws BladeException {
+    public void setRoute(Route route) throws Exception {
         this.route = route;
         this.action = route.getAction();
         if (null != this.action && !this.action.toString().contains("$$Lambda$")) {
@@ -48,13 +47,9 @@ public class Signature {
         }
     }
 
-    private void initParameters() throws BladeException {
-        try {
-            if (null != this.action) {
-                this.parameters = MethodArgument.getArgs(this);
-            }
-        } catch (Exception e) {
-            throw new BladeException(e);
+    private void initParameters() throws Exception {
+        if (null != this.action) {
+            this.parameters = MethodArgument.getArgs(this);
         }
     }
 }

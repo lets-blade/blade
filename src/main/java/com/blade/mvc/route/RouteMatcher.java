@@ -1,11 +1,11 @@
 package com.blade.mvc.route;
 
-import com.blade.exception.BladeException;
 import com.blade.ioc.annotation.Order;
 import com.blade.kit.Assert;
 import com.blade.kit.BladeKit;
 import com.blade.kit.PathKit;
 import com.blade.kit.ReflectKit;
+import com.blade.mvc.handler.RouteHandler;
 import com.blade.mvc.hook.Signature;
 import com.blade.mvc.hook.WebHook;
 import com.blade.mvc.http.HttpMethod;
@@ -130,7 +130,7 @@ public class RouteMatcher {
         }
     }
 
-    public Route lookupRoute(String httpMethod, String path) throws BladeException {
+    public Route lookupRoute(String httpMethod, String path) throws Exception {
         path = parsePath(path);
         String routeKey = path + '#' + httpMethod.toUpperCase();
         Route  route    = staticRoutes.get(routeKey);
@@ -185,7 +185,7 @@ public class RouteMatcher {
             }
             return route;
         } catch (Exception e) {
-            throw new BladeException(e);
+            throw e;
         }
     }
 

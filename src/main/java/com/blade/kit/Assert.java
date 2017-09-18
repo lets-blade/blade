@@ -1,7 +1,5 @@
 package com.blade.kit;
 
-import com.blade.exception.BladeException;
-
 import java.util.concurrent.Callable;
 
 /**
@@ -42,14 +40,6 @@ public class Assert {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-    }
-
-    public static void throwException(String msg) throws BladeException {
-        throw new BladeException(msg);
-    }
-
-    public static void throwException(Throwable t) throws BladeException {
-        throw new BladeException(t);
     }
 
 }

@@ -1,6 +1,6 @@
 package com.blade.mvc.http;
 
-import com.blade.kit.Assert;
+import com.blade.exception.NotFoundException;
 import com.blade.kit.DateKit;
 import com.blade.kit.StringKit;
 import com.blade.mvc.Const;
@@ -28,8 +28,6 @@ import java.util.*;
 import static com.blade.mvc.Const.X_POWER_BY;
 import static io.netty.handler.codec.http.HttpHeaderValues.KEEP_ALIVE;
 import static io.netty.handler.codec.http.HttpHeaders.Names.*;
-import static io.netty.handler.codec.http.HttpResponseStatus.OK;
-import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
 /**
  * HttpResponse
@@ -157,14 +155,14 @@ public class HttpResponse implements Response {
     public void download(@NonNull String fileName, @NonNull File file) throws Exception {
         try {
             if (null == file || !file.exists() || !file.isFile()) {
-                Assert.throwException("please check the file is effective!");
+                new NotFoundException();
             }
 
             RandomAccessFile raf        = new RandomAccessFile(file, "r");
             long             fileLength = raf.length();
             this.contentType = StringKit.mimeType(file.getName());
 
-            io.netty.handler.codec.http.HttpResponse httpResponse = new DefaultHttpResponse(HTTP_1_1, OK);
+            io.netty.handler.codec.http.HttpResponse httpResponse = new DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
             HttpHeaders                              httpHeaders  = httpResponse.headers().add(getDefaultHeader());
 
             boolean keepAlive = WebContext.request().keepAlive();

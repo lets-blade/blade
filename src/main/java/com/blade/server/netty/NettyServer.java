@@ -4,7 +4,6 @@ import com.blade.Blade;
 import com.blade.Environment;
 import com.blade.event.BeanProcessor;
 import com.blade.event.EventType;
-import com.blade.exception.ExceptionResolve;
 import com.blade.ioc.BeanDefine;
 import com.blade.ioc.DynamicContext;
 import com.blade.ioc.Ioc;
@@ -18,6 +17,7 @@ import com.blade.kit.StringKit;
 import com.blade.mvc.Const;
 import com.blade.mvc.WebContext;
 import com.blade.mvc.annotation.Path;
+import com.blade.mvc.handler.ExceptionHandler;
 import com.blade.mvc.hook.WebHook;
 import com.blade.mvc.route.RouteBuilder;
 import com.blade.mvc.route.RouteMatcher;
@@ -61,7 +61,6 @@ public class NettyServer implements Server {
     private int                 backlog;
     private Channel             channel;
     private RouteBuilder        routeBuilder;
-    private ExceptionResolve    exceptionResolve;
     private List<BeanProcessor> processors;
 
     @Override
@@ -79,13 +78,11 @@ public class NettyServer implements Server {
         log.info("Environment: classpath      => {}", CLASSPATH);
 
         this.loadConfig(args);
-
         this.initConfig();
 
         WebContext.init(blade, "/", false);
 
         this.initIoc();
-
         this.startServer(initStart);
 
     }
@@ -136,7 +133,7 @@ public class NettyServer implements Server {
         b.group(bossGroup, workerGroup)
                 .channel(NioServerSocketChannel.class)
                 .handler(new LoggingHandler(LogLevel.DEBUG))
-                .childHandler(new HttpServerInitializer(blade, exceptionResolve, sslCtx));
+                .childHandler(new HttpServerInitializer(blade, sslCtx));
 
         String address = environment.get(ENV_KEY_SERVER_ADDRESS, DEFAULT_SERVER_ADDRESS);
         int    port    = environment.getInt(ENV_KEY_SERVER_PORT, DEFAULT_SERVER_PORT);
@@ -168,8 +165,9 @@ public class NettyServer implements Server {
         if (ReflectKit.hasInterface(clazz, BeanProcessor.class) && null != clazz.getAnnotation(Bean.class)) {
             this.processors.add((BeanProcessor) blade.ioc().getBean(clazz));
         }
-        if (ReflectKit.hasInterface(clazz, ExceptionResolve.class) && null != clazz.getAnnotation(Bean.class)) {
-            this.exceptionResolve = (ExceptionResolve) blade.ioc().getBean(clazz);
+        if (ReflectKit.hasInterface(clazz, ExceptionHandler.class) && null != clazz.getAnnotation(Bean.class)) {
+            ExceptionHandler exceptionHandler = (ExceptionHandler) blade.ioc().getBean(clazz);
+            blade.exceptionHandler(exceptionHandler);
         }
     }
 

@@ -11,19 +11,9 @@ public interface DefaultUI {
     String HTML_FOOTER = "<hr/><br/><p><center><a href='https://github.com/biezhi/blade' target='_blank'>Blade-" + Const.VERSION + "</a></center></p>";
 
     /**
-     * server 500
-     */
-    String VIEW_500 = new HtmlCreator().title("500 Internal Error").center("500 Internal Error").html();
-
-    /**
      * server 404
      */
-    String VIEW_404 = new HtmlCreator().title("404 Not Found").center("<h1>URL [ %s ] Not Found</h1>").html();
-
-    String ERROR_START = new HtmlCreator().title("500 Internal Error").startStyle()
-            .add("*{margin:0;padding:0;font-weight:400;}.info{margin:0;padding:10px;color:#000;background-color:#fff;height:60px;line-height:60px;border-bottom:5px solid #15557a}.isa_error{margin:0;padding:10px;font-size:14px;font-weight:bold;background-color:#e9eff1;border-bottom:1px solid #000}")
-            .endStyle()
-            .add("<div class='info'><h3>%s</h3></div><div class='isa_error'><pre>").toString();
+    String VIEW_404 = new HtmlCreator().title("404 Not Found").center("<h1>[ %s ] Not Found</h1>").html();
 
     String[] banner = {
             " __, _,   _, __, __,",

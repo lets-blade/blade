@@ -24,9 +24,11 @@ import com.blade.ioc.SimpleIoc;
 import com.blade.kit.Assert;
 import com.blade.kit.BladeKit;
 import com.blade.mvc.SessionManager;
+import com.blade.mvc.handler.DefaultExceptionHandler;
+import com.blade.mvc.handler.ExceptionHandler;
+import com.blade.mvc.handler.RouteHandler;
 import com.blade.mvc.hook.WebHook;
 import com.blade.mvc.http.HttpMethod;
-import com.blade.mvc.route.RouteHandler;
 import com.blade.mvc.route.RouteMatcher;
 import com.blade.mvc.ui.template.DefaultEngine;
 import com.blade.mvc.ui.template.TemplateEngine;
@@ -64,6 +66,7 @@ public class Blade {
     private RouteMatcher        routeMatcher            = new RouteMatcher();
     private Environment         environment             = Environment.empty();
     private Consumer<Exception> startupExceptionHandler = (e) -> log.error("Failed to start Blade", e);
+    private ExceptionHandler    exceptionHandler        = new DefaultExceptionHandler();
     private boolean             started                 = false;
     private Class<?>            bootClass               = null;
 
@@ -182,6 +185,15 @@ public class Blade {
 
     public Object getBean(@NonNull Class<?> cls) {
         return ioc.getBean(cls);
+    }
+
+    public ExceptionHandler exceptionHandler() {
+        return exceptionHandler;
+    }
+
+    public Blade exceptionHandler(ExceptionHandler exceptionHandler) {
+        this.exceptionHandler = exceptionHandler;
+        return this;
     }
 
     public boolean devMode() {

@@ -1,7 +1,8 @@
 package com.blade.server.netty;
 
 import com.blade.Blade;
-import com.blade.exception.BladeException;
+import com.blade.exception.ForbiddenException;
+import com.blade.exception.NotFoundException;
 import com.blade.kit.DateKit;
 import com.blade.kit.IOKit;
 import com.blade.kit.StringKit;
@@ -57,11 +58,10 @@ public class StaticFileHandler implements RequestHandler<Boolean> {
      * @param ctx
      * @param request
      * @param response
-     * @param uri
      * @throws Exception
      */
     @Override
-    public Boolean handle(ChannelHandlerContext ctx, Request request, Response response) throws BladeException {
+    public Boolean handle(ChannelHandlerContext ctx, Request request, Response response) throws Exception {
         if (!"GET".equals(request.method())) {
             sendError(ctx, METHOD_NOT_ALLOWED);
             return false;
@@ -72,7 +72,8 @@ public class StaticFileHandler implements RequestHandler<Boolean> {
         if (uri.startsWith(Const.WEB_JARS)) {
             InputStream input = StaticFileHandler.class.getResourceAsStream("/META-INF/resources" + uri);
             if (null == input) {
-                sendError(ctx, NOT_FOUND);
+                log.warn("Not Found\t{}", uri);
+                throw new NotFoundException();
             } else {
                 if (http304(ctx, request, -1)) {
                     return false;
@@ -81,7 +82,7 @@ public class StaticFileHandler implements RequestHandler<Boolean> {
                 try {
                     content = IOKit.readToString(input);
                 } catch (IOException e) {
-                    throw new BladeException(e);
+                    throw e;
                 }
                 FullHttpResponse httpResponse = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, OK, Unpooled.copiedBuffer(content, CharsetUtil.UTF_8));
                 setDateAndCacheHeaders(httpResponse, null);
@@ -99,14 +100,14 @@ public class StaticFileHandler implements RequestHandler<Boolean> {
 
         final String path = sanitizeUri(uri);
         if (path == null) {
-            sendError(ctx, FORBIDDEN);
-            return false;
+            log.warn("Forbidden\t{}", uri);
+            throw new ForbiddenException();
         }
 
         File file = new File(path);
         if (file.isHidden() || !file.exists()) {
-            sendError(ctx, NOT_FOUND);
-            return false;
+            log.warn("Not Found\t{}", uri);
+            throw new NotFoundException();
         }
 
         if (file.isDirectory() && showFileList) {
@@ -139,7 +140,7 @@ public class StaticFileHandler implements RequestHandler<Boolean> {
 
             long fileLength = raf.length();
 
-            HttpResponse httpResponse = new DefaultHttpResponse(HTTP_1_1, OK);
+            HttpResponse httpResponse = new DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
             setContentTypeHeader(httpResponse, file);
             setDateAndCacheHeaders(httpResponse, file);
             httpResponse.headers().set(CONTENT_LENGTH, fileLength);
@@ -172,7 +173,7 @@ public class StaticFileHandler implements RequestHandler<Boolean> {
                 lastContentFuture.addListener(ChannelFutureListener.CLOSE);
             }
         } catch (Exception e) {
-            throw new BladeException(e);
+            throw e;
         }
         return false;
     }

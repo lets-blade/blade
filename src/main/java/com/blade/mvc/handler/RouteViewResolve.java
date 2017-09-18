@@ -1,7 +1,6 @@
 package com.blade.mvc.handler;
 
 import com.blade.Blade;
-import com.blade.exception.BladeException;
 import com.blade.ioc.Ioc;
 import com.blade.kit.ReflectKit;
 import com.blade.mvc.annotation.JSON;
@@ -59,19 +58,13 @@ public class RouteViewResolve {
                 return true;
             }
         } catch (Exception e) {
-            Throwable t = e;
-            if (e instanceof InvocationTargetException) {
-                t = e.getCause();
-            }
-            if (t instanceof BladeException) {
-                throw (BladeException) t;
-            }
-            throw new BladeException(t);
+            if (e instanceof InvocationTargetException) e = (Exception) e.getCause();
+            throw e;
         }
         return false;
     }
 
-    public boolean invokeHook(Signature routeSignature, Route route) throws BladeException {
+    public boolean invokeHook(Signature routeSignature, Route route) throws Exception {
         Method actionMethod = route.getAction();
         Object target       = route.getTarget();
         if (null == target) {
@@ -83,30 +76,27 @@ public class RouteViewResolve {
         // execute
         int len = actionMethod.getParameterTypes().length;
         actionMethod.setAccessible(true);
-        try {
-            Object returnParam;
-            if (len > 0) {
-                Signature signature = Signature.builder().route(route)
-                        .request(routeSignature.request()).response(routeSignature.response())
-                        .parameters(routeSignature.getParameters())
-                        .action(actionMethod).build();
 
-                Object[] args = MethodArgument.getArgs(signature);
-                returnParam = ReflectKit.invokeMehod(target, actionMethod, args);
-            } else {
-                returnParam = ReflectKit.invokeMehod(target, actionMethod);
-            }
+        Object returnParam;
+        if (len > 0) {
+            Signature signature = Signature.builder().route(route)
+                    .request(routeSignature.request()).response(routeSignature.response())
+                    .parameters(routeSignature.getParameters())
+                    .action(actionMethod).build();
 
-            if (null != returnParam) {
-                Class<?> returnType = returnParam.getClass();
-                if (returnType == Boolean.class || returnType == boolean.class) {
-                    return (Boolean) returnParam;
-                }
-            }
-            return true;
-        } catch (Exception e) {
-            throw new BladeException(e);
+            Object[] args = MethodArgument.getArgs(signature);
+            returnParam = ReflectKit.invokeMehod(target, actionMethod, args);
+        } else {
+            returnParam = ReflectKit.invokeMehod(target, actionMethod);
         }
+
+        if (null != returnParam) {
+            Class<?> returnType = returnParam.getClass();
+            if (returnType == Boolean.class || returnType == boolean.class) {
+                return (Boolean) returnParam;
+            }
+        }
+        return true;
     }
 
 }

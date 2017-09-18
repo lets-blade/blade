@@ -2,9 +2,11 @@ package com.blade.server.netty;
 
 import com.blade.Blade;
 import com.blade.exception.BladeException;
-import com.blade.exception.ExceptionResolve;
+import com.blade.exception.NotFoundException;
 import com.blade.kit.BladeKit;
 import com.blade.mvc.WebContext;
+import com.blade.mvc.handler.ExceptionHandler;
+import com.blade.mvc.handler.RouteHandler;
 import com.blade.mvc.handler.RouteViewResolve;
 import com.blade.mvc.hook.Signature;
 import com.blade.mvc.hook.WebHook;
@@ -13,9 +15,7 @@ import com.blade.mvc.http.HttpResponse;
 import com.blade.mvc.http.Request;
 import com.blade.mvc.http.Response;
 import com.blade.mvc.route.Route;
-import com.blade.mvc.route.RouteHandler;
 import com.blade.mvc.route.RouteMatcher;
-import com.blade.mvc.ui.DefaultUI;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
@@ -26,14 +26,10 @@ import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpVersion;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import static com.blade.mvc.Const.ENV_KEY_PAGE_404;
-import static com.blade.mvc.Const.ENV_KEY_PAGE_500;
 import static io.netty.handler.codec.http.HttpUtil.is100ContinueExpected;
 
 /**
@@ -47,30 +43,20 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
     private final Blade             blade;
     private final RouteMatcher      routeMatcher;
     private final Set<String>       statics;
-    private final Optional<String>  page404;
-    private final Optional<String>  page500;
     private final SessionHandler    sessionHandler;
     private final StaticFileHandler staticFileHandler;
     private final RouteViewResolve  routeViewResolve;
-    private final ExceptionResolve  exceptionResolve;
+    private final ExceptionHandler  exceptionHandler;
 
-    HttpServerHandler(Blade blade, ExceptionResolve exceptionResolve) {
+    HttpServerHandler(Blade blade) {
         this.blade = blade;
         this.statics = blade.getStatics();
-        this.exceptionResolve = exceptionResolve;
-
-        this.page404 = Optional.ofNullable(blade.environment().get(ENV_KEY_PAGE_404, null));
-        this.page500 = Optional.ofNullable(blade.environment().get(ENV_KEY_PAGE_500, null));
+        this.exceptionHandler = blade.exceptionHandler();
 
         this.routeMatcher = blade.routeMatcher();
         this.routeViewResolve = new RouteViewResolve(blade);
         this.staticFileHandler = new StaticFileHandler(blade);
         this.sessionHandler = blade.sessionManager() != null ? new SessionHandler(blade) : null;
-    }
-
-    @Override
-    public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
-        super.channelRegistered(ctx);
     }
 
     @Override
@@ -88,7 +74,7 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
         try {
             // request uri
             String uri = request.uri();
-            log.debug("{}\t{}\t{}", request.protocol(), request.method(), uri);
+            log.info("{}\t{}\t{}", request.protocol(), request.method(), uri);
 
             // write session
             WebContext.set(new WebContext(request, response));
@@ -100,15 +86,8 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
 
             Route route = routeMatcher.lookupRoute(request.method(), uri);
             if (null == route) {
-                // 404
-                response.notFound();
-                if (page404.isPresent()) {
-                    response.render(page404.get());
-                } else {
-                    String html = String.format(DefaultUI.VIEW_404, uri);
-                    response.html(html);
-                }
-                return;
+                log.warn("Not Found\t{}", uri);
+                throw new NotFoundException();
             }
             request.initPathParams(route);
 
@@ -135,9 +114,10 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
             this.invokeHook(routeMatcher.getAfter(uri), signature);
 
         } catch (Exception e) {
-            if (null != exceptionResolve && !exceptionResolve.handle(e, signature)) {
+            if (null != exceptionHandler) {
+                exceptionHandler.handle(e);
             } else {
-                throw e;
+                log.error("Blade Invoke Error", e);
             }
         } finally {
             this.sendFinish(response);
@@ -151,38 +131,13 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
     }
 
     @Override
-    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        super.channelInactive(ctx);
-    }
-
-    @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        log.error("error", cause);
-        if (!ctx.channel().isActive()) {
-            ctx.close();
-            return;
-        }
-        Response     response = WebContext.response();
-        String       error    = cause.getMessage();
-        StringWriter sw       = new StringWriter();
-        PrintWriter  writer   = new PrintWriter(sw);
-        if (page500.isPresent()) {
-            cause.printStackTrace(writer);
-            WebContext.request().attribute("err_message", error);
-            WebContext.request().attribute("err_stackTrace", sw.toString());
-            response.render(page500.get());
+        if (null != exceptionHandler) {
+            exceptionHandler.handle((Exception) cause);
         } else {
-            if (blade.devMode()) {
-                writer.write(String.format(DefaultUI.ERROR_START, cause.getClass() + " : " + cause.getMessage()));
-                writer.write("\r\n");
-                cause.printStackTrace(writer);
-                writer.println(DefaultUI.HTML_FOOTER);
-                error = sw.toString();
-                response.html(error);
-            } else {
-                response.body("Internal Server Error");
-            }
+            log.error("Blade Invoke Error", cause);
         }
+        ctx.close();
     }
 
     private boolean isStaticFile(String uri) {
@@ -195,7 +150,7 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
      *
      * @param signature signature
      */
-    private boolean routeHandle(Signature signature) throws Exception {
+    private void routeHandle(Signature signature) throws Exception {
         Object target = signature.getRoute().getTarget();
         if (null == target) {
             Class<?> clazz = signature.getAction().getDeclaringClass();
@@ -205,9 +160,8 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
         if (signature.getRoute().getTargetType() == RouteHandler.class) {
             RouteHandler routeHandler = (RouteHandler) target;
             routeHandler.handle(signature.request(), signature.response());
-            return false;
         } else {
-            return routeViewResolve.handle(signature);
+            routeViewResolve.handle(signature);
         }
     }
 
@@ -228,10 +182,9 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
      *
      * @param hooks     webHook list
      * @param signature http request
-     * @return
-     * @throws BladeException
+     * @return return invoke hook is abort
      */
-    private boolean invokeHook(List<Route> hooks, Signature signature) throws BladeException {
+    private boolean invokeHook(List<Route> hooks, Signature signature) throws Exception {
         for (Route route : hooks) {
             if (route.getTargetType() == RouteHandler.class) {
                 RouteHandler routeHandler = (RouteHandler) route.getTarget();

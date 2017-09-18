@@ -19,7 +19,7 @@ import static io.netty.handler.codec.http.HttpHeaders.Names.USER_AGENT;
  * Http Request
  *
  * @author biezhi
- *         2017/5/31
+ * 2017/5/31
  */
 public interface Request {
 
@@ -352,8 +352,8 @@ public interface Request {
      * @param name  Parameter name
      * @param value Parameter Value
      */
-    default Request attribute(@NonNull String name, @NonNull Object value) {
-        attributes().put(name, value);
+    default Request attribute(@NonNull String name, Object value) {
+        if (null != value) attributes().put(name, value);
         return this;
     }
 
