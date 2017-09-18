@@ -1,6 +1,6 @@
-package com.blade;
+package com.blade.mvc;
 
-import com.blade.mvc.Const;
+import com.blade.BaseTestCase;
 import com.blade.mvc.wrapper.OutputStreamWrapper;
 import org.junit.Test;
 

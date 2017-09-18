@@ -1,6 +1,5 @@
-package com.blade;
+package com.blade.kit;
 
-import com.blade.kit.JsonKit;
 import com.blade.model.TestBean;
 import org.junit.Test;
 

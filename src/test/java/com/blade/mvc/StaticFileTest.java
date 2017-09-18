@@ -1,5 +1,6 @@
-package com.blade;
+package com.blade.mvc;
 
+import com.blade.BaseTestCase;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;

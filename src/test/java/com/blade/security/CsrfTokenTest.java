@@ -1,5 +1,6 @@
-package com.blade;
+package com.blade.security;
 
+import com.blade.BaseTestCase;
 import com.blade.mvc.handler.RouteHandler;
 import com.blade.mvc.http.Request;
 import com.blade.mvc.http.Response;

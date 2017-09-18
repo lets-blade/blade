@@ -1,12 +1,12 @@
-package com.blade;
+package com.blade.mvc;
 
-import com.blade.event.Event;
+import com.blade.BaseTestCase;
 import com.blade.event.EventType;
 import org.junit.Test;
 
 /**
  * @author biezhi
- *         2017/6/5
+ * 2017/6/5
  */
 public class SessionTest extends BaseTestCase {
 

@@ -251,7 +251,7 @@ public class Environment {
         Map<String, Object> map = new HashMap<>();
         props.forEach((key_, value) -> {
             if (key_.toString().startsWith(key)) {
-                map.put(key_.toString(), value);
+                map.put(key_.toString().substring(key.length() + 1), value);
             }
         });
         return map;

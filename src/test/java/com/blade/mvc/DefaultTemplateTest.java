@@ -1,4 +1,4 @@
-package com.blade;
+package com.blade.mvc;
 
 import com.blade.model.Person;
 import com.blade.mvc.ui.template.UncheckedTemplateException;

@@ -1,8 +1,8 @@
-package com.blade;
+package com.blade.mvc;
 
+import com.blade.BaseTestCase;
 import com.blade.kit.JsonKit;
 import com.blade.kit.json.Ason;
-import com.blade.mvc.Const;
 import org.junit.Test;
 
 import java.io.File;

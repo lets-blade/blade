@@ -1,5 +1,6 @@
-package com.blade;
+package com.blade.mvc;
 
+import com.blade.BaseTestCase;
 import com.blade.security.web.auth.BasicAuthMiddleware;
 import org.junit.Test;
 import sun.misc.BASE64Encoder;
