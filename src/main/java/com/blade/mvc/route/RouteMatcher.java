@@ -49,7 +49,7 @@ public class RouteMatcher {
     private Map<HttpMethod, Integer>                            indexes            = new HashMap<>();
     private Map<HttpMethod, StringBuilder>                      patternBuilders    = new HashMap<>();
 
-    public Route addRoute(HttpMethod httpMethod, String path, RouteHandler handler, String methodName) throws NoSuchMethodException {
+    private Route addRoute(HttpMethod httpMethod, String path, RouteHandler handler, String methodName) throws NoSuchMethodException {
         Class<?> handleType = handler.getClass();
         Method   method     = handleType.getMethod(methodName, Request.class, Response.class);
         return addRoute(httpMethod, path, handler, RouteHandler.class, method);
@@ -118,17 +118,18 @@ public class RouteMatcher {
     public void route(String path, Class<?> clazz, String methodName, HttpMethod httpMethod) {
         try {
             Assert.notNull(path, "Route path not is null!");
-            Assert.notNull(clazz, "Class EventType not is null!");
+            Assert.notNull(clazz, "Route type not is null!");
             Assert.notNull(methodName, "Method name not is null");
             Assert.notNull(httpMethod, "Request Method not is null");
 
             Method[] methods = classMethodPool.computeIfAbsent(clazz.getName(), k -> clazz.getMethods());
-            if (null != methods) {
-                for (Method method : methods) {
-                    if (method.getName().equals(methodName)) {
-                        Object controller = controllerPool.computeIfAbsent(clazz, k -> ReflectKit.newInstance(clazz));
-                        addRoute(httpMethod, path, controller, clazz, method);
-                    }
+            if (null == methods) {
+                return;
+            }
+            for (Method method : methods) {
+                if (method.getName().equals(methodName)) {
+                    Object controller = controllerPool.computeIfAbsent(clazz, k -> ReflectKit.newInstance(clazz));
+                    addRoute(httpMethod, path, controller, clazz, method);
                 }
             }
         } catch (Exception e) {

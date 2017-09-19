@@ -59,7 +59,7 @@ public class RouteBuilder {
      */
     public void addRouter(final Class<?> routeType, Object controller) {
 
-        Method[] methods = routeType.getMethods();
+        Method[] methods = routeType.getDeclaredMethods();
         if (BladeKit.isEmpty(methods)) {
             return;
         }
@@ -71,11 +71,12 @@ public class RouteBuilder {
         }
 
         if (null == nameSpace) {
-            log.warn("Route [{}] not controller annotation", routeType.getName());
+            log.warn("Route [{}] not path annotation", routeType.getName());
             return;
         }
 
         for (Method method : methods) {
+
             com.blade.mvc.annotation.Route mapping     = method.getAnnotation(com.blade.mvc.annotation.Route.class);
             GetRoute                       getRoute    = method.getAnnotation(GetRoute.class);
             PostRoute                      postRoute   = method.getAnnotation(PostRoute.class);
