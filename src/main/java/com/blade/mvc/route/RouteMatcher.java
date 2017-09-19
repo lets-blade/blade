@@ -11,8 +11,7 @@ import com.blade.mvc.hook.WebHook;
 import com.blade.mvc.http.HttpMethod;
 import com.blade.mvc.http.Request;
 import com.blade.mvc.http.Response;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Method;
 import java.net.URI;
@@ -30,9 +29,8 @@ import java.util.stream.Stream;
  * @author <a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since 1.7.1-release
  */
+@Slf4j
 public class RouteMatcher {
-
-    private static final Logger log = LoggerFactory.getLogger(RouteMatcher.class);
 
     private static final Pattern PATH_VARIABLE_PATTERN = Pattern.compile(":(\\w+)");
     private static final String  PATH_VARIABLE_REPLACE = "([^/]+)";
@@ -57,8 +55,16 @@ public class RouteMatcher {
         return addRoute(httpMethod, path, handler, RouteHandler.class, method);
     }
 
+    Route addRoute(Route route) {
+        String     path           = route.getPath();
+        HttpMethod httpMethod     = route.getHttpMethod();
+        Object     controller     = route.getTarget();
+        Class<?>   controllerType = route.getTargetType();
+        Method     method         = route.getAction();
+        return addRoute(httpMethod, path, controller, controllerType, method);
+    }
 
-    public Route addRoute(HttpMethod httpMethod, String path, Object controller, Class<?> controllerType, Method method) {
+    private Route addRoute(HttpMethod httpMethod, String path, Object controller, Class<?> controllerType, Method method) {
 
         // [/** | /*]
         path = "*".equals(path) ? "/.*" : path;
