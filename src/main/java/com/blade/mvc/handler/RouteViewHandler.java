@@ -13,11 +13,11 @@ import com.blade.mvc.ui.ModelAndView;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-public class RouteViewResolve {
+public class RouteViewHandler {
 
     private Ioc ioc;
 
-    public RouteViewResolve(Blade blade) {
+    public RouteViewHandler(Blade blade) {
         this.ioc = blade.ioc();
     }
 

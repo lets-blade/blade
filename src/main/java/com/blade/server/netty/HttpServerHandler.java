@@ -7,7 +7,7 @@ import com.blade.kit.BladeKit;
 import com.blade.mvc.WebContext;
 import com.blade.mvc.handler.ExceptionHandler;
 import com.blade.mvc.handler.RouteHandler;
-import com.blade.mvc.handler.RouteViewResolve;
+import com.blade.mvc.handler.RouteViewHandler;
 import com.blade.mvc.hook.Signature;
 import com.blade.mvc.hook.WebHook;
 import com.blade.mvc.http.HttpRequest;
@@ -45,7 +45,7 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
     private final Set<String>       statics;
     private final SessionHandler    sessionHandler;
     private final StaticFileHandler staticFileHandler;
-    private final RouteViewResolve  routeViewResolve;
+    private final RouteViewHandler  routeViewHandler;
     private final ExceptionHandler  exceptionHandler;
 
     HttpServerHandler(Blade blade) {
@@ -54,13 +54,13 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
         this.exceptionHandler = blade.exceptionHandler();
 
         this.routeMatcher = blade.routeMatcher();
-        this.routeViewResolve = new RouteViewResolve(blade);
+        this.routeViewHandler = new RouteViewHandler(blade);
         this.staticFileHandler = new StaticFileHandler(blade);
         this.sessionHandler = blade.sessionManager() != null ? new SessionHandler(blade) : null;
     }
 
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest fullHttpRequest) throws Exception {
+    protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest fullHttpRequest) {
         if (is100ContinueExpected(fullHttpRequest)) {
             ctx.write(new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.CONTINUE));
         }
@@ -117,7 +117,7 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
             if (null != exceptionHandler) {
                 exceptionHandler.handle(e);
             } else {
-                throw e;
+                log.error("Blade Invoke Error", e);
             }
         } finally {
             this.sendFinish(response);
@@ -161,7 +161,7 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
             RouteHandler routeHandler = (RouteHandler) target;
             routeHandler.handle(signature.request(), signature.response());
         } else {
-            routeViewResolve.handle(signature);
+            routeViewHandler.handle(signature);
         }
     }
 
@@ -190,8 +190,10 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
                 RouteHandler routeHandler = (RouteHandler) route.getTarget();
                 routeHandler.handle(signature.request(), signature.response());
             } else {
-                boolean flag = routeViewResolve.invokeHook(signature, route);
-                if (!flag) return false;
+                boolean flag = routeViewHandler.invokeHook(signature, route);
+                if (!flag) {
+                    return false;
+                }
             }
         }
         return true;

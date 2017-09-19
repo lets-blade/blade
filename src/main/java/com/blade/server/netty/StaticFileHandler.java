@@ -22,7 +22,10 @@ import io.netty.util.CharsetUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.io.RandomAccessFile;
 import java.net.URLConnection;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -46,9 +49,9 @@ public class StaticFileHandler implements RequestHandler<Boolean> {
 
     private boolean showFileList;
 
-    public static final int HTTP_CACHE_SECONDS = 60;
+    private static final int HTTP_CACHE_SECONDS = 60;
 
-    public StaticFileHandler(Blade blade) {
+    StaticFileHandler(Blade blade) {
         this.showFileList = blade.environment().getBoolean(Const.ENV_KEY_STATIC_LIST, false);
     }
 
@@ -78,16 +81,13 @@ public class StaticFileHandler implements RequestHandler<Boolean> {
                 if (http304(ctx, request, -1)) {
                     return false;
                 }
-                String content = null;
-                try {
-                    content = IOKit.readToString(input);
-                } catch (IOException e) {
-                    throw e;
-                }
+                String           content      = IOKit.readToString(input);
                 FullHttpResponse httpResponse = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, OK, Unpooled.copiedBuffer(content, CharsetUtil.UTF_8));
                 setDateAndCacheHeaders(httpResponse, null);
                 String contentType = StringKit.mimeType(uri);
-                if (null != contentType) httpResponse.headers().set(CONTENT_TYPE, contentType);
+                if (null != contentType) {
+                    httpResponse.headers().set(CONTENT_TYPE, contentType);
+                }
                 httpResponse.headers().set(CONTENT_LENGTH, content.length());
                 if (request.keepAlive()) {
                     httpResponse.headers().set(CONNECTION, HttpHeaders.Values.KEEP_ALIVE);
@@ -136,44 +136,40 @@ public class StaticFileHandler implements RequestHandler<Boolean> {
             sendError(ctx, NOT_FOUND);
             return false;
         }
-        try {
 
-            long fileLength = raf.length();
+        long fileLength = raf.length();
 
-            HttpResponse httpResponse = new DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
-            setContentTypeHeader(httpResponse, file);
-            setDateAndCacheHeaders(httpResponse, file);
-            httpResponse.headers().set(CONTENT_LENGTH, fileLength);
-            if (request.keepAlive()) {
-                httpResponse.headers().set(CONNECTION, HttpHeaders.Values.KEEP_ALIVE);
-            }
+        HttpResponse httpResponse = new DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
+        setContentTypeHeader(httpResponse, file);
+        setDateAndCacheHeaders(httpResponse, file);
+        httpResponse.headers().set(CONTENT_LENGTH, fileLength);
+        if (request.keepAlive()) {
+            httpResponse.headers().set(CONNECTION, HttpHeaders.Values.KEEP_ALIVE);
+        }
 
-            // Write the initial line and the header.
-            ctx.write(httpResponse);
+        // Write the initial line and the header.
+        ctx.write(httpResponse);
 
-            // Write the content.
-            ChannelFuture sendFileFuture;
-            ChannelFuture lastContentFuture;
-            if (ctx.pipeline().get(SslHandler.class) == null) {
-                sendFileFuture = ctx.write(new DefaultFileRegion(raf.getChannel(), 0, fileLength), ctx.newProgressivePromise());
-                // Write the end marker.
-                lastContentFuture = ctx.writeAndFlush(LastHttpContent.EMPTY_LAST_CONTENT);
+        // Write the content.
+        ChannelFuture sendFileFuture;
+        ChannelFuture lastContentFuture;
+        if (ctx.pipeline().get(SslHandler.class) == null) {
+            sendFileFuture = ctx.write(new DefaultFileRegion(raf.getChannel(), 0, fileLength), ctx.newProgressivePromise());
+            // Write the end marker.
+            lastContentFuture = ctx.writeAndFlush(LastHttpContent.EMPTY_LAST_CONTENT);
 
-            } else {
-                sendFileFuture =
-                        ctx.writeAndFlush(new HttpChunkedInput(new ChunkedFile(raf, 0, fileLength, 8192)), ctx.newProgressivePromise());
-                // HttpChunkedInput will write the end marker (LastHttpContent) for us.
-                lastContentFuture = sendFileFuture;
-            }
+        } else {
+            sendFileFuture =
+                    ctx.writeAndFlush(new HttpChunkedInput(new ChunkedFile(raf, 0, fileLength, 8192)), ctx.newProgressivePromise());
+            // HttpChunkedInput will write the end marker (LastHttpContent) for us.
+            lastContentFuture = sendFileFuture;
+        }
 
-            sendFileFuture.addListener(ProgressiveFutureListener.build(raf));
+        sendFileFuture.addListener(ProgressiveFutureListener.build(raf));
 
-            // Decide whether to close the connection or not.
-            if (!request.keepAlive()) {
-                lastContentFuture.addListener(ChannelFutureListener.CLOSE);
-            }
-        } catch (Exception e) {
-            throw e;
+        // Decide whether to close the connection or not.
+        if (!request.keepAlive()) {
+            lastContentFuture.addListener(ChannelFutureListener.CLOSE);
         }
         return false;
     }
@@ -185,8 +181,7 @@ public class StaticFileHandler implements RequestHandler<Boolean> {
             return false;
         }
 
-        String ifModifiedSince     = ifMdf;
-        Date   ifModifiedSinceDate = format(ifModifiedSince, Const.HTTP_DATE_FORMAT);
+        Date   ifModifiedSinceDate = format(ifMdf, Const.HTTP_DATE_FORMAT);
         // Only compare up to the second because the datetime format we send to the client
         // does not have milliseconds
         long ifModifiedSinceDateSeconds = ifModifiedSinceDate.getTime() / 1000;
