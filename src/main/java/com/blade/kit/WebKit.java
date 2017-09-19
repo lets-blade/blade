@@ -2,8 +2,6 @@ package com.blade.kit;
 
 import com.blade.mvc.http.Request;
 
-import java.util.Optional;
-
 /**
  * @author biezhi
  *         2017/6/2

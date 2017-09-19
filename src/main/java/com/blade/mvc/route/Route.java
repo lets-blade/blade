@@ -1,7 +1,7 @@
 package com.blade.mvc.route;
 
-import com.blade.mvc.http.HttpMethod;
 import com.blade.kit.PathKit;
+import com.blade.mvc.http.HttpMethod;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;

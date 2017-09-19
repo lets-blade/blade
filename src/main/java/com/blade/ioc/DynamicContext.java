@@ -1,7 +1,6 @@
 package com.blade.ioc;
 
 import com.blade.ioc.reader.ClassInfo;
-import com.blade.kit.BladeKit;
 import com.blade.ioc.reader.ClassPathClassReader;
 import com.blade.ioc.reader.ClassReader;
 import com.blade.ioc.reader.JarReaderImpl;
