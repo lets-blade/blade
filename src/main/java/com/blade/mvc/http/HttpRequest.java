@@ -5,6 +5,7 @@ import com.blade.mvc.multipart.FileItem;
 import com.blade.mvc.route.Route;
 import com.blade.server.netty.SessionHandler;
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpUtil;
@@ -26,7 +27,7 @@ import static io.netty.handler.codec.http.HttpHeaders.Names.COOKIE;
  * Http Request Impl
  *
  * @author biezhi
- *         2017/5/31
+ * 2017/5/31
  */
 @Slf4j
 public class HttpRequest implements Request {
@@ -42,13 +43,13 @@ public class HttpRequest implements Request {
 
     private SessionHandler sessionHandler;
     private Route          route;
-    private ByteBuf        body;
-    private String         host;
-    private String         uri;
-    private String         url;
-    private String         protocol;
-    private String         method;
-    private boolean        keepAlive;
+    private ByteBuf body = Unpooled.copiedBuffer("", CharsetUtil.UTF_8);
+    private String  host;
+    private String  uri;
+    private String  url;
+    private String  protocol;
+    private String  method;
+    private boolean keepAlive;
 
     private Map<String, String>       headers    = new HashMap<>();
     private Map<String, Object>       attributes = new HashMap<>();

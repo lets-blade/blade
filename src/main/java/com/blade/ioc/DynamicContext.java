@@ -5,8 +5,7 @@ import com.blade.ioc.reader.ClassPathClassReader;
 import com.blade.ioc.reader.ClassReader;
 import com.blade.ioc.reader.JarReaderImpl;
 import com.blade.kit.StringKit;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.net.URL;
 import java.util.Enumeration;
@@ -18,9 +17,8 @@ import java.util.stream.Stream;
  * @author <a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since 1.6.6
  */
+@Slf4j
 public final class DynamicContext {
-
-    private static final Logger log = LoggerFactory.getLogger(DynamicContext.class);
 
     private static final ClassReader classpathReader = new ClassPathClassReader();
     private static final ClassReader jarReader = new JarReaderImpl();
