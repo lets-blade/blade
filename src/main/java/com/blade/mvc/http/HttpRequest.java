@@ -148,11 +148,6 @@ public class HttpRequest implements Request {
     }
 
     @Override
-    public Route route() {
-        return this.route;
-    }
-
-    @Override
     public String host() {
         return this.host;
     }

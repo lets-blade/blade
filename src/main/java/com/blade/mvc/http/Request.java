@@ -26,12 +26,10 @@ public interface Request {
     /**
      * init request path parameters
      *
-     * @param route
-     * @return
+     * @param route route object
+     * @return Return request
      */
     Request initPathParams(Route route);
-
-    Route route();
 
     /**
      * @return Return client request host
