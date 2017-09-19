@@ -32,7 +32,6 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
-import io.netty.handler.ssl.SslContext;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
@@ -80,9 +79,12 @@ public class NettyServer implements Server {
         this.loadConfig(args);
         this.initConfig();
 
-        WebContext.init(blade, "/", false);
+        WebContext.init(blade, "/");
 
         this.initIoc();
+
+        this.shutdownHook();
+
         this.startServer(initStart);
 
     }
@@ -117,10 +119,7 @@ public class NettyServer implements Server {
 
     }
 
-    private void startServer(long startTime) throws Exception {
-        // Configure SSL.
-        SslContext sslCtx = null;
-        boolean    SSL    = false;
+    private void startServer(long startTime) throws InterruptedException {
 
         // Configure the server.
         this.bossGroup = new NioEventLoopGroup(threadCount, bossExecutors);
@@ -133,7 +132,7 @@ public class NettyServer implements Server {
         b.group(bossGroup, workerGroup)
                 .channel(NioServerSocketChannel.class)
                 .handler(new LoggingHandler(LogLevel.DEBUG))
-                .childHandler(new HttpServerInitializer(blade, sslCtx));
+                .childHandler(new HttpServerInitializer(blade));
 
         String address = environment.get(ENV_KEY_SERVER_ADDRESS, DEFAULT_SERVER_ADDRESS);
         int    port    = environment.getInt(ENV_KEY_SERVER_PORT, DEFAULT_SERVER_PORT);
@@ -143,7 +142,7 @@ public class NettyServer implements Server {
 
         log.info("⬢ {} initialize successfully, Time elapsed: {} ms", appName, System.currentTimeMillis() - startTime);
         log.info("⬢ Blade start with {}:{}", address, port);
-        log.info("⬢ Open your web browser and navigate to {}://{}:{} ⚡", (SSL ? "https" : "http"), address.replace("0.0.0.0", "127.0.0.1"), port);
+        log.info("⬢ Open your web browser and navigate to {}://{}:{} ⚡", "http", address.replace(DEFAULT_SERVER_ADDRESS, LOCAL_IP_ADDRESS), port);
 
         blade.eventManager().fireEvent(EventType.SERVER_STARTED, blade);
     }
@@ -152,7 +151,7 @@ public class NettyServer implements Server {
     private void parseCls(Class<?> clazz) {
         if (null != clazz.getAnnotation(Bean.class)) blade.register(clazz);
         if (null != clazz.getAnnotation(Path.class)) {
-            if (null == clazz.getAnnotation(Bean.class)) {
+            if (null == blade.ioc().getBean(clazz)) {
                 blade.register(clazz);
             }
             Object controller = blade.ioc().getBean(clazz);
@@ -181,7 +180,7 @@ public class NettyServer implements Server {
             bootEnv.props().forEach((key, value) -> environment.set(key.toString(), value));
         }
 
-        if(null != args){
+        if (null != args) {
             Optional<String> envArg = Stream.of(args).filter(s -> s.startsWith(Const.TERMINAL_BLADE_ENV)).findFirst();
             envArg.ifPresent(arg -> {
                 String envName = "app-" + arg.split("=")[1] + ".properties";
@@ -197,14 +196,14 @@ public class NettyServer implements Server {
 
         // load terminal param
         if (!BladeKit.isEmpty(args)) {
-            for (int i = 0; i < args.length; i++) {
-                if (args[i].startsWith(TERMINAL_SERVER_ADDRESS)) {
-                    int    pos     = args[i].indexOf(TERMINAL_SERVER_ADDRESS) + TERMINAL_SERVER_ADDRESS.length();
-                    String address = args[i].substring(pos);
+            for (String arg : args) {
+                if (arg.startsWith(TERMINAL_SERVER_ADDRESS)) {
+                    int    pos     = arg.indexOf(TERMINAL_SERVER_ADDRESS) + TERMINAL_SERVER_ADDRESS.length();
+                    String address = arg.substring(pos);
                     environment.set(ENV_KEY_SERVER_ADDRESS, address);
-                } else if (args[i].startsWith(TERMINAL_SERVER_PORT)) {
-                    int    pos  = args[i].indexOf(TERMINAL_SERVER_PORT) + TERMINAL_SERVER_PORT.length();
-                    String port = args[i].substring(pos);
+                } else if (arg.startsWith(TERMINAL_SERVER_PORT)) {
+                    int    pos  = arg.indexOf(TERMINAL_SERVER_PORT) + TERMINAL_SERVER_PORT.length();
+                    String port = arg.substring(pos);
                     environment.set(ENV_KEY_SERVER_PORT, port);
                 }
             }
@@ -244,6 +243,12 @@ public class NettyServer implements Server {
         backlog = environment.getInt(ENV_KEY_NETTY_SO_BACKLOG, 1024);
     }
 
+    private void shutdownHook() {
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            stop();
+        }));
+    }
+
     @Override
     public void stop() {
         if (this.bossGroup != null) {
@@ -258,16 +263,12 @@ public class NettyServer implements Server {
         if (workerExecutors != null) {
             workerExecutors.shutdown();
         }
+        log.info("⬢ Blade shutdown");
     }
 
     @Override
     public void join() throws InterruptedException {
-        try {
-            channel.closeFuture().sync();
-        } catch (Exception e) {
-            e.printStackTrace();
-            this.stop();
-        }
+        channel.closeFuture().sync();
     }
 
 }

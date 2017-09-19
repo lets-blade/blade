@@ -12,7 +12,6 @@ import io.netty.handler.codec.http.HttpServerExpectContinueHandler;
 import io.netty.handler.codec.http.cors.CorsConfig;
 import io.netty.handler.codec.http.cors.CorsConfigBuilder;
 import io.netty.handler.codec.http.cors.CorsHandler;
-import io.netty.handler.ssl.SslContext;
 import io.netty.handler.stream.ChunkedWriteHandler;
 
 /**
@@ -20,15 +19,12 @@ import io.netty.handler.stream.ChunkedWriteHandler;
  */
 public class HttpServerInitializer extends ChannelInitializer<SocketChannel> {
 
-    private final Blade blade;
-    private final SslContext sslCtx;
+    private final Blade   blade;
+    private final boolean enableGzip;
+    private final boolean enableCors;
 
-    private boolean enableGzip;
-    private boolean enableCors;
-
-    public HttpServerInitializer(Blade blade, SslContext sslCtx) {
+    public HttpServerInitializer(Blade blade) {
         this.blade = blade;
-        this.sslCtx = null;
         this.enableGzip = blade.environment().getBoolean(Const.ENV_KEY_GZIP_ENABLE, false);
         this.enableCors = blade.environment().getBoolean(Const.ENV_KEY_CORS_ENABLE, false);
     }
@@ -36,9 +32,6 @@ public class HttpServerInitializer extends ChannelInitializer<SocketChannel> {
     @Override
     protected void initChannel(SocketChannel ch) throws Exception {
         ChannelPipeline p = ch.pipeline();
-        if (sslCtx != null) {
-            p.addLast(sslCtx.newHandler(ch.alloc()));
-        }
         if (enableGzip) {
             p.addLast(new HttpContentCompressor());
         }

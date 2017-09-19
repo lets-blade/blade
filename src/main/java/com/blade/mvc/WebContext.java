@@ -18,7 +18,6 @@ public class WebContext {
 
     private static Blade blade;
     private static String contextPath;
-    private static boolean ssl;
 
     private Request request;
     private Response response;
@@ -50,18 +49,13 @@ public class WebContext {
         return null != webContext ? webContext.response : null;
     }
 
-    public static void init(Blade blade_, String contextPath_, boolean ssl_) {
+    public static void init(Blade blade_, String contextPath_) {
         blade = blade_;
         contextPath = contextPath_;
-        ssl = ssl_;
     }
 
     public static Blade blade() {
         return blade;
-    }
-
-    public static boolean isSSL() {
-        return ssl;
     }
 
     public static String contextPath() {
