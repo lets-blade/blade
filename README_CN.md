@@ -4,6 +4,7 @@
 [快速开始](https://biezhi.gitbooks.io/blade-in-action/chapter1/1.1-create-blade-application.html)&nbsp; | &nbsp;[视频教程](https://biezhi.gitbooks.io/blade-in-action/#视频教程)&nbsp; | &nbsp;[参与贡献](https://bladejava.com/docs/appendix/contribute)&nbsp; | &nbsp;[捐赠](donate.md)&nbsp; | &nbsp;[FAQ](https://bladejava.com/docs/faqs) | &nbsp;[English](https://github.com/biezhi/blade/blob/master/README.md)
 
 [![Build Status](https://img.shields.io/travis/biezhi/blade.svg?style=flat-square)](https://travis-ci.org/biezhi/blade)
+[![codecov.io](https://img.shields.io/codecov/c/github/biezhi/blade/dev.svg?style=flat-square)](http://codecov.io/github/biezhi/blade?branch=dev)
 [![maven-central](https://img.shields.io/maven-central/v/com.bladejava/blade-mvc.svg?style=flat-square)](http://search.maven.org/#search%7Cga%7C1%7Cblade-mvc)
 [![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg?style=flat-square)](https://www.apache.org/licenses/LICENSE-2.0.html)
 [![Gitter](https://badges.gitter.im/biezhi/blade.svg)](https://gitter.im/biezhi/blade?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
@@ -42,14 +43,14 @@ Blade是一款简洁优雅的轻量级MVC框架。如果你喜欢它可以给一
 <dependency>
 	<groupId>com.bladejava</groupId>
 	<artifactId>blade-mvc</artifactId>
-	<version>2.0.2-alpha</version>
+	<version>2.0.2-beta</version>
 </dependency>
 ```
 
 或者  `Gradle`:
 
 ```sh
-compile 'com.bladejava:blade-mvc:2.0.2-alpha'
+compile 'com.bladejava:blade-mvc:2.0.2-beta'
 ```
 
 编写 `Main`函数：
