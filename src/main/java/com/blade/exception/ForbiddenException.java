@@ -8,8 +8,15 @@ package com.blade.exception;
  */
 public class ForbiddenException extends BladeException {
 
+    private static final int STATUS = 403;
+    private static final String NAME = "Forbidden";
+
     public ForbiddenException() {
-        super(403, "");
+        super(STATUS, NAME);
+    }
+
+    public ForbiddenException(String message){
+        super(STATUS, NAME, message);
     }
 
 }

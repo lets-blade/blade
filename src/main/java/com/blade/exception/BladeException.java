@@ -19,25 +19,8 @@ public class BladeException extends RuntimeException {
         this.name = name;
     }
 
-    public BladeException(int status, Throwable t) {
-        this.status = status;
-        this.name = name;
-    }
-
-    public BladeException(String message, int status, String name) {
+    public BladeException(int status, String name, String message) {
         super(message);
-        this.status = status;
-        this.name = name;
-    }
-
-    public BladeException(String message, Throwable cause, int status, String name) {
-        super(message, cause);
-        this.status = status;
-        this.name = name;
-    }
-
-    public BladeException(Throwable cause, int status, String name) {
-        super(cause);
         this.status = status;
         this.name = name;
     }

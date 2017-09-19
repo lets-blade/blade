@@ -8,8 +8,15 @@ package com.blade.exception;
  */
 public class InternalErrorException extends BladeException {
 
-    public InternalErrorException(String name) {
-        super(500, name);
+    private static final int STATUS = 500;
+    private static final String NAME = "Internal Error";
+
+    public InternalErrorException() {
+        super(STATUS, NAME);
+    }
+
+    public InternalErrorException(String message) {
+        super(STATUS, NAME, message);
     }
 
 }

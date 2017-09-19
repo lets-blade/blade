@@ -15,4 +15,8 @@ public class NotFoundException extends BladeException {
         super(STATUS, NAME);
     }
 
+    public NotFoundException(String message) {
+        super(STATUS, NAME, message);
+    }
+
 }
