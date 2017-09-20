@@ -12,7 +12,6 @@ import io.example.blog.model.Article;
 import io.example.blog.service.AService;
 
 import java.io.File;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -28,8 +27,8 @@ public class IndexController {
     private AService aService;
 
     @GetRoute(value = "/hello")
-    public void index(@Param Date text, Response response) {
-        System.out.println(text);
+    public void index(Response response) {
+        int a = 1/0;
         response.text("hello world!");
     }
 

@@ -22,6 +22,7 @@ public class Application {
         map.put("jdk", 1.8);
 
         Blade.me()
+                .devMode(false)
                 .use((invoker) -> {
                     System.out.println("hello...");
                     return true;

@@ -27,19 +27,20 @@ import java.util.List;
  */
 public interface Const {
 
-    int          DEFAULT_SERVER_PORT    = 9000;
-    String       DEFAULT_SERVER_ADDRESS = "0.0.0.0";
-    String       LOCAL_IP_ADDRESS       = "127.0.0.1";
-    String       VERSION                = "2.0.2-beta";
-    String       WEB_JARS               = "/webjars/";
-    String       CLASSPATH              = new File(Const.class.getResource("/").getPath()).getPath();
-    String       CONTENT_TYPE_HTML      = "text/html; charset=UTF-8";
-    String       CONTENT_TYPE_JSON      = "application/json; charset=UTF-8";
-    String       CONTENT_TYPE_TEXT      = "text/plain; charset=UTF-8";
-    String       X_POWER_BY             = "X-Powered-By";
-    String       HTTP_DATE_FORMAT       = "EEE, dd MMM yyyy HH:mm:ss zzz";
-    List<String> PLUGIN_PACKAGE_NAME    = Arrays.asList("com.blade.plugin");
-    List<String> DEFAULT_STATICS        = Arrays.asList("/favicon.ico", "/robots.txt", "/static/", "/upload/", "/webjars/");
+    int          DEFAULT_SERVER_PORT        = 9000;
+    String       DEFAULT_SERVER_ADDRESS     = "0.0.0.0";
+    String       LOCAL_IP_ADDRESS           = "127.0.0.1";
+    String       VERSION                    = "2.0.2-beta";
+    String       WEB_JARS                   = "/webjars/";
+    String       CLASSPATH                  = new File(Const.class.getResource("/").getPath()).getPath();
+    String       CONTENT_TYPE_HTML          = "text/html; charset=UTF-8";
+    String       CONTENT_TYPE_JSON          = "application/json; charset=UTF-8";
+    String       CONTENT_TYPE_TEXT          = "text/plain; charset=UTF-8";
+    String       X_POWER_BY                 = "X-Powered-By";
+    String       HTTP_DATE_FORMAT           = "EEE, dd MMM yyyy HH:mm:ss zzz";
+    String       INTERNAL_SERVER_ERROR_HTML = "<center><h1>500 Internal Server Error</h1><hr/></center>";
+    List<String> PLUGIN_PACKAGE_NAME        = Arrays.asList("com.blade.plugin");
+    List<String> DEFAULT_STATICS            = Arrays.asList("/favicon.ico", "/robots.txt", "/static/", "/upload/", "/webjars/");
 
     // Env key
     String ENV_KEY_DEV_MODE                = "app.devMode";

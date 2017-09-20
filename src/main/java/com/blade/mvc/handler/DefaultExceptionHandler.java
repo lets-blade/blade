@@ -11,8 +11,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Optional;
 
-import static com.blade.mvc.Const.ENV_KEY_PAGE_404;
-import static com.blade.mvc.Const.ENV_KEY_PAGE_500;
+import static com.blade.mvc.Const.*;
 
 /**
  * Default exception handler implements
@@ -84,7 +83,7 @@ public class DefaultExceptionHandler implements ExceptionHandler {
             if (blade.devMode()) {
                 response.html("<h1>" + request.attribute("title") + "</h1><p>" + request.attribute("message") + "</p>");
             } else {
-                response.body("Internal Server Error");
+                response.html(INTERNAL_SERVER_ERROR_HTML);
             }
         }
     }
