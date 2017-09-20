@@ -24,12 +24,6 @@ public class BladeTest extends BaseTestCase {
     }
 
     @Test
-    public void testJvmBindException() {
-//        app.start();
-//        app.start();
-    }
-
-    @Test
     public void testAppName() {
         start(
                 app.appName("bestKill").devMode(false)

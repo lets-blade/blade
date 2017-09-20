@@ -171,7 +171,7 @@ public class ResponseTest extends BaseTestCase {
     @Test
     public void testRedirect() throws Exception {
         start(
-                app.get("/", ((request, response) -> response.redirect("http://biezhi.me")))
+                app.get("/", ((request, response) -> response.redirect("https://github.com")))
         );
 
         int status = get("/").asString().getStatus();
