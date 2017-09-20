@@ -3,6 +3,9 @@ language: java
 jdk:
   - oraclejdk8
 
+before_install:
+    - export TZ='Asia/Shanghai'
+
 script: "mvn clean cobertura:cobertura"
 
 after_success:
