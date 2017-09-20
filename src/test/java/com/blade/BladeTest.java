@@ -1,18 +1,21 @@
 package com.blade;
 
 import com.blade.event.EventType;
+import com.blade.mvc.ui.template.DefaultEngine;
+import com.blade.types.BladeBeanDefineType;
+import org.junit.Assert;
 import org.junit.Test;
 
 /**
  * @author biezhi
- *         2017/6/4
+ * 2017/6/4
  */
 public class BladeTest extends BaseTestCase {
 
     @Test
     public void testAppName() {
         start(
-                app.appName("bestKill")
+                app.appName("bestKill").devMode(false)
         );
     }
 
@@ -25,4 +28,35 @@ public class BladeTest extends BaseTestCase {
         );
     }
 
+    @Test
+    public void testTemplate() {
+        start(
+                app.templateEngine(new DefaultEngine())
+        );
+    }
+
+    @Test
+    public void testRegister() {
+        start(
+                app.register(new BladeBeanDefineType())
+                        .event(EventType.SERVER_STARTED, e -> {
+                            Object bladeBeanDefineType = e.blade.getBean(BladeBeanDefineType.class);
+                            Assert.assertNotNull(bladeBeanDefineType);
+                        })
+        );
+    }
+
+    @Test
+    public void testAddStatics() {
+        start(
+                app.addStatics("/assets/").showFileList(true).gzip(true)
+        );
+    }
+
+    @Test
+    public void testEnableCors() {
+        start(
+                app.enableCors(true)
+        );
+    }
 }

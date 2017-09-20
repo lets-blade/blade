@@ -2,6 +2,7 @@ package com.blade.mvc;
 
 import com.blade.BaseTestCase;
 import com.blade.mvc.wrapper.OutputStreamWrapper;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -170,12 +171,11 @@ public class ResponseTest extends BaseTestCase {
     @Test
     public void testRedirect() throws Exception {
         start(
-                app.get("/", ((request, response) -> response.redirect("http://jd.com")))
+                app.get("/", ((request, response) -> response.redirect("http://biezhi.me")))
         );
 
-        String contentType = get("/").asString().getHeaders().getFirst("Content-Type");
-        System.out.println(contentType);
-//        assertEquals(Const.CONTENT_TYPE_HTML, contentType);
+        int status = get("/").asString().getStatus();
+        Assert.assertEquals(200, status);
     }
 
 }

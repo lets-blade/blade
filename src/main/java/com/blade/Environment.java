@@ -16,6 +16,7 @@
 package com.blade;
 
 import com.blade.kit.IOKit;
+import com.blade.kit.ReflectKit;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
@@ -26,10 +27,9 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Properties;
+import java.util.*;
+
+import static java.util.Optional.ofNullable;
 
 /**
  * Blade environment config
@@ -77,7 +77,7 @@ public class Environment {
      * @param url
      * @return
      */
-    public Environment of(@NonNull URL url) {
+    public static Environment of(@NonNull URL url) {
         try {
             return of(url.openStream());
         } catch (UnsupportedEncodingException e) {
@@ -113,17 +113,17 @@ public class Environment {
             return loadClasspath(location);
         } else if (location.startsWith("file:")) {
             location = location.substring("file:".length());
-            return new Environment().of(new File(location));
+            return of(new File(location));
         } else if (location.startsWith("url:")) {
             location = location.substring("url:".length());
             try {
-                return new Environment().of(new URL(location));
+                return of(new URL(location));
             } catch (MalformedURLException e) {
                 log.error("", e);
                 return null;
             }
         } else {
-            return new Environment().loadClasspath(location);
+            return loadClasspath(location);
         }
     }
 
@@ -157,7 +157,7 @@ public class Environment {
         ClassLoader loader = null;
         try {
             loader = Thread.currentThread().getContextClassLoader();
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
         if (loader == null) {
             loader = Environment.class.getClassLoader();
@@ -193,37 +193,52 @@ public class Environment {
         return this;
     }
 
-    public Optional<String> get(@NonNull String key) {
-        return Optional.ofNullable(props.getProperty(key));
+    public Optional<String> get(String key) {
+        if (null == key) return Optional.empty();
+        return ofNullable(props.getProperty(key));
+    }
+
+    public String getOrNull(String key) {
+        return get(key).orElse(null);
     }
 
     public String get(@NonNull String key, String defaultValue) {
         return props.getProperty(key, defaultValue);
     }
 
-    public Optional<Object> getObject(@NonNull String key) {
-        return Optional.ofNullable(props.get(key));
+    public Optional<Object> getObject(String key) {
+        return ofNullable(props.get(key));
     }
 
-    public Optional<Integer> getInt(@NonNull String key) {
-        if (getObject(key).isPresent()) {
+    public Optional<Integer> getInt(String key) {
+        if (null != key && getObject(key).isPresent()) {
             return Optional.of(Integer.parseInt(getObject(key).get().toString()));
         }
         return Optional.empty();
     }
 
-    public Integer getInt(@NonNull String key, int defaultValue) {
+    public Integer getIntOrNull(String key) {
+        Optional<Integer> intVal = getInt(key);
+        return intVal.orElse(null);
+    }
+
+    public Integer getInt(String key, int defaultValue) {
         if (getInt(key).isPresent()) {
             return getInt(key).get();
         }
         return defaultValue;
     }
 
-    public Optional<Long> getLong(@NonNull String key) {
-        if (getObject(key).isPresent()) {
+    public Optional<Long> getLong(String key) {
+        if (null != key && getObject(key).isPresent()) {
             return Optional.of(Long.parseLong(getObject(key).get().toString()));
         }
         return Optional.empty();
+    }
+
+    public Long getLongOrNull(String key) {
+        Optional<Long> longVal = getLong(key);
+        return longVal.orElse(null);
     }
 
     public Long getLong(@NonNull String key, long defaultValue) {
@@ -234,10 +249,15 @@ public class Environment {
     }
 
     public Optional<Boolean> getBoolean(@NonNull String key) {
-        if (getObject(key).isPresent()) {
+        if (null != key && getObject(key).isPresent()) {
             return Optional.of(Boolean.parseBoolean(getObject(key).get().toString()));
         }
         return Optional.empty();
+    }
+
+    public Boolean getBooleanOrNull(String key) {
+        Optional<Boolean> boolVal = getBoolean(key);
+        return boolVal.orElse(null);
     }
 
     public Boolean getBoolean(@NonNull String key, boolean defaultValue) {
@@ -247,29 +267,16 @@ public class Environment {
         return defaultValue;
     }
 
-    public Map<String, Object> getPrefix(@NonNull String key) {
-        Map<String, Object> map = new HashMap<>();
-        props.forEach((key_, value) -> {
-            if (key_.toString().startsWith(key)) {
-                map.put(key_.toString().substring(key.length() + 1), value);
-            }
-        });
-        return map;
-    }
-
-    public boolean hasKey(@NonNull String key) {
-        return props.containsKey(key);
-    }
-
-    public boolean hasValue(@NonNull String value) {
-        return props.containsValue(value);
-    }
-
-    public Optional<Double> getDouble(@NonNull String key) {
-        if (getObject(key).isPresent()) {
+    public Optional<Double> getDouble(String key) {
+        if (null != key && getObject(key).isPresent()) {
             return Optional.of(Double.parseDouble(getObject(key).get().toString()));
         }
         return Optional.empty();
+    }
+
+    public Double getDoubleOrNull(String key) {
+        Optional<Double> doubleVal = getDouble(key);
+        return doubleVal.orElse(null);
     }
 
     public Double getDouble(@NonNull String key, double defaultValue) {
@@ -279,10 +286,47 @@ public class Environment {
         return defaultValue;
     }
 
+    public Optional<Date> getDate(String key) {
+        if (null != key && getObject(key).isPresent()) {
+            String value = getObject(key).get().toString();
+            Date date = (Date) ReflectKit.convert(Date.class, value);
+            return Optional.ofNullable(date);
+        }
+        return Optional.empty();
+    }
+
+    public Date getDateOrNull(String key) {
+        Optional<Date> dateVal = getDate(key);
+        return dateVal.orElse(null);
+    }
+
+    public Map<String, Object> getPrefix(String key) {
+        Map<String, Object> map = new HashMap<>();
+        if (null != key) {
+            props.forEach((key_, value) -> {
+                if (key_.toString().startsWith(key)) {
+                    map.put(key_.toString().substring(key.length() + 1), value);
+                }
+            });
+        }
+        return map;
+    }
+
     public Map<String, String> toMap() {
         Map<String, String> map = new HashMap<>(props.size());
         props.forEach((k, v) -> map.put(k.toString(), v.toString()));
         return map;
+    }
+
+    public boolean hasKey(String key) {
+        if (null == key) {
+            return false;
+        }
+        return props.containsKey(key);
+    }
+
+    public boolean hasValue(String value) {
+        return props.containsValue(value);
     }
 
     public Properties props() {
