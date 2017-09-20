@@ -6,10 +6,15 @@ import java.util.regex.Pattern;
  * 正则工具类
  * 提供验证邮箱、手机号、电话号码、身份证号码、数字等方法
  *
- * @author    <a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
+ * @author <a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since 1.0
  */
 public final class PatternKit {
+
+    private static final String EMAIL_REGEX  = "(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21\\x23-\\x5b\\x5d-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21-\\x5a\\x53-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)\\])";
+    private static final String IP_REGEX     = "^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$";
+    private static final String URL_REGEX    = "^(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]";
+    private static final String MOBILE_REGEX = "^(13[0-9]|14[57]|15[012356789]|17[0678]|18[0-9])[0-9]{8}$";
 
     /**
      * 验证Email
@@ -18,25 +23,35 @@ public final class PatternKit {
      * @return 验证成功返回true，验证失败返回false
      */
     public static boolean isEmail(String email) {
-        String regex = "\\w+@\\w+\\.[a-z]+(\\.[a-z]+)?";
-        return Pattern.matches(regex, email);
+        return isMatch(EMAIL_REGEX, email);
     }
 
     /**
      * 验证身份证号码
      *
-     * @param idCard 居民身份证号码15位或18位，最后一位可能是数字或字母
+     * @param idCard 居民身份证号码18位，最后一位可能是数字或字母
      * @return 验证成功返回true，验证失败返回false
      */
-    public static boolean isIdCard(String idCard) {
-        String regex = "[1-9]\\d{13,16}[a-zA-Z0-9]{1}";
-        return Pattern.matches(regex, idCard);
+    public static boolean isIdCard18(String idCard) {
+        String regex = "^[1-9]\\d{5}[1-9]\\d{3}((0\\d)|(1[0-2]))(([0|1|2]\\d)|3[0-1])\\d{3}([0-9Xx])$";
+        return isMatch(regex, idCard);
+    }
+
+    /**
+     * 验证身份证号码
+     *
+     * @param idCard 居民身份证号码15位，最后一位可能是数字或字母
+     * @return 验证成功返回true，验证失败返回false
+     */
+    public static boolean isIdCard15(String idCard) {
+        String regex = "^[1-9]\\\\d{7}((0\\\\d)|(1[0-2]))(([0|1|2]\\\\d)|3[0-1])\\\\d{3}$";
+        return isMatch(regex, idCard);
     }
 
     public static boolean isImage(String suffix) {
-        if (null != suffix && !"".equals(suffix)) {
+        if (null != suffix && !"".equals(suffix) && suffix.contains(".")) {
             String regex = "(.*?)(?i)(jpg|jpeg|png|gif|bmp|webp)";
-            return Pattern.matches(regex, suffix);
+            return isMatch(regex, suffix);
         }
         return false;
     }
@@ -44,16 +59,16 @@ public final class PatternKit {
     /**
      * 验证手机号码（支持国际格式，+86135xxxx...（中国内地），+00852137xxxx...（中国香港））
      *
-     * @param mobile 移动、联通、电信运营商的号码段
-     *               <p>移动的号段：134(0-8)、135、136、137、138、139、147（预计用于TD上网卡）
-     *               、150、151、152、157（TD专用）、158、159、187（未启用）、188（TD专用）</p>
-     *               <p>联通的号段：130、131、132、155、156（世界风专用）、185（未启用）、186（3g）</p>
-     *               <p>电信的号段：133、153、180（未启用）、189</p>
+     * @param mobile 正则：手机号（精确）
+     *               <p>移动：134(0-8)、135、136、137、138、139、147、150、151、152、157、158、159、178、182、183、184、187、188</p>
+     *               <p>联通：130、131、132、145、155、156、171、175、176、185、186</p>
+     *               <p>电信：133、153、173、177、180、181、189</p>
+     *               <p>全球星：1349</p>
+     *               <p>虚拟运营商：170</p>
      * @return 验证成功返回true，验证失败返回false
      */
     public static boolean isMobile(String mobile) {
-        String regex = "(\\+\\d+)?1[34578]\\d{9}$";
-        return Pattern.matches(regex, mobile);
+        return isMatch(MOBILE_REGEX, mobile);
     }
 
     /**
@@ -68,8 +83,7 @@ public final class PatternKit {
      * @return 验证成功返回true，验证失败返回false
      */
     public static boolean isPhone(String phone) {
-        String regex = "(\\+\\d+)?(\\d{3,4}\\-?)?\\d{7,8}$";
-        return Pattern.matches(regex, phone);
+        return isMatch("(\\+\\d+)?(\\d{3,4}\\-?)?\\d{7,8}$", phone);
     }
 
     /**
@@ -80,7 +94,7 @@ public final class PatternKit {
      */
     public static boolean isDigit(String digit) {
         String regex = "\\-?[1-9]\\d+";
-        return Pattern.matches(regex, digit);
+        return isMatch(regex, digit);
     }
 
     /**
@@ -91,7 +105,7 @@ public final class PatternKit {
      */
     public static boolean isDecimals(String decimals) {
         String regex = "\\-?[1-9]\\d+(\\.\\d+)?";
-        return Pattern.matches(regex, decimals);
+        return isMatch(regex, decimals);
     }
 
     /**
@@ -102,7 +116,7 @@ public final class PatternKit {
      */
     public static boolean isBlankSpace(String blankSpace) {
         String regex = "\\s+";
-        return Pattern.matches(regex, blankSpace);
+        return isMatch(regex, blankSpace);
     }
 
     /**
@@ -113,7 +127,7 @@ public final class PatternKit {
      */
     public static boolean isChinese(String chinese) {
         String regex = "^[\u4E00-\u9FA5]+$";
-        return Pattern.matches(regex, chinese);
+        return isMatch(regex, chinese);
     }
 
     /**
@@ -124,7 +138,7 @@ public final class PatternKit {
      */
     public static boolean isRealName(String chinese) {
         String regex = "^[A-Za-z0-9\\s\u4E00-\u9FA5]+$";
-        return Pattern.matches(regex, chinese);
+        return isMatch(regex, chinese);
     }
 
     /**
@@ -135,18 +149,7 @@ public final class PatternKit {
      */
     public static boolean isNumber(String str) {
         String regex = "^[1-9]\\d*$";
-        return Pattern.matches(regex, str);
-    }
-
-    /**
-     * 验证学生学号
-     *
-     * @param num
-     * @return
-     */
-    public static boolean isStudentNum(String num) {
-        String regex = "^[A-Za-z0-9-_]+$";
-        return Pattern.matches(regex, num);
+        return isMatch(regex, str);
     }
 
     /**
@@ -157,18 +160,17 @@ public final class PatternKit {
      */
     public static boolean isBirthday(String birthday) {
         String regex = "^(\\d{4})-(\\d{2})-(\\d{2})$";
-        return Pattern.matches(regex, birthday);
+        return isMatch(regex, birthday);
     }
 
     /**
      * 验证URL地址
      *
-     * @param url 格式：http://blog.csdn.net:80/xyang81/article/details/7705960? 或 http://www.csdn.net:80
+     * @param url 格式：http://biezhi.me:80 ftp://192.168.2.12
      * @return 验证成功返回true，验证失败返回false
      */
     public static boolean isURL(String url) {
-        String regex = "(https?://(w{3}\\.)?)?\\w+\\.\\w+(\\.[a-zA-Z]+)*(:\\d{1,5})?(/\\w*)*(\\??(.+=.*)?(&.+=.*)?)?";
-        return Pattern.matches(regex, url);
+        return isMatch(URL_REGEX, url);
     }
 
     /**
@@ -179,7 +181,7 @@ public final class PatternKit {
      */
     public static boolean isPostcode(String postcode) {
         String regex = "[1-9]\\d{5}";
-        return Pattern.matches(regex, postcode);
+        return isMatch(regex, postcode);
     }
 
     /**
@@ -189,7 +191,18 @@ public final class PatternKit {
      * @return 验证成功返回true，验证失败返回false
      */
     public static boolean isIpAddress(String ipAddress) {
-        String regex = "[1-9](\\d{1,2})?\\.(0|([1-9](\\d{1,2})?))\\.(0|([1-9](\\d{1,2})?))\\.(0|([1-9](\\d{1,2})?))";
-        return Pattern.matches(regex, ipAddress);
+        return isMatch(IP_REGEX, ipAddress);
     }
+
+    /**
+     * 判断是否匹配正则
+     *
+     * @param regex 正则表达式
+     * @param input 要匹配的字符串
+     * @return {@code true}: 匹配<br>{@code false}: 不匹配
+     */
+    public static boolean isMatch(final String regex, final CharSequence input) {
+        return input != null && input.length() > 0 && Pattern.matches(regex, input);
+    }
+
 }
