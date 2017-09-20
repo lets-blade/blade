@@ -1,5 +1,6 @@
 package com.blade.kit;
 
+import lombok.NoArgsConstructor;
 import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
 
@@ -11,50 +12,18 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.security.*;
 
+import static com.blade.kit.ConvertKit.hex2Dec;
+
 /**
  * 加解密类
  *
- * @author    <a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
+ * @author <a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since 1.0
  */
-public class EncrypKit {
+@NoArgsConstructor
+public class EncryptKit {
 
     private static final char hexDigits[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
-
-    private EncrypKit() {
-        throw new IllegalStateException("EncrypKit shouldn't be constructed!");
-    }
-
-    /*********************** 哈希加密相关 ***********************/
-    /**
-     * MD2加密
-     *
-     * @param data 明文字符串
-     * @return 16进制密文
-     */
-    public static String encryptMD2ToString(String data) {
-        return encryptMD2ToString(data.getBytes());
-    }
-
-    /**
-     * MD2加密
-     *
-     * @param data 明文字节数组
-     * @return 16进制密文
-     */
-    public static String encryptMD2ToString(byte[] data) {
-        return bytes2HexString(encryptMD2(data));
-    }
-
-    /**
-     * MD2加密
-     *
-     * @param data 明文字节数组
-     * @return 密文字节数组
-     */
-    public static byte[] encryptMD2(byte[] data) {
-        return hashTemplate(data, "MD2");
-    }
 
     /**
      * MD5加密
@@ -74,7 +43,7 @@ public class EncrypKit {
      * @return 16进制加盐密文
      */
     public static String md5(String data, String salt) {
-        return bytes2HexString(encryptMD5((data + salt).getBytes()));
+        return bytes2HexString(md5ToByte((data + salt).getBytes()));
     }
 
     /**
@@ -84,7 +53,7 @@ public class EncrypKit {
      * @return 16进制密文
      */
     public static String md5(byte[] data) {
-        return bytes2HexString(encryptMD5(data));
+        return bytes2HexString(md5ToByte(data));
     }
 
     /**
@@ -99,7 +68,7 @@ public class EncrypKit {
         byte[] dataSalt = new byte[data.length + salt.length];
         System.arraycopy(data, 0, dataSalt, 0, data.length);
         System.arraycopy(salt, 0, dataSalt, data.length, salt.length);
-        return bytes2HexString(encryptMD5(dataSalt));
+        return bytes2HexString(md5ToByte(dataSalt));
     }
 
     /**
@@ -108,7 +77,7 @@ public class EncrypKit {
      * @param data 明文字节数组
      * @return 密文字节数组
      */
-    public static byte[] encryptMD5(byte[] data) {
+    static byte[] md5ToByte(byte[] data) {
         return hashTemplate(data, "MD5");
     }
 
@@ -118,9 +87,9 @@ public class EncrypKit {
      * @param filePath 文件路径
      * @return 文件的16进制密文
      */
-    public static String encryptMD5File2String(String filePath) {
+    public static String md5File(String filePath) {
         File file = StringKit.isBlank(filePath) ? null : new File(filePath);
-        return encryptMD5File2String(file);
+        return md5File(file);
     }
 
     /**
@@ -129,9 +98,9 @@ public class EncrypKit {
      * @param filePath 文件路径
      * @return 文件的MD5校验码
      */
-    public static byte[] encryptMD5File(String filePath) {
+    public static byte[] md5FileToByte(String filePath) {
         File file = StringKit.isBlank(filePath) ? null : new File(filePath);
-        return encryptMD5File(file);
+        return md5FileToByte(file);
     }
 
     /**
@@ -140,8 +109,8 @@ public class EncrypKit {
      * @param file 文件
      * @return 文件的16进制密文
      */
-    public static String encryptMD5File2String(File file) {
-        return bytes2HexString(encryptMD5File(file));
+    public static String md5File(File file) {
+        return bytes2HexString(md5FileToByte(file));
     }
 
     /**
@@ -150,9 +119,9 @@ public class EncrypKit {
      * @param file 文件
      * @return 文件的MD5校验码
      */
-    public static byte[] encryptMD5File(File file) {
+    public static byte[] md5FileToByte(File file) {
         if (file == null) return null;
-        FileInputStream fis = null;
+        FileInputStream   fis = null;
         DigestInputStream digestInputStream;
         try {
             fis = new FileInputStream(file);
@@ -176,8 +145,8 @@ public class EncrypKit {
      * @param data 明文字符串
      * @return 16进制密文
      */
-    public static String encryptSHA1ToString(String data) {
-        return encryptSHA1ToString(data.getBytes());
+    public static String SHA1(String data) {
+        return SHA1(data.getBytes());
     }
 
     /**
@@ -186,8 +155,8 @@ public class EncrypKit {
      * @param data 明文字节数组
      * @return 16进制密文
      */
-    public static String encryptSHA1ToString(byte[] data) {
-        return bytes2HexString(encryptSHA1(data));
+    public static String SHA1(byte[] data) {
+        return bytes2HexString(SHA1ToByte(data));
     }
 
     /**
@@ -196,48 +165,18 @@ public class EncrypKit {
      * @param data 明文字节数组
      * @return 密文字节数组
      */
-    public static byte[] encryptSHA1(byte[] data) {
+    public static byte[] SHA1ToByte(byte[] data) {
         return hashTemplate(data, "SHA1");
     }
 
     /**
-     * SHA224加密
-     *
-     * @param data 明文字符串
-     * @return 16进制密文
-     */
-    public static String encryptSHA224ToString(String data) {
-        return encryptSHA224ToString(data.getBytes());
-    }
-
-    /**
-     * SHA224加密
-     *
-     * @param data 明文字节数组
-     * @return 16进制密文
-     */
-    public static String encryptSHA224ToString(byte[] data) {
-        return bytes2HexString(encryptSHA224(data));
-    }
-
-    /**
-     * SHA224加密
-     *
-     * @param data 明文字节数组
-     * @return 密文字节数组
-     */
-    public static byte[] encryptSHA224(byte[] data) {
-        return hashTemplate(data, "SHA224");
-    }
-
-    /**
      * SHA256加密
      *
      * @param data 明文字符串
      * @return 16进制密文
      */
-    public static String encryptSHA256ToString(String data) {
-        return encryptSHA256ToString(data.getBytes());
+    public static String SHA256(String data) {
+        return SHA256(data.getBytes());
     }
 
     /**
@@ -246,8 +185,8 @@ public class EncrypKit {
      * @param data 明文字节数组
      * @return 16进制密文
      */
-    public static String encryptSHA256ToString(byte[] data) {
-        return bytes2HexString(encryptSHA256(data));
+    public static String SHA256(byte[] data) {
+        return bytes2HexString(SHA256ToByte(data));
     }
 
     /**
@@ -256,38 +195,8 @@ public class EncrypKit {
      * @param data 明文字节数组
      * @return 密文字节数组
      */
-    public static byte[] encryptSHA256(byte[] data) {
-        return hashTemplate(data, "SHA256");
-    }
-
-    /**
-     * SHA384加密
-     *
-     * @param data 明文字符串
-     * @return 16进制密文
-     */
-    public static String encryptSHA384ToString(String data) {
-        return encryptSHA384ToString(data.getBytes());
-    }
-
-    /**
-     * SHA384加密
-     *
-     * @param data 明文字节数组
-     * @return 16进制密文
-     */
-    public static String encryptSHA384ToString(byte[] data) {
-        return bytes2HexString(encryptSHA384(data));
-    }
-
-    /**
-     * SHA384加密
-     *
-     * @param data 明文字节数组
-     * @return 密文字节数组
-     */
-    public static byte[] encryptSHA384(byte[] data) {
-        return hashTemplate(data, "SHA384");
+    public static byte[] SHA256ToByte(byte[] data) {
+        return hashTemplate(data, "SHA-256");
     }
 
     /**
@@ -296,8 +205,8 @@ public class EncrypKit {
      * @param data 明文字符串
      * @return 16进制密文
      */
-    public static String encryptSHA512ToString(String data) {
-        return encryptSHA512ToString(data.getBytes());
+    public static String SHA512(String data) {
+        return SHA512(data.getBytes());
     }
 
     /**
@@ -306,8 +215,8 @@ public class EncrypKit {
      * @param data 明文字节数组
      * @return 16进制密文
      */
-    public static String encryptSHA512ToString(byte[] data) {
-        return bytes2HexString(encryptSHA512(data));
+    public static String SHA512(byte[] data) {
+        return bytes2HexString(SHA512ToByte(data));
     }
 
     /**
@@ -316,8 +225,8 @@ public class EncrypKit {
      * @param data 明文字节数组
      * @return 密文字节数组
      */
-    public static byte[] encryptSHA512(byte[] data) {
-        return hashTemplate(data, "SHA512");
+    public static byte[] SHA512ToByte(byte[] data) {
+        return hashTemplate(data, "SHA-512");
     }
 
     /**
@@ -346,8 +255,8 @@ public class EncrypKit {
      * @param key  秘钥
      * @return 16进制密文
      */
-    public static String encryptHmacMD5ToString(String data, String key) {
-        return encryptHmacMD5ToString(data.getBytes(), key.getBytes());
+    public static String hmacMd5(String data, String key) {
+        return hmacMd5(data.getBytes(), key.getBytes());
     }
 
     /**
@@ -357,8 +266,8 @@ public class EncrypKit {
      * @param key  秘钥
      * @return 16进制密文
      */
-    public static String encryptHmacMD5ToString(byte[] data, byte[] key) {
-        return bytes2HexString(encryptHmacMD5(data, key));
+    public static String hmacMd5(byte[] data, byte[] key) {
+        return bytes2HexString(hmacMd5ToByte(data, key));
     }
 
     /**
@@ -368,7 +277,7 @@ public class EncrypKit {
      * @param key  秘钥
      * @return 密文字节数组
      */
-    public static byte[] encryptHmacMD5(byte[] data, byte[] key) {
+    public static byte[] hmacMd5ToByte(byte[] data, byte[] key) {
         return hmacTemplate(data, key, "HmacMD5");
     }
 
@@ -379,8 +288,8 @@ public class EncrypKit {
      * @param key  秘钥
      * @return 16进制密文
      */
-    public static String encryptHmacSHA1ToString(String data, String key) {
-        return encryptHmacSHA1ToString(data.getBytes(), key.getBytes());
+    public static String hmacSHA1(String data, String key) {
+        return hmacSHA1(data.getBytes(), key.getBytes());
     }
 
     /**
@@ -390,8 +299,8 @@ public class EncrypKit {
      * @param key  秘钥
      * @return 16进制密文
      */
-    public static String encryptHmacSHA1ToString(byte[] data, byte[] key) {
-        return bytes2HexString(encryptHmacSHA1(data, key));
+    public static String hmacSHA1(byte[] data, byte[] key) {
+        return bytes2HexString(hmacSHA1ToByte(data, key));
     }
 
     /**
@@ -401,52 +310,19 @@ public class EncrypKit {
      * @param key  秘钥
      * @return 密文字节数组
      */
-    public static byte[] encryptHmacSHA1(byte[] data, byte[] key) {
+    public static byte[] hmacSHA1ToByte(byte[] data, byte[] key) {
         return hmacTemplate(data, key, "HmacSHA1");
     }
 
     /**
-     * HmacSHA224加密
-     *
-     * @param data 明文字符串
-     * @param key  秘钥
-     * @return 16进制密文
-     */
-    public static String encryptHmacSHA224ToString(String data, String key) {
-        return encryptHmacSHA224ToString(data.getBytes(), key.getBytes());
-    }
-
-    /**
-     * HmacSHA224加密
-     *
-     * @param data 明文字节数组
-     * @param key  秘钥
-     * @return 16进制密文
-     */
-    public static String encryptHmacSHA224ToString(byte[] data, byte[] key) {
-        return bytes2HexString(encryptHmacSHA224(data, key));
-    }
-
-    /**
-     * HmacSHA224加密
-     *
-     * @param data 明文字节数组
-     * @param key  秘钥
-     * @return 密文字节数组
-     */
-    public static byte[] encryptHmacSHA224(byte[] data, byte[] key) {
-        return hmacTemplate(data, key, "HmacSHA224");
-    }
-
-    /**
      * HmacSHA256加密
      *
      * @param data 明文字符串
      * @param key  秘钥
      * @return 16进制密文
      */
-    public static String encryptHmacSHA256ToString(String data, String key) {
-        return encryptHmacSHA256ToString(data.getBytes(), key.getBytes());
+    public static String hmacSHA256(String data, String key) {
+        return hmacSHA256(data.getBytes(), key.getBytes());
     }
 
     /**
@@ -456,8 +332,8 @@ public class EncrypKit {
      * @param key  秘钥
      * @return 16进制密文
      */
-    public static String encryptHmacSHA256ToString(byte[] data, byte[] key) {
-        return bytes2HexString(encryptHmacSHA256(data, key));
+    public static String hmacSHA256(byte[] data, byte[] key) {
+        return bytes2HexString(hmacSHA256ToByte(data, key));
     }
 
     /**
@@ -467,52 +343,19 @@ public class EncrypKit {
      * @param key  秘钥
      * @return 密文字节数组
      */
-    public static byte[] encryptHmacSHA256(byte[] data, byte[] key) {
+    public static byte[] hmacSHA256ToByte(byte[] data, byte[] key) {
         return hmacTemplate(data, key, "HmacSHA256");
     }
 
     /**
-     * HmacSHA384加密
-     *
-     * @param data 明文字符串
-     * @param key  秘钥
-     * @return 16进制密文
-     */
-    public static String encryptHmacSHA384ToString(String data, String key) {
-        return encryptHmacSHA384ToString(data.getBytes(), key.getBytes());
-    }
-
-    /**
-     * HmacSHA384加密
-     *
-     * @param data 明文字节数组
-     * @param key  秘钥
-     * @return 16进制密文
-     */
-    public static String encryptHmacSHA384ToString(byte[] data, byte[] key) {
-        return bytes2HexString(encryptHmacSHA384(data, key));
-    }
-
-    /**
-     * HmacSHA384加密
-     *
-     * @param data 明文字节数组
-     * @param key  秘钥
-     * @return 密文字节数组
-     */
-    public static byte[] encryptHmacSHA384(byte[] data, byte[] key) {
-        return hmacTemplate(data, key, "HmacSHA384");
-    }
-
-    /**
      * HmacSHA512加密
      *
      * @param data 明文字符串
      * @param key  秘钥
      * @return 16进制密文
      */
-    public static String encryptHmacSHA512ToString(String data, String key) {
-        return encryptHmacSHA512ToString(data.getBytes(), key.getBytes());
+    public static String hmacSHA512(String data, String key) {
+        return hmacSHA512(data.getBytes(), key.getBytes());
     }
 
     /**
@@ -522,8 +365,8 @@ public class EncrypKit {
      * @param key  秘钥
      * @return 16进制密文
      */
-    public static String encryptHmacSHA512ToString(byte[] data, byte[] key) {
-        return bytes2HexString(encryptHmacSHA512(data, key));
+    public static String hmacSHA512(byte[] data, byte[] key) {
+        return bytes2HexString(hmacSHA512ToByte(data, key));
     }
 
     /**
@@ -533,7 +376,7 @@ public class EncrypKit {
      * @param key  秘钥
      * @return 密文字节数组
      */
-    public static byte[] encryptHmacSHA512(byte[] data, byte[] key) {
+    public static byte[] hmacSHA512ToByte(byte[] data, byte[] key) {
         return hmacTemplate(data, key, "HmacSHA512");
     }
 
@@ -549,7 +392,7 @@ public class EncrypKit {
         if (data == null || data.length == 0 || key == null || key.length == 0) return null;
         try {
             SecretKeySpec secretKey = new SecretKeySpec(key, algorithm);
-            Mac mac = Mac.getInstance(algorithm);
+            Mac           mac       = Mac.getInstance(algorithm);
             mac.init(secretKey);
             return mac.doFinal(data);
         } catch (InvalidKeyException | NoSuchAlgorithmException e) {
@@ -565,8 +408,8 @@ public class EncrypKit {
      * <p>加密模式有：电子密码本模式ECB、加密块链模式CBC、加密反馈模式CFB、输出反馈模式OFB</p>
      * <p>填充方式有：NoPadding、ZerosPadding、PKCS5Padding</p>
      */
-    public static String DES_Transformation = "DES/ECB/NoPadding";
-    private static final String DES_Algorithm = "DES";
+    public static        String DES_Transformation = "DES/ECB/NoPadding";
+    private static final String DES_Algorithm      = "DES";
 
     /**
      * DES加密后转为Base64编码
@@ -575,8 +418,8 @@ public class EncrypKit {
      * @param key  8字节秘钥
      * @return Base64密文
      */
-    public static byte[] encryptDES2Base64(byte[] data, byte[] key) {
-        return new BASE64Encoder().encode(encryptDES(data, key)).getBytes();
+    public static byte[] DES2Base64(byte[] data, byte[] key) {
+        return new BASE64Encoder().encode(DES(data, key)).getBytes();
     }
 
     /**
@@ -586,8 +429,8 @@ public class EncrypKit {
      * @param key  8字节秘钥
      * @return 16进制密文
      */
-    public static String encryptDES2HexString(byte[] data, byte[] key) {
-        return bytes2HexString(encryptDES(data, key));
+    public static String DES2HexString(byte[] data, byte[] key) {
+        return bytes2HexString(DES(data, key));
     }
 
     /**
@@ -597,7 +440,7 @@ public class EncrypKit {
      * @param key  8字节秘钥
      * @return 密文
      */
-    public static byte[] encryptDES(byte[] data, byte[] key) {
+    public static byte[] DES(byte[] data, byte[] key) {
         return desTemplate(data, key, DES_Algorithm, DES_Transformation, true);
     }
 
@@ -645,8 +488,8 @@ public class EncrypKit {
      * <p>加密模式有：电子密码本模式ECB、加密块链模式CBC、加密反馈模式CFB、输出反馈模式OFB</p>
      * <p>填充方式有：NoPadding、ZerosPadding、PKCS5Padding</p>
      */
-    public static String TripleDES_Transformation = "DESede/ECB/NoPadding";
-    private static final String TripleDES_Algorithm = "DESede";
+    public static        String TripleDES_Transformation = "DESede/ECB/NoPadding";
+    private static final String TripleDES_Algorithm      = "DESede";
 
 
     /**
@@ -730,8 +573,8 @@ public class EncrypKit {
      * <p>加密模式有：电子密码本模式ECB、加密块链模式CBC、加密反馈模式CFB、输出反馈模式OFB</p>
      * <p>填充方式有：NoPadding、ZerosPadding、PKCS5Padding</p>
      */
-    public static String AES_Transformation = "AES/ECB/NoPadding";
-    private static final String AES_Algorithm = "AES";
+    public static        String AES_Transformation = "AES/ECB/NoPadding";
+    private static final String AES_Algorithm      = "AES";
 
 
     /**
@@ -822,8 +665,8 @@ public class EncrypKit {
         if (data == null || data.length == 0 || key == null || key.length == 0) return null;
         try {
             SecretKeySpec keySpec = new SecretKeySpec(key, algorithm);
-            Cipher cipher = Cipher.getInstance(transformation);
-            SecureRandom random = new SecureRandom();
+            Cipher        cipher  = Cipher.getInstance(transformation);
+            SecureRandom  random  = new SecureRandom();
             cipher.init(isEncrypt ? Cipher.ENCRYPT_MODE : Cipher.DECRYPT_MODE, keySpec, random);
             return cipher.doFinal(data);
         } catch (Throwable e) {
@@ -868,27 +711,11 @@ public class EncrypKit {
             len = len + 1;
         }
         char[] hexBytes = hexString.toUpperCase().toCharArray();
-        byte[] ret = new byte[len >> 1];
+        byte[] ret      = new byte[len >> 1];
         for (int i = 0; i < len; i += 2) {
             ret[i >> 1] = (byte) (hex2Dec(hexBytes[i]) << 4 | hex2Dec(hexBytes[i + 1]));
         }
         return ret;
-    }
-
-    /**
-     * hexChar转int
-     *
-     * @param hexChar hex单个字节
-     * @return 0..15
-     */
-    private static int hex2Dec(char hexChar) {
-        if (hexChar >= '0' && hexChar <= '9') {
-            return hexChar - '0';
-        } else if (hexChar >= 'A' && hexChar <= 'F') {
-            return hexChar - 'A' + 10;
-        } else {
-            throw new IllegalArgumentException();
-        }
     }
 
 }

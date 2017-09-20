@@ -7,7 +7,7 @@ import org.junit.Test;
  * @author biezhi
  *         2017/6/6
  */
-public class JsonTest {
+public class JsonKitTest {
 
     @Test
     public void test1() throws Exception {
