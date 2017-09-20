@@ -3,6 +3,7 @@ package com.blade;
 import com.blade.event.EventType;
 import com.blade.mvc.ui.template.DefaultEngine;
 import com.blade.types.BladeBeanDefineType;
+import netty_hello.Hello;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -11,6 +12,22 @@ import org.junit.Test;
  * 2017/6/4
  */
 public class BladeTest extends BaseTestCase {
+
+    @Test
+    public void testListen() {
+        app.listen("127.0.0.1", 10086).start().await();
+    }
+
+    @Test
+    public void testStart() {
+        app.start(Hello.class, null);
+    }
+
+    @Test
+    public void testJvmBindException() {
+        app.start();
+        app.start();
+    }
 
     @Test
     public void testAppName() {

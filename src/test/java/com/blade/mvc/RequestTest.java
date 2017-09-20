@@ -275,13 +275,13 @@ public class RequestTest extends BaseTestCase {
         );
 
         String body = post("/upload1")
-                .field("file1", new File(RequestTest.class.getResource("log_config.txt").getPath()))
+                .field("file1", new File(RequestTest.class.getResource("/log_config.txt").getPath()))
                 .asString().getBody();
 
         assertEquals("{\"file1\":{\"name\":\"file1\",\"fileName\":\"log_config.txt\",\"contentType\":\"text/plain\",\"length\":1551}}", body);
 
         body = post("/upload2")
-                .field("file1", new File(RequestTest.class.getResource("log_config.txt").getPath()))
+                .field("file1", new File(RequestTest.class.getResource("/log_config.txt").getPath()))
                 .asString().getBody();
 
         assertEquals("{\"name\":\"file1\",\"fileName\":\"log_config.txt\",\"contentType\":\"text/plain\",\"length\":1551}", body);
