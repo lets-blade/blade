@@ -133,7 +133,7 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         if (null != exceptionHandler) {
-            exceptionHandler.handle(cause);
+            exceptionHandler.handle((Exception) cause);
         } else {
             log.error("Blade Invoke Error", cause);
         }
