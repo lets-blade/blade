@@ -16,8 +16,6 @@ import java.lang.annotation.*;
 @Documented
 public @interface QueryParam {
 
-    boolean required() default false;
-
     String name() default "";
 
     String defaultValue() default "";

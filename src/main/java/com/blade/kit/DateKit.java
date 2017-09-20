@@ -93,6 +93,11 @@ public final class DateKit {
         return Date.from(Instant.from(formatted.atStartOfDay(ZoneId.systemDefault())));
     }
 
+    public static Date toDateTime(String time, String pattern) {
+        LocalDateTime formatted = LocalDateTime.parse(time, DateTimeFormatter.ofPattern(pattern));
+        return Date.from(formatted.atZone(ZoneId.systemDefault()).toInstant());
+    }
+
     public static LocalDate toLocalDate(String time, String pattern) {
         return LocalDate.parse(time, DateTimeFormatter.ofPattern(pattern));
     }

@@ -13,8 +13,6 @@ import java.lang.annotation.*;
 @Documented
 public @interface Param {
 
-    boolean required() default false;
-
     String name() default "";
 
     String defaultValue() default "";

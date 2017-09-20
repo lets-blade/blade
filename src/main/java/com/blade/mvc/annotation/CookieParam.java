@@ -13,8 +13,6 @@ import java.lang.annotation.*;
 @Documented
 public @interface CookieParam {
 
-    boolean required() default false;
-
     String value() default "";
 
     String defaultValue() default "";

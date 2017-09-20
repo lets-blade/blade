@@ -1,6 +1,5 @@
 package com.blade.kit;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
@@ -60,7 +59,8 @@ public class ReflectKit {
         } else if (type.equals(BigDecimal.class)) {
             return new BigDecimal(value);
         } else if (type.equals(Date.class)) {
-            return DateKit.toDate(value, "yyyy-MM-dd");
+            if (value.length() == 10) return DateKit.toDate(value, "yyyy-MM-dd");
+            return DateKit.toDateTime(value, "yyyy-MM-dd HH:mm:ss");
         } else if (type.equals(LocalDate.class)) {
             return DateKit.toLocalDate(value, "yyyy-MM-dd");
         } else if (type.equals(LocalDateTime.class)) {
@@ -74,11 +74,9 @@ public class ReflectKit {
      * @param method 方法名称
      * @param args   方法参数
      * @return
-     * @throws InvocationTargetException
-     * @throws IllegalArgumentException
-     * @throws IllegalAccessException
+     * @throws Exception
      */
-    public static Object invokeMehod(Object bean, Method method, Object... args) throws Exception {
+    public static Object invokeMethod(Object bean, Method method, Object... args) throws Exception {
         Class<?>[] types    = method.getParameterTypes();
         int        argCount = args == null ? 0 : args.length;
         // 参数个数对不上

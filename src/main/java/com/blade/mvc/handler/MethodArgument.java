@@ -1,7 +1,6 @@
 package com.blade.mvc.handler;
 
 import com.blade.exception.BladeException;
-import com.blade.exception.InternalErrorException;
 import com.blade.kit.AsmKit;
 import com.blade.kit.JsonKit;
 import com.blade.kit.ReflectKit;
@@ -16,7 +15,11 @@ import com.blade.mvc.multipart.FileItem;
 import com.blade.mvc.ui.ModelAndView;
 
 import java.lang.reflect.*;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Map;
 import java.util.Optional;
 
@@ -147,15 +150,11 @@ public final class MethodArgument {
         if (null != queryParam) {
             name = StringKit.isBlank(queryParam.name()) ? paramName : queryParam.name();
         }
-        if (ReflectKit.isPrimitive(argType)) {
+        if (ReflectKit.isPrimitive(argType) || argType.equals(Date.class) || argType.equals(BigDecimal.class)
+                || argType.equals(LocalDate.class) || argType.equals(LocalDateTime.class)) {
             Optional<String> val = request.query(name);
             if (!val.isPresent()) {
                 val = Optional.of(null != param ? param.defaultValue() : queryParam.defaultValue());
-            }
-
-            boolean required = (null != param ? param.required() : queryParam.required());
-            if (required && !val.isPresent()) {
-                new InternalErrorException(String.format("query param [%s] not is empty.", paramName));
             }
             return ReflectKit.convert(argType, val.get());
         } else {
@@ -172,12 +171,8 @@ public final class MethodArgument {
 
         String           cookieName = StringKit.isBlank(cookieParam.value()) ? paramName : cookieParam.value();
         Optional<String> val        = request.cookie(cookieName);
-        boolean          required   = cookieParam.required();
         if (!val.isPresent()) {
             val = Optional.of(cookieParam.defaultValue());
-        }
-        if (required && !val.isPresent()) {
-            new InternalErrorException(String.format("cookie param [%s] not is empty.", paramName));
         }
         return ReflectKit.convert(argType, val.get());
     }
@@ -188,14 +183,10 @@ public final class MethodArgument {
         String      paramName   = paramStrut.paramName;
         Request     request     = paramStrut.request;
 
-        String  key      = StringKit.isBlank(headerParam.value()) ? paramName : headerParam.value();
-        String  val      = request.header(key);
-        boolean required = headerParam.required();
+        String key = StringKit.isBlank(headerParam.value()) ? paramName : headerParam.value();
+        String val = request.header(key);
         if (StringKit.isBlank(val)) {
             val = headerParam.defaultValue();
-        }
-        if (required && StringKit.isBlank(val)) {
-            new InternalErrorException(String.format("header param [%s] not is empty.", paramName));
         }
         return ReflectKit.convert(argType, val);
     }
