@@ -22,7 +22,7 @@ import static com.blade.mvc.Const.*;
 public class DefaultExceptionHandler implements ExceptionHandler {
 
     @Override
-    public void handle(Exception e) {
+    public void handle(Throwable e) {
         Response response = WebContext.response();
         Request  request  = WebContext.request();
         if (e instanceof BladeException) {
@@ -32,7 +32,7 @@ public class DefaultExceptionHandler implements ExceptionHandler {
         }
     }
 
-    private void handleException(Exception e, Request request, Response response) {
+    private void handleException(Throwable e, Request request, Response response) {
         e.printStackTrace();
         response.status(500);
 

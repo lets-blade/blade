@@ -1,5 +1,7 @@
 package com.blade.kit;
 
+import lombok.NoArgsConstructor;
+
 import java.io.*;
 import java.nio.channels.FileChannel;
 import java.nio.file.Files;
@@ -8,16 +10,16 @@ import java.util.stream.Collectors;
 
 /**
  * @author biezhi
- *         2017/6/2
+ * 2017/6/2
  */
+@NoArgsConstructor
 public final class IOKit {
-
-    private IOKit() {
-        throw new IllegalStateException("IOKit shouldn't be constructed!");
-    }
 
     public static void closeQuietly(Closeable closeable) {
         try {
+            if (null == closeable) {
+                return;
+            }
             closeable.close();
         } catch (Exception e) {
             e.printStackTrace();
@@ -30,13 +32,13 @@ public final class IOKit {
     }
 
     public static String readToString(InputStream input) throws IOException {
-        try (BufferedReader buffer = new BufferedReader(new InputStreamReader(input))) {
+        try (BufferedReader buffer = new BufferedReader(new InputStreamReader(input, "UTF-8"))) {
             return buffer.lines().collect(Collectors.joining("\n"));
         }
     }
 
     public static void copyFileUsingFileChannels(File source, File dest) throws IOException {
-        FileChannel inputChannel = null;
+        FileChannel inputChannel  = null;
         FileChannel outputChannel = null;
         try {
             inputChannel = new FileInputStream(source).getChannel();

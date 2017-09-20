@@ -284,9 +284,6 @@ public class RouteMatcher {
         routes.values().forEach(route -> log.info("Add route => {}", route));
         hooks.values().forEach(route -> log.info("Add hook  => {}", route));
 
-        List<Route> routeHandlers = new ArrayList<>(routes.values());
-        routeHandlers.addAll(hooks.values().stream().findAny().orElse(new ArrayList<>()));
-
         Stream.of(routes.values(), hooks.values().stream().findAny().orElse(new ArrayList<>()))
                 .flatMap(Collection::stream).forEach(this::registerRoute);
 

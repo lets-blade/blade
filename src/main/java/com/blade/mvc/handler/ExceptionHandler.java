@@ -7,6 +7,6 @@ package com.blade.mvc.handler;
 @FunctionalInterface
 public interface ExceptionHandler {
 
-    void handle(Exception e);
+    void handle(Throwable e);
 
 }

@@ -202,8 +202,8 @@ public class Environment {
         return get(key).orElse(null);
     }
 
-    public String get(@NonNull String key, String defaultValue) {
-        return props.getProperty(key, defaultValue);
+    public String get(String key, String defaultValue) {
+        return get(key).orElse(defaultValue);
     }
 
     public Optional<Object> getObject(String key) {
@@ -241,14 +241,11 @@ public class Environment {
         return longVal.orElse(null);
     }
 
-    public Long getLong(@NonNull String key, long defaultValue) {
-        if (getLong(key).isPresent()) {
-            return getLong(key).get();
-        }
-        return defaultValue;
+    public Long getLong(String key, long defaultValue) {
+        return getLong(key).orElse(defaultValue);
     }
 
-    public Optional<Boolean> getBoolean(@NonNull String key) {
+    public Optional<Boolean> getBoolean(String key) {
         if (null != key && getObject(key).isPresent()) {
             return Optional.of(Boolean.parseBoolean(getObject(key).get().toString()));
         }
@@ -260,11 +257,8 @@ public class Environment {
         return boolVal.orElse(null);
     }
 
-    public Boolean getBoolean(@NonNull String key, boolean defaultValue) {
-        if (getBoolean(key).isPresent()) {
-            return getBoolean(key).get();
-        }
-        return defaultValue;
+    public Boolean getBoolean(String key, boolean defaultValue) {
+        return getBoolean(key).orElse(defaultValue);
     }
 
     public Optional<Double> getDouble(String key) {
@@ -279,11 +273,8 @@ public class Environment {
         return doubleVal.orElse(null);
     }
 
-    public Double getDouble(@NonNull String key, double defaultValue) {
-        if (getDouble(key).isPresent()) {
-            return getDouble(key).get();
-        }
-        return defaultValue;
+    public Double getDouble(String key, double defaultValue) {
+        return getDouble(key).orElse(defaultValue);
     }
 
     public Optional<Date> getDate(String key) {

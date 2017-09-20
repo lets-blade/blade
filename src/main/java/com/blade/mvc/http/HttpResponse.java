@@ -154,8 +154,8 @@ public class HttpResponse implements Response {
     @Override
     public void download(@NonNull String fileName, @NonNull File file) throws Exception {
         try {
-            if (null == file || !file.exists() || !file.isFile()) {
-                new NotFoundException();
+            if (!file.exists() || !file.isFile()) {
+                new NotFoundException("Not found file: " + file.getPath());
             }
 
             RandomAccessFile raf        = new RandomAccessFile(file, "r");

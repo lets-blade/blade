@@ -41,7 +41,7 @@ public final class StringKit {
 
     public static boolean isNumber(String string) {
         try {
-            double d = Double.parseDouble(string);
+            Double.parseDouble(string);
         } catch (NumberFormatException nfe) {
             return false;
         }

@@ -2,6 +2,7 @@ package com.blade.ioc;
 
 import com.blade.ioc.annotation.Order;
 
+import java.io.Serializable;
 import java.util.Comparator;
 
 /**
@@ -10,7 +11,7 @@ import java.util.Comparator;
  * @author biezhi
  *         2017/6/2
  */
-public class OrderComparator<T> implements Comparator<T> {
+public class OrderComparator<T> implements Serializable, Comparator<T> {
 
     @Override
     public int compare(T e1, T e2) {

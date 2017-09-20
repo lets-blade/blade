@@ -26,7 +26,7 @@ public class BladeKit {
         int mb = 1048576;
         int gb = 1073741824;
         if (Math.abs(value) > gb) {
-            return Math.round(value / gb) + "GB";
+            return Math.round( (float) (value / gb) ) + "GB";
         } else if (Math.abs(value) > mb) {
             return Math.round(value / mb) + "MB";
         } else if (Math.abs(value) > kb) {

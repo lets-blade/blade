@@ -44,7 +44,7 @@ public class Ason<K, V> extends LinkedHashMap<K, V> {
         if (StringKit.isNotBlank(val)) {
             return Boolean.parseBoolean(val);
         }
-        return null;
+        return Boolean.FALSE;
     }
 
     public Double getDouble(String key) {

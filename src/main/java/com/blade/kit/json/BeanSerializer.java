@@ -17,7 +17,7 @@ import java.util.Map;
 @Slf4j
 public class BeanSerializer {
 
-    public static Object serialize(SerializeMapping serializeMapping, Object bean) throws NullPointerException {
+    public static Object serialize(SerializeMapping serializeMapping, Object bean) throws Exception {
         if (bean == null) {
             return null;
         }
@@ -42,7 +42,13 @@ public class BeanSerializer {
 
         if (bean instanceof Map) {
             Map map = (Map) bean;
-            map.forEach((key, value) -> map.put(key, serialize(serializeMapping, value)));
+            map.forEach((key, value) -> {
+                try {
+                    map.put(key, serialize(serializeMapping, value));
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            });
             return map;
         }
         ArrayList<Integer> indexes = new ArrayList<>();
@@ -51,57 +57,54 @@ public class BeanSerializer {
         int                pos     = 0;
         for (Field field : bean.getClass().getDeclaredFields()) {
             Object value;
-            try {
-                String key = field.getName();
-                if ("this$0".equals(key) || "serialVersionUID".equals(key)) {
-                    continue;
-                }
-                field.setAccessible(true);
-                JsonIgnore jsonIgnore = field.getAnnotation(JsonIgnore.class);
-                if (null != jsonIgnore) {
-                    continue;
-                }
-                JsonProperty jsonProperty = field.getAnnotation(JsonProperty.class);
-                JsonFormat   jsonFormat   = field.getAnnotation(JsonFormat.class);
-                SerializeMapping temp = SerializeMapping.builder()
-                        .bigDecimalKeep(serializeMapping.getBigDecimalKeep())
-                        .datePatten(serializeMapping.getDatePatten())
-                        .build();
-
-                if (null != jsonFormat) {
-                    switch (jsonFormat.type()) {
-                        case DATE_PATTEN:
-                            temp.setDatePatten(jsonFormat.value());
-                            break;
-                        case BIGDECIMAL_KEEP:
-                            temp.setBigDecimalKeep(Integer.parseInt(jsonFormat.value()));
-                            break;
-                        default:
-                            break;
-                    }
-                }
-
-                if (jsonProperty != null) {
-                    value = serialize(temp, field.get(bean));
-                    if (!jsonProperty.value().isEmpty())
-                        key = jsonProperty.value();
-                } else {
-                    value = serialize(temp, field.get(bean));
-                }
-
-                if (value instanceof Date) {
-                    value = DateKit.toString((Date) value, temp.getDatePatten());
-                }
-
-                if (value instanceof BigDecimal) {
-                    value = ((BigDecimal) value).setScale(temp.getBigDecimalKeep()).toString();
-                }
-                int position = indexes.size();
-                indexes.add(position, pos++);
-                values.add(position, value);
-                keys.add(position, key);
-            } catch (Exception ignore) {
+            String key = field.getName();
+            if ("this$0".equals(key) || "serialVersionUID".equals(key)) {
+                continue;
             }
+            field.setAccessible(true);
+            JsonIgnore jsonIgnore = field.getAnnotation(JsonIgnore.class);
+            if (null != jsonIgnore) {
+                continue;
+            }
+            JsonProperty jsonProperty = field.getAnnotation(JsonProperty.class);
+            JsonFormat   jsonFormat   = field.getAnnotation(JsonFormat.class);
+            SerializeMapping temp = SerializeMapping.builder()
+                    .bigDecimalKeep(serializeMapping.getBigDecimalKeep())
+                    .datePatten(serializeMapping.getDatePatten())
+                    .build();
+
+            if (null != jsonFormat) {
+                switch (jsonFormat.type()) {
+                    case DATE_PATTEN:
+                        temp.setDatePatten(jsonFormat.value());
+                        break;
+                    case BIGDECIMAL_KEEP:
+                        temp.setBigDecimalKeep(Integer.parseInt(jsonFormat.value()));
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            if (jsonProperty != null) {
+                value = serialize(temp, field.get(bean));
+                if (!jsonProperty.value().isEmpty())
+                    key = jsonProperty.value();
+            } else {
+                value = serialize(temp, field.get(bean));
+            }
+
+            if (value instanceof Date) {
+                value = DateKit.toString((Date) value, temp.getDatePatten());
+            }
+
+            if (value instanceof BigDecimal) {
+                value = ((BigDecimal) value).setScale(temp.getBigDecimalKeep()).toString();
+            }
+            int position = indexes.size();
+            indexes.add(position, pos++);
+            values.add(position, value);
+            keys.add(position, key);
         }
         Ason<String, Object> ason = new Ason<>(indexes.size());
         for (int i = 0; i < indexes.size(); ++i)

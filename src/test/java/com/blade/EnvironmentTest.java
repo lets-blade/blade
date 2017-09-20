@@ -123,4 +123,10 @@ public class EnvironmentTest {
         assertEquals("0.0.2", map.get("version"));
     }
 
+    @Test
+    public void testHasKey(){
+        Environment environment = Environment.of("app.properties");
+        Assert.assertEquals(false, environment.hasKey("hello"));
+        Assert.assertEquals(true, environment.hasKey("app.version"));
+    }
 }

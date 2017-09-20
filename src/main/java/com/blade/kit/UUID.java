@@ -53,11 +53,11 @@ public abstract class UUID {
      * @return 64进制表示的紧凑格式的 UUID
      */
     public static String UU64(java.util.UUID uu) {
-        int index = 0;
-        char[] cs = new char[22];
-        long L = uu.getMostSignificantBits();
-        long R = uu.getLeastSignificantBits();
-        long mask = 63;
+        int    index = 0;
+        char[] cs    = new char[22];
+        long   L     = uu.getMostSignificantBits();
+        long   R     = uu.getLeastSignificantBits();
+        long   mask  = 63;
         // 从L64位取10次，每次取6位
         for (int off = 58; off >= 4; off -= 6) {
             long hex = (L & (mask << off)) >>> off;
@@ -90,8 +90,8 @@ public abstract class UUID {
 
     public static String UU32(java.util.UUID uu) {
         StringBuilder sb = new StringBuilder();
-        long m = uu.getMostSignificantBits();
-        long l = uu.getLeastSignificantBits();
+        long          m  = uu.getMostSignificantBits();
+        long          l  = uu.getLeastSignificantBits();
         for (int i = 0; i < 13; i++) {
             sb.append(_UU32[(int) (m >> ((13 - i - 1) * 5)) & 31]);
         }
@@ -111,9 +111,9 @@ public abstract class UUID {
     }
 
     public static long parseUnsignedLong(String s, int radix) {
-        int len = s.length();
-        long first = Long.parseLong(s.substring(0, len - 1), radix);
-        int second = Character.digit(s.charAt(len - 1), radix);
+        int  len    = s.length();
+        long first  = Long.parseLong(s.substring(0, len - 1), radix);
+        int  second = Character.digit(s.charAt(len - 1), radix);
         return first * radix + second;
     }
 
@@ -151,16 +151,16 @@ public abstract class UUID {
      */
     public static String UU16FromUU64(String uu64) {
         byte[] bytes = new byte[32];
-        char[] cs = uu64.toCharArray();
-        int index = 0;
+        char[] cs    = uu64.toCharArray();
+        int    index = 0;
         // 每次取2个字符，恢复成3个byte，重复10次，
         for (int i = 0; i < 10; i++) {
-            int off = i * 2;
-            char cl = cs[off];
-            char cr = cs[off + 1];
-            int l = Arrays.binarySearch(_UU64, cl);
-            int r = Arrays.binarySearch(_UU64, cr);
-            int n = (l << 6) | r;
+            int  off = i * 2;
+            char cl  = cs[off];
+            char cr  = cs[off + 1];
+            int  l   = Arrays.binarySearch(_UU64, cl);
+            int  r   = Arrays.binarySearch(_UU64, cr);
+            int  n   = (l << 6) | r;
             bytes[index++] = (byte) ((n & 0xF00) >>> 8);
             bytes[index++] = (byte) ((n & 0xF0) >>> 4);
             bytes[index++] = (byte) (n & 0xF);
@@ -168,9 +168,9 @@ public abstract class UUID {
         // 最后一次，是用最后2个字符，恢复回2个byte
         char cl = cs[20];
         char cr = cs[21];
-        int l = Arrays.binarySearch(_UU64, cl);
-        int r = Arrays.binarySearch(_UU64, cr);
-        int n = (l << 2) | r;
+        int  l  = Arrays.binarySearch(_UU64, cl);
+        int  r  = Arrays.binarySearch(_UU64, cr);
+        int  n  = (l << 2) | r;
         bytes[index++] = (byte) ((n & 0xF0) >>> 4);
         bytes[index++] = (byte) (n & 0xF);
 
@@ -215,10 +215,10 @@ public abstract class UUID {
      * @return 随机字符串
      */
     public static String captchaChar(int length, boolean caseSensitivity) {
-        StringBuilder sb = new StringBuilder();
-        Random rand = new Random();// 随机用以下三个随机生成器
-        Random randdata = new Random();
-        int data = 0;
+        StringBuilder sb       = new StringBuilder();
+        Random        rand     = new Random();// 随机用以下三个随机生成器
+        Random        randdata = new Random();
+        int           data     = 0;
         for (int i = 0; i < length; i++) {
             int index = rand.nextInt(caseSensitivity ? 3 : 2);
             // 目的是随机选择生成数字，大小写字母
@@ -235,6 +235,8 @@ public abstract class UUID {
                     data = randdata.nextInt(26) + 65;// 保证只会产生ASCII为65~90(A~Z)之间的整数
                     sb.append((char) data);
                     break;
+                default:
+                    break;
             }
         }
         return sb.toString();
@@ -247,8 +249,8 @@ public abstract class UUID {
      * @return 随机字符串
      */
     public static String captchaNumber(int length) {
-        StringBuilder sb = new StringBuilder();
-        Random rand = new Random();
+        StringBuilder sb   = new StringBuilder();
+        Random        rand = new Random();
         for (int i = 0; i < length; i++) {
             sb.append(rand.nextInt(10));
         }

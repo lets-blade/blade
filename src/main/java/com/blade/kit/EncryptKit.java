@@ -122,7 +122,7 @@ public class EncryptKit {
     public static byte[] md5FileToByte(File file) {
         if (file == null) return null;
         FileInputStream   fis = null;
-        DigestInputStream digestInputStream;
+        DigestInputStream digestInputStream = null;
         try {
             fis = new FileInputStream(file);
             MessageDigest md = MessageDigest.getInstance("MD5");
@@ -136,6 +136,7 @@ public class EncryptKit {
             return null;
         } finally {
             IOKit.closeQuietly(fis);
+            IOKit.closeQuietly(digestInputStream);
         }
     }
 
