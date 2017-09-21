@@ -5,6 +5,7 @@ import com.blade.ioc.reader.ClassPathClassReader;
 import com.blade.ioc.reader.ClassReader;
 import com.blade.ioc.reader.JarReaderImpl;
 import com.blade.kit.StringKit;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.URL;
@@ -18,15 +19,13 @@ import java.util.stream.Stream;
  * @since 1.6.6
  */
 @Slf4j
+@NoArgsConstructor
 public final class DynamicContext {
 
     private static final ClassReader classpathReader = new ClassPathClassReader();
     private static final ClassReader jarReader = new JarReaderImpl();
 
     private static boolean isJarContext = false;
-
-    private DynamicContext() {
-    }
 
     public static void init(Class<?> clazz) {
         String rs = clazz.getResource("").toString();

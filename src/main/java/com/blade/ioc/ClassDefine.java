@@ -53,7 +53,7 @@ public final class ClassDefine {
         if (interfaces.length == 0) {
             return Collections.emptyList();
         }
-        List<ClassDefine> results = new ArrayList<ClassDefine>(interfaces.length);
+        List<ClassDefine> results = new ArrayList<>(interfaces.length);
         for (Class<?> intf : interfaces) {
             results.add(ClassDefine.create(intf));
         }

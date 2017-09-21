@@ -2,6 +2,7 @@ package com.blade.ioc;
 
 import com.blade.ioc.annotation.Bean;
 import com.blade.types.BladeClassDefineType;
+import com.blade.types.BladeWebHookType;
 import org.junit.Test;
 
 import java.lang.annotation.Annotation;
@@ -40,6 +41,16 @@ public class ClassDefineTest {
         assertEquals("BladeClassDefineType", simpleName);
         assertEquals(Object.class, superKlass.getType());
         assertEquals(BladeClassDefineType.class, type);
+        assertEquals(false, classDefine.isAbstract());
+        assertEquals(false, classDefine.isInterface());
+        assertEquals(false, classDefine.isStatic());
+        assertEquals(true, classDefine.isPublic());
+        assertEquals(false, classDefine.isPrivate());
+        assertEquals(false, classDefine.isProtected());
+
+        assertEquals(1, ClassDefine.create(BladeWebHookType.class).getInterfaces().size());
+        assertEquals(1, ClassDefine.create(BladeWebHookType.class).getInterfaces().size());
+
     }
 
 

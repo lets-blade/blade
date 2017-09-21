@@ -10,7 +10,7 @@ import java.lang.reflect.Field;
  */
 public class FieldInjector implements Injector {
 
-    private Ioc ioc;
+    private Ioc   ioc;
     private Field field;
 
     public FieldInjector(Ioc ioc, Field field) {
@@ -22,7 +22,7 @@ public class FieldInjector implements Injector {
     public void injection(Object bean) {
         try {
             Class<?> fieldType = field.getType();
-            Object value = ioc.getBean(fieldType);
+            Object   value     = ioc.getBean(fieldType);
             if (value == null) {
                 throw new IllegalStateException("Can't inject bean: " + fieldType.getName() + " for field: " + field);
             }
@@ -32,4 +32,5 @@ public class FieldInjector implements Injector {
             throw new RuntimeException(e);
         }
     }
+
 }
