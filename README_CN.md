@@ -1,39 +1,54 @@
+<p align="center">
+    <img src="https://dn-biezhi.qbox.me/LOGO_BIG.png" />
+</p>
+<h1 align="center">Blade - 享受Web开发</h1>
+<p align="center">基于 <code>Java8</code> + <code>Netty4</code> 创造的轻量级、高性能、简洁优雅的Web框架 😋</p>
+<p align="center">花 <b>1小时</b> 学会它做点有趣的项目，一款除了Spring系框架的不二之选。</p>
+<p align="center">
+    <a href="" target="_blank">🐾 快速开始</a> | 
+    <a href="https://biezhi.gitbooks.io/blade-in-action" target="_blank">📘 BladeInAction</a> | 
+    <a href="http://v.qq.com/vplus/56171fe5fc0541ba6f356522325b0902/foldervideos/w6g0008012ruo91" target="_blank">🎬 视频教程</a> | 
+    <a href="" target="_blank">🌚 参与贡献</a> | 
+    <a href="" target="_blank">💰 捐赠我们</a> |
+    <a href="README.md">🌾 English</a>
+</p>
+<p align="center">
+    <a href="https://travis-ci.org/biezhi/blade"><img src="https://img.shields.io/travis/biezhi/blade.svg?style=flat-square"></a>
+    <a href="http://codecov.io/github/biezhi/blade?branch=dev"><img src="https://img.shields.io/codecov/c/github/biezhi/blade/dev.svg?style=flat-square"></a>
+    <a href="http://search.maven.org/#search%7Cga%7C1%7Cblade-mvc"><img src="https://img.shields.io/maven-central/v/com.bladejava/blade-mvc.svg?style=flat-square"></a>
+    <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache%202-4EB1BA.svg?style=flat-square"></a>
+    <a href="https://gitter.im/biezhi/blade"><img src="https://badges.gitter.im/biezhi/blade.svg?style=flat-square"></a>
+</p>
 
-[![](https://dn-biezhi.qbox.me/LOGO_BIG.png)](https://biezhi.gitbooks.io/blade-in-action)
-
-[快速开始](https://biezhi.gitbooks.io/blade-in-action/chapter1/1.1-create-blade-application.html)&nbsp; | &nbsp;[视频教程](https://biezhi.gitbooks.io/blade-in-action/#视频教程)&nbsp; | &nbsp;[参与贡献](https://bladejava.com/docs/appendix/contribute)&nbsp; | &nbsp;[捐赠](donate.md)&nbsp; | &nbsp;[FAQ](https://bladejava.com/docs/faqs) | &nbsp;[English](https://github.com/biezhi/blade/blob/master/README.md)
-
-[![Build Status](https://img.shields.io/travis/biezhi/blade.svg?style=flat-square)](https://travis-ci.org/biezhi/blade)
-[![codecov.io](https://img.shields.io/codecov/c/github/biezhi/blade/dev.svg?style=flat-square)](http://codecov.io/github/biezhi/blade?branch=dev)
-[![maven-central](https://img.shields.io/maven-central/v/com.bladejava/blade-mvc.svg?style=flat-square)](http://search.maven.org/#search%7Cga%7C1%7Cblade-mvc)
-[![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg?style=flat-square)](https://www.apache.org/licenses/LICENSE-2.0.html)
-[![Gitter](https://badges.gitter.im/biezhi/blade.svg)](https://gitter.im/biezhi/blade?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
-
+***
 
 ## Blade是什么？
 
-Blade是一款简洁优雅的轻量级MVC框架。如果你喜欢它可以给一个 [点赞](https://github.com/biezhi/blade/stargazers)/[Fork](https://github.com/biezhi/blade) 谢谢 :blush:
+`Blade` 是一款追求简约、高效的 Web 框架，让 `JavaWeb` 开发如虎添翼，在性能与灵活性上同时兼顾。
+如果你喜欢尝试有趣的事物，相信你会爱上它。
+如果觉得这个项目不错可以 [star](https://github.com/biezhi/blade/stargazers) 支持或者 [捐赠]() 它 :blush:
 
-## 特性
+## 功能特性
 
-* [x] 新一代MVC框架，不依赖更多的库，摆脱SSH的臃肿，模块化设计
+* [x] 新一代MVC框架，不依赖更多的库
+* [x] 摆脱SSH的臃肿，模块化设计
+* [x] 源码不到 `500kb`，学习也简单
 * [x] Restful风格路由设计
-* [x] 模板引擎支持
+* [x] 模板引擎支持，视图开发更灵活
 * [x] 高性能，100并发下qps 6w/s
-* [x] 运行Jar包即可开启web服务
+* [x] 运行 `JAR` 包即可开启 web 服务
 * [x] 流式API风格
 * [x] 支持插件扩展
-* [x] 支持webjars
+* [x] 支持 webjars 资源
 * [x] 内置多种常用中间件
-* [x] 内置JSON输出，可替换
+* [x] 内置JSON输出
 * [x] JDK8+
-* [x] 事件驱动
 
-## 概述
+## 框架概述
 
-* 简洁的：框架设计简单,容易理解,不依赖于更多第三方库。Blade框架目标让用户在一天内理解并使用。
-* 优雅的：`Blade` 支持 REST 风格路由接口, 提供 DSL 语法编写，无侵入式的拦截器。
-* 易部署：支持 `maven` 打成 `jar` 包直接运行。
+» 简洁的：框架设计简单,容易理解,不依赖于更多第三方库。Blade框架目标让用户在一天内理解并使用。<br/>
+» 优雅的：`Blade` 支持 REST 风格路由接口, 提供 DSL 语法编写，无侵入式的拦截器。<br/>
+» 易部署：支持 `maven` 打成 `jar` 包直接运行。<br/>
 
 ## 快速入门
 
@@ -53,28 +68,29 @@ Blade是一款简洁优雅的轻量级MVC框架。如果你喜欢它可以给一
 compile 'com.bladejava:blade-mvc:2.0.2-beta'
 ```
 
-编写 `Main`函数：
+编写 `main` 函数写一个 `Hello World`：
 
 ```java
 public static void main(String[] args) {
-    Blade blade = Blade.me();
-    blade.get("/", (req, res) -> {
+    Blade.me().get("/", (req, res) -> {
         res.text("Hello Blade");
     }).start();
 }
 ```
 
-用浏览器打开 http://localhost:9000 这样就可以看到第一个Blade应用了！
+用浏览器打开 http://localhost:9000 这样就可以看到第一个 `Blade` 应用了！
 
 ## API示例
 
 ```java
 public static void main(String[] args) {
-    Blade blade = Blade.of();
-    blade.get("/user/21", getxxx);
-    blade.post("/save", postxxx);
-    blade.delete("/del/21", deletexxx);
-    blade.put("/put", putxxx);
+    // 创建 Blade 对象，完成 GET、POST、PUT、DELETE 请求
+    Blade.me()
+        .get("/user/21", getting)
+        .post("/save", posting)
+        .delete("/remove", deleting)
+        .put("/putValue", putting)
+        .start();
 }
 ```
 
@@ -82,19 +98,22 @@ public static void main(String[] args) {
 
 ```java
 public static void main(String[] args) {
-    Blade blade = Blade.of();
+    Blade blade = Blade.me();
+    // 创建一个 /user/:uid 的路由
     blade.get("/user/:uid", (request, response) -> {
-		Integer uid = request.queryInt("uid").get();
+		Integer uid = request.pathInt("uid");
 		response.text("uid : " + uid);
 	});
 	
+    // 创建有2个参数的 REST 风格路由
     blade.get("/users/:uid/post/:pid", (request, response) -> {
-		Integer uid = request.queryInt("uid").get();
-		Integer pid = request.queryInt("pid").get();
+		Integer uid = request.pathInt("uid");
+		Integer pid = request.pathInt("pid");
 		String msg = "uid = " + uid + ", pid = " + pid;
 		response.text(msg);
 	});
 	
+    // 启动应用
     blade.start();
 }
 ```
@@ -103,23 +122,32 @@ public static void main(String[] args) {
 
 ```java
 public static void main(String[] args) {
-    Blade blade = Blade.of();
-    blade.get("/user", (request, response) -> {
-		Integer uid = request.queryInt("uid").get();
-		response.text("uid : " + uid);
-	}).start(Application.class);
+    Blade.me().get("/user", ((request, response) -> {
+         Optional<Integer> ageOptional = request.queryInt("age");
+         ageOptional.ifPresent(age -> System.out.println("年龄是:" + age));
+     })).start();
 }
 ```
 
 ## 上传文件
 
 ```java
-public void upload_img(@MultipartParam FileItem fileItem){
-    if(null != fileItem){
-        File file = fileItem.getFile();
-        String fileRealPath = "your upload file path!";
-        nioTransferCopy(file, fileRealPath);
-    }
+public void upload(@MultipartParam FileItem fileItem){
+    byte[] data = fileItem.getData();
+    // 将临时文件保存到指定路径
+    Files.write(Paths.get(filePath), data);
+}
+```
+
+或者
+
+```java
+public void upload(Request request){
+    request.fileItem("img").ifPresent(fileItem -> {
+        byte[] data = fileItem.getData();
+        // 将临时文件保存到指定路径
+        Files.write(Paths.get(filePath), data);              
+    });
 }
 ```
 
@@ -127,8 +155,8 @@ public void upload_img(@MultipartParam FileItem fileItem){
 
 ```java
 public static void main(String[] args) {
-    Blade blade = Blade.of();
-    blade.before("/.*", (request, response) -> {
+    // 所有请求执行前都会输出 before
+    Blade.me().before("/*", (request, response) -> {
         System.out.println("before...");
     }).start();
 }
@@ -136,14 +164,14 @@ public static void main(String[] args) {
 
 这一切看起来多么的简单，不过上面的功能可是冰山一角，查看文档和示例项目有更多惊喜:
 
-+ [hello工程](https://github.com/blade-samples/hello)
++ [第一个例子](https://github.com/bladejava/first-blade-app)
 + [文档服务](https://github.com/biezhi/grice)
-+ [更多例子](https://github.com/blade-samples)
++ [更多例子](https://github.com/bladejava/blade-demos)
 
 ## 使用Blade的站点
 
 + 博客系统：https://github.com/otale/tale
-+ 论坛程序：https://java-china.org
++ 社区程序：https://github.com/junicorn/roo
 + 图片社交：https://github.com/biezhi/nice
 + SS面板：https://github.com/biezhi/ss-panel
 

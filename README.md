@@ -1,32 +1,48 @@
+<p align="center">
+    <img src="https://dn-biezhi.qbox.me/LOGO_BIG.png" />
+</p>
+<h1 align="center">Blade - Enjoy Web Development</h1>
+<p align="center">Based on <code>Java8</code> + <code>Netty4</code> to create lightweight, high-performance, simple and elegant Web framework 😋</p>
+<p align="center">Spend <b>1 hour</b> to learn it to do something interesting, a Spring in addition to the framework of the best choice.</p>
+<p align="center">
+    <a href="" target="_blank">🐾 Quick Start</a> | 
+    <a href="https://biezhi.gitbooks.io/blade-in-action" target="_blank">📘 Blade In Action</a> | 
+    <a href="https://www.youtube.com/playlist?list=PLK2w-tGRdrj5TV2lxHFj8hcg4mbmRmnWX" target="_blank">🎬 Video Tutorial</a> | 
+    <a href="" target="_blank">🌚 Contribution</a> | 
+    <a href="" target="_blank">💰 Donate</a> |
+    <a href="README_CN.md">🇨🇳 简体中文</a>
+</p>
+<p align="center">
+    <a href="https://travis-ci.org/biezhi/blade"><img src="https://img.shields.io/travis/biezhi/blade.svg?style=flat-square"></a>
+    <a href="http://codecov.io/github/biezhi/blade?branch=dev"><img src="https://img.shields.io/codecov/c/github/biezhi/blade/dev.svg?style=flat-square"></a>
+    <a href="http://search.maven.org/#search%7Cga%7C1%7Cblade-mvc"><img src="https://img.shields.io/maven-central/v/com.bladejava/blade-mvc.svg?style=flat-square"></a>
+    <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache%202-4EB1BA.svg?style=flat-square"></a>
+    <a href="https://gitter.im/biezhi/blade"><img src="https://badges.gitter.im/biezhi/blade.svg?style=flat-square"></a>
+</p>
 
-[![](https://dn-biezhi.qbox.me/LOGO_BIG.png)](https://biezhi.gitbooks.io/blade-in-action)
-
-[Quick Start](https://biezhi.gitbooks.io/blade-in-action/chapter1/1.1-create-blade-application.html)&nbsp; | &nbsp;[Video](https://www.youtube.com/playlist?list=PLK2w-tGRdrj5TV2lxHFj8hcg4mbmRmnWX)&nbsp; | &nbsp;[Contribute](https://bladejava.com/docs/appendix/contribute)&nbsp; | &nbsp;[Donate](donate.md)&nbsp; | &nbsp;[FAQ](https://bladejava.com/docs/faqs) | &nbsp;[中文说明](https://github.com/biezhi/blade/blob/master/README_CN.md)
-
-[![Build Status](https://img.shields.io/travis/biezhi/blade.svg?style=flat-square)](https://travis-ci.org/biezhi/blade)
-[![codecov.io](https://img.shields.io/codecov/c/github/biezhi/blade/dev.svg?style=flat-square)](http://codecov.io/github/biezhi/blade?branch=dev)
-[![maven-central](https://img.shields.io/maven-central/v/com.bladejava/blade-mvc.svg?style=flat-square)](http://search.maven.org/#search%7Cga%7C1%7Cblade-mvc)
-[![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg?style=flat-square)](https://www.apache.org/licenses/LICENSE-2.0.html)
-[![Gitter](https://badges.gitter.im/biezhi/blade.svg)](https://gitter.im/biezhi/blade?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
-
+***
 
 ## What Is Blade?
 
-Blade is a lightweight MVC framework. It is based on the principles of simplicity and elegance. 
-If you like it, give me a [star](https://github.com/biezhi/blade/stargazers) / [fork](https://github.com/biezhi/blade). Thx :blush:
+`Blade` is a pursuit of simple, efficient Web framework, so that` JavaWeb` development even more powerful, both in performance and flexibility.
+If you like to try something interesting, I believe you will love it.
+If you think this item is good can [star](https://github.com/biezhi/blade/stargazers) support or [donate]() it :blush:
 
 ## Features
 
-* [x] Lightweight: the code is simple and the structure is clear
-* [x] RESTful style routing interface
-* [x] Template engine support
-* [x] High performance
-* [x] Run with jar file
-* [x] Fluent interface
-* [x] Support plugin extension
-* [x] Support webjars
-* [x] JDK8+
-* [x] Event mechanism
+* [x] A new generation of MVC frameworks that do not depend on more libraries
+* [x] Get rid of SSH's bloated, modular design
+* [x] source less than `500kb`, learning is also simple
+* [x] Restful style routing design
+* [x] template engine support, view development more flexible
+* [x] high performance, 100 concurrent qps 6w / s
+* [x] Run the `JAR` package to open the web service
+* [x] Streaming API style
+* [x] supports plug-in extensions
+* [x] support webjars resources
+* [x] built-in a variety of commonly used middleware
+* [x] Built-in JSON output
+* [x] JDK8 +
 
 ## Overview
 
@@ -51,28 +67,29 @@ or `Gradle`:
 compile 'com.bladejava:blade-mvc:2.0.2-beta'
 ```
 
-Create `Main` method like this：
+Write `main` method, lets `Hello World`：
 
 ```java
 public static void main(String[] args) {
-    Blade blade = Blade.me();
-    blade.get("/", (req, res) -> {
+    Blade.me().get("/", (req, res) -> {
         res.text("Hello Blade");
     }).start();
 }
 ```
 
-Run it and point your browser to [http://localhost:9000](http://localhost:9000). There you go, you've just created your first Blade app!
+Using browser open http://localhost:9000 so you can see the first `Blade` application!
 
 ## API Example
 
 ```java
 public static void main(String[] args) {
-    Blade blade = Blade.of();
-    blade.get("/user/21", getxxx);
-    blade.post("/save", postxxx);
-    blade.delete("/del/21", deletexxx);
-    blade.put("/put", putxxx);
+    // Create Blade，using GET、POST、PUT、DELETE
+    Blade.me()
+        .get("/user/21", getting)
+        .post("/save", posting)
+        .delete("/remove", deleting)
+        .put("/putValue", putting)
+        .start();
 }
 ```
 
@@ -80,71 +97,83 @@ public static void main(String[] args) {
 
 ```java
 public static void main(String[] args) {
-    Blade blade = Blade.of();
+    Blade blade = Blade.me();
+    // Create a route: /user/:uid
     blade.get("/user/:uid", (request, response) -> {
-		Integer uid = request.queryInt("uid").get();
+		Integer uid = request.pathInt("uid");
 		response.text("uid : " + uid);
 	});
 	
+    // Create two parameters route
     blade.get("/users/:uid/post/:pid", (request, response) -> {
-		Integer uid = request.queryInt("uid").get();
-		Integer pid = request.queryInt("pid").get();
+		Integer uid = request.pathInt("uid");
+		Integer pid = request.pathInt("pid");
 		String msg = "uid = " + uid + ", pid = " + pid;
 		response.text(msg);
 	});
 	
+    // Start blade
     blade.start();
 }
 ```
 
-## Form URL Parameters
+## Form Parameters
 
 ```java
 public static void main(String[] args) {
-    Blade blade = Blade.of();
-    blade.get("/user", (request, response) -> {
-		Integer uid = request.queryInt("uid").get();
-		response.text("uid : " + uid);
-	}).start(Application.class);
+    Blade.me().get("/user", ((request, response) -> {
+         Optional<Integer> ageOptional = request.queryInt("age");
+         ageOptional.ifPresent(age -> System.out.println("age is:" + age));
+     })).start();
 }
 ```
 
 ## Upload File
 
 ```java
-public void upload_img(@MultipartParam FileItem fileItem){
-    if(null != fileItem){
-        File file = fileItem.getFile();
-        String fileRealPath = "your upload file path!";
-        nioTransferCopy(file, fileRealPath);
-    }
+public void upload(@MultipartParam FileItem fileItem){
+    byte[] data = fileItem.getData();
+    // Save the temporary file to the specified path
+    Files.write(Paths.get(filePath), data);
 }
 ```
 
-## Route Web Hook
+Or
+
+```java
+public void upload(Request request){
+    request.fileItem("img").ifPresent(fileItem -> {
+        byte[] data = fileItem.getData();
+        // Save the temporary file to the specified path
+        Files.write(Paths.get(filePath), data);              
+    });
+}
+```
+
+## Before hook
 
 ```java
 public static void main(String[] args) {
-    Blade blade = Blade.of();
-    blade.before("/.*", (request, response) -> {
+    // All requests are exported before execution before
+    Blade.me().before("/*", (request, response) -> {
         System.out.println("before...");
     }).start();
 }
 ```
 
-You may refer to these examples for additional guidance:
+How easy it all looks, but the features above are the tip of the iceberg, and there are more surprises to see in the documentation and sample projects:
 
-+ [Hello Blade](https://github.com/bladejava/blade-demos/tree/master/helloworld)
++ [FirstBladeApp](https://github.com/bladejava/first-blade-app)
 + [Doc Service](https://github.com/biezhi/grice)
-+ [More Examples](https://github.com/bladejava)
++ [More Examples](https://github.com/bladejava/blade-demos)
 
-## Used Blade WebSite
+## Use the Blade site
 
-+ Blog：https://github.com/otale/tale
-+ BBS：https://java-china.org
-+ Gallery：https://github.com/biezhi/nice
++ Blog System：https://github.com/otale/tale
++ Community Application：https://github.com/junicorn/roo
++ Pictures social：https://github.com/biezhi/nice
 + SS Panel：https://github.com/biezhi/ss-panel
-	
+
 ## Update
 
 [update log](https://github.com/biezhi/blade/blob/master/UPDATE_LOG.md)
