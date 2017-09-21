@@ -225,8 +225,11 @@ public class HttpResponse implements Response {
 
     @Override
     public void send(@NonNull FullHttpResponse response) {
+
         response.headers().add(getDefaultHeader());
+
         boolean keepAlive = WebContext.request().keepAlive();
+
         // Add 'Content-Length' header only for a keep-alive connection.
         response.headers().set(HttpHeaders.Names.CONTENT_LENGTH, response.content().readableBytes());
         if (!keepAlive) {

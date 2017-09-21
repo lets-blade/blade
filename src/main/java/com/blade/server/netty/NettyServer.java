@@ -139,7 +139,7 @@ public class NettyServer implements Server {
         channel = b.bind(address, port).sync().channel();
         String appName = environment.get(ENV_KEY_APP_NAME, "Blade");
 
-        log.info("⬢ {} initialize successfully, Time elapsed: {} ms", appName, System.currentTimeMillis() - startTime);
+        log.info("⬢ {} initialize successfully, Time elapsed: {} ms", appName, (System.currentTimeMillis() - startTime));
         log.info("⬢ Blade start with {}:{}", address, port);
         log.info("⬢ Open your web browser and navigate to {}://{}:{} ⚡", "http", address.replace(DEFAULT_SERVER_ADDRESS, LOCAL_IP_ADDRESS), port);
 
@@ -244,9 +244,7 @@ public class NettyServer implements Server {
     }
 
     private void shutdownHook() {
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            stop();
-        }));
+        Runtime.getRuntime().addShutdownHook(new Thread(this::stop));
     }
 
     @Override
@@ -271,9 +269,10 @@ public class NettyServer implements Server {
         channel.closeFuture().sync();
     }
 
+    // print blade start banner text
     private void printBanner() {
-        StringBuffer text  = new StringBuffer();
-        String       space = "\t\t\t\t\t\t\t   ";
+        StringBuilder text  = new StringBuilder();
+        String        space = "\t\t\t\t\t\t\t   ";
         for (String s : Const.BANNER_TEXT) {
             text.append("\r\n").append(space).append(s);
         }
