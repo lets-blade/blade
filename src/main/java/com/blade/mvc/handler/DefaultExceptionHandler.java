@@ -34,13 +34,13 @@ public class DefaultExceptionHandler implements ExceptionHandler {
 
     private void handleException(Exception e, Request request, Response response) {
         e.printStackTrace();
-        response.status(500);
-
-        request.attribute("title", "500 Internal Server Error");
-        request.attribute("message", e.getMessage());
-        request.attribute("stackTrace", getStackTrace(e));
-
-        this.render500(request, response);
+        if (null != response) {
+            response.status(500);
+            request.attribute("title", "500 Internal Server Error");
+            request.attribute("message", e.getMessage());
+            request.attribute("stackTrace", getStackTrace(e));
+            this.render500(request, response);
+        }
     }
 
     private void handleBladeException(BladeException e, Request request, Response response) {
