@@ -26,8 +26,8 @@ import java.nio.file.Files;
 import java.util.*;
 
 import static com.blade.mvc.Const.X_POWER_BY;
+import static io.netty.handler.codec.http.HttpHeaderNames.*;
 import static io.netty.handler.codec.http.HttpHeaderValues.KEEP_ALIVE;
-import static io.netty.handler.codec.http.HttpHeaders.Names.*;
 
 /**
  * HttpResponse
@@ -83,7 +83,7 @@ public class HttpResponse implements Response {
 
     @Override
     public Response cookie(@NonNull com.blade.mvc.http.Cookie cookie) {
-        Cookie nettyCookie = new DefaultCookie(cookie.name(), cookie.value());
+        Cookie nettyCookie = new io.netty.handler.codec.http.cookie.DefaultCookie(cookie.name(), cookie.value());
         if (cookie.domain() != null) {
             nettyCookie.setDomain(cookie.domain());
         }
@@ -104,7 +104,7 @@ public class HttpResponse implements Response {
 
     @Override
     public Response cookie(@NonNull String name, @NonNull String value, int maxAge) {
-        Cookie nettyCookie = new DefaultCookie(name, value);
+        Cookie nettyCookie = new io.netty.handler.codec.http.cookie.DefaultCookie(name, value);
         nettyCookie.setPath("/");
         nettyCookie.setMaxAge(maxAge);
         this.cookies.add(nettyCookie);
@@ -113,7 +113,7 @@ public class HttpResponse implements Response {
 
     @Override
     public Response cookie(@NonNull String name, @NonNull String value, int maxAge, boolean secured) {
-        Cookie nettyCookie = new DefaultCookie(name, value);
+        Cookie nettyCookie = new io.netty.handler.codec.http.cookie.DefaultCookie(name, value);
         nettyCookie.setPath("/");
         nettyCookie.setMaxAge(maxAge);
         nettyCookie.setSecure(secured);
@@ -123,7 +123,7 @@ public class HttpResponse implements Response {
 
     @Override
     public Response cookie(@NonNull String path, @NonNull String name, @NonNull String value, int maxAge, boolean secured) {
-        Cookie nettyCookie = new DefaultCookie(name, value);
+        Cookie nettyCookie = new io.netty.handler.codec.http.cookie.DefaultCookie(name, value);
         nettyCookie.setMaxAge(maxAge);
         nettyCookie.setSecure(secured);
         nettyCookie.setPath(path);
@@ -138,7 +138,7 @@ public class HttpResponse implements Response {
             cookie.setValue("");
             cookie.setMaxAge(-1);
         });
-        Cookie nettyCookie = new DefaultCookie(name, "");
+        Cookie nettyCookie = new io.netty.handler.codec.http.cookie.DefaultCookie(name, "");
         nettyCookie.setMaxAge(-1);
         this.cookies.add(nettyCookie);
         return this;
@@ -153,42 +153,38 @@ public class HttpResponse implements Response {
 
     @Override
     public void download(@NonNull String fileName, @NonNull File file) throws Exception {
-        try {
-            if (!file.exists() || !file.isFile()) {
-                new NotFoundException("Not found file: " + file.getPath());
-            }
-
-            RandomAccessFile raf        = new RandomAccessFile(file, "r");
-            long             fileLength = raf.length();
-            this.contentType = StringKit.mimeType(file.getName());
-
-            io.netty.handler.codec.http.HttpResponse httpResponse = new DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
-            HttpHeaders                              httpHeaders  = httpResponse.headers().add(getDefaultHeader());
-
-            boolean keepAlive = WebContext.request().keepAlive();
-            if (keepAlive) {
-                httpResponse.headers().set(CONNECTION, HttpHeaders.Values.KEEP_ALIVE);
-            }
-            httpHeaders.set(CONTENT_TYPE, this.contentType);
-            httpHeaders.set("Content-Disposition", "attachment; filename=" + new String(fileName.getBytes("UTF-8"), "ISO8859_1"));
-            httpHeaders.set(CONTENT_LENGTH, fileLength);
-
-            // Write the initial line and the header.
-            ctx.write(httpResponse);
-
-            ChannelFuture sendFileFuture = ctx.write(new DefaultFileRegion(raf.getChannel(), 0, fileLength), ctx.newProgressivePromise());
-            // Write the end marker.
-            ChannelFuture lastContentFuture = ctx.writeAndFlush(LastHttpContent.EMPTY_LAST_CONTENT);
-
-            sendFileFuture.addListener(ProgressiveFutureListener.build(raf));
-            // Decide whether to close the connection or not.
-            if (!keepAlive) {
-                lastContentFuture.addListener(ChannelFutureListener.CLOSE);
-            }
-            isCommit = true;
-        } catch (Exception e) {
-            throw e;
+        if (!file.exists() || !file.isFile()) {
+            throw new NotFoundException("Not found file: " + file.getPath());
         }
+
+        RandomAccessFile raf        = new RandomAccessFile(file, "r");
+        Long             fileLength = raf.length();
+        this.contentType = StringKit.mimeType(file.getName());
+
+        io.netty.handler.codec.http.HttpResponse httpResponse = new DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
+        HttpHeaders                              httpHeaders  = httpResponse.headers().add(getDefaultHeader());
+
+        boolean keepAlive = WebContext.request().keepAlive();
+        if (keepAlive) {
+            httpResponse.headers().set(CONNECTION, KEEP_ALIVE);
+        }
+        httpHeaders.set(CONTENT_TYPE, this.contentType);
+        httpHeaders.set("Content-Disposition", "attachment; filename=" + new String(fileName.getBytes("UTF-8"), "ISO8859_1"));
+        httpHeaders.setInt(CONTENT_LENGTH, fileLength.intValue());
+
+        // Write the initial line and the header.
+        ctx.write(httpResponse);
+
+        ChannelFuture sendFileFuture = ctx.write(new DefaultFileRegion(raf.getChannel(), 0, fileLength), ctx.newProgressivePromise());
+        // Write the end marker.
+        ChannelFuture lastContentFuture = ctx.writeAndFlush(LastHttpContent.EMPTY_LAST_CONTENT);
+
+        sendFileFuture.addListener(ProgressiveFutureListener.build(raf));
+        // Decide whether to close the connection or not.
+        if (!keepAlive) {
+            lastContentFuture.addListener(ChannelFutureListener.CLOSE);
+        }
+        isCommit = true;
     }
 
     @Override
@@ -213,7 +209,7 @@ public class HttpResponse implements Response {
 
     @Override
     public void redirect(@NonNull String newUri) {
-        headers.set(HttpHeaders.Names.LOCATION, newUri);
+        headers.set(LOCATION, newUri);
         FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.FOUND);
         this.send(response);
     }
@@ -231,7 +227,7 @@ public class HttpResponse implements Response {
         boolean keepAlive = WebContext.request().keepAlive();
 
         // Add 'Content-Length' header only for a keep-alive connection.
-        response.headers().set(HttpHeaders.Names.CONTENT_LENGTH, response.content().readableBytes());
+        response.headers().setInt(CONTENT_LENGTH, response.content().readableBytes());
         if (!keepAlive) {
             ctx.write(response).addListener(ChannelFutureListener.CLOSE);
         } else {

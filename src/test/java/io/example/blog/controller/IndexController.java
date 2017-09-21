@@ -28,7 +28,7 @@ public class IndexController {
 
     @GetRoute(value = "/hello")
     public void index(Response response) {
-        int a = 1/0;
+//        int a = 1/0;
         response.text("hello world!");
     }
 
