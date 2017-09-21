@@ -76,4 +76,11 @@ public interface Const {
     String TERMINAL_SERVER_PORT    = "--server.port=";
     String TERMINAL_BLADE_ENV      = "--blade.env=";
 
+    String[] BANNER_TEXT = {
+            " __, _,   _, __, __,",
+            " |_) |   /_\\ | \\ |_",
+            " |_) | , | | |_/ |",
+            " ~   ~~~ ~ ~ ~   ~~~"
+    };
+
 }

@@ -21,7 +21,6 @@ import com.blade.mvc.handler.ExceptionHandler;
 import com.blade.mvc.hook.WebHook;
 import com.blade.mvc.route.RouteBuilder;
 import com.blade.mvc.route.RouteMatcher;
-import com.blade.mvc.ui.DefaultUI;
 import com.blade.mvc.ui.template.DefaultEngine;
 import com.blade.server.Server;
 import io.netty.bootstrap.ServerBootstrap;
@@ -216,7 +215,8 @@ public class NettyServer implements Server {
             blade.scanPackages(blade.bootClass().getPackage().getName());
         }
 
-        DefaultUI.printBanner();
+        // print banner text
+        this.printBanner();
 
         String statics = environment.get(ENV_KEY_STATIC_DIRS, "");
         if (StringKit.isNotBlank(statics)) {
@@ -269,6 +269,19 @@ public class NettyServer implements Server {
     @Override
     public void join() throws InterruptedException {
         channel.closeFuture().sync();
+    }
+
+    private void printBanner() {
+        StringBuffer text  = new StringBuffer();
+        String       space = "\t\t\t\t\t\t\t   ";
+        for (String s : Const.BANNER_TEXT) {
+            text.append("\r\n").append(space).append(s);
+        }
+        text.append("\r\n")
+                .append(space)
+                .append(" :: Blade :: (v")
+                .append(Const.VERSION + ") \r\n");
+        System.out.println(text.toString());
     }
 
 }

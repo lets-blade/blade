@@ -361,7 +361,8 @@ public interface Request {
      * @param name Parameter name
      * @return Return parameter value
      */
-    default <T> T attribute(@NonNull String name) {
+    default <T> T attribute(String name) {
+        if (null == name) return null;
         Object object = attributes().get(name);
         return null != object ? (T) object : null;
     }

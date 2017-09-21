@@ -1,8 +1,12 @@
 package com.blade.mvc.ui;
 
+import com.blade.mvc.Const;
+
 import java.util.List;
 
 public class HtmlCreator {
+
+    private static final String HTML_FOOTER = "<br/><p><center>Copyright © <a href='https://github.com/biezhi/blade' target='_blank'>Blade-" + Const.VERSION + "</a></center></p><br/>";
 
     private StringBuilder html = new StringBuilder();
 
@@ -10,7 +14,35 @@ public class HtmlCreator {
         html.append("<!DOCTYPE html>");
         html.append("<head>");
         html.append("<meta charset=\"utf-8\">");
-        html.append("<style type='text/css'>.version{padding:10px;text-decoration-line: none;}</style>");
+        html.append("<style type='text/css'>.version{padding:10px;text-decoration-line: none;}.message-header{" +
+                "background-color: #900C3F;\n" +
+                "color: #fff;\n" +
+                "-webkit-box-align: center;\n" +
+                "-ms-flex-align: center;\n" +
+                "align-items: center;\n" +
+                "border-radius: 3px 3px 0 0;\n" +
+                "color: #fff;\n" +
+                "display: -webkit-box;\n" +
+                "display: -ms-flexbox;\n" +
+                "display: flex;\n" +
+                "-webkit-box-pack: justify;\n" +
+                "-ms-flex-pack: justify;\n" +
+                "justify-content: space-between;\n" +
+                "line-height: 1.25;\n" +
+                "padding: 0.5em 0.75em;\n" +
+                "position: relative;}" +
+                ".message-body{" +
+                "background-color: #fff5f7;" +
+                "font-size:1rem;" +
+                "border-color: #ff3860;\n" +
+                "color: #900C3F;\n" +
+                "border-top-left-radius: 0;\n" +
+                "border-top-right-radius: 0;\n" +
+                "border-top: none;\n" +
+                "border: 1px solid #dbdbdb;\n" +
+                "border-radius: 3px;\n" +
+                "padding: 1em 1.25em;" +
+                "}</style>");
     }
 
     public HtmlCreator title(String title) {
@@ -37,6 +69,11 @@ public class HtmlCreator {
 
     public HtmlCreator startP() {
         html.append("<p>");
+        return this;
+    }
+
+    public HtmlCreator startP(String className) {
+        html.append("<p class='" + className + "'>");
         return this;
     }
 
@@ -115,7 +152,7 @@ public class HtmlCreator {
     }
 
     public String html() {
-        html.append(DefaultUI.HTML_FOOTER);
+        html.append(HTML_FOOTER);
         html.append("</body>");
         return html.toString();
     }

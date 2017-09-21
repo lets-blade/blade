@@ -5,7 +5,7 @@ import com.blade.exception.BladeException;
 import com.blade.mvc.WebContext;
 import com.blade.mvc.http.Request;
 import com.blade.mvc.http.Response;
-import com.blade.mvc.ui.DefaultUI;
+import com.blade.mvc.ui.HtmlCreator;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -63,8 +63,10 @@ public class DefaultExceptionHandler implements ExceptionHandler {
             if (page404.isPresent()) {
                 response.render(page404.get());
             } else {
-                String html = String.format(DefaultUI.VIEW_404, request.uri());
-                response.html(html);
+                HtmlCreator htmlCreator = new HtmlCreator();
+                htmlCreator.center("<h1>404 Not Found - " + request.uri() + "</h1>");
+                htmlCreator.hr();
+                response.html(htmlCreator.html());
             }
         }
     }
@@ -81,7 +83,17 @@ public class DefaultExceptionHandler implements ExceptionHandler {
             response.render(page500.get());
         } else {
             if (blade.devMode()) {
-                response.html("<h1>" + request.attribute("title") + "</h1><p>" + request.attribute("message") + "</p>");
+                HtmlCreator htmlCreator = new HtmlCreator();
+                htmlCreator.center("<h1>" + request.attribute("title") + "</h1>");
+                htmlCreator.startP("message-header");
+                htmlCreator.add("Error Message: " + request.attribute("message"));
+                htmlCreator.endP();
+                if (null != request.attribute("stackTrace")) {
+                    htmlCreator.startP("message-body");
+                    htmlCreator.add(request.attribute("stackTrace").toString().replace("\n", "<br/>"));
+                    htmlCreator.endP();
+                }
+                response.html(htmlCreator.html());
             } else {
                 response.html(INTERNAL_SERVER_ERROR_HTML);
             }
