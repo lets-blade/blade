@@ -1,6 +1,7 @@
 package com.blade.kit;
 
 import com.blade.mvc.multipart.MimeType;
+import lombok.NoArgsConstructor;
 
 import java.util.Random;
 
@@ -8,11 +9,8 @@ import java.util.Random;
  * @author biezhi
  *         2017/6/1
  */
+@NoArgsConstructor
 public final class StringKit {
-
-    private StringKit() {
-
-    }
 
     private static final Random random = new Random();
 

@@ -1,6 +1,7 @@
 package com.blade.kit;
 
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.*;
 import java.nio.channels.FileChannel;
@@ -12,6 +13,7 @@ import java.util.stream.Collectors;
  * @author biezhi
  * 2017/6/2
  */
+@Slf4j
 @NoArgsConstructor
 public final class IOKit {
 
@@ -22,13 +24,13 @@ public final class IOKit {
             }
             closeable.close();
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Close closeable error", e);
         }
     }
 
     public static String readToString(String file) throws IOException {
-        BufferedReader crunchifyBufferReader = Files.newBufferedReader(Paths.get(file));
-        return crunchifyBufferReader.lines().collect(Collectors.joining());
+        BufferedReader bufferedReader = Files.newBufferedReader(Paths.get(file));
+        return bufferedReader.lines().collect(Collectors.joining());
     }
 
     public static String readToString(InputStream input) throws IOException {
@@ -37,7 +39,7 @@ public final class IOKit {
         }
     }
 
-    public static void copyFileUsingFileChannels(File source, File dest) throws IOException {
+    public static void copyFile(File source, File dest) throws IOException {
         FileChannel inputChannel  = null;
         FileChannel outputChannel = null;
         try {
@@ -45,10 +47,12 @@ public final class IOKit {
             outputChannel = new FileOutputStream(dest).getChannel();
             outputChannel.transferFrom(inputChannel, 0, inputChannel.size());
         } finally {
-            assert inputChannel != null;
-            inputChannel.close();
-            assert outputChannel != null;
-            outputChannel.close();
+            if(null != inputChannel){
+                inputChannel.close();
+            }
+            if(null != outputChannel){
+                outputChannel.close();
+            }
         }
     }
 
