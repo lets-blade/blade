@@ -19,8 +19,7 @@ import io.netty.handler.codec.http.*;
 import io.netty.handler.ssl.SslHandler;
 import io.netty.handler.stream.ChunkedFile;
 import io.netty.util.CharsetUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -40,12 +39,13 @@ import static io.netty.handler.codec.http.HttpResponseStatus.*;
 import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
 /**
+ * static file handler
+ *
  * @author biezhi
  * 2017/5/31
  */
+@Slf4j
 public class StaticFileHandler implements RequestHandler<Boolean> {
-
-    public static final Logger log = LoggerFactory.getLogger(StaticFileHandler.class);
 
     private boolean showFileList;
 
@@ -181,7 +181,7 @@ public class StaticFileHandler implements RequestHandler<Boolean> {
             return false;
         }
 
-        Date   ifModifiedSinceDate = format(ifMdf, Const.HTTP_DATE_FORMAT);
+        Date ifModifiedSinceDate = format(ifMdf, Const.HTTP_DATE_FORMAT);
         // Only compare up to the second because the datetime format we send to the client
         // does not have milliseconds
         long ifModifiedSinceDateSeconds = ifModifiedSinceDate.getTime() / 1000;
@@ -214,10 +214,10 @@ public class StaticFileHandler implements RequestHandler<Boolean> {
         StringBuilder buf = new StringBuilder()
                 .append("<!DOCTYPE html>\r\n")
                 .append("<html><head><meta charset='utf-8' /><title>")
-                .append("文件列表: ")
+                .append("File list: ")
                 .append(dirPath)
                 .append("</title></head><body>\r\n")
-                .append("<h3>文件列表: ")
+                .append("<h3>File list: ")
                 .append(dirPath)
                 .append("</h3>\r\n")
                 .append("<ul>")

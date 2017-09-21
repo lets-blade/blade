@@ -23,6 +23,12 @@ import java.util.Date;
 import java.util.Map;
 import java.util.Optional;
 
+/**
+ * Route method param parse
+ *
+ * @author biezhi
+ * 2017/9/20
+ */
 public final class MethodArgument {
 
     public static Object[] getArgs(Signature signature) throws Exception {
@@ -36,7 +42,6 @@ public final class MethodArgument {
 
         for (int i = 0, len = parameters.length; i < len; i++) {
             Parameter parameter = parameters[i];
-            assert parameterNames != null;
             String   paramName = parameterNames[i];
             Class<?> argType   = parameter.getType();
             if (containsAnnotation(parameter)) {

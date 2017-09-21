@@ -96,12 +96,13 @@ public class RouteMatcher {
         return route;
     }
 
-    public void addRoute(String path, RouteHandler handler, HttpMethod httpMethod) {
+    public Route addRoute(String path, RouteHandler handler, HttpMethod httpMethod) {
         try {
-            addRoute(httpMethod, path, handler, METHOD_NAME);
+            return addRoute(httpMethod, path, handler, METHOD_NAME);
         } catch (Exception e) {
             log.error("", e);
         }
+        return null;
     }
 
     public void route(String path, Class<?> clazz, String methodName) {
@@ -280,7 +281,7 @@ public class RouteMatcher {
     }
 
     // a bad way
-    public void register() {
+    void register() {
         routes.values().forEach(route -> log.info("Add route => {}", route));
         hooks.values().forEach(route -> log.info("Add hook  => {}", route));
 

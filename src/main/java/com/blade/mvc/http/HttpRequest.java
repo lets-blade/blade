@@ -42,7 +42,6 @@ public class HttpRequest implements Request {
     }
 
     private SessionHandler sessionHandler;
-    private Route          route;
     private ByteBuf body = Unpooled.copiedBuffer("", CharsetUtil.UTF_8);
     private String  host;
     private String  uri;
@@ -141,7 +140,6 @@ public class HttpRequest implements Request {
 
     @Override
     public Request initPathParams(@NonNull Route route) {
-        this.route = route;
         if (null != route.getPathParams())
             this.pathParams = route.getPathParams();
         return this;

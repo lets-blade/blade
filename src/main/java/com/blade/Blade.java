@@ -65,7 +65,7 @@ public class Blade {
     private NettyServer         nettyServer             = new NettyServer();
     private RouteMatcher        routeMatcher            = new RouteMatcher();
     private Environment         environment             = Environment.empty();
-    private Consumer<Exception> startupExceptionHandler = (e) -> log.error("Failed to start Blade", e);
+    private Consumer<Exception> startupExceptionHandler = (e) -> log.error("Start blade failed", e);
     private ExceptionHandler    exceptionHandler        = new DefaultExceptionHandler();
     private boolean             started                 = false;
     private Class<?>            bootClass               = null;
