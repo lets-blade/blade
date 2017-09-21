@@ -95,7 +95,7 @@ public class ResponseTest extends BaseTestCase {
                 app.get("/cookie", ((request, response) -> response.cookie("c1", "value1"))).disableSession()
         );
         System.out.println(get("/cookie").getHeaders());
-        String cookie = get("/cookie").asString().getHeaders().getFirst("Set-Cookie");
+        String cookie = get("/cookie").asString().getHeaders().getFirst("set-cookie");
         assertEquals("c1=value1", cookie);
     }
 
@@ -107,7 +107,7 @@ public class ResponseTest extends BaseTestCase {
         String text = bodyToString("/");
         assertEquals("hello blade", text);
 
-        String contentType = get("/").asString().getHeaders().getFirst("Content-Type");
+        String contentType = get("/").asString().getHeaders().getFirst("content-type");
         assertEquals(Const.CONTENT_TYPE_TEXT, contentType);
     }
 
@@ -119,7 +119,7 @@ public class ResponseTest extends BaseTestCase {
         String text = bodyToString("/");
         assertEquals("<h1>hello blade</h1>", text);
 
-        String contentType = get("/").asString().getHeaders().getFirst("Content-Type");
+        String contentType = get("/").asString().getHeaders().getFirst("content-type");
         assertEquals(Const.CONTENT_TYPE_HTML, contentType);
     }
 
@@ -133,8 +133,8 @@ public class ResponseTest extends BaseTestCase {
         assertEquals("[1,2,3]", bodyToString("/json1"));
         assertEquals("[4,5,6]", bodyToString("/json2"));
 
-        assertEquals(Const.CONTENT_TYPE_JSON, get("/json1").asString().getHeaders().getFirst("Content-Type"));
-        assertEquals(Const.CONTENT_TYPE_JSON, get("/json2").asString().getHeaders().getFirst("Content-Type"));
+        assertEquals(Const.CONTENT_TYPE_JSON, get("/json1").asString().getHeaders().getFirst("content-type"));
+        assertEquals(Const.CONTENT_TYPE_JSON, get("/json2").asString().getHeaders().getFirst("content-type"));
     }
 
     @Test
@@ -164,7 +164,7 @@ public class ResponseTest extends BaseTestCase {
         String html = bodyToString("/");
         assertEquals("user is biezhi", html);
 
-        String contentType = get("/").asString().getHeaders().getFirst("Content-Type");
+        String contentType = get("/").asString().getHeaders().getFirst("content-type");
         assertEquals(Const.CONTENT_TYPE_HTML, contentType);
     }
 
