@@ -5,12 +5,12 @@
 <p align="center">Based on <code>Java8</code> + <code>Netty4</code> to create lightweight, high-performance, simple and elegant Web framework 😋</p>
 <p align="center">Spend <b>1 hour</b> to learn it to do something interesting, a Spring in addition to the framework of the best choice.</p>
 <p align="center">
-    <a href="" target="_blank">🐾 Quick Start</a> | 
-    <a href="https://biezhi.gitbooks.io/blade-in-action" target="_blank">📘 Blade In Action</a> | 
-    <a href="https://www.youtube.com/playlist?list=PLK2w-tGRdrj5TV2lxHFj8hcg4mbmRmnWX" target="_blank">🎬 Video Tutorial</a> | 
-    <a href="" target="_blank">🌚 Contribution</a> | 
-    <a href="" target="_blank">💰 Donate</a> |
-    <a href="README_CN.md">🇨🇳 简体中文</a>
+    🐾 <a href="" target="_blank">Quick Start</a> | 
+    📘 <a href="https://biezhi.gitbooks.io/blade-in-action" target="_blank">Blade In Action</a> | 
+    🎬 <a href="https://www.youtube.com/playlist?list=PLK2w-tGRdrj5TV2lxHFj8hcg4mbmRmnWX" target="_blank">Video Tutorial</a> | 
+    🌚 <a href="" target="_blank">Contribution</a> | 
+    💰 <a href="" target="_blank">Donate</a> |
+    🇨🇳 <a href="README_CN.md">简体中文</a>
 </p>
 <p align="center">
     <a href="https://travis-ci.org/biezhi/blade"><img src="https://img.shields.io/travis/biezhi/blade.svg?style=flat-square"></a>
@@ -46,8 +46,9 @@ If you think this item is good can [star](https://github.com/biezhi/blade/starga
 
 ## Overview
 
-* Simplicity: The design is simple, easy to understand and doesn't introduce many layers between you and the standard library. The goal of this project is that the users should be able to understand the whole framework in a single day.
-* Elegance: `blade` supports the RESTful style routing interface, has no invasive interceptors and provides the writing of DSL grammar.
+» Simplicity: The design is simple, easy to understand and doesn't introduce many layers between you and the standard library. The goal of this project is that the users should be able to understand the whole framework in a single day.<br/>
+» Elegance: `blade` supports the RESTful style routing interface, has no invasive interceptors and provides the writing of DSL grammar.<br/>
+» Easy deploy: support `maven` package `jar` file running.<br/>
 
 ## Get Start
 
