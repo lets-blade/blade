@@ -122,22 +122,22 @@ public class NettyServer implements Server {
     private void startServer(long startTime) throws InterruptedException {
 
         // Configure the server.
-        this.bossGroup = new NioEventLoopGroup(threadCount, bossExecutors);
-        this.workerGroup = new NioEventLoopGroup(workers, workerExecutors);
-
         ServerBootstrap b = new ServerBootstrap();
         b.option(ChannelOption.SO_BACKLOG, backlog);
         b.option(ChannelOption.SO_REUSEADDR, true);
+        b.childOption(ChannelOption.SO_REUSEADDR, true);
 
         // enable epool
         if (BladeKit.epollIsAvailable()) {
-            log.info("⬢ Enable linux epoll");
+            log.info("⬢ Use EpollEventLoopGroup");
             b.option(EpollChannelOption.SO_REUSEPORT, true);
+
             NettyServerGroup nettyServerGroup = EpoolKit.group(threadCount, bossExecutors, workers, workerExecutors);
             this.bossGroup = nettyServerGroup.getBoosGroup();
             this.workerGroup = nettyServerGroup.getWorkerGroup();
             b.group(bossGroup, workerGroup).channel(nettyServerGroup.getSocketChannel());
         } else {
+            log.info("⬢ Use NioEventLoopGroup");
             this.bossGroup = new NioEventLoopGroup(threadCount, bossExecutors);
             this.workerGroup = new NioEventLoopGroup(workers, workerExecutors);
             b.group(bossGroup, workerGroup).channel(NioServerSocketChannel.class);
@@ -149,14 +149,20 @@ public class NettyServer implements Server {
         String address = environment.get(ENV_KEY_SERVER_ADDRESS, DEFAULT_SERVER_ADDRESS);
         int    port    = environment.getInt(ENV_KEY_SERVER_PORT, DEFAULT_SERVER_PORT);
 
-        channel = b.bind(address, port).sync().channel();
-        String appName = environment.get(ENV_KEY_APP_NAME, "Blade");
+        try {
+            channel = b.bind(address, port).sync().channel();
+            String appName = environment.get(ENV_KEY_APP_NAME, "Blade");
 
-        log.info("⬢ {} initialize successfully, Time elapsed: {} ms", appName, (System.currentTimeMillis() - startTime));
-        log.info("⬢ Blade start with {}:{}", address, port);
-        log.info("⬢ Open your web browser and navigate to {}://{}:{} ⚡", "http", address.replace(DEFAULT_SERVER_ADDRESS, LOCAL_IP_ADDRESS), port);
+            log.info("⬢ {} initialize successfully, Time elapsed: {} ms", appName, (System.currentTimeMillis() - startTime));
+            log.info("⬢ Blade start with {}:{}", address, port);
+            log.info("⬢ Open your web browser and navigate to {}://{}:{} ⚡", "http", address.replace(DEFAULT_SERVER_ADDRESS, LOCAL_IP_ADDRESS), port);
 
-        blade.eventManager().fireEvent(EventType.SERVER_STARTED, blade);
+            blade.eventManager().fireEvent(EventType.SERVER_STARTED, blade);
+            channel.closeFuture().sync();
+        } finally {
+            this.workerGroup.shutdownGracefully().sync();
+            this.bossGroup.shutdownGracefully().sync();
+        }
     }
 
 
@@ -253,7 +259,7 @@ public class NettyServer implements Server {
 
         threadCount = environment.getInt(ENV_KEY_NETTY_THREAD_COUNT, 1);
         workers = environment.getInt(ENV_KEY_NETTY_WORKERS, 0);
-        backlog = environment.getInt(ENV_KEY_NETTY_SO_BACKLOG, 1024);
+        backlog = environment.getInt(ENV_KEY_NETTY_SO_BACKLOG, 8192);
     }
 
     private void shutdownHook() {
@@ -262,19 +268,23 @@ public class NettyServer implements Server {
 
     @Override
     public void stop() {
-        if (this.bossGroup != null) {
-            this.bossGroup.shutdownGracefully();
+        try {
+            log.info("⬢ Blade shutdown");
+            if (this.bossGroup != null) {
+                this.bossGroup.shutdownGracefully().sync();
+            }
+            if (this.workerGroup != null) {
+                this.workerGroup.shutdownGracefully().sync();
+            }
+            if (bossExecutors != null) {
+                bossExecutors.shutdown();
+            }
+            if (workerExecutors != null) {
+                workerExecutors.shutdown();
+            }
+        } catch (Exception e) {
+            log.error("Blade shutdown error", e);
         }
-        if (this.workerGroup != null) {
-            this.workerGroup.shutdownGracefully();
-        }
-        if (bossExecutors != null) {
-            bossExecutors.shutdown();
-        }
-        if (workerExecutors != null) {
-            workerExecutors.shutdown();
-        }
-        log.info("⬢ Blade shutdown");
     }
 
     @Override
