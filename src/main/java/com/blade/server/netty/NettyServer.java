@@ -152,20 +152,14 @@ public class NettyServer implements Server {
         String address = environment.get(ENV_KEY_SERVER_ADDRESS, DEFAULT_SERVER_ADDRESS);
         int    port    = environment.getInt(ENV_KEY_SERVER_PORT, DEFAULT_SERVER_PORT);
 
-        try {
-            channel = b.bind(address, port).sync().channel();
-            String appName = environment.get(ENV_KEY_APP_NAME, "Blade");
+        channel = b.bind(address, port).sync().channel();
+        String appName = environment.get(ENV_KEY_APP_NAME, "Blade");
 
-            log.info("⬢ {} initialize successfully, Time elapsed: {} ms", appName, (System.currentTimeMillis() - startTime));
-            log.info("⬢ Blade start with {}:{}", address, port);
-            log.info("⬢ Open your web browser and navigate to {}://{}:{} ⚡", "http", address.replace(DEFAULT_SERVER_ADDRESS, LOCAL_IP_ADDRESS), port);
+        log.info("⬢ {} initialize successfully, Time elapsed: {} ms", appName, (System.currentTimeMillis() - startTime));
+        log.info("⬢ Blade start with {}:{}", address, port);
+        log.info("⬢ Open your web browser and navigate to {}://{}:{} ⚡", "http", address.replace(DEFAULT_SERVER_ADDRESS, LOCAL_IP_ADDRESS), port);
 
-            blade.eventManager().fireEvent(EventType.SERVER_STARTED, blade);
-            channel.closeFuture().sync();
-        } finally {
-            this.workerGroup.shutdownGracefully().sync();
-            this.bossGroup.shutdownGracefully().sync();
-        }
+        blade.eventManager().fireEvent(EventType.SERVER_STARTED, blade);
     }
 
 
