@@ -25,9 +25,10 @@ import java.io.*;
 import java.nio.file.Files;
 import java.util.*;
 
+import static com.blade.mvc.Const.HEADER_SERVER;
 import static com.blade.mvc.Const.X_POWER_BY;
-import static io.netty.handler.codec.http.HttpHeaderNames.*;
 import static io.netty.handler.codec.http.HttpHeaderValues.KEEP_ALIVE;
+import static io.netty.handler.codec.http.HttpHeaders.Names.*;
 
 /**
  * HttpResponse
@@ -241,6 +242,9 @@ public class HttpResponse implements Response {
         headers.set(DATE, DateKit.gmtDate());
         headers.set(CONTENT_TYPE, this.contentType);
         headers.set(X_POWER_BY, "blade-" + Const.VERSION);
+        if (!headers.contains(HEADER_SERVER)) {
+            headers.set(HEADER_SERVER, "blade-" + Const.VERSION);
+        }
         this.cookies.forEach(cookie -> headers.add(SET_COOKIE, ServerCookieEncoder.LAX.encode(cookie)));
         return headers;
     }

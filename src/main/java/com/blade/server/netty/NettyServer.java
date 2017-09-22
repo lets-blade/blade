@@ -27,6 +27,7 @@ import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
+import io.netty.channel.epoll.EpollChannelOption;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
@@ -128,9 +129,21 @@ public class NettyServer implements Server {
         b.option(ChannelOption.SO_BACKLOG, backlog);
         b.option(ChannelOption.SO_REUSEADDR, true);
 
-        b.group(bossGroup, workerGroup)
-                .channel(NioServerSocketChannel.class)
-                .handler(new LoggingHandler(LogLevel.DEBUG))
+        // enable epool
+        if (BladeKit.epollIsAvailable()) {
+            log.info("⬢ Enable linux epoll");
+            b.option(EpollChannelOption.SO_REUSEPORT, true);
+            NettyServerGroup nettyServerGroup = EpoolKit.group(threadCount, bossExecutors, workers, workerExecutors);
+            this.bossGroup = nettyServerGroup.getBoosGroup();
+            this.workerGroup = nettyServerGroup.getWorkerGroup();
+            b.group(bossGroup, workerGroup).channel(nettyServerGroup.getSocketChannel());
+        } else {
+            this.bossGroup = new NioEventLoopGroup(threadCount, bossExecutors);
+            this.workerGroup = new NioEventLoopGroup(workers, workerExecutors);
+            b.group(bossGroup, workerGroup).channel(NioServerSocketChannel.class);
+        }
+
+        b.handler(new LoggingHandler(LogLevel.DEBUG))
                 .childHandler(new HttpServerInitializer(blade));
 
         String address = environment.get(ENV_KEY_SERVER_ADDRESS, DEFAULT_SERVER_ADDRESS);

@@ -157,7 +157,7 @@ public interface Response {
      */
     default void text(String text) {
         if (null == text) return;
-        FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(statusCode()), Unpooled.wrappedBuffer(text.getBytes(CharsetUtil.UTF_8)));
+        FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(statusCode()), Unpooled.wrappedBuffer(text.getBytes(CharsetUtil.UTF_8)), false);
         this.contentType(Const.CONTENT_TYPE_TEXT);
         this.send(response);
     }
@@ -170,7 +170,7 @@ public interface Response {
      */
     default void html(String html) {
         if (null == html) return;
-        FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(statusCode()), Unpooled.wrappedBuffer(html.getBytes(CharsetUtil.UTF_8)));
+        FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(statusCode()), Unpooled.wrappedBuffer(html.getBytes(CharsetUtil.UTF_8)), false);
         this.contentType(Const.CONTENT_TYPE_HTML);
         this.send(response);
     }
@@ -183,7 +183,7 @@ public interface Response {
      */
     default void json(String json) {
         if (null == json) return;
-        FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(statusCode()), Unpooled.wrappedBuffer(json.getBytes(CharsetUtil.UTF_8)));
+        FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(statusCode()), Unpooled.wrappedBuffer(json.getBytes(CharsetUtil.UTF_8)), false);
         if (!WebContext.request().isIE()) {
             this.contentType(Const.CONTENT_TYPE_JSON);
         }
@@ -208,19 +208,19 @@ public interface Response {
      */
     default void body(String data) {
         if (null == data) return;
-        FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(statusCode()), Unpooled.wrappedBuffer(data.getBytes(CharsetUtil.UTF_8)));
+        FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(statusCode()), Unpooled.wrappedBuffer(data.getBytes(CharsetUtil.UTF_8)), false);
         this.send(response);
     }
 
     default void body(byte[] data) {
         if (null == data) return;
-        FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(statusCode()), Unpooled.wrappedBuffer(data));
+        FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(statusCode()), Unpooled.wrappedBuffer(data), false);
         this.send(response);
     }
 
     default void body(ByteBuf byteBuf) {
         if (null == byteBuf) return;
-        FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(statusCode()), byteBuf);
+        FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(statusCode()), byteBuf, false);
         this.send(response);
     }
 

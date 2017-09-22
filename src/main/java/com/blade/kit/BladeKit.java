@@ -72,4 +72,13 @@ public class BladeKit {
         return !isWebHook(httpMethod);
     }
 
+    public static boolean epollIsAvailable() {
+        try {
+            Object obj = Class.forName("io.netty.channel.epoll.Epoll").getMethod("isAvailable").invoke(null);
+            return null != obj && Boolean.valueOf(obj.toString());
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
 }
