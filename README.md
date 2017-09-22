@@ -24,7 +24,7 @@
 
 ## What Is Blade?
 
-`Blade` is a pursuit of simple, efficient Web framework, so that` JavaWeb` development even more powerful, both in performance and flexibility.
+`Blade` is a pursuit of simple, efficient Web framework, so that `JavaWeb` development even more powerful, both in performance and flexibility.
 If you like to try something interesting, I believe you will love it.
 If you think this item is good can [star](https://github.com/biezhi/blade/stargazers) support or [donate]() it :blush:
 
