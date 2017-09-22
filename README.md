@@ -35,7 +35,7 @@ If you think this item is good can [star](https://github.com/biezhi/blade/starga
 * [x] source less than `500kb`, learning is also simple
 * [x] Restful style routing design
 * [x] template engine support, view development more flexible
-* [x] high performance, 100 concurrent qps 6w / s
+* [x] high performance, 100 concurrent tps 6w/s
 * [x] Run the `JAR` package to open the web service
 * [x] Streaming API style
 * [x] supports plug-in extensions
