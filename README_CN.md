@@ -65,7 +65,7 @@
 或者  `Gradle`:
 
 ```sh
-compile 'com.bladejava:blade-mvc:2.0.2-beta'
+compile 'com.bladejava:blade-mvc:2.0.2-beta3'
 ```
 
 编写 `main` 函数写一个 `Hello World`：

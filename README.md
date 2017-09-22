@@ -58,7 +58,7 @@ Grab via `Maven`：
 <dependency>
 	<groupId>com.bladejava</groupId>
 	<artifactId>blade-mvc</artifactId>
-	<version>2.0.2-beta</version>
+	<version>2.0.2-beta3</version>
 </dependency>
 ```
 
