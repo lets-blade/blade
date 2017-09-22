@@ -32,6 +32,7 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
+import io.netty.util.ResourceLeakDetector;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
@@ -120,6 +121,8 @@ public class NettyServer implements Server {
     }
 
     private void startServer(long startTime) throws InterruptedException {
+
+        ResourceLeakDetector.setLevel(ResourceLeakDetector.Level.DISABLED);
 
         // Configure the server.
         ServerBootstrap b = new ServerBootstrap();
