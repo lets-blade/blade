@@ -1,7 +1,6 @@
 <p align="center">
     <img src="http://7xls9k.dl1.z0.glb.clouddn.com/blade-logo.png" />
 </p>
-<h1 align="center">Blade - Enjoy Web Development</h1>
 <p align="center">Based on <code>Java8</code> + <code>Netty4</code> to create lightweight, high-performance, simple and elegant Web framework 😋</p>
 <p align="center">Spend <b>1 hour</b> to learn it to do something interesting, a Spring in addition to the framework of the best choice.</p>
 <p align="center">

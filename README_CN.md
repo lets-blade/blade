@@ -1,7 +1,6 @@
 <p align="center">
     <img src="http://7xls9k.dl1.z0.glb.clouddn.com/blade-logo.png" />
 </p>
-<h1 align="center">Blade - 享受Web开发</h1>
 <p align="center">基于 <code>Java8</code> + <code>Netty4</code> 创造的轻量级、高性能、简洁优雅的Web框架 😋</p>
 <p align="center">花 <b>1小时</b> 学会它做点有趣的项目，一款除了Spring系框架的不二之选。</p>
 <p align="center">
