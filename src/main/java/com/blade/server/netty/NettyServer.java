@@ -130,7 +130,7 @@ public class NettyServer implements Server {
         b.option(ChannelOption.SO_REUSEADDR, true);
         b.childOption(ChannelOption.SO_REUSEADDR, true);
 
-        // enable epool
+        // enable epoll
         if (BladeKit.epollIsAvailable()) {
             log.info("⬢ Use EpollEventLoopGroup");
             b.option(EpollChannelOption.SO_REUSEPORT, true);

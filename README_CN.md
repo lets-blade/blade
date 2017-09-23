@@ -1,5 +1,5 @@
 <p align="center">
-    <img src="https://dn-biezhi.qbox.me/LOGO_BIG.png" />
+    <img src="http://7xls9k.dl1.z0.glb.clouddn.com/blade-logo.png" />
 </p>
 <h1 align="center">Blade - 享受Web开发</h1>
 <p align="center">基于 <code>Java8</code> + <code>Netty4</code> 创造的轻量级、高性能、简洁优雅的Web框架 😋</p>

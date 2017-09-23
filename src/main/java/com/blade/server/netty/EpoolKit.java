@@ -6,7 +6,7 @@ import io.netty.channel.epoll.EpollServerSocketChannel;
 import java.util.concurrent.ExecutorService;
 
 /**
- * Epool kit
+ * Epoll kit
  * <p>
  * enable epool event loop group
  *

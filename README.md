@@ -1,5 +1,5 @@
 <p align="center">
-    <img src="https://dn-biezhi.qbox.me/LOGO_BIG.png" />
+    <img src="http://7xls9k.dl1.z0.glb.clouddn.com/blade-logo.png" />
 </p>
 <h1 align="center">Blade - Enjoy Web Development</h1>
 <p align="center">Based on <code>Java8</code> + <code>Netty4</code> to create lightweight, high-performance, simple and elegant Web framework 😋</p>
@@ -65,7 +65,7 @@ Grab via `Maven`：
 or `Gradle`:
 
 ```sh
-compile 'com.bladejava:blade-mvc:2.0.2-beta'
+compile 'com.bladejava:blade-mvc:2.0.2-beta3'
 ```
 
 Write `main` method, lets `Hello World`：
