@@ -54,6 +54,7 @@ hs_err_pid*
 
 # IntelliJ
 /out/
+.idea/
 
 # mpeltonen/sbt-idea plugin
 .idea_modules/
@@ -123,4 +124,5 @@ local.properties
 .cache-main
 .scala_dependencies
 .worksheet
+
 
