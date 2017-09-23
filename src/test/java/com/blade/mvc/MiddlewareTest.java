@@ -3,7 +3,8 @@ package com.blade.mvc;
 import com.blade.BaseTestCase;
 import com.blade.security.web.auth.BasicAuthMiddleware;
 import org.junit.Test;
-import sun.misc.BASE64Encoder;
+
+import java.util.Base64;
 
 import static org.junit.Assert.assertEquals;
 
@@ -35,8 +36,7 @@ public class MiddlewareTest extends BaseTestCase {
 
         int code = get("/").asString().getStatus();
         assertEquals(401, code);
-
-        String basicAuth = new BASE64Encoder().encode("blade:blade".getBytes());
+        String basicAuth = Base64.getEncoder().encodeToString("blade:blade".getBytes());
         String result    = get("/").header("Authorization", "Basic " + basicAuth).asString().getBody();
         assertEquals("Hello", result);
     }

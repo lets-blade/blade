@@ -1,10 +1,9 @@
 package com.blade.kit;
 
 import org.junit.Test;
-import sun.misc.BASE64Encoder;
-
 import java.io.File;
 import java.util.Arrays;
+import java.util.Base64;
 
 import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
@@ -191,7 +190,7 @@ public class EncryptKitTest {
         );
         assertTrue(
                 Arrays.equals(
-                        new BASE64Encoder().encode(bytesResDES).getBytes(),
+                        Base64.getEncoder().encode(bytesResDES),
                         EncryptKit.DES2Base64(bytesDataDES, bytesKeyDES)
                 )
         );
@@ -214,7 +213,7 @@ public class EncryptKitTest {
         assertTrue(
                 Arrays.equals(
                         bytesDataDES,
-                        EncryptKit.decryptBase64DES(new BASE64Encoder().encode(bytesResDES).getBytes(), bytesKeyDES)
+                        EncryptKit.decryptBase64DES(Base64.getEncoder().encode(bytesResDES), bytesKeyDES)
                 )
         );
     }
@@ -240,7 +239,7 @@ public class EncryptKitTest {
         );
         assertTrue(
                 Arrays.equals(
-                        new BASE64Encoder().encode(bytesResDES3).getBytes(),
+                        Base64.getEncoder().encode(bytesResDES3),
                         EncryptKit.encrypt3DES2Base64(bytesDataDES3, bytesKeyDES3)
                 )
         );
@@ -263,7 +262,7 @@ public class EncryptKitTest {
         assertTrue(
                 Arrays.equals(
                         bytesDataDES3,
-                        EncryptKit.decryptBase64_3DES(new BASE64Encoder().encode(bytesResDES3).getBytes(), bytesKeyDES3)
+                        EncryptKit.decryptBase64_3DES(Base64.getEncoder().encode(bytesResDES3), bytesKeyDES3)
                 )
         );
     }
@@ -289,7 +288,7 @@ public class EncryptKitTest {
         );
         assertTrue(
                 Arrays.equals(
-                        new BASE64Encoder().encode(bytesResAES).getBytes(),
+                        Base64.getEncoder().encode(bytesResAES),
                         EncryptKit.encryptAES2Base64(bytesDataAES, bytesKeyAES)
                 )
         );
@@ -312,7 +311,7 @@ public class EncryptKitTest {
         assertTrue(
                 Arrays.equals(
                         bytesDataAES,
-                        EncryptKit.decryptBase64AES(new BASE64Encoder().encode(bytesResAES).getBytes(), bytesKeyAES)
+                        EncryptKit.decryptBase64AES(Base64.getEncoder().encode(bytesResAES), bytesKeyAES)
                 )
         );
     }
