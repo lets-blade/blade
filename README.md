@@ -1,5 +1,5 @@
 <p align="center">
-    <img src="http://7xls9k.dl1.z0.glb.clouddn.com/blade-logo.png" width="650"/>
+    <a href="https://lets-blade.com"><img src="http://7xls9k.dl1.z0.glb.clouddn.com/blade-logo.png" width="650"/></a>
 </p>
 <p align="center">Based on <code>Java8</code> + <code>Netty4</code> to create lightweight, high-performance, simple and elegant Web framework 😋</p>
 <p align="center">Spend <b>1 hour</b> to learn it to do something interesting, a Spring in addition to the framework of the best choice.</p>
@@ -8,7 +8,7 @@
     📘 <a href="https://biezhi.gitbooks.io/blade-in-action" target="_blank">Blade In Action</a> | 
     🎬 <a href="https://www.youtube.com/playlist?list=PLK2w-tGRdrj5TV2lxHFj8hcg4mbmRmnWX" target="_blank">Video Tutorial</a> | 
     🌚 <a href="" target="_blank">Contribution</a> | 
-    💰 <a href="" target="_blank">Donate</a> |
+    💰 <a href="https://lets-blade.com/donate" target="_blank">Donate</a> |
     🇨🇳 <a href="README_CN.md">简体中文</a>
 </p>
 <p align="center">
