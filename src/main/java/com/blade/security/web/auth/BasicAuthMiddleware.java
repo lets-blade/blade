@@ -7,7 +7,8 @@ import com.blade.mvc.hook.WebHook;
 import com.blade.mvc.http.Request;
 import com.blade.mvc.http.Response;
 import lombok.extern.slf4j.Slf4j;
-import sun.misc.BASE64Decoder;
+
+import java.util.Base64;
 
 import static com.blade.mvc.Const.ENV_KEY_AUTH_PASSWORD;
 import static com.blade.mvc.Const.ENV_KEY_AUTH_USERNAME;
@@ -69,9 +70,8 @@ public class BasicAuthMiddleware implements WebHook {
     private String getFromBASE64(String s) {
         if (s == null)
             return null;
-        BASE64Decoder decoder = new BASE64Decoder();
         try {
-            byte[] b = decoder.decodeBuffer(s);
+            byte[] b = Base64.getDecoder().decode(s);
             return new String(b);
         } catch (Exception e) {
             return null;

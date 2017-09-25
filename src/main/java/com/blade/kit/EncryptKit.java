@@ -1,8 +1,6 @@
 package com.blade.kit;
 
 import lombok.NoArgsConstructor;
-import sun.misc.BASE64Decoder;
-import sun.misc.BASE64Encoder;
 
 import javax.crypto.Cipher;
 import javax.crypto.Mac;
@@ -11,6 +9,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.security.*;
+import java.util.Base64;
 
 import static com.blade.kit.ConvertKit.hex2Dec;
 
@@ -420,7 +419,7 @@ public class EncryptKit {
      * @return Base64密文
      */
     public static byte[] DES2Base64(byte[] data, byte[] key) {
-        return new BASE64Encoder().encode(DES(data, key)).getBytes();
+        return Base64.getEncoder().encode(DES(data, key));
     }
 
     /**
@@ -454,7 +453,7 @@ public class EncryptKit {
      */
     public static byte[] decryptBase64DES(byte[] data, byte[] key) {
         try {
-            return decryptDES(new BASE64Decoder().decodeBuffer(new String(data)), key);
+            return decryptDES(Base64.getDecoder().decode(data), key);
         } catch (Exception e) {
             return null;
         }
@@ -502,7 +501,7 @@ public class EncryptKit {
      */
     public static byte[] encrypt3DES2Base64(byte[] data, byte[] key) {
         try {
-            return new BASE64Encoder().encode(encrypt3DES(data, key)).getBytes();
+            return Base64.getEncoder().encode(encrypt3DES(data, key));
         } catch (Exception e) {
             return null;
         }
@@ -539,7 +538,7 @@ public class EncryptKit {
      */
     public static byte[] decryptBase64_3DES(byte[] data, byte[] key) {
         try {
-            return decrypt3DES(new BASE64Decoder().decodeBuffer(new String(data)), key);
+            return decrypt3DES(Base64.getDecoder().decode(data), key);
         } catch (Exception e) {
             return null;
         }
@@ -587,7 +586,7 @@ public class EncryptKit {
      */
     public static byte[] encryptAES2Base64(byte[] data, byte[] key) {
         try {
-            return new BASE64Encoder().encode(encryptAES(data, key)).getBytes();
+            return Base64.getEncoder().encode(encryptAES(data, key));
         } catch (Exception e) {
             return null;
         }
@@ -624,7 +623,7 @@ public class EncryptKit {
      */
     public static byte[] decryptBase64AES(byte[] data, byte[] key) {
         try {
-            return decryptAES(new BASE64Decoder().decodeBuffer(new String(data)), key);
+            return decryptAES(Base64.getDecoder().decode(data), key);
         } catch (Exception e) {
             return null;
         }
