@@ -5,11 +5,11 @@
 
     <groupId>com.bladejava</groupId>
     <artifactId>blade-mvc</artifactId>
-    <version>2.0.2-beta3</version>
+    <version>2.0.2</version>
     <packaging>jar</packaging>
 
     <name>blade</name>
-    <url>https://github.com/biezhi/blade</url>
+    <url>https://lets-blade.com</url>
     <description>blade mvc</description>
 
     <licenses>
