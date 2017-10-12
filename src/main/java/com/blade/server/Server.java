@@ -16,4 +16,6 @@ public interface Server {
 
     void stop();
 
+    void stopAndWait();
+
 }
