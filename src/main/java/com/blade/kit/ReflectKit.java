@@ -5,9 +5,7 @@ import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.stream.Stream;
 
 /**
@@ -15,8 +13,6 @@ import java.util.stream.Stream;
  * 2017/5/31
  */
 public class ReflectKit {
-
-    private static final List EMPTY_LIST = new ArrayList(0);
 
     public static <T> T newInstance(Class<T> cls) {
         try {
