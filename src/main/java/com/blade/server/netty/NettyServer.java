@@ -268,10 +268,10 @@ public class NettyServer implements Server {
         try {
             log.info("⬢ Blade shutdown");
             if (this.bossGroup != null) {
-                this.bossGroup.shutdownGracefully().sync();
+                this.bossGroup.shutdownGracefully();
             }
             if (this.workerGroup != null) {
-                this.workerGroup.shutdownGracefully().sync();
+                this.workerGroup.shutdownGracefully();
             }
             if (bossExecutors != null) {
                 bossExecutors.shutdown();
