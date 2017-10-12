@@ -17,6 +17,7 @@ import com.blade.kit.StringKit;
 import com.blade.mvc.Const;
 import com.blade.mvc.WebContext;
 import com.blade.mvc.annotation.Path;
+import com.blade.mvc.handler.DefaultExceptionHandler;
 import com.blade.mvc.handler.ExceptionHandler;
 import com.blade.mvc.hook.WebHook;
 import com.blade.mvc.route.RouteBuilder;
@@ -179,7 +180,9 @@ public class NettyServer implements Server {
         if (ReflectKit.hasInterface(clazz, BeanProcessor.class) && null != clazz.getAnnotation(Bean.class)) {
             this.processors.add((BeanProcessor) blade.ioc().getBean(clazz));
         }
-        if (ReflectKit.hasInterface(clazz, ExceptionHandler.class) && null != clazz.getAnnotation(Bean.class)) {
+        if (null != clazz.getAnnotation(Bean.class) && (
+                ReflectKit.hasInterface(clazz, ExceptionHandler.class) || clazz.getSuperclass().equals(DefaultExceptionHandler.class)
+        )) {
             ExceptionHandler exceptionHandler = (ExceptionHandler) blade.ioc().getBean(clazz);
             blade.exceptionHandler(exceptionHandler);
         }
