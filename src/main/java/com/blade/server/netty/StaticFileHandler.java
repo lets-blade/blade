@@ -26,6 +26,7 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
 import java.net.URLConnection;
+import java.net.URLDecoder;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -70,7 +71,8 @@ public class StaticFileHandler implements RequestHandler<Boolean> {
             return false;
         }
 
-        String uri = request.uri();
+        String uri = URLDecoder.decode(request.uri(), "UTF-8");
+        log.info("{}\t{}\t{}", request.protocol(), request.method(), uri);
 
         if (uri.startsWith(Const.WEB_JARS)) {
             InputStream input = StaticFileHandler.class.getResourceAsStream("/META-INF/resources" + uri);

@@ -2,6 +2,7 @@ package com.blade.mvc.handler;
 
 import com.blade.Blade;
 import com.blade.exception.BladeException;
+import com.blade.exception.InternalErrorException;
 import com.blade.ioc.Ioc;
 import com.blade.kit.BladeKit;
 import com.blade.kit.ReflectKit;
@@ -27,7 +28,7 @@ import java.util.List;
 public class RequestInvoker {
 
     private final Blade blade;
-    private final Ioc ioc;
+    private final Ioc   ioc;
 
     public RequestInvoker(Blade blade) {
         this.blade = blade;
@@ -109,8 +110,8 @@ public class RequestInvoker {
      * @throws Exception throw like parse param exception
      */
     public boolean invokeHook(Signature routeSignature, Route hookRoute) throws Exception {
-        Method actionMethod = hookRoute.getAction();
-        Object target       = hookRoute.getTarget();
+        Method hookMethod = hookRoute.getAction();
+        Object target     = hookRoute.getTarget();
         if (null == target) {
             Class<?> clazz = hookRoute.getAction().getDeclaringClass();
             target = ioc.getBean(clazz);
@@ -118,20 +119,20 @@ public class RequestInvoker {
         }
 
         // execute
-        int len = actionMethod.getParameterTypes().length;
-        actionMethod.setAccessible(true);
+        int len = hookMethod.getParameterTypes().length;
+        hookMethod.setAccessible(true);
 
         Object returnParam;
         if (len > 0) {
-            Signature signature = Signature.builder().route(hookRoute)
-                    .request(routeSignature.request()).response(routeSignature.response())
-                    .parameters(routeSignature.getParameters())
-                    .action(actionMethod).build();
-
-            Object[] args = MethodArgument.getArgs(signature);
-            returnParam = ReflectKit.invokeMethod(target, actionMethod, args);
+            if (len == 1) {
+                returnParam = ReflectKit.invokeMethod(target, hookMethod, routeSignature);
+            } else if (len == 2) {
+                returnParam = ReflectKit.invokeMethod(target, hookMethod, routeSignature.request(), routeSignature.response());
+            } else {
+                throw new InternalErrorException("Bad web hook structure");
+            }
         } else {
-            returnParam = ReflectKit.invokeMethod(target, actionMethod);
+            returnParam = ReflectKit.invokeMethod(target, hookMethod);
         }
 
         if (null == returnParam) return true;
@@ -174,6 +175,5 @@ public class RequestInvoker {
         }
         return true;
     }
-
 
 }

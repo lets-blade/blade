@@ -39,6 +39,9 @@ public class RequestInvokerTest {
         signature.setRoute(Route.builder()
                 .target(new IndexController())
                 .action(IndexController.class.getMethod("users", String.class))
+                .httpMethod(HttpMethod.GET)
+                .targetType(IndexController.class)
+                .path("/users")
                 .build());
 
         Route route = new RouteMatcher().addRoute("/*", new BladeWebHookType(), HttpMethod.BEFORE);

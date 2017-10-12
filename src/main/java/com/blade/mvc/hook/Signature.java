@@ -12,7 +12,7 @@ import java.lang.reflect.Method;
  * Signature
  *
  * @author biezhi
- *         2017/6/2
+ * 2017/6/2
  */
 @Data
 @Builder
@@ -43,12 +43,6 @@ public class Signature {
         this.route = route;
         this.action = route.getAction();
         if (null != this.action && !this.action.toString().contains("$$Lambda$")) {
-            this.initParameters();
-        }
-    }
-
-    private void initParameters() throws Exception {
-        if (null != this.action) {
             this.parameters = MethodArgument.getArgs(this);
         }
     }

@@ -67,9 +67,9 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
         Signature signature = Signature.builder().request(request).response(response).build();
 
         try {
+
             // request uri
             String uri = request.uri();
-            log.info("{}\t{}\t{}", request.protocol(), request.method(), uri);
 
             // write session
             WebContext.set(new WebContext(request, response));
@@ -77,6 +77,8 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
             if (isStaticFile(uri)) {
                 staticFileHandler.handle(ctx, request, response);
                 return;
+            } else {
+                log.info("{}\t{}\t{}", request.protocol(), request.method(), uri);
             }
 
             Route route = routeMatcher.lookupRoute(request.method(), uri);
