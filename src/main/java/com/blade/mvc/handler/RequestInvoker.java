@@ -2,6 +2,7 @@ package com.blade.mvc.handler;
 
 import com.blade.Blade;
 import com.blade.exception.BladeException;
+import com.blade.exception.InternalErrorException;
 import com.blade.ioc.Ioc;
 import com.blade.kit.BladeKit;
 import com.blade.kit.ReflectKit;
@@ -123,7 +124,13 @@ public class RequestInvoker {
 
         Object returnParam;
         if (len > 0) {
-            returnParam = ReflectKit.invokeMethod(target, hookMethod, routeSignature);
+            if (len == 1) {
+                returnParam = ReflectKit.invokeMethod(target, hookMethod, routeSignature);
+            } else if (len == 2) {
+                returnParam = ReflectKit.invokeMethod(target, hookMethod, routeSignature.request(), routeSignature.response());
+            } else {
+                throw new InternalErrorException("Bad web hook structure");
+            }
         } else {
             returnParam = ReflectKit.invokeMethod(target, hookMethod);
         }
