@@ -1,6 +1,5 @@
 package com.blade;
 
-import com.blade.mvc.handler.RouteHandler;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.request.HttpRequest;
 import com.mashape.unirest.request.HttpRequestWithBody;
@@ -15,7 +14,6 @@ import org.junit.Before;
 @Slf4j
 public class BaseTestCase {
 
-    protected RouteHandler OK_HANDLER = (req, res) -> res.text("OK");
     protected Blade app;
     private   String origin    = "http://127.0.0.1:10086";
     protected String firefoxUA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:53.0) Gecko/20100101 Firefox/53.0";

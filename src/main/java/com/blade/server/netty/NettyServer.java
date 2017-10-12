@@ -265,8 +265,8 @@ public class NettyServer implements Server {
 
     @Override
     public void stop() {
+        log.info("⬢ Blade shutdown ...");
         try {
-            log.info("⬢ Blade shutdown");
             if (this.bossGroup != null) {
                 this.bossGroup.shutdownGracefully();
             }
@@ -279,6 +279,29 @@ public class NettyServer implements Server {
             if (workerExecutors != null) {
                 workerExecutors.shutdown();
             }
+            log.info("⬢ Blade shutdown successful");
+        } catch (Exception e) {
+            log.error("Blade shutdown error", e);
+        }
+    }
+
+    @Override
+    public void stopAndWait() {
+        log.info("⬢ Blade shutdown ...");
+        try {
+            if (this.bossGroup != null) {
+                this.bossGroup.shutdownGracefully().sync();
+            }
+            if (this.workerGroup != null) {
+                this.workerGroup.shutdownGracefully().sync();
+            }
+            if (bossExecutors != null) {
+                bossExecutors.shutdown();
+            }
+            if (workerExecutors != null) {
+                workerExecutors.shutdown();
+            }
+            log.info("⬢ Blade shutdown successful");
         } catch (Exception e) {
             log.error("Blade shutdown error", e);
         }
@@ -289,7 +312,9 @@ public class NettyServer implements Server {
         channel.closeFuture().sync();
     }
 
-    // print blade start banner text
+    /**
+     * print blade start banner text
+     */
     private void printBanner() {
         StringBuilder text  = new StringBuilder();
         String        space = "\t\t\t\t\t\t\t   ";

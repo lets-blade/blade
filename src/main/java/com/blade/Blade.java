@@ -422,7 +422,8 @@ public class Blade {
 
     public void stop() {
         eventManager.fireEvent(EventType.SERVER_STOPPING, this);
-        nettyServer.stop();
+        nettyServer.stopAndWait();
         eventManager.fireEvent(EventType.SERVER_STOPPED, this);
     }
+
 }
