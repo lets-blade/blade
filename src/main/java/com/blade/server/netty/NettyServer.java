@@ -246,7 +246,7 @@ public class NettyServer implements Server {
         }
 
         String templatePath = environment.get(ENV_KEY_TEMPLATE_PATH, "templates");
-        if (templatePath.charAt(0) == CHAR_SLAT) {
+        if (templatePath.charAt(0) == HttpConst.CHAR_SLASH) {
             templatePath = templatePath.substring(1);
         }
         if (templatePath.endsWith(HttpConst.SLASH)) {
