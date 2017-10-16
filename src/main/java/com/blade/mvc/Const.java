@@ -36,8 +36,6 @@ public interface Const {
     String       CONTENT_TYPE_HTML          = "text/html; charset=UTF-8";
     String       CONTENT_TYPE_JSON          = "application/json; charset=UTF-8";
     String       CONTENT_TYPE_TEXT          = "text/plain; charset=UTF-8";
-    String       X_POWER_BY                 = "X-Powered-By";
-    String       HEADER_SERVER              = "Server";
     String       HTTP_DATE_FORMAT           = "EEE, dd MMM yyyy HH:mm:ss zzz";
     String       INTERNAL_SERVER_ERROR_HTML = "<center><h1>500 Internal Server Error</h1><hr/></center>";
     List<String> PLUGIN_PACKAGE_NAME        = Arrays.asList("com.blade.plugin");

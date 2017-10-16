@@ -35,7 +35,6 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.regex.Pattern;
 
-import static io.netty.handler.codec.http.HttpHeaders.Names.*;
 import static io.netty.handler.codec.http.HttpResponseStatus.*;
 import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
@@ -88,11 +87,11 @@ public class StaticFileHandler implements RequestHandler<Boolean> {
                 setDateAndCacheHeaders(httpResponse, null);
                 String contentType = StringKit.mimeType(uri);
                 if (null != contentType) {
-                    httpResponse.headers().set(CONTENT_TYPE, contentType);
+                    httpResponse.headers().set(HttpConst.CONTENT_TYPE, contentType);
                 }
-                httpResponse.headers().set(CONTENT_LENGTH, content.length());
+                httpResponse.headers().set(HttpConst.CONTENT_LENGTH, content.length());
                 if (request.keepAlive()) {
-                    httpResponse.headers().set(CONNECTION, HttpHeaders.Values.KEEP_ALIVE);
+                    httpResponse.headers().set(HttpConst.CONNECTION, HttpConst.KEEP_ALIVE);
                 }
                 // Write the initial line and the header.
                 ctx.writeAndFlush(httpResponse);
@@ -144,9 +143,9 @@ public class StaticFileHandler implements RequestHandler<Boolean> {
         HttpResponse httpResponse = new DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
         setContentTypeHeader(httpResponse, file);
         setDateAndCacheHeaders(httpResponse, file);
-        httpResponse.headers().set(CONTENT_LENGTH, fileLength);
+        httpResponse.headers().set(HttpConst.CONTENT_LENGTH, fileLength);
         if (request.keepAlive()) {
-            httpResponse.headers().set(CONNECTION, HttpHeaders.Values.KEEP_ALIVE);
+            httpResponse.headers().set(HttpConst.CONNECTION, HttpConst.KEEP_ALIVE);
         }
 
         // Write the initial line and the header.
@@ -178,7 +177,7 @@ public class StaticFileHandler implements RequestHandler<Boolean> {
 
     private boolean http304(ChannelHandlerContext ctx, Request request, long lastModified) {
         // Cache Validation
-        String ifMdf = request.header(IF_MODIFIED_SINCE);
+        String ifMdf = request.header(HttpConst.IF_MODIFIED_SINCE);
         if (StringKit.isBlank(ifMdf)) {
             return false;
         }
@@ -212,7 +211,7 @@ public class StaticFileHandler implements RequestHandler<Boolean> {
 
     private static void sendListing(ChannelHandlerContext ctx, File dir, String dirPath) {
         FullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1, OK);
-        response.headers().set(CONTENT_TYPE, "text/html; charset=UTF-8");
+        response.headers().set(HttpConst.CONTENT_TYPE, "text/html; charset=UTF-8");
         StringBuilder buf = new StringBuilder()
                 .append("<!DOCTYPE html>\r\n")
                 .append("<html><head><meta charset='utf-8' /><title>")
@@ -252,7 +251,7 @@ public class StaticFileHandler implements RequestHandler<Boolean> {
     private static void sendError(ChannelHandlerContext ctx, HttpResponseStatus status) {
         FullHttpResponse response = new DefaultFullHttpResponse(
                 HTTP_1_1, status, Unpooled.copiedBuffer("Failure: " + status + "\r\n", CharsetUtil.UTF_8));
-        response.headers().set(CONTENT_TYPE, Const.CONTENT_TYPE_TEXT);
+        response.headers().set(HttpConst.CONTENT_TYPE, Const.CONTENT_TYPE_TEXT);
         // Close the connection as soon as the error message is sent.
         ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
     }
@@ -276,7 +275,7 @@ public class StaticFileHandler implements RequestHandler<Boolean> {
      * @param response HTTP response
      */
     private static void setDateHeader(FullHttpResponse response) {
-        response.headers().set(DATE, DateKit.gmtDate());
+        response.headers().set(HttpConst.DATE, DateKit.gmtDate());
     }
 
     private static final Pattern INSECURE_URI = Pattern.compile(".*[<>&\"].*");
@@ -310,18 +309,18 @@ public class StaticFileHandler implements RequestHandler<Boolean> {
         // Date header
         LocalDateTime localTime = LocalDateTime.now();
         String        date      = DateKit.gmtDate(localTime);
-        response.headers().set(DATE, date);
+        response.headers().set(HttpConst.DATE, date);
         String        lastModifed = date;
         LocalDateTime newTime     = localTime.plusSeconds(HTTP_CACHE_SECONDS);
         date = DateKit.gmtDate(newTime);
 
         // Add cache headers
-        response.headers().set(EXPIRES, date);
-        response.headers().set(CACHE_CONTROL, "private, max-age=" + HTTP_CACHE_SECONDS);
+        response.headers().set(HttpConst.EXPIRES, date);
+        response.headers().set(HttpConst.CACHE_CONTROL, "private, max-age=" + HTTP_CACHE_SECONDS);
         if (null != fileToCache) {
             lastModifed = DateKit.gmtDate(new Date(fileToCache.lastModified()));
         }
-        response.headers().set(LAST_MODIFIED, lastModifed);
+        response.headers().set(HttpConst.LAST_MODIFIED, lastModifed);
     }
 
     /**
@@ -335,7 +334,7 @@ public class StaticFileHandler implements RequestHandler<Boolean> {
         if (null == contentType) {
             contentType = URLConnection.guessContentTypeFromName(file.getName());
         }
-        response.headers().set(CONTENT_TYPE, contentType);
+        response.headers().set(HttpConst.CONTENT_TYPE, contentType);
     }
 
 }
