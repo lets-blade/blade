@@ -3,6 +3,8 @@ package com.blade.server.netty;
 import io.netty.util.AsciiString;
 
 /**
+ * Http headers const
+ *
  * @author biezhi
  * @date 2017/10/16
  */
