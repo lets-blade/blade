@@ -11,6 +11,18 @@ import java.util.regex.Pattern;
  */
 public class InputFilter {
 
+
+    private static final Pattern SCRIPT_PATTERN       = Pattern.compile("<script>(.*?)</script>", Pattern.CASE_INSENSITIVE);
+    private static final Pattern SRC_PATTERN          = Pattern.compile("src[\r\n]*=[\r\n]*\\\'(.*?)\\\'", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL);
+    private static final Pattern SRC2_PATTERN         = Pattern.compile("src[\r\n]*=[\r\n]*\\\"(.*?)\\\"", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL);
+    private static final Pattern SCRIPT_END_PATTERN   = Pattern.compile("</script>", Pattern.CASE_INSENSITIVE);
+    private static final Pattern SCRIPT_START_PATTERN = Pattern.compile("<script(.*?)>", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL);
+    private static final Pattern EVAL_PATTERN         = Pattern.compile("eval\\((.*?)\\)", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL);
+    private static final Pattern EXPRESSION_PATTERN   = Pattern.compile("expression\\((.*?)\\)", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL);
+    private static final Pattern JAVASCRIPT_PATTERN   = Pattern.compile("javascript:", Pattern.CASE_INSENSITIVE);
+    private static final Pattern VBSCRIPT_PATTERN     = Pattern.compile("vbscript:", Pattern.CASE_INSENSITIVE);
+    private static final  Pattern ONLOAD_PATTERN       = Pattern.compile("onload(.*?)=", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL);
+
     private String value;
 
     public InputFilter(String value) {
@@ -30,42 +42,42 @@ public class InputFilter {
             cleanValue = cleanValue.replaceAll("\0", "");
 
             // Avoid anything between script tags
-            Pattern scriptPattern = Pattern.compile("<script>(.*?)</script>", Pattern.CASE_INSENSITIVE);
+            Pattern scriptPattern = SCRIPT_PATTERN;
             cleanValue = scriptPattern.matcher(cleanValue).replaceAll("");
 
             // Avoid anything in a src='...' type of expression
-            scriptPattern = Pattern.compile("src[\r\n]*=[\r\n]*\\\'(.*?)\\\'", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL);
+            scriptPattern = SRC_PATTERN;
             cleanValue = scriptPattern.matcher(cleanValue).replaceAll("");
 
-            scriptPattern = Pattern.compile("src[\r\n]*=[\r\n]*\\\"(.*?)\\\"", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL);
+            scriptPattern = SRC2_PATTERN;
             cleanValue = scriptPattern.matcher(cleanValue).replaceAll("");
 
             // Remove any lonesome </script> tag
-            scriptPattern = Pattern.compile("</script>", Pattern.CASE_INSENSITIVE);
+            scriptPattern = SCRIPT_END_PATTERN;
             cleanValue = scriptPattern.matcher(cleanValue).replaceAll("");
 
             // Remove any lonesome <script ...> tag
-            scriptPattern = Pattern.compile("<script(.*?)>", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL);
+            scriptPattern = SCRIPT_START_PATTERN;
             cleanValue = scriptPattern.matcher(cleanValue).replaceAll("");
 
             // Avoid eval(...) expressions
-            scriptPattern = Pattern.compile("eval\\((.*?)\\)", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL);
+            scriptPattern = EVAL_PATTERN;
             cleanValue = scriptPattern.matcher(cleanValue).replaceAll("");
 
             // Avoid expression(...) expressions
-            scriptPattern = Pattern.compile("expression\\((.*?)\\)", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL);
+            scriptPattern = EXPRESSION_PATTERN;
             cleanValue = scriptPattern.matcher(cleanValue).replaceAll("");
 
             // Avoid javascript:... expressions
-            scriptPattern = Pattern.compile("javascript:", Pattern.CASE_INSENSITIVE);
+            scriptPattern = JAVASCRIPT_PATTERN;
             cleanValue = scriptPattern.matcher(cleanValue).replaceAll("");
 
             // Avoid vbscript:... expressions
-            scriptPattern = Pattern.compile("vbscript:", Pattern.CASE_INSENSITIVE);
+            scriptPattern = VBSCRIPT_PATTERN;
             cleanValue = scriptPattern.matcher(cleanValue).replaceAll("");
 
             // Avoid onload= expressions
-            scriptPattern = Pattern.compile("onload(.*?)=", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL);
+            scriptPattern = ONLOAD_PATTERN;
             this.value = scriptPattern.matcher(cleanValue).replaceAll("");
         }
         return this;
