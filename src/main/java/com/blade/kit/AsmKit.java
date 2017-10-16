@@ -73,6 +73,7 @@ public final class AsmKit {
             return null;
         }
         cr.accept(new ClassVisitor(Opcodes.ASM5) {
+            @Override
             public MethodVisitor visitMethod(final int access, final String name, final String desc, final String signature, final String[] exceptions) {
                 final Type[] args = Type.getArgumentTypes(desc);
                 // 方法名相同并且参数个数相同
@@ -81,6 +82,7 @@ public final class AsmKit {
                 }
                 MethodVisitor v = super.visitMethod(access, name, desc, signature, exceptions);
                 return new MethodVisitor(Opcodes.ASM5, v) {
+                    @Override
                     public void visitLocalVariable(String name, String desc, String signature, Label start, Label end, int index) {
                         int i = index - 1;
                         // 如果是静态方法，则第一就是参数

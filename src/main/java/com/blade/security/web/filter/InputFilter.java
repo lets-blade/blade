@@ -76,6 +76,7 @@ public class InputFilter {
         return this;
     }
 
+    @Override
     public String toString() {
         return this.value;
     }
