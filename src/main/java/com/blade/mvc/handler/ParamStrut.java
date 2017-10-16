@@ -9,7 +9,6 @@ public class ParamStrut {
 
     Param          param;
     PathParam      pathParam;
-    QueryParam     queryParam;
     BodyParam      bodyParam;
     HeaderParam    headerParam;
     CookieParam    cookieParam;
