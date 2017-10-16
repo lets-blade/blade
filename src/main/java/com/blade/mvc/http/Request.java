@@ -5,15 +5,13 @@ import com.blade.kit.WebKit;
 import com.blade.mvc.WebContext;
 import com.blade.mvc.multipart.FileItem;
 import com.blade.mvc.route.Route;
+import com.blade.server.netty.HttpConst;
 import io.netty.buffer.ByteBuf;
 import lombok.NonNull;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-
-import static io.netty.handler.codec.http.HttpHeaders.Names.CONTENT_TYPE;
-import static io.netty.handler.codec.http.HttpHeaders.Names.USER_AGENT;
 
 /**
  * Http Request
@@ -50,7 +48,7 @@ public interface Request {
      * @return return user-agent
      */
     default String userAgent() {
-        return header(USER_AGENT);
+        return header(HttpConst.USER_AGENT);
     }
 
     /**
@@ -246,7 +244,7 @@ public interface Request {
      * @return Return contentType
      */
     default String contentType() {
-        String contentType = header(CONTENT_TYPE);
+        String contentType = header(HttpConst.CONTENT_TYPE_STRING);
         return null != contentType ? contentType : "Unknown";
     }
 

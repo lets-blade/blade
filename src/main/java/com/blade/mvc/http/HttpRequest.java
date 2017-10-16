@@ -3,6 +3,7 @@ package com.blade.mvc.http;
 import com.blade.kit.StringKit;
 import com.blade.mvc.multipart.FileItem;
 import com.blade.mvc.route.Route;
+import com.blade.server.netty.HttpConst;
 import com.blade.server.netty.SessionHandler;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -20,8 +21,6 @@ import java.io.IOException;
 import java.net.URLConnection;
 import java.nio.file.Files;
 import java.util.*;
-
-import static io.netty.handler.codec.http.HttpHeaders.Names.COOKIE;
 
 /**
  * Http Request Impl
@@ -73,8 +72,8 @@ public class HttpRequest implements Request {
         }
 
         // cookies
-        if (StringKit.isNotBlank(header(COOKIE))) {
-            ServerCookieDecoder.LAX.decode(header(COOKIE)).forEach(this::parseCookie);
+        if (StringKit.isNotBlank(header(HttpConst.COOKIE_STRING))) {
+            ServerCookieDecoder.LAX.decode(header(HttpConst.COOKIE_STRING)).forEach(this::parseCookie);
         }
     }
 
