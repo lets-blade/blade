@@ -346,7 +346,7 @@ public interface Request {
      * Add a cookie to the request
      *
      * @param cookie
-     * @return
+     * @return return Request instance
      */
     Request cookie(Cookie cookie);
 
@@ -428,7 +428,7 @@ public interface Request {
      * get file item by request part name
      *
      * @param name
-     * @return
+     * @return return Optional<FileItem>
      */
     default Optional<FileItem> fileItem(@NonNull String name) {
         return Optional.ofNullable(fileItems().get(name));

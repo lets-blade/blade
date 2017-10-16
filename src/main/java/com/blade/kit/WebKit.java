@@ -4,6 +4,8 @@ import com.blade.mvc.http.Request;
 import lombok.NoArgsConstructor;
 
 /**
+ * Web kit
+ *
  * @author biezhi
  * 2017/6/2
  */
@@ -13,10 +15,10 @@ public final class WebKit {
     private static final String UNKNOWN_MAGIC = "unknown";
 
     /**
-     * 根据request对象获取客户端ip地址
+     * Get the client IP address by request
      *
-     * @param request
-     * @return
+     * @param request Request instance
+     * @return return ip address
      */
     public static String ipAddr(Request request) {
         String ipAddress = request.header("x-forwarded-for");

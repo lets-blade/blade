@@ -66,11 +66,13 @@ public class ReflectKit {
     }
 
     /**
-     * @param bean   类实例
-     * @param method 方法名称
-     * @param args   方法参数
-     * @return
-     * @throws Exception
+     * invoke method
+     *
+     * @param bean   bean instance
+     * @param method method instance
+     * @param args   method arguments
+     * @return return method returned value
+     * @throws Exception throws Exception
      */
     public static Object invokeMethod(Object bean, Method method, Object... args) throws Exception {
         Class<?>[] types    = method.getParameterTypes();

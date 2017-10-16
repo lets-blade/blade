@@ -55,8 +55,8 @@ public class Environment {
     /**
      * Properties to Environment
      *
-     * @param props
-     * @return
+     * @param props properties instance
+     * @return return Environment instance
      */
     public static Environment of(@NonNull Properties props) {
         Environment environment = new Environment();
@@ -67,8 +67,8 @@ public class Environment {
     /**
      * Map to Environment
      *
-     * @param map
-     * @return
+     * @param map config map
+     * @return return Environment instance
      */
     public static Environment of(@NonNull Map<String, String> map) {
         Environment environment = new Environment();
@@ -79,8 +79,8 @@ public class Environment {
     /**
      * load Environment by URL
      *
-     * @param url
-     * @return
+     * @param url file url
+     * @return return Environment instance
      */
     public static Environment of(@NonNull URL url) {
         try {
@@ -95,8 +95,8 @@ public class Environment {
     /**
      * load Environment by file
      *
-     * @param file
-     * @return
+     * @param file environment file
+     * @return return Environment instance
      */
     public static Environment of(@NonNull File file) {
         try {
@@ -109,8 +109,8 @@ public class Environment {
     /**
      * load Environment by location
      *
-     * @param location
-     * @return
+     * @param location environment location
+     * @return return Environment instance
      */
     public static Environment of(@NonNull String location) {
         if (location.startsWith(PREFIX_CLASSPATH)) {

@@ -109,7 +109,7 @@ public interface Response {
      * add raw response cookie
      *
      * @param cookie
-     * @return
+     * @return return Response instance
      */
     Response cookie(Cookie cookie);
 
@@ -159,7 +159,7 @@ public interface Response {
      * remove cookie
      *
      * @param name
-     * @return
+     * @return return Response instance
      */
     Response removeCookie(String name);
 
@@ -167,7 +167,6 @@ public interface Response {
      * Render by text
      *
      * @param text text content
-     * @return Return Response
      */
     default void text(String text) {
         if (null == text) return;
@@ -180,7 +179,6 @@ public interface Response {
      * Render by html
      *
      * @param html html content
-     * @return Return Response
      */
     default void html(String html) {
         if (null == html) return;
@@ -193,7 +191,6 @@ public interface Response {
      * Render by json
      *
      * @param json json content
-     * @return Return Response
      */
     default void json(String json) {
         if (null == json) return;
@@ -207,8 +204,7 @@ public interface Response {
     /**
      * Render by json
      *
-     * @param bean
-     * @return
+     * @param bean bean instance
      */
     default void json(Object bean) {
         if (null == bean) return;
@@ -218,7 +214,7 @@ public interface Response {
     /**
      * send body to client
      *
-     * @param data
+     * @param data body string
      */
     default void body(String data) {
         if (null == data) return;
