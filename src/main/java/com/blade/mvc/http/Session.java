@@ -18,6 +18,27 @@ public interface Session {
     String id();
 
     /**
+     * Set session id
+     *
+     * @param id session id
+     */
+    void id(String id);
+
+    /**
+     * Get current session client ip address
+     *
+     * @return return request ip address
+     */
+    String ip();
+
+    /**
+     * Set current session client ip address
+     *
+     * @param ip ip address
+     */
+    void ip(String ip);
+
+    /**
      * Get current session attribute by name
      *
      * @param name attribute name
@@ -65,10 +86,23 @@ public interface Session {
     long created();
 
     /**
+     * Set session created unix time
+     *
+     * @param created created time
+     */
+    void created(long created);
+
+    /**
      * Get current session expired unix time.
      *
      * @return return expired time
      */
     long expired();
 
+    /**
+     * Set session expired unix time
+     *
+     * @param expired expired time
+     */
+    void expired(long expired);
 }
