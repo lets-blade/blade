@@ -41,6 +41,11 @@ import static java.util.Optional.ofNullable;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Environment {
 
+    private static final String PREFIX_CLASSPATH = "classpath:";
+    private static final String PREFIX_FILE      = "file:";
+    private static final String PREFIX_URL       = "url:";
+    private static final String SALT             = "/";
+
     private Properties props = new Properties();
 
     public static Environment empty() {
@@ -50,8 +55,8 @@ public class Environment {
     /**
      * Properties to Environment
      *
-     * @param props
-     * @return
+     * @param props properties instance
+     * @return return Environment instance
      */
     public static Environment of(@NonNull Properties props) {
         Environment environment = new Environment();
@@ -62,8 +67,8 @@ public class Environment {
     /**
      * Map to Environment
      *
-     * @param map
-     * @return
+     * @param map config map
+     * @return return Environment instance
      */
     public static Environment of(@NonNull Map<String, String> map) {
         Environment environment = new Environment();
@@ -74,8 +79,8 @@ public class Environment {
     /**
      * load Environment by URL
      *
-     * @param url
-     * @return
+     * @param url file url
+     * @return return Environment instance
      */
     public static Environment of(@NonNull URL url) {
         try {
@@ -90,8 +95,8 @@ public class Environment {
     /**
      * load Environment by file
      *
-     * @param file
-     * @return
+     * @param file environment file
+     * @return return Environment instance
      */
     public static Environment of(@NonNull File file) {
         try {
@@ -104,18 +109,18 @@ public class Environment {
     /**
      * load Environment by location
      *
-     * @param location
-     * @return
+     * @param location environment location
+     * @return return Environment instance
      */
     public static Environment of(@NonNull String location) {
-        if (location.startsWith("classpath:")) {
-            location = location.substring("classpath:".length());
+        if (location.startsWith(PREFIX_CLASSPATH)) {
+            location = location.substring(PREFIX_CLASSPATH.length());
             return loadClasspath(location);
-        } else if (location.startsWith("file:")) {
-            location = location.substring("file:".length());
+        } else if (location.startsWith(PREFIX_FILE)) {
+            location = location.substring(PREFIX_FILE.length());
             return of(new File(location));
-        } else if (location.startsWith("url:")) {
-            location = location.substring("url:".length());
+        } else if (location.startsWith(PREFIX_URL)) {
+            location = location.substring(PREFIX_URL.length());
             try {
                 return of(new URL(location));
             } catch (MalformedURLException e) {
@@ -128,7 +133,7 @@ public class Environment {
     }
 
     private static Environment loadClasspath(@NonNull String classpath) {
-        if (classpath.startsWith("/")) {
+        if (classpath.startsWith(SALT)) {
             classpath = classpath.substring(1);
         }
         InputStream is = getDefault().getResourceAsStream(classpath);
@@ -280,7 +285,7 @@ public class Environment {
     public Optional<Date> getDate(String key) {
         if (null != key && getObject(key).isPresent()) {
             String value = getObject(key).get().toString();
-            Date date = (Date) ReflectKit.convert(Date.class, value);
+            Date   date  = (Date) ReflectKit.convert(Date.class, value);
             return Optional.ofNullable(date);
         }
         return Optional.empty();

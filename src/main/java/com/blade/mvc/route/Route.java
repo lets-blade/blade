@@ -53,7 +53,7 @@ public class Route {
     /**
      * Url path params
      */
-    private Map<String, String> pathParams = new HashMap<>();
+    private Map<String, String> pathParams = new HashMap<>(8);
 
     public Route(HttpMethod httpMethod, String path, Class<?> targetType, Method action) {
         super();
@@ -72,7 +72,7 @@ public class Route {
         this.action = action;
     }
 
-    public HttpMethod getHttpMethod() {
+    HttpMethod getHttpMethod() {
         return httpMethod;
     }
 
@@ -104,15 +104,15 @@ public class Route {
         return pathParams;
     }
 
-    public void setPathParams(Map<String, String> pathParams) {
+    void setPathParams(Map<String, String> pathParams) {
         this.pathParams = pathParams;
     }
 
-    public int getSort() {
+    int getSort() {
         return sort;
     }
 
-    public void setSort(int sort) {
+    void setSort(int sort) {
         this.sort = sort;
     }
 

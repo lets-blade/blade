@@ -23,9 +23,9 @@ public final class DateKit {
     }
 
     /**
-     * return current unix time
+     * get current unix time
      *
-     * @return
+     * @return return current unix time
      */
     public static int nowUnix() {
         return (int) Instant.now().getEpochSecond();
@@ -34,9 +34,9 @@ public final class DateKit {
     /**
      * format unix time to string
      *
-     * @param unixTime
-     * @param pattern
-     * @return
+     * @param unixTime unix time
+     * @param pattern  date format pattern
+     * @return return string date
      */
     public static String toString(long unixTime, String pattern) {
         return Instant.ofEpochSecond(unixTime).atZone(ZoneId.systemDefault()).format(DateTimeFormatter.ofPattern(pattern));
@@ -45,9 +45,9 @@ public final class DateKit {
     /**
      * format date to string
      *
-     * @param date
-     * @param pattern
-     * @return
+     * @param date    date instance
+     * @param pattern date format pattern
+     * @return return string date
      */
     public static String toString(Date date, String pattern) {
         Instant instant = new java.util.Date((date.getTime())).toInstant();
@@ -65,9 +65,9 @@ public final class DateKit {
     /**
      * format string time to unix time
      *
-     * @param time
-     * @param pattern
-     * @return
+     * @param time    string date
+     * @param pattern date format pattern
+     * @return return unix time
      */
     public static int toUnix(String time, String pattern) {
         LocalDateTime formatted = LocalDateTime.parse(time, DateTimeFormatter.ofPattern(pattern));
@@ -77,8 +77,8 @@ public final class DateKit {
     /**
      * format string (yyyy-MM-dd HH:mm:ss) to unix time
      *
-     * @param time
-     * @return
+     * @param time string datetime
+     * @return return unix time
      */
     public static int toUnix(String time) {
         return toUnix(time, "yyyy-MM-dd HH:mm:ss");

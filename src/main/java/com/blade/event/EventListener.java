@@ -15,9 +15,20 @@
  */
 package com.blade.event;
 
+/**
+ * EventListener
+ *
+ * @author biezhi
+ * @date 2017/9/18
+ */
 @FunctionalInterface
 public interface EventListener {
 
+    /**
+     * Start event
+     *
+     * @param e Event instance
+     */
     void trigger(Event e);
 
 }

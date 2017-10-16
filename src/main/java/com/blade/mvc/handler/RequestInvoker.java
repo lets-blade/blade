@@ -14,6 +14,7 @@ import com.blade.mvc.hook.WebHook;
 import com.blade.mvc.http.Response;
 import com.blade.mvc.route.Route;
 import com.blade.mvc.ui.ModelAndView;
+import com.blade.server.netty.HttpConst;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -75,7 +76,7 @@ public class RequestInvoker {
             boolean isRestful = (null != JSON) || (null != path && path.restful());
 
             // if request is restful and not InternetExplorer userAgent
-            if (isRestful && !signature.request().userAgent().contains("MSIE")) {
+            if (isRestful && !signature.request().userAgent().contains(HttpConst.IE_UA)) {
                 signature.response().contentType(Const.CONTENT_TYPE_JSON);
             }
 

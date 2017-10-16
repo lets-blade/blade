@@ -3,10 +3,14 @@ package com.blade.server.netty;
 import com.blade.Blade;
 import com.blade.event.EventManager;
 import com.blade.event.EventType;
+import com.blade.kit.ReflectKit;
 import com.blade.kit.UUID;
 import com.blade.mvc.SessionManager;
 import com.blade.mvc.WebContext;
-import com.blade.mvc.http.*;
+import com.blade.mvc.http.Cookie;
+import com.blade.mvc.http.Request;
+import com.blade.mvc.http.Response;
+import com.blade.mvc.http.Session;
 
 import java.time.Instant;
 import java.util.Optional;
@@ -18,7 +22,7 @@ import static com.blade.mvc.Const.ENV_KEY_SESSION_TIMEOUT;
  * session handler
  *
  * @author biezhi
- *         2017/6/3
+ * 2017/6/3
  */
 public class SessionHandler {
 
@@ -28,22 +32,22 @@ public class SessionHandler {
     private final String         sessionKey;
     private final int            timeout;
 
-    public SessionHandler(Blade blade) {
+    SessionHandler(Blade blade) {
         this.blade = blade;
         this.sessionManager = blade.sessionManager();
         this.eventManager = blade.eventManager();
-        this.sessionKey = blade.environment().get(ENV_KEY_SESSION_KEY, "SESSION");
+        this.sessionKey = blade.environment().get(ENV_KEY_SESSION_KEY, HttpConst.DEFAULT_SESSION_KEY);
         this.timeout = blade.environment().getInt(ENV_KEY_SESSION_TIMEOUT, 1800);
     }
 
     public Session createSession(Request request) {
-        Session session = getSession(request);
+        Session  session  = getSession(request);
         Response response = WebContext.response();
         if (null == session) {
             return createSession(request, response);
         } else {
             if (session.expired() < Instant.now().getEpochSecond()) {
-                removeSession(session, response);
+                removeSession(session);
             }
         }
         return session;
@@ -51,18 +55,19 @@ public class SessionHandler {
 
     private Session createSession(Request request, Response response) {
 
-        long now = Instant.now().getEpochSecond();
+        long now     = Instant.now().getEpochSecond();
         long expired = now + timeout;
 
         String sessionId = UUID.UU32();
-        Cookie cookie = new Cookie();
+        Cookie cookie    = new Cookie();
         cookie.name(sessionKey);
         cookie.value(sessionId);
         cookie.httpOnly(true);
 
-        HttpSession session = new HttpSession(sessionId);
-        session.setCreated(now);
-        session.setExpired(expired);
+        Session session = ReflectKit.newInstance(blade.sessionType());
+        session.id(sessionId);
+        session.created(now);
+        session.expired(expired);
         sessionManager.addSession(session);
 
         request.cookie(cookie);
@@ -73,7 +78,7 @@ public class SessionHandler {
         return session;
     }
 
-    private void removeSession(Session session, Response response) {
+    private void removeSession(Session session) {
         session.attributes().clear();
         sessionManager.remove(session);
         eventManager.fireEvent(EventType.SESSION_DESTROY, blade);

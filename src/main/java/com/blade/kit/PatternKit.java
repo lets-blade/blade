@@ -143,9 +143,6 @@ public final class PatternKit {
 
     /**
      * 检测是否是数字
-     *
-     * @param str
-     * @return
      */
     public static boolean isNumber(String str) {
         String regex = "^[1-9]\\d*$";

@@ -9,11 +9,12 @@ import java.util.Map;
  * HttpSession
  *
  * @author biezhi
- *         2017/5/31
+ * 2017/5/31
  */
 public class HttpSession implements Session {
 
     private Map<String, Object> attributes = new HashMap<>();
+    @Setter
     private String              id         = null;
     @Setter
     private String              ip         = null;
@@ -22,13 +23,24 @@ public class HttpSession implements Session {
     @Setter
     private long                expired    = -1;
 
-    public HttpSession(String id) {
+    @Override
+    public String id() {
+        return id;
+    }
+
+    @Override
+    public void id(String id) {
         this.id = id;
     }
 
     @Override
-    public String id() {
-        return id;
+    public String ip() {
+        return this.ip;
+    }
+
+    @Override
+    public void ip(String ip) {
+        this.ip = ip;
     }
 
     @Override
@@ -58,7 +70,18 @@ public class HttpSession implements Session {
     }
 
     @Override
+    public void created(long created) {
+        this.created = created;
+    }
+
+    @Override
     public long expired() {
         return this.expired;
     }
+
+    @Override
+    public void expired(long expired) {
+        this.expired = expired;
+    }
+
 }

@@ -5,15 +5,13 @@ import com.blade.kit.WebKit;
 import com.blade.mvc.WebContext;
 import com.blade.mvc.multipart.FileItem;
 import com.blade.mvc.route.Route;
+import com.blade.server.netty.HttpConst;
 import io.netty.buffer.ByteBuf;
 import lombok.NonNull;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-
-import static io.netty.handler.codec.http.HttpHeaders.Names.CONTENT_TYPE;
-import static io.netty.handler.codec.http.HttpHeaders.Names.USER_AGENT;
 
 /**
  * Http Request
@@ -32,33 +30,45 @@ public interface Request {
     Request initPathParams(Route route);
 
     /**
+     * Get client host.
+     *
      * @return Return client request host
      */
     String host();
 
     /**
+     * Get request uri
+     *
      * @return Return request uri
      */
     String uri();
 
     /**
+     * Get request url
+     *
      * @return request url
      */
     String url();
 
     /**
+     * Get request user-agent
+     *
      * @return return user-agent
      */
     default String userAgent() {
-        return header(USER_AGENT);
+        return header(HttpConst.USER_AGENT);
     }
 
     /**
+     * Get request http protocol
+     *
      * @return Return protocol
      */
     String protocol();
 
     /**
+     * Get current application contextPath, default is "/"
+     *
      * @return Return contextPath
      */
     default String contextPath() {
@@ -66,6 +76,8 @@ public interface Request {
     }
 
     /**
+     * Get current request Path params, like /users/:uid
+     *
      * @return Return parameters on the path Map
      */
     Map<String, String> pathParams();
@@ -103,11 +115,15 @@ public interface Request {
     }
 
     /**
+     * Get queryString. e.g: http://xxx.com/hello?name=a&age=23
+     *
      * @return Return query string
      */
     String queryString();
 
     /**
+     * Get current request query parameters
+     *
      * @return Return request query Map
      */
     Map<String, List<String>> parameters();
@@ -221,16 +237,22 @@ public interface Request {
     }
 
     /**
+     * Get current request http method. e.g: GET
+     *
      * @return Return request method
      */
     String method();
 
     /**
+     * Get current request HttpMethod. e.g: HttpMethod.GET
+     *
      * @return Return HttpMethod
      */
     HttpMethod httpMethod();
 
     /**
+     * Get client ip address
+     *
      * @return Return server remote address
      */
     default String address() {
@@ -238,24 +260,32 @@ public interface Request {
     }
 
     /**
+     * Get current request session, if null then create
+     *
      * @return Return current session
      */
     Session session();
 
     /**
+     * Get current request contentType. e.g: "text/html; charset=utf-8"
+     *
      * @return Return contentType
      */
     default String contentType() {
-        String contentType = header(CONTENT_TYPE);
+        String contentType = header(HttpConst.CONTENT_TYPE_STRING);
         return null != contentType ? contentType : "Unknown";
     }
 
     /**
+     * Get current request is https.
+     *
      * @return Return whether to use the SSL connection
      */
     boolean isSecure();
 
     /**
+     * Get current request is ajax. According to the header "x-requested-with"
+     *
      * @return Return current request is a AJAX request
      */
     default boolean isAjax() {
@@ -263,6 +293,8 @@ public interface Request {
     }
 
     /**
+     * Gets the current request is the head of the IE browser
+     *
      * @return return current request is IE browser
      */
     default boolean isIE() {
@@ -270,6 +302,11 @@ public interface Request {
         return ua.contains("MSIE") || ua.contains("TRIDENT");
     }
 
+    /**
+     * Get current request cookies
+     *
+     * @return return cookies
+     */
     Map<String, String> cookies();
 
     /**
@@ -286,6 +323,12 @@ public interface Request {
         return Optional.empty();
     }
 
+    /**
+     * Get raw cookie by cookie name
+     *
+     * @param name cookie name
+     * @return return Optional<Cookie>
+     */
     Optional<Cookie> cookieRaw(String name);
 
     /**
@@ -303,11 +346,13 @@ public interface Request {
      * Add a cookie to the request
      *
      * @param cookie
-     * @return
+     * @return return Request instance
      */
     Request cookie(Cookie cookie);
 
     /**
+     * Get current request headers.
+     *
      * @return Return header information Map
      */
     Map<String, String> headers();
@@ -335,11 +380,15 @@ public interface Request {
     }
 
     /**
+     * Get current request is KeepAlive, HTTP1.1 is true.
+     *
      * @return return current request connection keepAlive
      */
     boolean keepAlive();
 
     /**
+     * Get current request attributes
+     *
      * @return Return all Attribute in Request
      */
     Map<String, Object> attributes();
@@ -349,6 +398,7 @@ public interface Request {
      *
      * @param name  Parameter name
      * @param value Parameter Value
+     * @return set attribute value and return current request instance
      */
     default Request attribute(@NonNull String name, Object value) {
         if (null != value) attributes().put(name, value);
@@ -368,6 +418,8 @@ public interface Request {
     }
 
     /**
+     * Get current request all fileItems
+     *
      * @return return request file items
      */
     Map<String, FileItem> fileItems();
@@ -376,18 +428,22 @@ public interface Request {
      * get file item by request part name
      *
      * @param name
-     * @return
+     * @return return Optional<FileItem>
      */
     default Optional<FileItem> fileItem(@NonNull String name) {
         return Optional.ofNullable(fileItems().get(name));
     }
 
     /**
+     * Get current request body as ByteBuf
+     *
      * @return Return request body
      */
     ByteBuf body();
 
     /**
+     * Get current request body as string
+     *
      * @return return request body to string
      */
     String bodyToString();

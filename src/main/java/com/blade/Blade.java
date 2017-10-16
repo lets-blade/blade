@@ -29,6 +29,8 @@ import com.blade.mvc.handler.ExceptionHandler;
 import com.blade.mvc.handler.RouteHandler;
 import com.blade.mvc.hook.WebHook;
 import com.blade.mvc.http.HttpMethod;
+import com.blade.mvc.http.HttpSession;
+import com.blade.mvc.http.Session;
 import com.blade.mvc.route.RouteMatcher;
 import com.blade.mvc.ui.template.DefaultEngine;
 import com.blade.mvc.ui.template.TemplateEngine;
@@ -53,56 +55,109 @@ import static com.blade.mvc.Const.*;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Blade {
 
-    private List<WebHook>       middleware              = new ArrayList<>();
-    private List<BeanProcessor> processors              = new ArrayList<>();
-    private Set<String>         packages                = new LinkedHashSet<>(PLUGIN_PACKAGE_NAME);
-    private Set<String>         statics                 = new HashSet<>(DEFAULT_STATICS);
-    private Ioc                 ioc                     = new SimpleIoc();
-    private TemplateEngine      templateEngine          = new DefaultEngine();
-    private EventManager        eventManager            = new EventManager();
-    private SessionManager      sessionManager          = new SessionManager();
-    private CountDownLatch      latch                   = new CountDownLatch(1);
-    private NettyServer         nettyServer             = new NettyServer();
-    private RouteMatcher        routeMatcher            = new RouteMatcher();
-    private Environment         environment             = Environment.empty();
-    private Consumer<Exception> startupExceptionHandler = (e) -> log.error("Start blade failed", e);
-    private ExceptionHandler    exceptionHandler        = new DefaultExceptionHandler();
-    private boolean             started                 = false;
-    private Class<?>            bootClass               = null;
+    private List<WebHook>            middleware              = new ArrayList<>();
+    private List<BeanProcessor>      processors              = new ArrayList<>();
+    private Set<String>              packages                = new LinkedHashSet<>(PLUGIN_PACKAGE_NAME);
+    private Set<String>              statics                 = new HashSet<>(DEFAULT_STATICS);
+    private Ioc                      ioc                     = new SimpleIoc();
+    private TemplateEngine           templateEngine          = new DefaultEngine();
+    private EventManager             eventManager            = new EventManager();
+    private SessionManager           sessionManager          = new SessionManager();
+    private CountDownLatch           latch                   = new CountDownLatch(1);
+    private NettyServer              nettyServer             = new NettyServer();
+    private RouteMatcher             routeMatcher            = new RouteMatcher();
+    private Environment              environment             = Environment.empty();
+    private Consumer<Exception>      startupExceptionHandler = (e) -> log.error("Start blade failed", e);
+    private ExceptionHandler         exceptionHandler        = new DefaultExceptionHandler();
+    private boolean                  started                 = false;
+    private Class<?>                 bootClass               = null;
+    private Class<? extends Session> sessionImplType         = HttpSession.class;
 
+    /**
+     * Give your blade instance
+     *
+     * @return return blade instance
+     */
     public static Blade me() {
         return new Blade();
     }
 
+    /**
+     * Get blade ioc container, default is SimpleIoc implement
+     *
+     * @return return ioc container
+     */
     public Ioc ioc() {
         return ioc;
     }
 
+    /**
+     * Add a get route to routes
+     *
+     * @param path    your route path
+     * @param handler route implement
+     * @return return blade instance
+     */
     public Blade get(@NonNull String path, @NonNull RouteHandler handler) {
         routeMatcher.addRoute(path, handler, HttpMethod.GET);
         return this;
     }
 
+    /**
+     * Add a post route to routes
+     *
+     * @param path    your route path
+     * @param handler route implement
+     * @return return blade instance
+     */
     public Blade post(@NonNull String path, @NonNull RouteHandler handler) {
         routeMatcher.addRoute(path, handler, HttpMethod.POST);
         return this;
     }
 
+    /**
+     * Add a put route to routes
+     *
+     * @param path    your route path
+     * @param handler route implement
+     * @return return blade instance
+     */
     public Blade put(@NonNull String path, @NonNull RouteHandler handler) {
         routeMatcher.addRoute(path, handler, HttpMethod.PUT);
         return this;
     }
 
+    /**
+     * Add a delete route to routes
+     *
+     * @param path    your route path
+     * @param handler route implement
+     * @return return blade instance
+     */
     public Blade delete(@NonNull String path, @NonNull RouteHandler handler) {
         routeMatcher.addRoute(path, handler, HttpMethod.DELETE);
         return this;
     }
 
+    /**
+     * Add a before route to routes, the before route will be executed before matching route
+     *
+     * @param path    your route path
+     * @param handler route implement
+     * @return return blade instance
+     */
     public Blade before(@NonNull String path, @NonNull RouteHandler handler) {
         routeMatcher.addRoute(path, handler, HttpMethod.BEFORE);
         return this;
     }
 
+    /**
+     * Add a after route to routes, the before route will be executed after matching route
+     *
+     * @param path    your route path
+     * @param handler route implement
+     * @return return blade instance
+     */
     public Blade after(@NonNull String path, @NonNull RouteHandler handler) {
         routeMatcher.addRoute(path, handler, HttpMethod.AFTER);
         return this;
@@ -119,10 +174,20 @@ public class Blade {
         return this;
     }
 
+    /**
+     * Get TemplateEngine, default is DefaultEngine
+     *
+     * @return return TemplateEngine
+     */
     public TemplateEngine templateEngine() {
         return templateEngine;
     }
 
+    /**
+     * Get RouteMatcher
+     *
+     * @return return RouteMatcher
+     */
     public RouteMatcher routeMatcher() {
         return routeMatcher;
     }
@@ -183,19 +248,41 @@ public class Blade {
         return this;
     }
 
+    /**
+     * Get ioc bean
+     *
+     * @param cls bean class type
+     * @return return bean instance
+     */
     public Object getBean(@NonNull Class<?> cls) {
         return ioc.getBean(cls);
     }
 
+    /**
+     * Get ExceptionHandler
+     *
+     * @return return ExceptionHandler
+     */
     public ExceptionHandler exceptionHandler() {
         return exceptionHandler;
     }
 
+    /**
+     * Set ExceptionHandler, when you need a custom exception handling
+     *
+     * @param exceptionHandler your ExceptionHandler instance
+     * @return return blade instance
+     */
     public Blade exceptionHandler(ExceptionHandler exceptionHandler) {
         this.exceptionHandler = exceptionHandler;
         return this;
     }
 
+    /**
+     * Get current is developer mode
+     *
+     * @return return true is developer mode, else not.
+     */
     public boolean devMode() {
         return environment.getBoolean(ENV_KEY_DEV_MODE, true);
     }
@@ -227,6 +314,12 @@ public class Blade {
         return this;
     }
 
+    /**
+     * Get blade statics list.
+     * e.g: "/favicon.ico", "/robots.txt", "/static/", "/upload/", "/webjars/"
+     *
+     * @return return statics
+     */
     public Set<String> getStatics() {
         return statics;
     }
@@ -242,6 +335,11 @@ public class Blade {
         return this;
     }
 
+    /**
+     * Get scan the package set.
+     *
+     * @return return packages set
+     */
     public Set<String> scanPackages() {
         return packages;
     }
@@ -316,6 +414,11 @@ public class Blade {
         return this;
     }
 
+    /**
+     * Get middleware list
+     *
+     * @return return middleware list
+     */
     public List<WebHook> middleware() {
         return this.middleware;
     }
@@ -344,32 +447,93 @@ public class Blade {
         return this;
     }
 
+    /**
+     * Get session implements Class Type
+     *
+     * @return return blade Session Type
+     */
+    public Class<? extends Session> sessionType() {
+        return this.sessionImplType;
+    }
+
+    /**
+     * Set session implements Class Type, e.g: RedisSession
+     *
+     * @param sessionImplType Session Type implement
+     * @return return blade instance
+     */
+    public Blade sessionType(Class<? extends Session> sessionImplType) {
+        this.sessionImplType = sessionImplType;
+        return this;
+    }
+
+    /**
+     * Event on started
+     *
+     * @param processor bean processor
+     * @return return blade instance
+     */
     public Blade onStarted(@NonNull BeanProcessor processor) {
         processors.add(processor);
         return this;
     }
 
+    /**
+     * Get processors
+     *
+     * @return return processors
+     */
     public List<BeanProcessor> processors() {
         return processors;
     }
 
+    /**
+     * Get EventManager
+     *
+     * @return return EventManager
+     */
     public EventManager eventManager() {
         return eventManager;
     }
 
+    /**
+     * Get SessionManager
+     *
+     * @return return SessionManager
+     */
     public SessionManager sessionManager() {
         return sessionManager;
     }
 
+    /**
+     * Disable session, default is open
+     *
+     * @return return blade instance
+     */
     public Blade disableSession() {
         this.sessionManager = null;
         return this;
     }
 
+    /**
+     * Start blade application.
+     * <p>
+     * When all the routing in the main function of situations you can use,
+     * Otherwise please do not call this method.
+     *
+     * @return return blade instance
+     */
     public Blade start() {
-        return this.start(null, DEFAULT_SERVER_ADDRESS, DEFAULT_SERVER_PORT, null);
+        return this.start(null, null);
     }
 
+    /**
+     * Start blade application
+     *
+     * @param mainCls main Class, the main class bag is basic package
+     * @param args    command arguments
+     * @return return blade instance
+     */
     public Blade start(Class<?> mainCls, String... args) {
         return this.start(mainCls, DEFAULT_SERVER_ADDRESS, DEFAULT_SERVER_PORT, args);
     }
@@ -407,6 +571,11 @@ public class Blade {
         return this;
     }
 
+    /**
+     * Await
+     *
+     * @return return blade instance
+     */
     public Blade await() {
         if (!started) {
             throw new IllegalStateException("Server hasn't been started. Call start() before calling this method.");
@@ -420,6 +589,11 @@ public class Blade {
         return this;
     }
 
+    /**
+     * Stop current blade application
+     * <p>
+     * Will stop synchronization waiting netty service
+     */
     public void stop() {
         eventManager.fireEvent(EventType.SERVER_STOPPING, this);
         nettyServer.stopAndWait();

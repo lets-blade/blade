@@ -1,7 +1,7 @@
 package com.blade.ioc.reader;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.EqualsAndHashCode;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
@@ -19,9 +19,12 @@ import java.util.jar.JarFile;
  * @author <a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since 1.0
  */
+@Slf4j
+@EqualsAndHashCode(callSuper = true)
 public class JarReaderImpl extends AbstractClassReader implements ClassReader {
 
-    private static final Logger log = LoggerFactory.getLogger(JarReaderImpl.class);
+    private static final String JAR_FILE   = "jar:file:";
+    private static final String WSJAR_FILE = "wsjar:file:";
 
     @Override
     public Set<ClassInfo> getClass(String packageName, boolean recursive) {
@@ -50,7 +53,7 @@ public class JarReaderImpl extends AbstractClassReader implements ClassReader {
             // 循环迭代下去
             while (dirs.hasMoreElements()) {
                 // 获取下一个元素
-                URL url = dirs.nextElement();
+                URL            url        = dirs.nextElement();
                 Set<ClassInfo> subClasses = this.getClasses(url, packageDirName, packageName, parent, annotation, recursive, classes);
                 if (subClasses.size() > 0) {
                     classes.addAll(subClasses);
@@ -65,7 +68,7 @@ public class JarReaderImpl extends AbstractClassReader implements ClassReader {
     private Set<ClassInfo> getClasses(final URL url, final String packageDirName, String packageName, final Class<?> parent,
                                       final Class<? extends Annotation> annotation, final boolean recursive, Set<ClassInfo> classes) {
         try {
-            if (url.toString().startsWith("jar:file:") || url.toString().startsWith("wsjar:file:")) {
+            if (url.toString().startsWith(JAR_FILE) || url.toString().startsWith(WSJAR_FILE)) {
 
                 // 获取jar
                 JarFile jarFile = ((JarURLConnection) url.openConnection()).getJarFile();
@@ -77,7 +80,7 @@ public class JarReaderImpl extends AbstractClassReader implements ClassReader {
                 while (eje.hasMoreElements()) {
                     // 获取jar里的一个实体 可以是目录 和一些jar包里的其他文件 如META-INF等文件
                     JarEntry entry = eje.nextElement();
-                    String name = entry.getName();
+                    String   name  = entry.getName();
                     // 如果是以/开头的
                     if (name.charAt(0) == '/') {
                         // 获取后面的字符串

@@ -180,12 +180,15 @@ public class NettyServer implements Server {
         if (ReflectKit.hasInterface(clazz, BeanProcessor.class) && null != clazz.getAnnotation(Bean.class)) {
             this.processors.add((BeanProcessor) blade.ioc().getBean(clazz));
         }
-        if (null != clazz.getAnnotation(Bean.class) && (
-                ReflectKit.hasInterface(clazz, ExceptionHandler.class) || clazz.getSuperclass().equals(DefaultExceptionHandler.class)
-        )) {
+        if (isExceptionHandler(clazz)) {
             ExceptionHandler exceptionHandler = (ExceptionHandler) blade.ioc().getBean(clazz);
             blade.exceptionHandler(exceptionHandler);
         }
+    }
+
+    private boolean isExceptionHandler(Class<?> clazz) {
+        return (null != clazz.getAnnotation(Bean.class) && (
+                ReflectKit.hasInterface(clazz, ExceptionHandler.class) || clazz.getSuperclass().equals(DefaultExceptionHandler.class)));
     }
 
     private void loadConfig(String[] args) {
@@ -243,10 +246,10 @@ public class NettyServer implements Server {
         }
 
         String templatePath = environment.get(ENV_KEY_TEMPLATE_PATH, "templates");
-        if (templatePath.charAt(0) == '/') {
+        if (templatePath.charAt(0) == HttpConst.CHAR_SLASH) {
             templatePath = templatePath.substring(1);
         }
-        if (templatePath.endsWith("/")) {
+        if (templatePath.endsWith(HttpConst.SLASH)) {
             templatePath = templatePath.substring(0, templatePath.length() - 1);
         }
         DefaultEngine.TEMPLATE_PATH = templatePath;

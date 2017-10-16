@@ -42,8 +42,8 @@ public final class MethodArgument {
 
         for (int i = 0, len = parameters.length; i < len; i++) {
             Parameter parameter = parameters[i];
-            String   paramName = parameterNames[i];
-            Class<?> argType   = parameter.getType();
+            String    paramName = parameterNames[i];
+            Class<?>  argType   = parameter.getType();
             if (containsAnnotation(parameter)) {
                 args[i] = getAnnotationParam(parameter, paramName, request);
                 continue;
@@ -58,8 +58,7 @@ public final class MethodArgument {
     }
 
     private static boolean containsAnnotation(Parameter parameter) {
-        return parameter.getAnnotation(QueryParam.class) != null ||
-                parameter.getAnnotation(PathParam.class) != null ||
+        return parameter.getAnnotation(PathParam.class) != null ||
                 parameter.getAnnotation(Param.class) != null ||
                 parameter.getAnnotation(HeaderParam.class) != null ||
                 parameter.getAnnotation(BodyParam.class) != null ||
@@ -122,10 +121,6 @@ public final class MethodArgument {
             String name = StringKit.isBlank(multipartParam.value()) ? paramName : multipartParam.value();
             return request.fileItem(name).orElse(null);
         }
-        QueryParam queryParam = parameter.getAnnotation(QueryParam.class);
-        if (null != queryParam) {
-            return getQueryParam(ParamStrut.builder().argType(argType).queryParam(queryParam).paramName(paramName).request(request).build());
-        }
         return null;
     }
 
@@ -142,30 +137,26 @@ public final class MethodArgument {
     }
 
     private static Object getQueryParam(ParamStrut paramStrut) throws Exception {
-        QueryParam queryParam = paramStrut.queryParam;
-        Param      param      = paramStrut.param;
-
+        Param    param     = paramStrut.param;
         String   paramName = paramStrut.paramName;
         Class<?> argType   = paramStrut.argType;
         Request  request   = paramStrut.request;
-        String   name      = null;
+        String   name;
         if (null != param) {
             name = StringKit.isBlank(param.name()) ? paramName : param.name();
-        }
-        if (null != queryParam) {
-            name = StringKit.isBlank(queryParam.name()) ? paramName : queryParam.name();
-        }
-        if (ReflectKit.isPrimitive(argType) || argType.equals(Date.class) || argType.equals(BigDecimal.class)
-                || argType.equals(LocalDate.class) || argType.equals(LocalDateTime.class)) {
-            Optional<String> val = request.query(name);
-            if (!val.isPresent()) {
-                val = Optional.of(null != param ? param.defaultValue() : queryParam.defaultValue());
+            if (ReflectKit.isPrimitive(argType) || argType.equals(Date.class) || argType.equals(BigDecimal.class)
+                    || argType.equals(LocalDate.class) || argType.equals(LocalDateTime.class)) {
+                Optional<String> val = request.query(name);
+                if (!val.isPresent()) {
+                    val = Optional.of(null != param ? param.defaultValue() : param.defaultValue());
+                }
+                return ReflectKit.convert(argType, val.get());
+            } else {
+                name = null != param ? param.name() : param.name();
+                return parseModel(argType, request, name);
             }
-            return ReflectKit.convert(argType, val.get());
-        } else {
-            name = null != param ? param.name() : queryParam.name();
-            return parseModel(argType, request, name);
         }
+        return null;
     }
 
     private static Object getCookie(ParamStrut paramStrut) throws BladeException {
@@ -220,7 +211,7 @@ public final class MethodArgument {
 
         for (Field field : fields) {
             field.setAccessible(true);
-            if (field.getName().equals("serialVersionUID")) {
+            if ("serialVersionUID".equals(field.getName())) {
                 continue;
             }
             Optional<String> fieldValue = request.query(field.getName());

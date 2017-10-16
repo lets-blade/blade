@@ -1,5 +1,16 @@
 package com.blade.ioc.reader;
 
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
+/**
+ * ClassInfo
+ *
+ * @author <a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
+ * @since 1.0
+ */
+@Data
+@EqualsAndHashCode
 public class ClassInfo {
 
     private String className;

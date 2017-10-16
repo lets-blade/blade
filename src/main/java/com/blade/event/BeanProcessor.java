@@ -17,11 +17,29 @@ package com.blade.event;
 
 import com.blade.Blade;
 
+/**
+ * Bean processor
+ * <p>
+ * When the Blade program execution at startup time
+ *
+ * @author biezhi
+ * @date 2017/9/18
+ */
 @FunctionalInterface
 public interface BeanProcessor {
 
+    /**
+     * Initialize the ioc container after execution
+     *
+     * @param blade Blade instance
+     */
     void processor(Blade blade);
 
+    /**
+     * Initialize the ioc container before execution
+     *
+     * @param blade Blade instance
+     */
     default void preHandle(Blade blade) {
     }
 

@@ -9,6 +9,13 @@ package com.blade.mvc.handler;
 @FunctionalInterface
 public interface ExceptionHandler {
 
+    String VARIABLE_STACKTRACE = "stackTrace";
+
+    /**
+     * Handler exception
+     *
+     * @param e current request exception
+     */
     void handle(Exception e);
 
 }

@@ -2,6 +2,8 @@ package com.blade.mvc.handler;
 
 import com.blade.Blade;
 import com.blade.exception.BladeException;
+import com.blade.exception.InternalErrorException;
+import com.blade.exception.NotFoundException;
 import com.blade.mvc.WebContext;
 import com.blade.mvc.http.Request;
 import com.blade.mvc.http.Response;
@@ -49,16 +51,16 @@ public class DefaultExceptionHandler implements ExceptionHandler {
         request.attribute("title", e.getStatus() + " " + e.getName());
         request.attribute("message", e.getMessage());
         if (null != e.getCause()) {
-            request.attribute("stackTrace", getStackTrace(e));
+            request.attribute(VARIABLE_STACKTRACE, getStackTrace(e));
         }
 
-        if (e.getStatus() == 500) {
+        if (e.getStatus() == InternalErrorException.STATUS) {
             e.printStackTrace();
             if (returnHtml(request)) {
                 this.render500(request, response);
             }
         }
-        if (e.getStatus() == 404 && returnHtml(request)) {
+        if (e.getStatus() == NotFoundException.STATUS && returnHtml(request)) {
             Optional<String> page404 = Optional.ofNullable(blade.environment().get(ENV_KEY_PAGE_404, null));
             if (page404.isPresent()) {
                 response.render(page404.get());
@@ -88,9 +90,9 @@ public class DefaultExceptionHandler implements ExceptionHandler {
                 htmlCreator.startP("message-header");
                 htmlCreator.add("Error Message: " + request.attribute("message"));
                 htmlCreator.endP();
-                if (null != request.attribute("stackTrace")) {
+                if (null != request.attribute(VARIABLE_STACKTRACE)) {
                     htmlCreator.startP("message-body");
-                    htmlCreator.add(request.attribute("stackTrace").toString().replace("\n", "<br/>"));
+                    htmlCreator.add(request.attribute(VARIABLE_STACKTRACE).toString().replace("\n", "<br/>"));
                     htmlCreator.endP();
                 }
                 response.html(htmlCreator.html());
