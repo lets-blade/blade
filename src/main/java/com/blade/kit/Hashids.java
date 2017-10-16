@@ -27,6 +27,8 @@ public class Hashids {
     private static final String DEFAULT_SEPS     = "cfhistuCFHISTU";
     private static final String DEFAULT_SALT     = "";
 
+    private static final Pattern PATTERN = Pattern.compile("[\\w\\W]{1,12}");
+
     private static final int    DEFAULT_MIN_HASH_LENGTH = 0;
     private static final int    MIN_ALPHABET_LENGTH     = 16;
     private static final double SEP_DIV                 = 3.5;
@@ -176,7 +178,7 @@ public class Hashids {
         }
 
         final List<Long> matched = new ArrayList<Long>();
-        final Matcher    matcher = Pattern.compile("[\\w\\W]{1,12}").matcher(hexa);
+        final Matcher    matcher = PATTERN.matcher(hexa);
 
         while (matcher.find()) {
             matched.add(Long.parseLong("1" + matcher.group(), 16));
