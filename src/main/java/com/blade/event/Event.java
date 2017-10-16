@@ -17,6 +17,12 @@ package com.blade.event;
 
 import com.blade.Blade;
 
+/**
+ * Event
+ *
+ * @author biezhi
+ * @date 2017/9/18
+ */
 public class Event {
 
     public EventType eventType;

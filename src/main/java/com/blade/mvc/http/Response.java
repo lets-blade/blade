@@ -26,6 +26,8 @@ import java.util.Map;
 public interface Response {
 
     /**
+     * Get current response http status code. e.g: 200
+     *
      * @return return response status code
      */
     int statusCode();
@@ -39,6 +41,8 @@ public interface Response {
     Response status(int status);
 
     /**
+     * Set current response http code 400
+     *
      * @return Setting Response Status is BadRequest and Return Response
      */
     default Response badRequest() {
@@ -46,6 +50,8 @@ public interface Response {
     }
 
     /**
+     * Set current response http code 401
+     *
      * @return Setting Response Status is unauthorized and Return Response
      */
     default Response unauthorized() {
@@ -53,6 +59,8 @@ public interface Response {
     }
 
     /**
+     * Set current response http code 404
+     *
      * @return Setting Response Status is notFound and Return Response
      */
     default Response notFound() {
@@ -68,17 +76,21 @@ public interface Response {
     Response contentType(String contentType);
 
     /**
+     * Get current response headers: contentType
+     *
      * @return return response content-type
      */
     String contentType();
 
     /**
+     * Get current response headers
+     *
      * @return return response headers
      */
     Map<String, String> headers();
 
     /**
-     * setting header
+     * Set current response header
      *
      * @param name  Header Name
      * @param value Header Value
@@ -87,6 +99,8 @@ public interface Response {
     Response header(String name, String value);
 
     /**
+     * Get current response cookies
+     *
      * @return return response cookies
      */
     Map<String, String> cookies();
@@ -212,12 +226,22 @@ public interface Response {
         this.send(response);
     }
 
+    /**
+     * Send response body by byte array.
+     *
+     * @param data byte array data
+     */
     default void body(byte[] data) {
         if (null == data) return;
         FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(statusCode()), Unpooled.wrappedBuffer(data), false);
         this.send(response);
     }
 
+    /**
+     * Send response body by ByteBuf.
+     *
+     * @param byteBuf ByteBuf data
+     */
     default void body(ByteBuf byteBuf) {
         if (null == byteBuf) return;
         FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(statusCode()), byteBuf, false);
@@ -225,17 +249,18 @@ public interface Response {
     }
 
     /**
-     * download some file to clinet
+     * download some file to client
      *
      * @param fileName give client file name
-     * @param file
+     * @param file     file storage location
      */
     void download(String fileName, File file) throws Exception;
 
     /**
      * create temp file outputStream
      *
-     * @return
+     * @return return OutputStreamWrapper
+     * @throws IOException throw IOException
      * @since 2.0.1-alpha3
      */
     OutputStreamWrapper outputStream() throws IOException;
@@ -267,10 +292,17 @@ public interface Response {
     void redirect(String newUri);
 
     /**
+     * Judge whether the current response has been submitted to the client
+     *
      * @return return current response is commit
      */
     boolean isCommit();
 
+    /**
+     * Send response by FullHttpResponse, custom build, please be careful
+     *
+     * @param response FullHttpResponse instance
+     */
     void send(FullHttpResponse response);
 
 }

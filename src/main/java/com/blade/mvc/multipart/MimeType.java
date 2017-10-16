@@ -165,6 +165,12 @@ public interface MimeType {
         put("vcf", "text/x-vcard");
     }};
 
+    /**
+     * Get MimeType by ext
+     *
+     * @param ext The file suffix
+     * @return return file MimeType
+     */
     static String get(String ext) {
         if (mimeTypes.containsKey(ext)) {
             return mimeTypes.get(ext);
