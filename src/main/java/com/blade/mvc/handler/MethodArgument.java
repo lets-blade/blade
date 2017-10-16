@@ -220,7 +220,7 @@ public final class MethodArgument {
 
         for (Field field : fields) {
             field.setAccessible(true);
-            if (field.getName().equals("serialVersionUID")) {
+            if ("serialVersionUID".equals(field.getName())) {
                 continue;
             }
             Optional<String> fieldValue = request.query(field.getName());

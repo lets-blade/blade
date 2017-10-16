@@ -208,13 +208,13 @@ public class JsonSerializer {
             while (c >= ' ' && ",:]}/\\\"[{;=#".indexOf(c) < 0)
                 c = this.buffer[++position];
             String substr = new String(buffer, startPosition, position-- - startPosition);
-            if (substr.equalsIgnoreCase("true")) {
+            if ("true".equalsIgnoreCase(substr)) {
                 return (Boolean.TRUE);
             }
-            if (substr.equalsIgnoreCase("false")) {
+            if ("false".equalsIgnoreCase(substr)) {
                 return (Boolean.FALSE);
             }
-            if (substr.equalsIgnoreCase("null")) {
+            if ("null".equalsIgnoreCase(substr)) {
                 return null;
             }
 

@@ -1,5 +1,6 @@
 package com.blade.ioc.reader;
 
+import lombok.EqualsAndHashCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,6 +20,7 @@ import java.util.jar.JarFile;
  * @author <a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since 1.0
  */
+@EqualsAndHashCode
 public class JarReaderImpl extends AbstractClassReader implements ClassReader {
 
     private static final Logger log = LoggerFactory.getLogger(JarReaderImpl.class);
