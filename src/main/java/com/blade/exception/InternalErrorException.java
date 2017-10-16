@@ -8,7 +8,7 @@ package com.blade.exception;
  */
 public class InternalErrorException extends BladeException {
 
-    private static final int STATUS = 500;
+    public static final int STATUS = 500;
     private static final String NAME = "Internal Error";
 
     public InternalErrorException() {

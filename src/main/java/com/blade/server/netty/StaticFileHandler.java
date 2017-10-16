@@ -65,7 +65,7 @@ public class StaticFileHandler implements RequestHandler<Boolean> {
      */
     @Override
     public Boolean handle(ChannelHandlerContext ctx, Request request, Response response) throws Exception {
-        if (!"GET".equals(request.method())) {
+        if (!HttpConst.METHOD_GET.equals(request.method())) {
             sendError(ctx, METHOD_NOT_ALLOWED);
             return false;
         }
@@ -112,10 +112,10 @@ public class StaticFileHandler implements RequestHandler<Boolean> {
         }
 
         if (file.isDirectory() && showFileList) {
-            if (uri.endsWith("/")) {
+            if (uri.endsWith(HttpConst.SLASH)) {
                 sendListing(ctx, file, uri);
             } else {
-                response.redirect(uri + '/');
+                response.redirect(uri + HttpConst.SLASH);
             }
             return false;
         }
@@ -281,14 +281,14 @@ public class StaticFileHandler implements RequestHandler<Boolean> {
     private static final Pattern INSECURE_URI = Pattern.compile(".*[<>&\"].*");
 
     private static String sanitizeUri(String uri) {
-        if (uri.isEmpty() || uri.charAt(0) != '/') {
+        if (uri.isEmpty() || uri.charAt(0) != HttpConst.CHAR_SLASH) {
             return null;
         }
         // Convert file separators.
-        uri = uri.replace('/', File.separatorChar);
+        uri = uri.replace(HttpConst.CHAR_SLASH, File.separatorChar);
         // Simplistic dumb security check.
         // You will have to do something serious in the production environment.
-        if (uri.contains(File.separator + '.') ||
+        if (uri.contains(File.separator + HttpConst.CHAR_POINT) ||
                 uri.contains('.' + File.separator) ||
                 uri.charAt(0) == '.' || uri.charAt(uri.length() - 1) == '.' ||
                 INSECURE_URI.matcher(uri).matches()) {

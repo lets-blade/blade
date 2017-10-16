@@ -43,12 +43,13 @@ import java.util.regex.Pattern;
 public final class HTMLFilter {
 
     /** regex flag union representing /si modifiers in php **/
-    private static final int REGEX_FLAGS_SI = Pattern.CASE_INSENSITIVE | Pattern.DOTALL;
-    private static final Pattern P_COMMENTS = Pattern.compile("<!--(.*?)-->", Pattern.DOTALL);
-    private static final Pattern P_COMMENT = Pattern.compile("^!--(.*)--$", REGEX_FLAGS_SI);
-    private static final Pattern P_TAGS = Pattern.compile("<(.*?)>", Pattern.DOTALL);
-    private static final Pattern P_END_TAG = Pattern.compile("^/([a-z0-9]+)", REGEX_FLAGS_SI);
-    private static final Pattern P_START_TAG = Pattern.compile("^([a-z0-9]+)(.*?)(/?)$", REGEX_FLAGS_SI);
+    private static final String  PROTOCOL       = "#//";
+    private static final int     REGEX_FLAGS_SI = Pattern.CASE_INSENSITIVE | Pattern.DOTALL;
+    private static final Pattern P_COMMENTS     = Pattern.compile("<!--(.*?)-->", Pattern.DOTALL);
+    private static final Pattern P_COMMENT      = Pattern.compile("^!--(.*)--$", REGEX_FLAGS_SI);
+    private static final Pattern P_TAGS         = Pattern.compile("<(.*?)>", Pattern.DOTALL);
+    private static final Pattern P_END_TAG      = Pattern.compile("^/([a-z0-9]+)", REGEX_FLAGS_SI);
+    private static final Pattern P_START_TAG    = Pattern.compile("^([a-z0-9]+)(.*?)(/?)$", REGEX_FLAGS_SI);
     private static final Pattern P_QUOTED_ATTRIBUTES = Pattern.compile("([a-z0-9]+)=([\"'])(.*?)\\2", REGEX_FLAGS_SI);
     private static final Pattern P_UNQUOTED_ATTRIBUTES = Pattern.compile("([a-z0-9]+)(=)([^\"\\s']+)", REGEX_FLAGS_SI);
     private static final Pattern P_PROTOCOL = Pattern.compile("^([^:]+):", REGEX_FLAGS_SI);
@@ -370,11 +371,6 @@ public final class HTMLFilter {
                 for (int ii = 0; ii < paramNames.size(); ii++) {
                     paramName = paramNames.get(ii).toLowerCase();
                     paramValue = paramValues.get(ii);
-
-//          debug( "paramName='" + paramName + "'" );
-//          debug( "paramValue='" + paramValue + "'" );
-//          debug( "allowed? " + vAllowed.get( name ).contains( paramName ) );
-
                     if (allowedAttribute(name, paramName)) {
                         if (inArray(paramName, vProtocolAtts)) {
                             paramValue = processParamProtocol(paramValue);
@@ -423,7 +419,7 @@ public final class HTMLFilter {
             if (!inArray(protocol, vAllowedProtocols)) {
                 // bad protocol, turn into local anchor link instead
                 s = "#" + s.substring(protocol.length() + 1, s.length());
-                if (s.startsWith("#//")) {
+                if (s.startsWith(HTMLFilter.PROTOCOL)) {
                     s = "#" + s.substring(3, s.length());
                 }
             }

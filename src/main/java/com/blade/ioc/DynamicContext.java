@@ -24,12 +24,13 @@ public final class DynamicContext {
 
     private static final ClassReader classpathReader = new ClassPathClassReader();
     private static final ClassReader jarReader = new JarReaderImpl();
+    private static final String SUFFIX_JAR = ".jar";
 
     private static boolean isJarContext = false;
 
     public static void init(Class<?> clazz) {
         String rs = clazz.getResource("").toString();
-        if (rs.contains(".jar")) {
+        if (rs.contains(SUFFIX_JAR)) {
             isJarContext = true;
         }
     }

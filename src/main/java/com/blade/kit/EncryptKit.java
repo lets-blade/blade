@@ -22,7 +22,7 @@ import static com.blade.kit.ConvertKit.hex2Dec;
 @NoArgsConstructor
 public class EncryptKit {
 
-    private static final char hexDigits[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
+    private static final char[] HEX_DIGITS = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
 
     /**
      * MD5加密
@@ -689,8 +689,8 @@ public class EncryptKit {
         if (len <= 0) return null;
         char[] ret = new char[len << 1];
         for (int i = 0, j = 0; i < len; i++) {
-            ret[j++] = hexDigits[bytes[i] >>> 4 & 0x0f];
-            ret[j++] = hexDigits[bytes[i] & 0x0f];
+            ret[j++] = HEX_DIGITS[bytes[i] >>> 4 & 0x0f];
+            ret[j++] = HEX_DIGITS[bytes[i] & 0x0f];
         }
         return new String(ret).toLowerCase();
     }

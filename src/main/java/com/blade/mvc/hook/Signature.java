@@ -21,6 +21,8 @@ import java.lang.reflect.Method;
 @ToString
 public class Signature {
 
+    private static final String LAMBDA = "$$Lambda$";
+
     private Route    route;
     private Method   action;
     private Request  request;
@@ -42,7 +44,7 @@ public class Signature {
     public void setRoute(Route route) throws Exception {
         this.route = route;
         this.action = route.getAction();
-        if (null != this.action && !this.action.toString().contains("$$Lambda$")) {
+        if (null != this.action && !this.action.toString().contains(LAMBDA)) {
             this.parameters = MethodArgument.getArgs(this);
         }
     }

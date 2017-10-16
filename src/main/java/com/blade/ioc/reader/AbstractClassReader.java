@@ -68,7 +68,6 @@ public abstract class AbstractClassReader implements ClassReader {
                 } else {
                     // 如果是java类文件 去掉后面的.class 只留下类名
                     String className = file.getName().substring(0, file.getName().length() - 6);
-//                    Class<?> clazz = classLoader.defineClassByName(packageName + '.' + className);
                     Class<?> clazz = Class.forName(packageName + '.' + className);
                     if (null != parent && null != annotation) {
                         if (null != clazz.getSuperclass() && clazz.getSuperclass().equals(parent) &&

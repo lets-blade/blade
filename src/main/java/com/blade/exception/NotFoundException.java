@@ -8,7 +8,7 @@ package com.blade.exception;
  */
 public class NotFoundException extends BladeException {
 
-    private static final int    STATUS = 404;
+    public static final int    STATUS = 404;
     private static final String NAME   = "Not Found";
 
     public NotFoundException() {

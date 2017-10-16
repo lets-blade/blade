@@ -66,7 +66,7 @@ public class HttpRequest implements Request {
         // request query parameters
         this.parameters.putAll(new QueryStringDecoder(fullHttpRequest.uri(), CharsetUtil.UTF_8).parameters());
 
-        if (!"GET".equals(fullHttpRequest.method().name())) {
+        if (!HttpConst.METHOD_GET.equals(fullHttpRequest.method().name())) {
             HttpPostRequestDecoder decoder = new HttpPostRequestDecoder(HTTP_DATA_FACTORY, fullHttpRequest);
             decoder.getBodyHttpDatas().stream().forEach(this::parseData);
         }

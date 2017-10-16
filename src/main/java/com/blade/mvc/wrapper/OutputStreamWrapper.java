@@ -48,8 +48,8 @@ public class OutputStreamWrapper {
         outputStream.write(b);
     }
 
-    public void write(byte b[], int off, int len) throws IOException {
-        outputStream.write(b, off, len);
+    public void write(byte[] bytes, int off, int len) throws IOException {
+        outputStream.write(bytes, off, len);
     }
 
     public void flush() throws IOException {
