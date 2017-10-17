@@ -17,6 +17,7 @@
     <a href="http://search.maven.org/#search%7Cga%7C1%7Cblade-mvc"><img src="https://img.shields.io/maven-central/v/com.bladejava/blade-mvc.svg?style=flat-square"></a>
     <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache%202-4EB1BA.svg?style=flat-square"></a>
     <a href="https://gitter.im/biezhi/blade"><img src="https://badges.gitter.im/biezhi/blade.svg?style=flat-square"></a>
+    <a href="https://beerpay.io/biezhi/blade"><img src="https://beerpay.io/biezhi/blade/badge.svg?style=beer" /></a>
 </p>
 
 ***
@@ -55,9 +56,9 @@ Grab via `Maven`：
 
 ```xml
 <dependency>
-	<groupId>com.bladejava</groupId>
-	<artifactId>blade-mvc</artifactId>
-	<version>2.0.3</version>
+    <groupId>com.bladejava</groupId>
+    <artifactId>blade-mvc</artifactId>
+    <version>2.0.3</version>
 </dependency>
 ```
 
