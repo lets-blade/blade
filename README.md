@@ -17,7 +17,6 @@
     <a href="http://search.maven.org/#search%7Cga%7C1%7Cblade-mvc"><img src="https://img.shields.io/maven-central/v/com.bladejava/blade-mvc.svg?style=flat-square"></a>
     <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache%202-4EB1BA.svg?style=flat-square"></a>
     <a href="https://gitter.im/biezhi/blade"><img src="https://badges.gitter.im/biezhi/blade.svg?style=flat-square"></a>
-    <a href="https://beerpay.io/biezhi/blade"><img src="https://beerpay.io/biezhi/blade/badge.svg?style=beer" /></a>
 </p>
 
 ***
@@ -175,9 +174,9 @@ How easy it all looks, but the features above are the tip of the iceberg, and th
 + Pictures social：https://github.com/biezhi/nice
 + SS Panel：https://github.com/biezhi/ss-panel
 
-## Update
+## Change Logs
 
-[update log](https://github.com/biezhi/blade/blob/master/UPDATE_LOG.md)
+[See Here](https://lets-blade.com/about/change-logs)
 
 ## Contact
 
