@@ -1,22 +1,24 @@
 package com.blade.kit;
 
+import lombok.NoArgsConstructor;
+
 import java.io.*;
 
+@NoArgsConstructor
 public final class ConvertKit {
 
-    private ConvertKit() {
-        throw new UnsupportedOperationException("u can't instantiate me...");
-    }
-
+    /**
+     * Hex Digits
+     */
     private static final char[] HEX_DIGITS = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
 
     /**
-     * byteArr转hexString
-     * <p>例如：</p>
+     * byteArr convert hexString
+     * <p>e.g:</p>
      * bytes2HexString(new byte[] { 0, (byte) 0xa8 }) returns 00A8
      *
-     * @param bytes 字节数组
-     * @return 16进制大写字符串
+     * @param bytes byte array
+     * @return hex decimal uppercase string
      */
     public static String bytes2HexString(final byte[] bytes) {
         if (bytes == null) return null;

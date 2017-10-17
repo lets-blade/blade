@@ -34,6 +34,7 @@ import com.blade.mvc.http.Session;
 import com.blade.mvc.route.RouteMatcher;
 import com.blade.mvc.ui.template.DefaultEngine;
 import com.blade.mvc.ui.template.TemplateEngine;
+import com.blade.server.Server;
 import com.blade.server.netty.NettyServer;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -48,6 +49,11 @@ import static com.blade.mvc.Const.*;
 
 /**
  * Blade Core
+ * <p>
+ * The Blade is the core operating class of the framework,
+ * which can be used to register routes,
+ * modify the template engine, set the file list display,
+ * static resource directory, and so on.
  *
  * @author biezhi 2017/5/31
  */
@@ -55,26 +61,104 @@ import static com.blade.mvc.Const.*;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Blade {
 
-    private List<WebHook>            middleware              = new ArrayList<>();
-    private List<BeanProcessor>      processors              = new ArrayList<>();
-    private Set<String>              packages                = new LinkedHashSet<>(PLUGIN_PACKAGE_NAME);
-    private Set<String>              statics                 = new HashSet<>(DEFAULT_STATICS);
-    private Ioc                      ioc                     = new SimpleIoc();
-    private TemplateEngine           templateEngine          = new DefaultEngine();
-    private EventManager             eventManager            = new EventManager();
-    private SessionManager           sessionManager          = new SessionManager();
-    private CountDownLatch           latch                   = new CountDownLatch(1);
-    private NettyServer              nettyServer             = new NettyServer();
-    private RouteMatcher             routeMatcher            = new RouteMatcher();
-    private Environment              environment             = Environment.empty();
-    private Consumer<Exception>      startupExceptionHandler = (e) -> log.error("Start blade failed", e);
-    private ExceptionHandler         exceptionHandler        = new DefaultExceptionHandler();
-    private boolean                  started                 = false;
-    private Class<?>                 bootClass               = null;
-    private Class<? extends Session> sessionImplType         = HttpSession.class;
+    /**
+     * Project middleware list,
+     * the default is empty, when you use the time you can call the use of methods to add.
+     * <p>
+     * Blade provide you with BasicAuthMiddleware, CsrfMiddleware,
+     * you can customize the implementation of some middleware
+     */
+    private List<WebHook> middleware = new ArrayList<>();
 
     /**
-     * Give your blade instance
+     * BeanProcessor list, which stores all the actions that were performed before the project was started
+     */
+    private List<BeanProcessor> processors = new ArrayList<>();
+
+    /**
+     * All need to be scanned by the package, when you do not set the time will scan com.blade.plugin package
+     */
+    private Set<String> packages = new LinkedHashSet<>(PLUGIN_PACKAGE_NAME);
+
+    /**
+     * All static resource URL prefixes,
+     * defaults to "/favicon.ico", "/robots.txt", "/static/", "/upload/", "/webjars/",
+     * which are located under classpath
+     */
+    private Set<String> statics = new HashSet<>(DEFAULT_STATICS);
+
+    /**
+     * The default IOC container implementation
+     */
+    private Ioc ioc = new SimpleIoc();
+
+    /**
+     * The default template engine implementation, this is a very simple, generally not put into production
+     */
+    private TemplateEngine templateEngine = new DefaultEngine();
+
+    /**
+     * Event manager, which manages all the guys that will trigger events
+     */
+    private EventManager eventManager = new EventManager();
+
+    /**
+     * Session manager, which manages session when you enable session
+     */
+    private SessionManager sessionManager = new SessionManager();
+
+    /**
+     * Used to wait for the start to complete the lock
+     */
+    private CountDownLatch latch = new CountDownLatch(1);
+
+    /**
+     * Web server implementation, currently only netty
+     */
+    private Server server = new NettyServer();
+
+    /**
+     * A route matcher that matches whether a route exists
+     */
+    private RouteMatcher routeMatcher = new RouteMatcher();
+
+    /**
+     * Blade environment, which stores the parameters of the app.properties configuration file
+     */
+    private Environment environment = Environment.empty();
+
+    /**
+     * Exception handling, it will output some logs when the error is initiated
+     */
+    private Consumer<Exception> startupExceptionHandler = (e) -> log.error("Start blade failed", e);
+
+    /**
+     * Exception handler, default is DefaultExceptionHandler.
+     * <p>
+     * When you need to customize the handling of exceptions can be inherited from DefaultExceptionHandler
+     */
+    private ExceptionHandler exceptionHandler = new DefaultExceptionHandler();
+
+    /**
+     * Used to identify whether the web server has started
+     */
+    private boolean started = false;
+
+    /**
+     * Project main class, the main category is located in the root directory of the basic package,
+     * all the features will be in the sub-package below
+     */
+    private Class<?> bootClass = null;
+
+    /**
+     * Session implementation type, the default is HttpSession.
+     * <p>
+     * When you need to be able to achieve similar RedisSession
+     */
+    private Class<? extends Session> sessionImplType = HttpSession.class;
+
+    /**
+     * Give your blade instance, from then on will get the energy
      *
      * @return return blade instance
      */
@@ -83,7 +167,11 @@ public class Blade {
     }
 
     /**
-     * Get blade ioc container, default is SimpleIoc implement
+     * Get blade ioc container, default is SimpleIoc implement.
+     * <p>
+     * IOC container will help you hosting Bean or component, it is actually a Map inside.
+     * In the blade in a single way to make objects reuse,
+     * you can save resources, to avoid the terrible memory leak
      *
      * @return return ioc container
      */
@@ -555,9 +643,9 @@ public class Blade {
             eventManager.fireEvent(EventType.SERVER_STARTING, this);
             Thread thread = new Thread(() -> {
                 try {
-                    nettyServer.start(Blade.this, args);
+                    server.start(Blade.this, args);
                     latch.countDown();
-                    nettyServer.join();
+                    server.join();
                 } catch (Exception e) {
                     startupExceptionHandler.accept(e);
                 }
@@ -572,7 +660,7 @@ public class Blade {
     }
 
     /**
-     * Await
+     * Await web server started
      *
      * @return return blade instance
      */
@@ -596,7 +684,7 @@ public class Blade {
      */
     public void stop() {
         eventManager.fireEvent(EventType.SERVER_STOPPING, this);
-        nettyServer.stopAndWait();
+        server.stopAndWait();
         eventManager.fireEvent(EventType.SERVER_STOPPED, this);
     }
 
