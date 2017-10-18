@@ -53,7 +53,7 @@ If you think this item is good can [star](https://github.com/biezhi/blade/starga
 
 Run with `Maven`：
 
-Create a basic Maven project
+Create a basic `Maven` project
 
 ```xml
 <dependency>
@@ -63,7 +63,7 @@ Create a basic Maven project
 </dependency>
 ```
 
-> ⚠️ Do not create a webapp project, blade is not so much trouble :_)
+> Do not create a webapp project, blade is not so much trouble.
 
 or `Gradle`:
 
@@ -110,10 +110,8 @@ Using browser open http://localhost:9000 so you can see the first `Blade` applic
 - [Write Cookie](#write-cookie)
 - [Web Hook](#web-hook)
 - [Logging](#logging)
-- [Config Statics](#config-statics)
 - [Basic Auth](#basic-auth)
 - [Change Server Port](#change-server-port)
-- [Custom TemplateEngine](#custom-templateengine)
 - [Custom Exception Handler](#custom-exception-handler)
 
 ## Register Route
@@ -262,7 +260,7 @@ public class User {
 
 ```java
 @PostRoute("/users")
-public void saveUser(User user){
+public void saveUser(@Param User user){
     System.out.println("user => " + user);
 }
 ```
@@ -451,7 +449,7 @@ public void printHtml(Response response){
 
 ## Render Template
 
-By default all template files are in the templates directory, most of the time you do not need to change it.
+By default all template files are in the templates directory, most of the cases you do not need to change it.
 
 ### Default Template
 
@@ -634,7 +632,7 @@ server.port=9001
 java -jar blade-app.jar --server.port=9001
 ```
 
-## Custom Exception Handler 
+## Custom Exception Handler
 
 Blade has already implemented an exception handler by default, and sometimes you need to deal with custom exceptions, so you can do it.
 

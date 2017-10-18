@@ -53,6 +53,8 @@
 
 `Maven` 配置：
 
+创建一个基础的 `Maven` 工程
+
 ```xml
 <dependency>
 	<groupId>com.bladejava</groupId>
@@ -60,6 +62,8 @@
 	<version>2.0.3</version>
 </dependency>
 ```
+
+> 不需要创建 webapp 项目骨架, Blade 没这么麻烦。
 
 或者  `Gradle`:
 
@@ -79,11 +83,45 @@ public static void main(String[] args) {
 
 用浏览器打开 http://localhost:9000 这样就可以看到第一个 `Blade` 应用了！
 
-## API示例
+
+## Contents
+
+- [注册路由](#注册路由)
+    - [硬编码方式](#硬编码方式)
+    - [控制器方式](#控制器方式)
+- [获取请求参数](#获取请求参数)
+    - [表单参数](#表单参数)
+    - [Restful参数](#Restful参数)
+    - [Body参数](#Body参数)
+    - [参数转为对象](#参数转为对象)
+- [获取环境配置](#获取环境配置)
+- [获取Header](#获取Header)
+- [获取Cookie](#获取Cookie)
+- [静态资源](#静态资源)
+- [上传文件](#上传文件)
+- [设置会话](#设置会话)
+- [渲染到浏览器](#渲染到浏览器)
+    - [渲染JSON](#渲染JSON)
+    - [渲染文本](#渲染文本)
+    - [渲染Html](#渲染Html)
+- [模板渲染](#模板渲染)
+    - [默认模板](#默认模板)
+    - [Jetbrick模板](#Jetbrick模板)
+- [重定向](#重定向)
+- [写入Cookie](#写入Cookie)
+- [路由拦截](#路由拦截)
+- [日志输出](#日志输出)
+- [Basic认证](#Basic认证)
+- [修改服务端口](#修改服务端口)
+- [自定义异常处理](#自定义异常处理)
+
+## 注册路由
+
+### 硬编码方式
 
 ```java
 public static void main(String[] args) {
-    // 创建 Blade 对象，完成 GET、POST、PUT、DELETE 请求
+    // Create Blade，using GET、POST、PUT、DELETE
     Blade.me()
         .get("/user/21", getting)
         .post("/save", posting)
@@ -93,18 +131,77 @@ public static void main(String[] args) {
 }
 ```
 
-## REST URL参数获取
+### 控制器方式
+
+```java
+@Path
+public class IndexController {
+    
+    @GetRoute("signin")
+    public String signin(){
+        return "signin.html";
+    }
+    
+    @PostRoute("signin")
+    @JSON
+    public RestResponse doSignin(Request request){
+        // do something
+        return RestResponse.ok();
+    }
+    
+}
+```
+
+## 获取请求参数
+
+### 表单参数
+
+下面是个例子:
+
+**使用Request获取**
+
+```java
+public static void main(String[] args) {
+    Blade.me().get("/user", ((request, response) -> {
+         Optional<Integer> ageOptional = request.queryInt("age");
+         ageOptional.ifPresent(age -> System.out.println("age is:" + age));
+     })).start();
+}
+```
+
+**使用注解获取**
+
+```java
+@PostRoute("/save")
+public void savePerson(@Param String username, @Parma Integer age){
+  System.out.println("username is:" + usernam + ", age is:" + age)
+}
+```
+
+在终端下发送数据测试
+
+```bash
+curl -X GET http://127.0.0.1:9000/user?age=25
+```
+
+```bash
+curl -X POST http://127.0.0.1:9000/save -F username=jack -F age=16
+```
+
+### Restful参数
+
+**使用Request获取**
 
 ```java
 public static void main(String[] args) {
     Blade blade = Blade.me();
-    // 创建一个 /user/:uid 的路由
+    // Create a route: /user/:uid
     blade.get("/user/:uid", (request, response) -> {
 		Integer uid = request.pathInt("uid");
 		response.text("uid : " + uid);
 	});
 	
-    // 创建有2个参数的 REST 风格路由
+    // Create two parameters route
     blade.get("/users/:uid/post/:pid", (request, response) -> {
 		Integer uid = request.pathInt("uid");
 		Integer pid = request.pathInt("pid");
@@ -112,67 +209,457 @@ public static void main(String[] args) {
 		response.text(msg);
 	});
 	
-    // 启动应用
+    // Start blade
     blade.start();
 }
 ```
 
-## 表单参数
+**使用注解获取**
+
+```java
+@GetRoute("/users/:username/:page")
+public void userTopics(@PathParam String username, @PathParam Integer page){
+  System.out.println("username is:" + usernam + ", page is:" + page)
+}
+```
+
+在终端下发送数据测试
+
+```bash
+curl -X GET http://127.0.0.1:9000/users/biezhi/2
+```
+
+### Body参数
 
 ```java
 public static void main(String[] args) {
-    Blade.me().get("/user", ((request, response) -> {
-         Optional<Integer> ageOptional = request.queryInt("age");
-         ageOptional.ifPresent(age -> System.out.println("年龄是:" + age));
-     })).start();
+    Blade.me().post("/body", ((request, response) -> {
+      System.out.println("body string is:" + body)
+    }).start();
 }
+```
+
+在终端下发送数据测试
+
+```bash
+curl -X POST http://127.0.0.1:9000/body -d '{"username":"biezhi","age":22}'
+```
+
+### 参数转为对象
+
+这是 `User` 类结构
+
+```java
+public class User {
+  private String username;
+  private Integer age;
+  // getter and setter
+}
+```
+
+**使用注解获取**
+
+```java
+@PostRoute("/users")
+public void saveUser(@Param User user){
+    System.out.println("user => " + user);
+}
+```
+
+在终端下发送数据测试
+
+```bash
+curl -X POST http://127.0.0.1:9000/users -F username=jack -F age=16
+```
+
+**自定义 `model` 名称**
+
+```java
+@PostRoute("/users")
+public void saveUser(@Param(name="u") User user){
+    System.out.println("user => " + user);
+}
+```
+
+在终端下发送数据测试
+
+```bash
+curl -X POST http://127.0.0.1:9000/users -F u[username]=jack -F u[age]=16
+```
+
+**Body参数转对象**
+
+```java
+public void getUser(@BodyParam User user){
+    System.out.println("user => " + user);
+}
+```
+
+在终端下发送数据测试
+
+```bash
+curl -X POST http://127.0.0.1:9000/body -d '{"username":"biezhi","age":22}'
+```
+
+## 获取环境配置
+
+```java
+Environment environment = WebContext.blade().environment();
+String version = environment.get("app.version", "0.0.1");;
+```
+
+## 获取Header
+
+**使用Request获取**
+
+```java
+@GetRoute("header")
+public void getHeader(Request request){
+  System.out.println("Host => " + request.header("Host"));
+  // get useragent
+  System.out.println("UserAgent => " + request.userAgent());
+  // get client ip
+  System.out.println("Client Address => " + request.address());
+}
+```
+
+**使用注解获取**
+
+```java
+@GetRoute("header")
+public void getHeader(@HeaderParam String Host){
+  System.out.println("Host => " + Host);
+}
+```
+
+## 获取Cookie
+
+**使用Request获取**
+
+```java
+@GetRoute("cookie")
+public void getCookie(Request request){
+  System.out.println("UID => " + request.cookie("UID").get());
+  request.cookie("UID").ifPresent(System.out::println);
+}
+```
+
+**使用注解获取**
+
+```java
+@GetRoute("cookie")
+public void getCookie(@CookieParam String UID){
+  System.out.println("Cookie UID => " + UID);
+}
+```
+
+## 静态资源
+
+Blade 内置了一些静态资源目录，只要将资源文件保存在 `classpath` 下的 `static` 目录中，然后浏览 http://127.0.0.1:9000/static/style.css
+
+如果要自定义静态资源URL，可以使用下面的代码
+
+```java
+Blade.me().addStatics("/mydir");
+```
+
+当然你也可以在配置文件中指定 `app.properties` (位于classpath之下)
+
+```bash
+mvc.statics=/mydir
 ```
 
 ## 上传文件
 
-```java
-public void upload(@MultipartParam FileItem fileItem){
-    byte[] data = fileItem.getData();
-    // 将临时文件保存到指定路径
-    Files.write(Paths.get(filePath), data);
-}
-```
-
-或者
+**使用Request获取**
 
 ```java
+@PostRoute("upload")
 public void upload(Request request){
     request.fileItem("img").ifPresent(fileItem -> {
         byte[] data = fileItem.getData();
-        // 将临时文件保存到指定路径
+        // Save the temporary file to the specified path
         Files.write(Paths.get(filePath), data);              
     });
 }
 ```
 
-## 路由钩子
+**使用注解获取**
+
+```java
+@PostRoute("upload")
+public void upload(@MultipartParam FileItem fileItem){
+    byte[] data = fileItem.getData();
+    // Save the temporary file to the specified path
+    Files.write(Paths.get(filePath), data);
+}
+```
+
+## 设置会话
+
+```java
+public void login(Session session){
+  // if login success
+  session.attribute("login_key", SOME_MODEL);
+}
+```
+
+## 渲染到浏览器
+
+### 渲染JSON
+
+**使用Request获取**
+
+```java
+@GetRoute("users/json")
+public void printJSON(Response response){
+  User user = new User("biezhi", 18);
+  response.json(user);
+}
+```
+
+**使用注解获取**
+
+这种形式看起来更简洁 😶
+
+```java
+@GetRoute("users/json")
+@JSON
+public User printJSON(){
+  return new User("biezhi", 18);
+}
+```
+
+### 渲染文本
+
+```java
+@GetRoute("text")
+public void printText(Response response){
+  response.text("I Love Blade!");
+}
+```
+
+### 渲染Html
+
+```java
+@GetRoute("html")
+public void printHtml(Response response){
+  response.html("<center><h1>I Love Blade!</h1></center>");
+}
+```
+
+## 模板渲染
+
+默认情况下，所有模板文件都 `在templates` 目录中，大多数情况下你不需要更改它。
+
+### 默认模板
+
+默认情况下，Blade使用内置的模板引擎，如果你真的做一个Web项目可以尝试其他几个扩展，这很简单。
 
 ```java
 public static void main(String[] args) {
-    // 所有请求执行前都会输出 before
+    Blade.me().get("/hello", ((request, response) -> {
+                request.attribute("name", "biezhi");
+                response.render("hello.html");
+            }))
+            .start(Hello.class, args);
+}
+```
+
+`hello.html` 模板
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Hello Page</title>
+</head>
+<body>
+
+  <h1>Hello, ${name}</h1>
+
+</body>
+</html>
+```
+
+### Jetbrick模板
+
+**配置 Jetbrick 模板引擎**
+
+创建一个 `BeanProcessor` 配置文件
+
+```java
+@Bean
+public class TemplateConfig implements BeanProcessor {
+    
+    @Override
+    public void processor(Blade blade) {
+        blade.templateEngine(new JetbrickTemplateEngine());
+    }
+    
+}
+```
+
+写一点数据让模板渲染
+
+```java
+public static void main(String[] args) {
+    Blade.me().get("/hello", ((request, response) -> {
+                User user = new User("biezhi", 50);
+                request.attribute("user", user);
+                response.render("hello.html");
+            }))
+            .start(Hello.class, args);
+}
+```
+
+`hello.html` 模板
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Hello Page</title>
+</head>
+<body>
+
+  <h1>Hello, ${user.username}</h1>
+  
+  #if(user.age > 18)
+    <p>Good Boy!</p>
+  #else
+    <p>Gooood Baby!</p>
+  #end
+  
+</body>
+</html>
+```
+
+[Render API](http://static.javadoc.io/com.bladejava/blade-mvc/2.0.3/com/blade/mvc/http/Response.html#render-com.blade.mvc.ui.ModelAndView-)
+
+## 重定向
+
+```java
+@GetRoute("redirect")
+public void redirectToGithub(Response response){
+  
+  response.redirect("https://github.com/biezhi");
+  
+}
+```
+
+[Redirect API](http://static.javadoc.io/com.bladejava/blade-mvc/2.0.3/com/blade/mvc/http/Response.html#redirect-java.lang.String-)
+
+## 写入Cookie
+
+```java
+@GetRoute("write-cookie")
+public void writeCookie(Response response){
+  
+  response.cookie("hello", "world");
+  response.cookie("UID", "22", 3600);
+  
+}
+```
+
+[Cookie API](http://static.javadoc.io/com.bladejava/blade-mvc/2.0.3/com/blade/mvc/http/Response.html#cookie-java.lang.String-java.lang.String-)
+
+## 路由拦截
+
+`WebHook` 是Blade框架中可以在执行路由之前和之后拦截的接口。
+
+```java
+public static void main(String[] args) {
+    // All requests are exported before execution before
     Blade.me().before("/*", (request, response) -> {
         System.out.println("before...");
     }).start();
 }
 ```
 
+## 日志输出
+
+Blade 使用 `slf4-api` 作为日志接口，默认实现一个简单的日志（从simple-logger修改），如果你需要复杂的日志记录你也可以使用其他的日志框架，你只需要在依赖关系中排除 `blade-log` 然后添加你喜欢的。
+
+```java
+private static final Logger log = LoggerFactory.getLogger(Hello.class);
+
+public static void main(String[] args) {
+  log.info("Hello Info, {}", "2017");
+  log.warn("Hello Warn");
+  log.debug("Hello Debug");
+  log.error("Hello Error");
+}
+```
+
+## Basic认证
+
+Blade 内置了几个中间件，当你需要Basic认证时可以使用如下代码，当然也可以定制来实现。
+
+```java
+public static void main(String[] args) {
+  Blade.me().use(new BasicAuthMiddleware()).start();
+}
+```
+
+在 `app.properties` 配置文件中指定用户名和密码。
+
+```bash
+http.auth.username=admin
+http.auth.password=123456
+```
+
+## 修改服务端口
+
+有三种方式修改端口，硬编码，配置文件，启动命令行参数。
+
+**硬编码**
+
+```java
+Blade.me().listen(9001).start();
+```
+
+**配置文件 `app.properties`**
+
+```bash
+server.port=9001
+```
+
+**命令行**
+
+```bash
+java -jar blade-app.jar --server.port=9001
+```
+
+## 自定义异常处理
+
+默认情况下，Blade 已经实现了一个异常处理器，有时你需要处理自定义异常，因此器可以像下面这样使用。
+
+```java
+@Bean
+public class GolbalExceptionHandler extends DefaultExceptionHandler {
+    
+    @Override
+    public void handle(Exception e) {
+        if (e instanceof ValidateException) {
+            ValidateException validateException = (ValidateException) e;
+            String msg = validateException.getErrMsg();
+            WebContext.response().json(RestResponse.fail(msg));
+        } else {
+            super.handle(e);
+        }
+    }
+  
+}
+```
+
 这一切看起来多么的简单，不过上面的功能可是冰山一角，查看文档和示例项目有更多惊喜:
 
-+ [第一个例子](https://github.com/bladejava/first-blade-app)
-+ [文档服务](https://github.com/biezhi/grice)
-+ [更多例子](https://github.com/bladejava/blade-demos)
-
-## 使用Blade的站点
-
-+ 博客系统：https://github.com/otale/tale
-+ 社区程序：https://github.com/junicorn/roo
-+ 图片社交：https://github.com/biezhi/nice
-+ SS面板：https://github.com/biezhi/ss-panel
++ [第一个Blade程序](https://github.com/lets-blade/first-blade-app)
++ [Blade Demos](https://github.com/lets-blade/blade-demos)
++ [更多演示](https://lets-blade.com/about/who-used)
 
 ## 联系我
 
