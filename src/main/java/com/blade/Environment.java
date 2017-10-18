@@ -17,6 +17,7 @@ package com.blade;
 
 import com.blade.kit.IOKit;
 import com.blade.kit.ReflectKit;
+import com.blade.server.netty.HttpConst;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
@@ -33,6 +34,9 @@ import static java.util.Optional.ofNullable;
 
 /**
  * Blade environment config
+ * <p>
+ * This class can help you to load the properties type of the configuration file,
+ * and easy to read、write
  *
  * @author biezhi
  * 2017/6/1
@@ -41,13 +45,31 @@ import static java.util.Optional.ofNullable;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Environment {
 
+    /**
+     * Classpath prefix
+     */
     private static final String PREFIX_CLASSPATH = "classpath:";
-    private static final String PREFIX_FILE      = "file:";
-    private static final String PREFIX_URL       = "url:";
-    private static final String SALT             = "/";
 
+    /**
+     * File prefix
+     */
+    private static final String PREFIX_FILE = "file:";
+
+    /**
+     * Url prefix
+     */
+    private static final String PREFIX_URL = "url:";
+
+    /**
+     * Save the internal configuration
+     */
     private Properties props = new Properties();
 
+    /**
+     * Create an empty environment
+     *
+     * @return return Environment instance
+     */
     public static Environment empty() {
         return new Environment();
     }
@@ -77,7 +99,7 @@ public class Environment {
     }
 
     /**
-     * load Environment by URL
+     * Load environment by URL
      *
      * @param url file url
      * @return return Environment instance
@@ -93,7 +115,7 @@ public class Environment {
     }
 
     /**
-     * load Environment by file
+     * Load environment by file
      *
      * @param file environment file
      * @return return Environment instance
@@ -107,7 +129,7 @@ public class Environment {
     }
 
     /**
-     * load Environment by location
+     * Load environment by location
      *
      * @param location environment location
      * @return return Environment instance
@@ -132,8 +154,14 @@ public class Environment {
         }
     }
 
+    /**
+     * Load classpath file to Environment
+     *
+     * @param classpath classpath url
+     * @return return Environment instance
+     */
     private static Environment loadClasspath(@NonNull String classpath) {
-        if (classpath.startsWith(SALT)) {
+        if (classpath.startsWith(HttpConst.SLASH)) {
             classpath = classpath.substring(1);
         }
         InputStream is = getDefault().getResourceAsStream(classpath);
@@ -143,6 +171,12 @@ public class Environment {
         return of(is);
     }
 
+    /**
+     * Load InputStream to Environment
+     *
+     * @param is InputStream instance
+     * @return return Environment instance
+     */
     private static Environment of(@NonNull InputStream is) {
         try {
             Environment environment = new Environment();
@@ -156,7 +190,9 @@ public class Environment {
     }
 
     /**
-     * Returns current thread's context class loader
+     * Get current thread context ClassLoader
+     *
+     * @return return ClassLoader
      */
     public static ClassLoader getDefault() {
         ClassLoader loader = null;
@@ -178,16 +214,36 @@ public class Environment {
         return loader;
     }
 
+    /**
+     * Set a value to props
+     *
+     * @param key   key
+     * @param value value
+     * @return return Environment instance
+     */
     public Environment set(@NonNull String key, @NonNull Object value) {
         String val = value.toString();
         props.put(key, val);
         return this;
     }
 
+    /**
+     * And Set the same
+     *
+     * @param key   key
+     * @param value value
+     * @return return Environment instance
+     */
     public Environment add(@NonNull String key, @NonNull Object value) {
         return set(key, value);
     }
 
+    /**
+     * Add a map to props
+     *
+     * @param map map config instance
+     * @return return Environment instance
+     */
     public Environment addAll(@NonNull Map<String, String> map) {
         map.forEach((key, value) -> this.props.setProperty(key, value));
         return this;

@@ -1,6 +1,7 @@
 package com.blade.kit;
 
 import com.blade.mvc.Const;
+import lombok.NoArgsConstructor;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -11,16 +12,23 @@ import java.util.Date;
 import java.util.Locale;
 
 /**
- * date kit
+ * Date kit
  *
  * @author biezhi
  * 2017/6/2
  */
+@NoArgsConstructor
 public final class DateKit {
 
-    private DateKit() {
-        throw new IllegalStateException("DateKit shouldn't be constructed!");
-    }
+    /**
+     * GMT Format
+     */
+    private static final DateTimeFormatter GMT_FMT     = DateTimeFormatter.ofPattern(Const.HTTP_DATE_FORMAT, Locale.US);
+
+    /**
+     * GMT ZoneId
+     */
+    private static final ZoneId            GMT_ZONE_ID = ZoneId.of("GMT");
 
     /**
      * get current unix time
@@ -109,9 +117,6 @@ public final class DateKit {
     public static Date toDate(long unixTime) {
         return Date.from(Instant.ofEpochSecond(unixTime));
     }
-
-    private static final DateTimeFormatter GMT_FMT     = DateTimeFormatter.ofPattern(Const.HTTP_DATE_FORMAT, Locale.US);
-    private static final ZoneId            GMT_ZONE_ID = ZoneId.of("GMT");
 
     public static String gmtDate() {
         return GMT_FMT.format(LocalDateTime.now().atZone(GMT_ZONE_ID));

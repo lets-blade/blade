@@ -37,10 +37,17 @@
         <junit.version>4.12</junit.version>
         <slf4j-api.version>1.7.21</slf4j-api.version>
         <netty.version>4.1.16.Final</netty.version>
+        <blade-asm.version>0.0.1</blade-asm.version>
         <blade-log.version>0.0.5</blade-log.version>
     </properties>
 
     <dependencies>
+
+        <dependency>
+            <groupId>com.bladejava</groupId>
+            <artifactId>blade-asm</artifactId>
+            <version>${blade-asm.version}</version>
+        </dependency>
 
         <dependency>
             <groupId>com.bladejava</groupId>
