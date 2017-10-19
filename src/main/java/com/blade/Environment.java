@@ -161,10 +161,11 @@ public class Environment {
      * @return return Environment instance
      */
     private static Environment loadClasspath(@NonNull String classpath) {
+        String path = classpath;
         if (classpath.startsWith(HttpConst.SLASH)) {
-            classpath = classpath.substring(1);
+            path = classpath.substring(1);
         }
-        InputStream is = getDefault().getResourceAsStream(classpath);
+        InputStream is = getDefault().getResourceAsStream(path);
         if (null == is) {
             return new Environment();
         }

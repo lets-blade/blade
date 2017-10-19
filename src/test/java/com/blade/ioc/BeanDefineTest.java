@@ -1,5 +1,6 @@
 package com.blade.ioc;
 
+import com.blade.ioc.bean.BeanDefine;
 import com.blade.types.BladeBeanDefineType;
 import org.junit.Test;
 

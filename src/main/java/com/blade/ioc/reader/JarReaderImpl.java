@@ -1,5 +1,7 @@
 package com.blade.ioc.reader;
 
+import com.blade.ioc.ClassReader;
+import com.blade.ioc.bean.ClassInfo;
 import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
 
@@ -14,7 +16,7 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 /**
- * 根据jar文件读取类
+ * Read the class according to the jar file
  *
  * @author <a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since 1.0
@@ -27,32 +29,16 @@ public class JarReaderImpl extends AbstractClassReader implements ClassReader {
     private static final String WSJAR_FILE = "wsjar:file:";
 
     @Override
-    public Set<ClassInfo> getClass(String packageName, boolean recursive) {
-        return this.getClassByAnnotation(packageName, null, null, recursive);
-    }
-
-    @Override
-    public Set<ClassInfo> getClass(String packageName, Class<?> parent, boolean recursive) {
-        return this.getClassByAnnotation(packageName, parent, null, recursive);
-    }
-
-    @Override
-    public Set<ClassInfo> getClassByAnnotation(String packageName, Class<? extends Annotation> annotation, boolean recursive) {
-        return this.getClassByAnnotation(packageName, null, annotation, recursive);
-    }
-
-    @Override
     public Set<ClassInfo> getClassByAnnotation(String packageName, Class<?> parent, Class<? extends Annotation> annotation, boolean recursive) {
         Set<ClassInfo> classes = new HashSet<>();
-        // 获取包的名字 并进行替换
+        // Get the name of the package and replace it
         String packageDirName = packageName.replace('.', '/');
-        // 定义一个枚举的集合 并进行循环来处理这个目录下的URL
+        // Defines an enumerated collection and loops to process the URL in this directory
         Enumeration<URL> dirs;
         try {
             dirs = this.getClass().getClassLoader().getResources(packageDirName);
-            // 循环迭代下去
             while (dirs.hasMoreElements()) {
-                // 获取下一个元素
+                // Next
                 URL            url        = dirs.nextElement();
                 Set<ClassInfo> subClasses = this.getClasses(url, packageDirName, packageName, parent, annotation, recursive, classes);
                 if (subClasses.size() > 0) {
@@ -70,61 +56,62 @@ public class JarReaderImpl extends AbstractClassReader implements ClassReader {
         try {
             if (url.toString().startsWith(JAR_FILE) || url.toString().startsWith(WSJAR_FILE)) {
 
-                // 获取jar
+                // Get jar file
                 JarFile jarFile = ((JarURLConnection) url.openConnection()).getJarFile();
 
-                // 从此jar包 得到一个枚举类
+                // From the jar package to get an enumeration class
                 Enumeration<JarEntry> eje = jarFile.entries();
-
-                // 同样的进行循环迭代
                 while (eje.hasMoreElements()) {
-                    // 获取jar里的一个实体 可以是目录 和一些jar包里的其他文件 如META-INF等文件
+                    // Get an entity in jar can be a directory and some other documents in the jar package
+                    // such as META-INF and other documents
                     JarEntry entry = eje.nextElement();
                     String   name  = entry.getName();
-                    // 如果是以/开头的
+                    // if start with '/'
                     if (name.charAt(0) == '/') {
-                        // 获取后面的字符串
                         name = name.substring(1);
                     }
-                    // 如果前半部分和定义的包名相同
-                    if (name.startsWith(packageDirName)) {
-                        int idx = name.lastIndexOf('/');
-                        // 如果以"/"结尾 是一个包
-                        if (idx != -1) {
-                            // 获取包名 把"/"替换成"."
-                            packageName = name.substring(0, idx).replace('/', '.');
-                        }
-                        // 如果可以迭代下去 并且是一个包
-                        if ((idx != -1) || recursive) {
-                            // 如果是一个.class文件 而且不是目录
-                            if (name.endsWith(".class") && !entry.isDirectory()) {
-                                // 去掉后面的".class" 获取真正的类名
-                                String className = name.substring(packageName.length() + 1, name.length() - 6);
-                                // 添加到classes
-                                Class<?> clazz = Class.forName(packageName + '.' + className);
-                                if (null != parent && null != annotation) {
-                                    if (null != clazz.getSuperclass() &&
-                                            clazz.getSuperclass().equals(parent) && null != clazz.getAnnotation(annotation)) {
-                                        classes.add(new ClassInfo(clazz));
-                                    }
-                                    continue;
-                                }
-                                if (null != parent) {
-                                    if (null != clazz.getSuperclass() && clazz.getSuperclass().equals(parent)) {
-                                        classes.add(new ClassInfo(clazz));
-                                    }
-                                    continue;
-                                }
-                                if (null != annotation) {
-                                    if (null != clazz.getAnnotation(annotation)) {
-                                        classes.add(new ClassInfo(clazz));
-                                    }
-                                    continue;
-                                }
-                                classes.add(new ClassInfo(clazz));
-                            }
-                        }
+                    // If the first half is the same as the defined package name
+                    if (!name.startsWith(packageDirName)) {
+                        continue;
                     }
+                    int idx = name.lastIndexOf('/');
+                    // If the end of "/" is a package
+                    if (idx != -1) {
+                        // Get the package name and replace "/" with "."
+                        packageName = name.substring(0, idx).replace('/', '.');
+                    }
+                    // If it can be iterated and is a package
+                    if (idx == -1 && !recursive) {
+                        continue;
+                    }
+                    // If it is a .class file and not a directory
+                    if (!name.endsWith(".class") || entry.isDirectory()) {
+                        continue;
+                    }
+                    // Remove the following ".class" to get the real class name
+                    String className = name.substring(packageName.length() + 1, name.length() - 6);
+                    // Add to classes
+                    Class<?> clazz = Class.forName(packageName + '.' + className);
+                    if (null != parent && null != annotation) {
+                        if (null != clazz.getSuperclass() &&
+                                clazz.getSuperclass().equals(parent) && null != clazz.getAnnotation(annotation)) {
+                            classes.add(new ClassInfo(clazz));
+                        }
+                        continue;
+                    }
+                    if (null != parent) {
+                        if (null != clazz.getSuperclass() && clazz.getSuperclass().equals(parent)) {
+                            classes.add(new ClassInfo(clazz));
+                        }
+                        continue;
+                    }
+                    if (null != annotation) {
+                        if (null != clazz.getAnnotation(annotation)) {
+                            classes.add(new ClassInfo(clazz));
+                        }
+                        continue;
+                    }
+                    classes.add(new ClassInfo(clazz));
                 }
             }
         } catch (IOException e) {
@@ -135,4 +122,6 @@ public class JarReaderImpl extends AbstractClassReader implements ClassReader {
         }
         return classes;
     }
+
+
 }

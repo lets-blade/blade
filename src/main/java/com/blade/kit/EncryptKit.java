@@ -25,6 +25,24 @@ public class EncryptKit {
     private static final char[] HEX_DIGITS = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
 
     /**
+     * 3DES转变
+     * <p>法算法名称/加密模式/填充方式</p>
+     * <p>加密模式有：电子密码本模式ECB、加密块链模式CBC、加密反馈模式CFB、输出反馈模式OFB</p>
+     * <p>填充方式有：NoPadding、ZerosPadding、PKCS5Padding</p>
+     */
+    private static final  String TripleDES_Transformation = "DESede/ECB/NoPadding";
+    private static final String TripleDES_Algorithm      = "DESede";
+
+    /**
+     * AES转变
+     * <p>法算法名称/加密模式/填充方式</p>
+     * <p>加密模式有：电子密码本模式ECB、加密块链模式CBC、加密反馈模式CFB、输出反馈模式OFB</p>
+     * <p>填充方式有：NoPadding、ZerosPadding、PKCS5Padding</p>
+     */
+    private static        String AES_Transformation = "AES/ECB/NoPadding";
+    private static final String AES_Algorithm      = "AES";
+
+    /**
      * MD5加密
      *
      * @param data 明文字符串
@@ -120,7 +138,7 @@ public class EncryptKit {
      */
     public static byte[] md5FileToByte(File file) {
         if (file == null) return null;
-        FileInputStream   fis = null;
+        FileInputStream   fis               = null;
         DigestInputStream digestInputStream = null;
         try {
             fis = new FileInputStream(file);
@@ -482,15 +500,6 @@ public class EncryptKit {
     }
 
     /************************ 3DES加密相关 ***********************/
-    /**
-     * 3DES转变
-     * <p>法算法名称/加密模式/填充方式</p>
-     * <p>加密模式有：电子密码本模式ECB、加密块链模式CBC、加密反馈模式CFB、输出反馈模式OFB</p>
-     * <p>填充方式有：NoPadding、ZerosPadding、PKCS5Padding</p>
-     */
-    public static        String TripleDES_Transformation = "DESede/ECB/NoPadding";
-    private static final String TripleDES_Algorithm      = "DESede";
-
 
     /**
      * 3DES加密后转为Base64编码
@@ -567,15 +576,6 @@ public class EncryptKit {
     }
 
     /************************ AES加密相关 ***********************/
-    /**
-     * AES转变
-     * <p>法算法名称/加密模式/填充方式</p>
-     * <p>加密模式有：电子密码本模式ECB、加密块链模式CBC、加密反馈模式CFB、输出反馈模式OFB</p>
-     * <p>填充方式有：NoPadding、ZerosPadding、PKCS5Padding</p>
-     */
-    public static        String AES_Transformation = "AES/ECB/NoPadding";
-    private static final String AES_Algorithm      = "AES";
-
 
     /**
      * AES加密后转为Base64编码

@@ -286,8 +286,8 @@ public class Hashids {
     }
 
     private long[] _decode(String hash, String alphabet) {
-        final ArrayList<Long> ret = new ArrayList<Long>();
-
+        final ArrayList<Long> ret = new ArrayList<>();
+        String shuffle = alphabet;
         int          i             = 0;
         final String regexp        = "[" + this.guards + "]";
         String       hashBreakdown = hash.replaceAll(regexp, " ");
@@ -309,9 +309,9 @@ public class Hashids {
                 String subHash, buffer;
                 for (final String aHashArray : hashArray) {
                     subHash = aHashArray;
-                    buffer = lottery + this.salt + alphabet;
-                    alphabet = Hashids.consistentShuffle(alphabet, buffer.substring(0, alphabet.length()));
-                    ret.add(Hashids.unhash(subHash, alphabet));
+                    buffer = lottery + this.salt + shuffle;
+                    shuffle = Hashids.consistentShuffle(shuffle, buffer.substring(0, shuffle.length()));
+                    ret.add(Hashids.unhash(subHash, shuffle));
                 }
             }
         }
