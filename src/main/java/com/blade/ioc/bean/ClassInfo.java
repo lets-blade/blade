@@ -1,4 +1,4 @@
-package com.blade.ioc.reader;
+package com.blade.ioc.bean;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;

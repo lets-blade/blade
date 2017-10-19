@@ -1,4 +1,7 @@
-package com.blade.ioc;
+package com.blade.ioc.bean;
+
+import com.blade.ioc.Injector;
+import com.blade.ioc.Ioc;
 
 import java.lang.reflect.Field;
 

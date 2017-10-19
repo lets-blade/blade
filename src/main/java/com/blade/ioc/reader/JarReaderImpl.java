@@ -1,5 +1,7 @@
 package com.blade.ioc.reader;
 
+import com.blade.ioc.ClassReader;
+import com.blade.ioc.bean.ClassInfo;
 import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
 

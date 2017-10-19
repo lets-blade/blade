@@ -1,5 +1,7 @@
 package com.blade.ioc.reader;
 
+import com.blade.ioc.ClassReader;
+
 /**
  * Read classes by classpath
  *

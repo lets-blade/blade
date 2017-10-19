@@ -1,11 +1,11 @@
 package com.blade.kit;
 
-import com.blade.ioc.BeanDefine;
-import com.blade.ioc.ClassDefine;
-import com.blade.ioc.FieldInjector;
 import com.blade.ioc.Ioc;
 import com.blade.ioc.annotation.Inject;
 import com.blade.ioc.annotation.InjectWith;
+import com.blade.ioc.bean.BeanDefine;
+import com.blade.ioc.bean.ClassDefine;
+import com.blade.ioc.bean.FieldInjector;
 import com.blade.mvc.http.HttpMethod;
 import lombok.NoArgsConstructor;
 

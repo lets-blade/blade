@@ -1,7 +1,8 @@
 
-package com.blade.ioc.reader;
+package com.blade.ioc;
 
-import com.blade.ioc.Scanner;
+import com.blade.ioc.bean.ClassInfo;
+import com.blade.ioc.bean.Scanner;
 
 import java.util.Set;
 

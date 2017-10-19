@@ -1,6 +1,7 @@
 package com.blade.ioc;
 
-import com.blade.ioc.reader.ClassInfo;
+import com.blade.ioc.bean.ClassInfo;
+import com.blade.ioc.bean.Scanner;
 import com.blade.ioc.reader.JarReaderImpl;
 import org.junit.Assert;
 import org.junit.Test;

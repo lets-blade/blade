@@ -16,7 +16,7 @@
 package com.blade.event;
 
 import com.blade.Blade;
-import com.blade.ioc.OrderComparator;
+import com.blade.ioc.bean.OrderComparator;
 
 import java.util.LinkedList;
 import java.util.List;

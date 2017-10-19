@@ -1,4 +1,4 @@
-package com.blade.ioc;
+package com.blade.ioc.bean;
 
 import lombok.Builder;
 import lombok.Data;

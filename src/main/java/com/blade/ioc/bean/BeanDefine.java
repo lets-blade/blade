@@ -1,4 +1,4 @@
-package com.blade.ioc;
+package com.blade.ioc.bean;
 
 /**
  * Bean Define, IOC to define a target

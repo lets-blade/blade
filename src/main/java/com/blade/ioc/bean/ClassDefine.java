@@ -1,4 +1,4 @@
-package com.blade.ioc;
+package com.blade.ioc.bean;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
