@@ -24,6 +24,9 @@
 
 ## What Is Blade?
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/1136f3b4c92d456aa27b71b36ac28b50)](https://www.codacy.com/app/biezhi/blade?utm_source=github.com&utm_medium=referral&utm_content=biezhi/blade&utm_campaign=badger)
+
+
 `Blade` is a pursuit of simple, efficient Web framework, so that `JavaWeb` development even more powerful, both in performance and flexibility.
 If you like to try something interesting, I believe you will love it.
 If you think this item is good can [star](https://github.com/biezhi/blade/stargazers) support or [donate](https://lets-blade.com/donate) it :blush:
