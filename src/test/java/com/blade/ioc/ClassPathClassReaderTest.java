@@ -26,18 +26,18 @@ public class ClassPathClassReaderTest {
         ClassReader classReader = DynamicContext.getClassReader(packageName);
         assertEquals(ClassPathClassReader.class, classReader.getClass());
 
-        Set<ClassInfo> classInfos = classReader.getClass(packageName, false);
+        Set<ClassInfo> classInfos = classReader.readClasses(Scanner.builder().packageName(packageName).build());
         assertEquals(2, classInfos.size());
 
-        classInfos = classReader.getClass(packageName, Runnable.class, false);
+        classInfos = classReader.readClasses(Scanner.builder().packageName(packageName).parent(Runnable.class).build());
         assertEquals(1, classInfos.size());
         assertEquals(UserService.class, classInfos.stream().findFirst().get().getClazz());
 
-        classInfos = classReader.getClassByAnnotation(packageName, Path.class, false);
+        classInfos = classReader.readClasses(Scanner.builder().packageName(packageName).annotation(Path.class).build());
         assertEquals(1, classInfos.size());
         assertEquals(IndexController.class, classInfos.stream().findFirst().get().getClazz());
 
-        classInfos = classReader.getClassByAnnotation(packageName, Object.class, Path.class, false);
+        classInfos = classReader.readClasses(Scanner.builder().packageName(packageName).parent(Object.class).annotation(Path.class).build());
         assertEquals(1, classInfos.size());
         assertEquals(IndexController.class, classInfos.stream().findFirst().get().getClazz());
 

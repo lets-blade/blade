@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.net.URL;
 import java.util.Enumeration;
+import java.util.Set;
 import java.util.stream.Stream;
 
 /**
@@ -23,8 +24,8 @@ import java.util.stream.Stream;
 public final class DynamicContext {
 
     private static final ClassReader classpathReader = new ClassPathClassReader();
-    private static final ClassReader jarReader = new JarReaderImpl();
-    private static final String SUFFIX_JAR = ".jar";
+    private static final ClassReader jarReader       = new JarReaderImpl();
+    private static final String      SUFFIX_JAR      = ".jar";
 
     private static boolean isJarContext = false;
 
@@ -36,7 +37,9 @@ public final class DynamicContext {
     }
 
     public static Stream<ClassInfo> recursionFindClasses(String packageName) {
-        return getClassReader(packageName).getClass(packageName, true).stream();
+        Scanner        scanner    = Scanner.builder().packageName(packageName).recursive(true).build();
+        Set<ClassInfo> classInfos = getClassReader(packageName).readClasses(scanner);
+        return classInfos.stream();
     }
 
     public static ClassReader getClassReader(String packageName) {

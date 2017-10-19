@@ -16,7 +16,7 @@ public class JarReaderTest {
     @Test
     public void testJarReader() {
         JarReaderImpl  jarReader  = new JarReaderImpl();
-        Set<ClassInfo> classInfos = jarReader.getClass("org.slf4j.impl", false);
+        Set<ClassInfo> classInfos = jarReader.readClasses(Scanner.builder().packageName("org.slf4j.impl").build());
         Assert.assertNotNull(classInfos);
     }
 

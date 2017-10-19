@@ -1,7 +1,7 @@
 package com.blade.ioc.reader;
 
 /**
- * 根据classpath加载类
+ * Read classes by classpath
  *
  * @author <a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since 1.0
