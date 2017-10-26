@@ -197,6 +197,20 @@ public class RouteMatcher {
         }
     }
 
+    public boolean hasBeforeHook() {
+        return hooks.values().stream()
+                .flatMap(Collection::stream)
+                .filter(route -> route.getHttpMethod().equals(HttpMethod.BEFORE))
+                .count() > 0;
+    }
+
+    public boolean hasAfterHook() {
+        return hooks.values().stream()
+                .flatMap(Collection::stream)
+                .filter(route -> route.getHttpMethod().equals(HttpMethod.AFTER))
+                .count() > 0;
+    }
+
     /**
      * Find all in before of the hook
      *

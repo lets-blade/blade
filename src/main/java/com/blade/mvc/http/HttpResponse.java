@@ -6,7 +6,6 @@ import com.blade.kit.StringKit;
 import com.blade.mvc.Const;
 import com.blade.mvc.WebContext;
 import com.blade.mvc.ui.ModelAndView;
-import com.blade.mvc.ui.template.TemplateEngine;
 import com.blade.mvc.wrapper.OutputStreamWrapper;
 import com.blade.server.netty.HttpConst;
 import com.blade.server.netty.ProgressiveFutureListener;
@@ -18,12 +17,13 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.DefaultFileRegion;
 import io.netty.handler.codec.http.*;
 import io.netty.handler.codec.http.cookie.Cookie;
-import io.netty.handler.codec.http.cookie.ServerCookieEncoder;
+import io.netty.util.AsciiString;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.*;
 import java.nio.file.Files;
+import java.time.LocalDateTime;
 import java.util.*;
 
 import static io.netty.handler.codec.http.HttpHeaderValues.KEEP_ALIVE;
@@ -37,13 +37,12 @@ import static io.netty.handler.codec.http.HttpHeaderValues.KEEP_ALIVE;
 @Slf4j
 public class HttpResponse implements Response {
 
-    private HttpHeaders           headers        = new DefaultHttpHeaders();
-    private Set<Cookie>           cookies        = new HashSet<>();
-    private int                   statusCode     = 200;
-    private boolean               isCommit       = false;
-    private String                contentType    = null;
-    private ChannelHandlerContext ctx            = null;
-    private TemplateEngine        templateEngine = null;
+    private HttpHeaders           headers     = new DefaultHttpHeaders(false);
+    private Set<Cookie>           cookies     = new HashSet<>(4);
+    private int                   statusCode  = 200;
+    private boolean               isCommit    = false;
+    private String                contentType = null;
+    private ChannelHandlerContext ctx         = null;
 
     @Override
     public int statusCode() {
@@ -197,7 +196,7 @@ public class HttpResponse implements Response {
     public void render(@NonNull ModelAndView modelAndView) {
         StringWriter sw = new StringWriter();
         try {
-            templateEngine.render(modelAndView, sw);
+            WebContext.blade().templateEngine().render(modelAndView, sw);
             ByteBuf          buffer   = Unpooled.wrappedBuffer(sw.toString().getBytes("utf-8"));
             FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(statusCode), buffer);
             this.send(response);
@@ -226,7 +225,8 @@ public class HttpResponse implements Response {
         boolean keepAlive = WebContext.request().keepAlive();
 
         // Add 'Content-Length' header only for a keep-alive connection.
-        response.headers().setInt(HttpConst.CONTENT_LENGTH, response.content().readableBytes());
+        response.headers().set(HttpConst.CONTENT_LENGTH, AsciiString.cached(String.valueOf(response.content().readableBytes())));
+
         if (!keepAlive) {
             ctx.write(response).addListener(ChannelFutureListener.CLOSE);
         } else {
@@ -237,19 +237,20 @@ public class HttpResponse implements Response {
     }
 
     private HttpHeaders getDefaultHeader() {
-        headers.set(HttpConst.DATE, DateKit.gmtDate());
-        headers.set(HttpConst.CONTENT_TYPE, this.contentType);
-        headers.set(HttpConst.X_POWER_BY, "blade-" + Const.VERSION);
+        headers.set(HttpConst.DATE, DateKit.gmtDate(LocalDateTime.now()));
+        headers.set(HttpConst.CONTENT_TYPE, AsciiString.cached(this.contentType));
+        headers.set(HttpConst.X_POWER_BY, AsciiString.cached("blade-" + Const.VERSION));
         if (!headers.contains(HttpConst.SERVER)) {
-            headers.set(HttpConst.SERVER, "blade-" + Const.VERSION);
+            headers.set(HttpConst.SERVER, AsciiString.cached("blade-" + Const.VERSION));
         }
-        this.cookies.forEach(cookie -> headers.add(HttpConst.SET_COOKIE, ServerCookieEncoder.LAX.encode(cookie)));
+        if (this.cookies.size() > 0) {
+            this.cookies.forEach(cookie -> headers.add(HttpConst.SET_COOKIE, io.netty.handler.codec.http.cookie.ServerCookieEncoder.LAX.encode(cookie)));
+        }
         return headers;
     }
 
-    public static HttpResponse build(ChannelHandlerContext ctx, TemplateEngine templateEngine) {
+    public static HttpResponse build(ChannelHandlerContext ctx) {
         HttpResponse httpResponse = new HttpResponse();
-        httpResponse.templateEngine = templateEngine;
         httpResponse.ctx = ctx;
         return httpResponse;
     }

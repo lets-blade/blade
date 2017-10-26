@@ -16,16 +16,11 @@ import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
-import io.netty.handler.codec.http.DefaultFullHttpResponse;
 import io.netty.handler.codec.http.FullHttpRequest;
-import io.netty.handler.codec.http.HttpResponseStatus;
-import io.netty.handler.codec.http.HttpVersion;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Optional;
 import java.util.Set;
-
-import static io.netty.handler.codec.http.HttpUtil.is100ContinueExpected;
 
 /**
  * @author biezhi
@@ -35,33 +30,38 @@ import static io.netty.handler.codec.http.HttpUtil.is100ContinueExpected;
 @ChannelHandler.Sharable
 public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
 
-    private final Blade             blade;
     private final RouteMatcher      routeMatcher;
     private final Set<String>       statics;
-    private final SessionHandler    sessionHandler;
     private final StaticFileHandler staticFileHandler;
     private final RequestInvoker    requestInvoker;
     private final ExceptionHandler  exceptionHandler;
+    public static SessionHandler SESSION_HANDLER = null;
+    private final boolean hasMiddleware;
+    private final boolean hasBeforeHook;
+    private final boolean hasAfterHook;
 
     HttpServerHandler(Blade blade) {
-        this.blade = blade;
         this.statics = blade.getStatics();
         this.exceptionHandler = blade.exceptionHandler();
 
         this.routeMatcher = blade.routeMatcher();
         this.requestInvoker = new RequestInvoker(blade);
         this.staticFileHandler = new StaticFileHandler(blade);
-        this.sessionHandler = blade.sessionManager() != null ? new SessionHandler(blade) : null;
+
+        this.hasMiddleware = routeMatcher.getMiddleware().size() > 0;
+        this.hasBeforeHook = routeMatcher.hasBeforeHook();
+        this.hasAfterHook = routeMatcher.hasAfterHook();
+
+        HttpServerHandler.SESSION_HANDLER = blade.sessionManager() != null ? new SessionHandler(blade) : null;
     }
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest fullHttpRequest) {
-        if (is100ContinueExpected(fullHttpRequest)) {
-            ctx.write(new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.CONTINUE));
-        }
-
-        Request  request  = HttpRequest.build(ctx, fullHttpRequest, sessionHandler);
-        Response response = HttpResponse.build(ctx, blade.templateEngine());
+//        if (is100ContinueExpected(fullHttpRequest)) {
+//            ctx.write(new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.CONTINUE));
+//        }
+        Request  request  = HttpRequest.build(ctx, fullHttpRequest);
+        Response response = HttpResponse.build(ctx);
 
         // route signature
         Signature signature = Signature.builder().request(request).response(response).build();
@@ -92,13 +92,13 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
             signature.setRoute(route);
 
             // middleware
-            if (!requestInvoker.invokeMiddleware(routeMatcher.getMiddleware(), signature)) {
+            if (hasMiddleware && !requestInvoker.invokeMiddleware(routeMatcher.getMiddleware(), signature)) {
                 this.sendFinish(response);
                 return;
             }
 
             // web hook before
-            if (!requestInvoker.invokeHook(routeMatcher.getBefore(uri), signature)) {
+            if (hasBeforeHook && !requestInvoker.invokeHook(routeMatcher.getBefore(uri), signature)) {
                 this.sendFinish(response);
                 return;
             }
@@ -108,8 +108,9 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
             requestInvoker.routeHandle(signature);
 
             // webHook
-            requestInvoker.invokeHook(routeMatcher.getAfter(uri), signature);
-
+            if (hasAfterHook) {
+                requestInvoker.invokeHook(routeMatcher.getAfter(uri), signature);
+            }
         } catch (Exception e) {
             if (null != exceptionHandler) {
                 exceptionHandler.handle(e);
