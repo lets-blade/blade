@@ -37,11 +37,11 @@ import static io.netty.handler.codec.http.HttpHeaderValues.KEEP_ALIVE;
 @Slf4j
 public class HttpResponse implements Response {
 
-    private String                contentType    = Const.CONTENT_TYPE_HTML;
     private HttpHeaders           headers        = new DefaultHttpHeaders();
     private Set<Cookie>           cookies        = new HashSet<>();
     private int                   statusCode     = 200;
     private boolean               isCommit       = false;
+    private String                contentType    = null;
     private ChannelHandlerContext ctx            = null;
     private TemplateEngine        templateEngine = null;
 

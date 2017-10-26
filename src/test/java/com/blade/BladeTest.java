@@ -26,7 +26,7 @@ public class BladeTest extends BaseTestCase {
     @Test
     public void testAppName() {
         start(
-                app.appName("bestKill").devMode(false)
+                app.appName("bestKill2").devMode(false)
         );
     }
 

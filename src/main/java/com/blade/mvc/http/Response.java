@@ -171,7 +171,8 @@ public interface Response {
     default void text(String text) {
         if (null == text) return;
         FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(statusCode()), Unpooled.wrappedBuffer(text.getBytes(CharsetUtil.UTF_8)), false);
-        this.contentType(Const.CONTENT_TYPE_TEXT);
+        if (null == this.contentType())
+            this.contentType(Const.CONTENT_TYPE_TEXT);
         this.send(response);
     }
 
@@ -183,7 +184,8 @@ public interface Response {
     default void html(String html) {
         if (null == html) return;
         FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(statusCode()), Unpooled.wrappedBuffer(html.getBytes(CharsetUtil.UTF_8)), false);
-        this.contentType(Const.CONTENT_TYPE_HTML);
+        if (null == this.contentType())
+            this.contentType(Const.CONTENT_TYPE_HTML);
         this.send(response);
     }
 
@@ -195,7 +197,7 @@ public interface Response {
     default void json(String json) {
         if (null == json) return;
         FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(statusCode()), Unpooled.wrappedBuffer(json.getBytes(CharsetUtil.UTF_8)), false);
-        if (!WebContext.request().isIE()) {
+        if (null == this.contentType() && !WebContext.request().isIE()) {
             this.contentType(Const.CONTENT_TYPE_JSON);
         }
         this.send(response);
