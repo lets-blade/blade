@@ -233,7 +233,7 @@ public class HttpResponse implements Response {
             ctx.write(response).addListener(ChannelFutureListener.CLOSE);
         } else {
             response.headers().set(HttpConst.CONNECTION, KEEP_ALIVE);
-            ctx.write(response);
+            ctx.write(response, ctx.voidPromise());
         }
         isCommit = true;
     }
