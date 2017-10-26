@@ -44,6 +44,8 @@ public class HttpResponse implements Response {
     private String                contentType = null;
     private ChannelHandlerContext ctx         = null;
 
+    private static final CharSequence VERSION = AsciiString.cached("blade-" + Const.VERSION);
+
     @Override
     public int statusCode() {
         return this.statusCode;
@@ -220,7 +222,7 @@ public class HttpResponse implements Response {
     @Override
     public void send(@NonNull FullHttpResponse response) {
 
-        response.headers().add(getDefaultHeader());
+        response.headers().set(getDefaultHeader());
 
         boolean keepAlive = WebContext.request().keepAlive();
 
@@ -238,10 +240,10 @@ public class HttpResponse implements Response {
 
     private HttpHeaders getDefaultHeader() {
         headers.set(HttpConst.DATE, DateKit.gmtDate(LocalDateTime.now()));
-        headers.set(HttpConst.CONTENT_TYPE, AsciiString.cached(this.contentType));
-        headers.set(HttpConst.X_POWER_BY, AsciiString.cached("blade-" + Const.VERSION));
+        headers.set(HttpConst.CONTENT_TYPE, this.contentType);
+        headers.set(HttpConst.X_POWER_BY, VERSION);
         if (!headers.contains(HttpConst.SERVER)) {
-            headers.set(HttpConst.SERVER, AsciiString.cached("blade-" + Const.VERSION));
+            headers.set(HttpConst.SERVER, VERSION);
         }
         if (this.cookies.size() > 0) {
             this.cookies.forEach(cookie -> headers.add(HttpConst.SET_COOKIE, io.netty.handler.codec.http.cookie.ServerCookieEncoder.LAX.encode(cookie)));
