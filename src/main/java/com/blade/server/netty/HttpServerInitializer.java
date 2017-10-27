@@ -14,17 +14,21 @@ import io.netty.handler.codec.http.cors.CorsConfigBuilder;
 import io.netty.handler.codec.http.cors.CorsHandler;
 import io.netty.handler.stream.ChunkedWriteHandler;
 
+import java.util.concurrent.ScheduledExecutorService;
+
 /**
  * HttpServerInitializer
  */
 public class HttpServerInitializer extends ChannelInitializer<SocketChannel> {
 
-    private final Blade   blade;
-    private final boolean enableGzip;
-    private final boolean enableCors;
+    private final Blade                    blade;
+    private final boolean                  enableGzip;
+    private final boolean                  enableCors;
+    private final ScheduledExecutorService service;
 
-    public HttpServerInitializer(Blade blade) {
+    public HttpServerInitializer(Blade blade, ScheduledExecutorService service) {
         this.blade = blade;
+        this.service = service;
         this.enableGzip = blade.environment().getBoolean(Const.ENV_KEY_GZIP_ENABLE, false);
         this.enableCors = blade.environment().getBoolean(Const.ENV_KEY_CORS_ENABLE, false);
     }
@@ -43,6 +47,6 @@ public class HttpServerInitializer extends ChannelInitializer<SocketChannel> {
             CorsConfig corsConfig = CorsConfigBuilder.forAnyOrigin().allowNullOrigin().allowCredentials().build();
             p.addLast(new CorsHandler(corsConfig));
         }
-        p.addLast(new HttpServerHandler(blade));
+        p.addLast(new HttpServerHandler(blade, service));
     }
 }

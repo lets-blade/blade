@@ -2,6 +2,7 @@ package com.blade.server.netty;
 
 import com.blade.Blade;
 import com.blade.exception.NotFoundException;
+import com.blade.kit.DateKit;
 import com.blade.mvc.WebContext;
 import com.blade.mvc.handler.ExceptionHandler;
 import com.blade.mvc.handler.RequestInvoker;
@@ -17,10 +18,14 @@ import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.FullHttpRequest;
+import io.netty.util.AsciiString;
 import lombok.extern.slf4j.Slf4j;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author biezhi
@@ -40,8 +45,14 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
     private final boolean hasBeforeHook;
     private final boolean hasAfterHook;
 
-    HttpServerHandler(Blade blade) {
+    private volatile CharSequence date = new AsciiString(DateKit.gmtDate(LocalDateTime.now()));
+
+
+    HttpServerHandler(Blade blade, ScheduledExecutorService service) {
         this.statics = blade.getStatics();
+
+        service.scheduleWithFixedDelay(() -> date = new AsciiString(DateKit.gmtDate(LocalDateTime.now())), 1000, 1000, TimeUnit.MILLISECONDS);
+
         this.exceptionHandler = blade.exceptionHandler();
 
         this.routeMatcher = blade.routeMatcher();
@@ -57,15 +68,11 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest fullHttpRequest) {
-//        if (is100ContinueExpected(fullHttpRequest)) {
-//            ctx.write(new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.CONTINUE));
-//        }
         Request  request  = HttpRequest.build(ctx, fullHttpRequest);
-        Response response = HttpResponse.build(ctx);
+        Response response = HttpResponse.build(ctx, date);
 
         // route signature
         Signature signature = Signature.builder().request(request).response(response).build();
-
         try {
 
             // request uri

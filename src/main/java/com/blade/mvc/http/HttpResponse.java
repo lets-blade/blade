@@ -1,9 +1,7 @@
 package com.blade.mvc.http;
 
 import com.blade.exception.NotFoundException;
-import com.blade.kit.DateKit;
 import com.blade.kit.StringKit;
-import com.blade.mvc.Const;
 import com.blade.mvc.WebContext;
 import com.blade.mvc.ui.ModelAndView;
 import com.blade.mvc.wrapper.OutputStreamWrapper;
@@ -17,13 +15,11 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.DefaultFileRegion;
 import io.netty.handler.codec.http.*;
 import io.netty.handler.codec.http.cookie.Cookie;
-import io.netty.util.AsciiString;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.*;
 import java.nio.file.Files;
-import java.time.LocalDateTime;
 import java.util.*;
 
 import static io.netty.handler.codec.http.HttpHeaderValues.KEEP_ALIVE;
@@ -41,10 +37,9 @@ public class HttpResponse implements Response {
     private Set<Cookie>           cookies     = new HashSet<>(4);
     private int                   statusCode  = 200;
     private boolean               isCommit    = false;
-    private String                contentType = null;
     private ChannelHandlerContext ctx         = null;
-
-    private static final CharSequence VERSION = AsciiString.cached("blade-" + Const.VERSION);
+    private CharSequence          contentType = null;
+    private CharSequence          dateString  = null;
 
     @Override
     public int statusCode() {
@@ -58,13 +53,13 @@ public class HttpResponse implements Response {
     }
 
     @Override
-    public Response contentType(@NonNull String contentType) {
+    public Response contentType(@NonNull CharSequence contentType) {
         this.contentType = contentType;
         return this;
     }
 
     @Override
-    public String contentType() {
+    public CharSequence contentType() {
         return this.contentType;
     }
 
@@ -76,7 +71,7 @@ public class HttpResponse implements Response {
     }
 
     @Override
-    public Response header(@NonNull String name, @NonNull String value) {
+    public Response header(CharSequence name, CharSequence value) {
         this.headers.set(name, value);
         return this;
     }
@@ -221,13 +216,14 @@ public class HttpResponse implements Response {
 
     @Override
     public void send(@NonNull FullHttpResponse response) {
-
         response.headers().set(getDefaultHeader());
 
         boolean keepAlive = WebContext.request().keepAlive();
 
-        // Add 'Content-Length' header only for a keep-alive connection.
-        response.headers().set(HttpConst.CONTENT_LENGTH, AsciiString.cached(String.valueOf(response.content().readableBytes())));
+        if (!response.headers().contains(HttpConst.CONTENT_LENGTH)) {
+            // Add 'Content-Length' header only for a keep-alive connection.
+            response.headers().set(HttpConst.CONTENT_LENGTH, String.valueOf(response.content().readableBytes()));
+        }
 
         if (!keepAlive) {
             ctx.write(response).addListener(ChannelFutureListener.CLOSE);
@@ -239,11 +235,11 @@ public class HttpResponse implements Response {
     }
 
     private HttpHeaders getDefaultHeader() {
-        headers.set(HttpConst.DATE, DateKit.gmtDate(LocalDateTime.now()));
-        headers.set(HttpConst.CONTENT_TYPE, this.contentType);
-        headers.set(HttpConst.X_POWER_BY, VERSION);
+        headers.set(HttpConst.DATE, dateString);
+        headers.set(HttpConst.CONTENT_TYPE, HttpConst.getContentType(this.contentType));
+        headers.set(HttpConst.X_POWER_BY, HttpConst.VERSION);
         if (!headers.contains(HttpConst.SERVER)) {
-            headers.set(HttpConst.SERVER, VERSION);
+            headers.set(HttpConst.SERVER, HttpConst.VERSION);
         }
         if (this.cookies.size() > 0) {
             this.cookies.forEach(cookie -> headers.add(HttpConst.SET_COOKIE, io.netty.handler.codec.http.cookie.ServerCookieEncoder.LAX.encode(cookie)));
@@ -251,9 +247,10 @@ public class HttpResponse implements Response {
         return headers;
     }
 
-    public static HttpResponse build(ChannelHandlerContext ctx) {
+    public static HttpResponse build(ChannelHandlerContext ctx, CharSequence dateString) {
         HttpResponse httpResponse = new HttpResponse();
         httpResponse.ctx = ctx;
+        httpResponse.dateString = dateString;
         return httpResponse;
     }
 
