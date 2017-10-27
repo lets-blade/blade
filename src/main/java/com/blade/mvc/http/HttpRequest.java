@@ -4,11 +4,12 @@ import com.blade.kit.StringKit;
 import com.blade.mvc.multipart.FileItem;
 import com.blade.mvc.route.Route;
 import com.blade.server.netty.HttpConst;
-import com.blade.server.netty.SessionHandler;
+import com.blade.server.netty.HttpServerHandler;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.FullHttpRequest;
+import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpUtil;
 import io.netty.handler.codec.http.QueryStringDecoder;
 import io.netty.handler.codec.http.cookie.ServerCookieDecoder;
@@ -40,7 +41,6 @@ public class HttpRequest implements Request {
         DiskAttribute.baseDirectory = null;
     }
 
-    private SessionHandler sessionHandler;
     private ByteBuf body = Unpooled.copiedBuffer("", CharsetUtil.UTF_8);
     private String  host;
     private String  uri;
@@ -49,26 +49,37 @@ public class HttpRequest implements Request {
     private String  method;
     private boolean keepAlive;
 
-    private Map<String, String>       headers    = new HashMap<>();
-    private Map<String, Object>       attributes = new HashMap<>();
-    private Map<String, List<String>> parameters = new HashMap<>();
-    private Map<String, String>       pathParams = new HashMap<>();
-    private Map<String, Cookie>       cookies    = new HashMap<>();
-    private Map<String, FileItem>     fileItems  = new HashMap<>();
+    private Map<String, String>       headers    = null;
+    private Map<String, Object>       attributes = null;
+    private Map<String, List<String>> parameters = null;
+    private Map<String, String>       pathParams = null;
+    private Map<String, Cookie>       cookies    = new HashMap<>(4);
+    private Map<String, FileItem>     fileItems  = new HashMap<>(4);
 
     private void init(FullHttpRequest fullHttpRequest) {
         // headers
-        fullHttpRequest.headers().forEach((header) -> headers.put(header.getKey(), header.getValue()));
+        HttpHeaders httpHeaders = fullHttpRequest.trailingHeaders();
+        if (httpHeaders.size() > 0) {
+            this.headers = new HashMap<>(httpHeaders.size());
+            httpHeaders.forEach((header) -> headers.put(header.getKey(), header.getValue()));
+        } else {
+            this.headers = Collections.EMPTY_MAP;
+        }
 
         // body content
         this.body = fullHttpRequest.content().copy();
 
         // request query parameters
-        this.parameters.putAll(new QueryStringDecoder(fullHttpRequest.uri(), CharsetUtil.UTF_8).parameters());
+        Map<String, List<String>> parameters = new QueryStringDecoder(fullHttpRequest.uri(), CharsetUtil.UTF_8).parameters();
+        if (null != parameters) {
+            this.parameters = parameters;
+        } else {
+            this.parameters = Collections.EMPTY_MAP;
+        }
 
         if (!HttpConst.METHOD_GET.equals(fullHttpRequest.method().name())) {
             HttpPostRequestDecoder decoder = new HttpPostRequestDecoder(HTTP_DATA_FACTORY, fullHttpRequest);
-            decoder.getBodyHttpDatas().stream().forEach(this::parseData);
+            decoder.getBodyHttpDatas().forEach(this::parseData);
         }
 
         // cookies
@@ -191,7 +202,7 @@ public class HttpRequest implements Request {
 
     @Override
     public Session session() {
-        return sessionHandler.createSession(this);
+        return HttpServerHandler.SESSION_HANDLER.createSession(this);
     }
 
     @Override
@@ -235,6 +246,9 @@ public class HttpRequest implements Request {
 
     @Override
     public Map<String, Object> attributes() {
+        if (null == this.attributes) {
+            this.attributes = new HashMap<>(4);
+        }
         return this.attributes;
     }
 
@@ -253,9 +267,8 @@ public class HttpRequest implements Request {
         return this.body.toString(CharsetUtil.UTF_8);
     }
 
-    public static HttpRequest build(ChannelHandlerContext ctx, FullHttpRequest fullHttpRequest, SessionHandler sessionHandler) {
+    public static HttpRequest build(ChannelHandlerContext ctx, FullHttpRequest fullHttpRequest) {
         HttpRequest httpRequest = new HttpRequest();
-        httpRequest.sessionHandler = sessionHandler;
         httpRequest.keepAlive = HttpUtil.isKeepAlive(fullHttpRequest);
         String remoteAddress = ctx.channel().remoteAddress().toString();
         httpRequest.host = StringKit.isNotBlank(remoteAddress) ? remoteAddress.substring(1) : "Unknown";

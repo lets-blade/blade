@@ -1,12 +1,9 @@
 package com.blade.mvc.http;
 
 import com.blade.exception.NotFoundException;
-import com.blade.kit.DateKit;
 import com.blade.kit.StringKit;
-import com.blade.mvc.Const;
 import com.blade.mvc.WebContext;
 import com.blade.mvc.ui.ModelAndView;
-import com.blade.mvc.ui.template.TemplateEngine;
 import com.blade.mvc.wrapper.OutputStreamWrapper;
 import com.blade.server.netty.HttpConst;
 import com.blade.server.netty.ProgressiveFutureListener;
@@ -18,7 +15,6 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.DefaultFileRegion;
 import io.netty.handler.codec.http.*;
 import io.netty.handler.codec.http.cookie.Cookie;
-import io.netty.handler.codec.http.cookie.ServerCookieEncoder;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
@@ -37,13 +33,13 @@ import static io.netty.handler.codec.http.HttpHeaderValues.KEEP_ALIVE;
 @Slf4j
 public class HttpResponse implements Response {
 
-    private HttpHeaders           headers        = new DefaultHttpHeaders();
-    private Set<Cookie>           cookies        = new HashSet<>();
-    private int                   statusCode     = 200;
-    private boolean               isCommit       = false;
-    private String                contentType    = null;
-    private ChannelHandlerContext ctx            = null;
-    private TemplateEngine        templateEngine = null;
+    private HttpHeaders           headers     = new DefaultHttpHeaders(false);
+    private Set<Cookie>           cookies     = new HashSet<>(4);
+    private int                   statusCode  = 200;
+    private boolean               isCommit    = false;
+    private ChannelHandlerContext ctx         = null;
+    private CharSequence          contentType = null;
+    private CharSequence          dateString  = null;
 
     @Override
     public int statusCode() {
@@ -57,14 +53,14 @@ public class HttpResponse implements Response {
     }
 
     @Override
-    public Response contentType(@NonNull String contentType) {
+    public Response contentType(@NonNull CharSequence contentType) {
         this.contentType = contentType;
         return this;
     }
 
     @Override
     public String contentType() {
-        return this.contentType;
+        return String.valueOf(this.contentType);
     }
 
     @Override
@@ -75,7 +71,7 @@ public class HttpResponse implements Response {
     }
 
     @Override
-    public Response header(@NonNull String name, @NonNull String value) {
+    public Response header(CharSequence name, CharSequence value) {
         this.headers.set(name, value);
         return this;
     }
@@ -197,7 +193,7 @@ public class HttpResponse implements Response {
     public void render(@NonNull ModelAndView modelAndView) {
         StringWriter sw = new StringWriter();
         try {
-            templateEngine.render(modelAndView, sw);
+            WebContext.blade().templateEngine().render(modelAndView, sw);
             ByteBuf          buffer   = Unpooled.wrappedBuffer(sw.toString().getBytes("utf-8"));
             FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(statusCode), buffer);
             this.send(response);
@@ -220,37 +216,41 @@ public class HttpResponse implements Response {
 
     @Override
     public void send(@NonNull FullHttpResponse response) {
-
-        response.headers().add(getDefaultHeader());
+        response.headers().set(getDefaultHeader());
 
         boolean keepAlive = WebContext.request().keepAlive();
 
-        // Add 'Content-Length' header only for a keep-alive connection.
-        response.headers().setInt(HttpConst.CONTENT_LENGTH, response.content().readableBytes());
+        if (!response.headers().contains(HttpConst.CONTENT_LENGTH)) {
+            // Add 'Content-Length' header only for a keep-alive connection.
+            response.headers().set(HttpConst.CONTENT_LENGTH, String.valueOf(response.content().readableBytes()));
+        }
+
         if (!keepAlive) {
             ctx.write(response).addListener(ChannelFutureListener.CLOSE);
         } else {
             response.headers().set(HttpConst.CONNECTION, KEEP_ALIVE);
-            ctx.write(response);
+            ctx.write(response, ctx.voidPromise());
         }
         isCommit = true;
     }
 
     private HttpHeaders getDefaultHeader() {
-        headers.set(HttpConst.DATE, DateKit.gmtDate());
-        headers.set(HttpConst.CONTENT_TYPE, this.contentType);
-        headers.set(HttpConst.X_POWER_BY, "blade-" + Const.VERSION);
+        headers.set(HttpConst.DATE, dateString);
+        headers.set(HttpConst.CONTENT_TYPE, HttpConst.getContentType(this.contentType));
+        headers.set(HttpConst.X_POWER_BY, HttpConst.VERSION);
         if (!headers.contains(HttpConst.SERVER)) {
-            headers.set(HttpConst.SERVER, "blade-" + Const.VERSION);
+            headers.set(HttpConst.SERVER, HttpConst.VERSION);
         }
-        this.cookies.forEach(cookie -> headers.add(HttpConst.SET_COOKIE, ServerCookieEncoder.LAX.encode(cookie)));
+        if (this.cookies.size() > 0) {
+            this.cookies.forEach(cookie -> headers.add(HttpConst.SET_COOKIE, io.netty.handler.codec.http.cookie.ServerCookieEncoder.LAX.encode(cookie)));
+        }
         return headers;
     }
 
-    public static HttpResponse build(ChannelHandlerContext ctx, TemplateEngine templateEngine) {
+    public static HttpResponse build(ChannelHandlerContext ctx, CharSequence dateString) {
         HttpResponse httpResponse = new HttpResponse();
-        httpResponse.templateEngine = templateEngine;
         httpResponse.ctx = ctx;
+        httpResponse.dateString = dateString;
         return httpResponse;
     }
 

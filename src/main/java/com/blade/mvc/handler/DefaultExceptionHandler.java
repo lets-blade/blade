@@ -56,11 +56,9 @@ public class DefaultExceptionHandler implements ExceptionHandler {
 
         if (e.getStatus() == InternalErrorException.STATUS) {
             e.printStackTrace();
-            if (returnHtml(request)) {
-                this.render500(request, response);
-            }
+            this.render500(request, response);
         }
-        if (e.getStatus() == NotFoundException.STATUS && returnHtml(request)) {
+        if (e.getStatus() == NotFoundException.STATUS) {
             Optional<String> page404 = Optional.ofNullable(blade.environment().get(ENV_KEY_PAGE_404, null));
             if (page404.isPresent()) {
                 response.render(page404.get());
@@ -71,11 +69,6 @@ public class DefaultExceptionHandler implements ExceptionHandler {
                 response.html(htmlCreator.html());
             }
         }
-    }
-
-    private boolean returnHtml(Request request) {
-        String accepts = request.header("Accept");
-        return accepts != null && accepts.contains("html");
     }
 
     private void render500(Request request, Response response) {

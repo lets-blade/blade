@@ -148,7 +148,7 @@ public class NettyServer implements Server {
         }
 
         b.handler(new LoggingHandler(LogLevel.DEBUG))
-                .childHandler(new HttpServerInitializer(blade));
+                .childHandler(new HttpServerInitializer(blade, bossGroup.next()));
 
         String address = environment.get(ENV_KEY_SERVER_ADDRESS, DEFAULT_SERVER_ADDRESS);
         int    port    = environment.getInt(ENV_KEY_SERVER_PORT, DEFAULT_SERVER_PORT);

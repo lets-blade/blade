@@ -1,6 +1,10 @@
 package com.blade.server.netty;
 
+import com.blade.mvc.Const;
 import io.netty.util.AsciiString;
+
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Http headers const
@@ -20,16 +24,34 @@ public interface HttpConst {
     char   CHAR_SLASH          = '/';
     char   CHAR_POINT          = '.';
 
-    AsciiString CONNECTION     = AsciiString.cached("Connection");
-    AsciiString CONTENT_LENGTH = AsciiString.cached("Content-Length");
-    AsciiString CONTENT_TYPE   = AsciiString.cached("Content-Type");
-    AsciiString DATE           = AsciiString.cached("Date");
-    AsciiString LOCATION       = AsciiString.cached("Location");
-    AsciiString X_POWER_BY     = AsciiString.cached("X-Powered-By");
-    AsciiString EXPIRES        = AsciiString.cached("Expires");
-    AsciiString CACHE_CONTROL  = AsciiString.cached("Cache-Control");
-    AsciiString LAST_MODIFIED  = AsciiString.cached("Last-Modified");
-    AsciiString SERVER         = AsciiString.cached("Server");
-    AsciiString SET_COOKIE     = AsciiString.cached("Set-Cookie");
-    AsciiString KEEP_ALIVE     = AsciiString.cached("Keep-Alive");
+    CharSequence CONNECTION     = AsciiString.cached("Connection");
+    CharSequence CONTENT_LENGTH = AsciiString.cached("Content-Length");
+    CharSequence CONTENT_TYPE   = AsciiString.cached("Content-Type");
+    CharSequence DATE           = AsciiString.cached("Date");
+    CharSequence LOCATION       = AsciiString.cached("Location");
+    CharSequence X_POWER_BY     = AsciiString.cached("X-Powered-By");
+    CharSequence EXPIRES        = AsciiString.cached("Expires");
+    CharSequence CACHE_CONTROL  = AsciiString.cached("Cache-Control");
+    CharSequence LAST_MODIFIED  = AsciiString.cached("Last-Modified");
+    CharSequence SERVER         = AsciiString.cached("Server");
+    CharSequence SET_COOKIE     = AsciiString.cached("Set-Cookie");
+    CharSequence KEEP_ALIVE     = AsciiString.cached("Keep-Alive");
+
+    String CONTENT_TYPE_HTML = "text/html; charset=UTF-8";
+
+    CharSequence VERSION = AsciiString.cached("blade-" + Const.VERSION);
+
+    Map<CharSequence, CharSequence> contentTypes = new ConcurrentHashMap<>(8);
+
+    static CharSequence getContentType(CharSequence contentType) {
+        if (null == contentType) {
+            contentType = CONTENT_TYPE_HTML;
+        }
+        if (contentTypes.containsKey(contentType)) {
+            return contentTypes.get(contentType);
+        }
+        contentTypes.put(contentType, AsciiString.cached(String.valueOf(contentType)));
+        return contentTypes.get(contentType);
+    }
+
 }

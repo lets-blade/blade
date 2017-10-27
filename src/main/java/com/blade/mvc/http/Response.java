@@ -73,7 +73,7 @@ public interface Response {
      * @param contentType content type
      * @return Return Response
      */
-    Response contentType(String contentType);
+    Response contentType(CharSequence contentType);
 
     /**
      * Get current response headers: contentType
@@ -96,7 +96,7 @@ public interface Response {
      * @param value Header Value
      * @return Return Response
      */
-    Response header(String name, String value);
+    Response header(CharSequence name, CharSequence value);
 
     /**
      * Get current response cookies

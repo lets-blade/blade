@@ -44,7 +44,8 @@ public class Signature {
     public void setRoute(Route route) throws Exception {
         this.route = route;
         this.action = route.getAction();
-        if (null != this.action && !this.action.toString().contains(LAMBDA)) {
+        if (null != this.action &&
+                !this.action.getDeclaringClass().getName().contains(LAMBDA)) {
             this.parameters = MethodArgument.getArgs(this);
         }
     }
