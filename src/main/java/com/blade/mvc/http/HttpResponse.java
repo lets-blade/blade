@@ -59,8 +59,8 @@ public class HttpResponse implements Response {
     }
 
     @Override
-    public CharSequence contentType() {
-        return this.contentType;
+    public String contentType() {
+        return String.valueOf(this.contentType);
     }
 
     @Override

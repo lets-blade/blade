@@ -80,7 +80,7 @@ public interface Response {
      *
      * @return return response content-type
      */
-    CharSequence contentType();
+    String contentType();
 
     /**
      * Get current response headers
