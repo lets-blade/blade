@@ -37,11 +37,16 @@ public interface HttpConst {
     CharSequence SET_COOKIE     = AsciiString.cached("Set-Cookie");
     CharSequence KEEP_ALIVE     = AsciiString.cached("Keep-Alive");
 
+    String CONTENT_TYPE_HTML = "text/html; charset=UTF-8";
+
     CharSequence VERSION = AsciiString.cached("blade-" + Const.VERSION);
 
     Map<CharSequence, CharSequence> contentTypes = new ConcurrentHashMap<>(8);
 
     static CharSequence getContentType(CharSequence contentType) {
+        if (null == contentType) {
+            contentType = CONTENT_TYPE_HTML;
+        }
         if (contentTypes.containsKey(contentType)) {
             return contentTypes.get(contentType);
         }

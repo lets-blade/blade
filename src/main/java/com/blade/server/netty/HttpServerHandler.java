@@ -28,6 +28,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 /**
+ * Http Server Handler
+ *
  * @author biezhi
  * 2017/5/31
  */
