@@ -81,18 +81,18 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
             // write session
             WebContext.set(new WebContext(request, response));
 
-            if (isStaticFile(uri)) {
-                staticFileHandler.handle(ctx, request, response);
-                return;
-            } else {
-                log.info("{}\t{}\t{}", request.protocol(), request.method(), uri);
-            }
-
             Route route = routeMatcher.lookupRoute(request.method(), uri);
             if (null == route) {
+                if (isStaticFile(uri)) {
+                    staticFileHandler.handle(ctx, request, response);
+                    return;
+                }
                 log.warn("Not Found\t{}", uri);
                 throw new NotFoundException();
             }
+
+            log.info("{}\t{}\t{}", request.protocol(), request.method(), uri);
+
             request.initPathParams(route);
 
             // get method parameters
