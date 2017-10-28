@@ -274,17 +274,21 @@ public class RequestTest extends BaseTestCase {
                         .post("/upload2", (request, response) -> response.json(request.fileItem("file1").orElse(null)))
         );
 
+        String contentLength = this.isWindows() ? "1584" : "1551";
         String body = post("/upload1")
                 .field("file1", new File(RequestTest.class.getResource("/log_config.txt").getPath()))
                 .asString().getBody();
 
-        assertEquals("{\"file1\":{\"name\":\"file1\",\"fileName\":\"log_config.txt\",\"contentType\":\"text/plain\",\"length\":1551}}", body);
+        assertEquals("{\"file1\":{\"name\":\"file1\",\"fileName\":\"log_config.txt\",\"contentType\":\"text/plain\",\"length\":" + contentLength + "}}", body);
 
         body = post("/upload2")
                 .field("file1", new File(RequestTest.class.getResource("/log_config.txt").getPath()))
                 .asString().getBody();
 
-        assertEquals("{\"name\":\"file1\",\"fileName\":\"log_config.txt\",\"contentType\":\"text/plain\",\"length\":1551}", body);
+        assertEquals("{\"name\":\"file1\",\"fileName\":\"log_config.txt\",\"contentType\":\"text/plain\",\"length\":" + contentLength + "}", body);
     }
 
+    private boolean isWindows() {
+        return System.getProperty("os.name").toLowerCase().indexOf("win") > -1;
+    }
 }
