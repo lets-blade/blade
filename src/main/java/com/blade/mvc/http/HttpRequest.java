@@ -72,7 +72,8 @@ public class HttpRequest implements Request {
         // request query parameters
         Map<String, List<String>> parameters = new QueryStringDecoder(fullHttpRequest.uri(), CharsetUtil.UTF_8).parameters();
         if (null != parameters) {
-            this.parameters = parameters;
+            this.parameters = new HashMap<>();
+            this.parameters.putAll(parameters);
         } else {
             this.parameters = new HashMap<>();
         }
