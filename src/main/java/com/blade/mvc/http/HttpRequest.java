@@ -58,7 +58,7 @@ public class HttpRequest implements Request {
 
     private void init(FullHttpRequest fullHttpRequest) {
         // headers
-        HttpHeaders httpHeaders = fullHttpRequest.trailingHeaders();
+        HttpHeaders httpHeaders = fullHttpRequest.headers();
         if (httpHeaders.size() > 0) {
             this.headers = new HashMap<>(httpHeaders.size());
             httpHeaders.forEach((header) -> headers.put(header.getKey(), header.getValue()));
@@ -72,7 +72,8 @@ public class HttpRequest implements Request {
         // request query parameters
         Map<String, List<String>> parameters = new QueryStringDecoder(fullHttpRequest.uri(), CharsetUtil.UTF_8).parameters();
         if (null != parameters) {
-            this.parameters = parameters;
+            this.parameters = new HashMap<>(parameters.size());
+            this.parameters.putAll(parameters);
         } else {
             this.parameters = Collections.EMPTY_MAP;
         }

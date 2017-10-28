@@ -2,6 +2,7 @@ package com.blade.mvc.http;
 
 import com.blade.exception.NotFoundException;
 import com.blade.kit.StringKit;
+import com.blade.mvc.Const;
 import com.blade.mvc.WebContext;
 import com.blade.mvc.ui.ModelAndView;
 import com.blade.mvc.wrapper.OutputStreamWrapper;
@@ -60,7 +61,7 @@ public class HttpResponse implements Response {
 
     @Override
     public String contentType() {
-        return String.valueOf(this.contentType);
+        return String.valueOf(null == this.contentType ? Const.CONTENT_TYPE_HTML : this.contentType);
     }
 
     @Override
