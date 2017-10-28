@@ -177,11 +177,11 @@ public class RequestTest extends BaseTestCase {
     @Test
     public void testContentType() throws Exception {
         start(
-                app.get("/c1", (request, response) -> response.text(response.contentType()))
+                app.get("/c1", (request, response) -> response.html("Hello"))
                         .get("/c2", (request, response) -> response.contentType("application/json; charset=UTF-8").text(response.contentType()))
         );
 
-        assertEquals(Const.CONTENT_TYPE_HTML, bodyToString("/c1"));
+        assertEquals(Const.CONTENT_TYPE_HTML, get("/c1").asString().getHeaders().getFirst("Content-Type"));
         assertEquals(Const.CONTENT_TYPE_JSON, bodyToString("/c2"));
     }
 
