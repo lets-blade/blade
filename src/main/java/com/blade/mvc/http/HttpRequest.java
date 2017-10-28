@@ -58,12 +58,12 @@ public class HttpRequest implements Request {
 
     private void init(FullHttpRequest fullHttpRequest) {
         // headers
-        HttpHeaders httpHeaders = fullHttpRequest.trailingHeaders();
+        HttpHeaders httpHeaders = fullHttpRequest.headers();
         if (httpHeaders.size() > 0) {
             this.headers = new HashMap<>(httpHeaders.size());
             httpHeaders.forEach((header) -> headers.put(header.getKey(), header.getValue()));
         } else {
-            this.headers = Collections.EMPTY_MAP;
+            this.headers = new HashMap<>();
         }
 
         // body content
@@ -74,7 +74,7 @@ public class HttpRequest implements Request {
         if (null != parameters) {
             this.parameters = parameters;
         } else {
-            this.parameters = Collections.EMPTY_MAP;
+            this.parameters = new HashMap<>();
         }
 
         if (!HttpConst.METHOD_GET.equals(fullHttpRequest.method().name())) {
@@ -95,7 +95,7 @@ public class HttpRequest implements Request {
                     Attribute attribute = (Attribute) data;
                     String name = attribute.getName();
                     String value = attribute.getValue();
-                    this.parameters.put(name, Arrays.asList(value));
+                    this.parameters.put(name, Collections.singletonList(value));
                     break;
                 case FileUpload:
                     FileUpload fileUpload = (FileUpload) data;
@@ -135,7 +135,7 @@ public class HttpRequest implements Request {
     /**
      * parse netty cookie to {@link Cookie}.
      *
-     * @param nettyCookie
+     * @param nettyCookie netty raw cookie instance
      */
     private void parseCookie(io.netty.handler.codec.http.cookie.Cookie nettyCookie) {
         Cookie cookie = new Cookie();

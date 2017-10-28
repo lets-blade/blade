@@ -60,7 +60,7 @@ public class HttpResponse implements Response {
 
     @Override
     public String contentType() {
-        return String.valueOf(this.contentType);
+        return null == this.contentType ? null : String.valueOf(this.contentType);
     }
 
     @Override
