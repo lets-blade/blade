@@ -51,10 +51,10 @@ public class HttpRequest implements Request {
 
     private Map<String, String>       headers    = null;
     private Map<String, Object>       attributes = null;
-    private Map<String, List<String>> parameters = null;
+    private Map<String, List<String>> parameters = new HashMap<>();
     private Map<String, String>       pathParams = null;
-    private Map<String, Cookie>       cookies    = new HashMap<>(4);
-    private Map<String, FileItem>     fileItems  = new HashMap<>(4);
+    private Map<String, Cookie>       cookies    = new HashMap<>();
+    private Map<String, FileItem>     fileItems  = new HashMap<>();
 
     private void init(FullHttpRequest fullHttpRequest) {
         // headers
@@ -74,8 +74,6 @@ public class HttpRequest implements Request {
         if (null != parameters) {
             this.parameters = new HashMap<>();
             this.parameters.putAll(parameters);
-        } else {
-            this.parameters = new HashMap<>();
         }
 
         if (!HttpConst.METHOD_GET.equals(fullHttpRequest.method().name())) {

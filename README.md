@@ -86,34 +86,34 @@ Using browser open http://localhost:9000 so you can see the first `Blade` applic
 
 ## Contents
 
-- [Register Route](#register-route)
-    - [HardCode](#hardCode)
-    - [Controller](#controller)
-- [Get Request Parameters](#get-request-parameters)
-    - [Form Parameters](#form-parameters)
-    - [Path Parameters](#path-parameters)
-    - [Body Parameters](#body-parameters)
-    - [Parse To Model](#parse-to-model)
-- [Get Environment](#get-environment)
-- [Get Header](#get-header)
-- [Get Cookie](#get-cookie)
-- [Static Resource](#static-resource)
-- [Upload File](#upload-file)
-- [Set Session](#set-session)
-- [Render To Browser](#render-to-broser)
-    - [Render JSON](#render-json)
-    - [Render Text](#render-text)
-    - [Render Html](#render-html)
-- [Render Template](#render-template)
-    - [Default Template](#default-template)
-    - [Jetbrick Template](#jetbrick-template)
-- [Redirects](#redirects)
-- [Write Cookie](#write-cookie)
-- [Web Hook](#web-hook)
-- [Logging](#logging)
-- [Basic Auth](#basic-auth)
-- [Change Server Port](#change-server-port)
-- [Custom Exception Handler](#custom-exception-handler)
+- [**`Register Route`**](#register-route)
+    - [**`HardCode`**](#hardCode)
+    - [**`Controller`**](#controller)
+- [**`Get Request Parameters`**](#get-request-parameters)
+    - [**`Form Parameters`**](#form-parameters)
+    - [**`Path Parameters`**](#path-parameters)
+    - [**`Body Parameters`**](#body-parameters)
+    - [**`Parse To Model`**](#parse-to-model)
+- [**`Get Environment`**](#get-environment)
+- [**`Get Header`**](#get-header)
+- [**`Get Cookie`**](#get-cookie)
+- [**`Static Resource`**](#static-resource)
+- [**`Upload File`**](#upload-file)
+- [**`Set Session`**](#set-session)
+- [**`Render To Browser`**](#render-to-broser)
+    - [**`Render JSON`**](#render-json)
+    - [**`Render Text`**](#render-text)
+    - [**`Render Html`**](#render-html)
+- [**`Render Template`**](#render-template)
+    - [**`Default Template`**](#default-template)
+    - [**`Jetbrick Template`**](#jetbrick-template)
+- [**`Redirects`**](#redirects)
+- [**`Write Cookie`**](#write-cookie)
+- [**`Web Hook`**](#web-hook)
+- [**`Logging`**](#logging)
+- [**`Basic Auth`**](#basic-auth)
+- [**`Change Server Port`**](#change-server-port)
+- [**`Custom Exception Handler`**](#custom-exception-handler)
 
 ## Register Route
 
@@ -131,7 +131,7 @@ public static void main(String[] args) {
 }
 ```
 
-### Controller
+### `Controller`
 
 ```java
 @Path
