@@ -12,6 +12,7 @@ import io.netty.handler.codec.http.HttpServerExpectContinueHandler;
 import io.netty.handler.codec.http.cors.CorsConfig;
 import io.netty.handler.codec.http.cors.CorsConfigBuilder;
 import io.netty.handler.codec.http.cors.CorsHandler;
+import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
 import io.netty.handler.stream.ChunkedWriteHandler;
 
 import java.util.concurrent.ScheduledExecutorService;
@@ -46,6 +47,10 @@ public class HttpServerInitializer extends ChannelInitializer<SocketChannel> {
         if (enableCors) {
             CorsConfig corsConfig = CorsConfigBuilder.forAnyOrigin().allowNullOrigin().allowCredentials().build();
             p.addLast(new CorsHandler(corsConfig));
+        }
+        if (null != blade.webSocketPath()) {
+            p.addLast(new WebSocketServerProtocolHandler(blade.webSocketPath(), null, true));
+            p.addLast(new WebSockerHandler(blade));
         }
         p.addLast(new HttpServerHandler(blade, service));
     }
