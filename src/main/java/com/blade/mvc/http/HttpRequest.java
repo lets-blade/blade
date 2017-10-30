@@ -51,7 +51,7 @@ public class HttpRequest implements Request {
 
     private Map<String, String>       headers    = null;
     private Map<String, Object>       attributes = null;
-    private Map<String, List<String>> parameters = null;
+    private Map<String, List<String>> parameters = new HashMap<>();
     private Map<String, String>       pathParams = null;
     private Map<String, Cookie>       cookies    = new HashMap<>(4);
     private Map<String, FileItem>     fileItems  = new HashMap<>(4);
