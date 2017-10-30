@@ -131,7 +131,7 @@ public static void main(String[] args) {
 }
 ```
 
-### Controller
+### `Controller`
 
 ```java
 @Path
@@ -152,9 +152,9 @@ public class IndexController {
 }
 ```
 
-## Get Request Parameters
+## `Get Request Parameters`
 
-### Form Parameters
+### `Form Parameters`
 
 Here is an example:
 
