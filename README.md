@@ -12,7 +12,7 @@
     🇨🇳 <a href="README_CN.md">简体中文</a>
 </p>
 <p align="center">
-    <a href="https://travis-ci.org/biezhi/blade"><img src="https://img.shields.io/travis/biezhi/blade.svg?style=flat-square"></a>
+    <a href="https://travis-ci.org/biezhi/blade"><a href="#backers" alt="sponsors on Open Collective"><img src="https://opencollective.com/blade/backers/badge.svg" /></a> <a href="#sponsors" alt="Sponsors on Open Collective"><img src="https://opencollective.com/blade/sponsors/badge.svg" /></a> <img src="https://img.shields.io/travis/biezhi/blade.svg?style=flat-square"></a>
     <a href="http://codecov.io/github/biezhi/blade?branch=dev"><img src="https://img.shields.io/codecov/c/github/biezhi/blade/dev.svg?style=flat-square"></a>
     <a href="http://search.maven.org/#search%7Cga%7C1%7Cblade-mvc"><img src="https://img.shields.io/maven-central/v/com.bladejava/blade-mvc.svg?style=flat-square"></a>
     <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache%202-4EB1BA.svg?style=flat-square"></a>
@@ -683,6 +683,36 @@ Thank you very much for the developers to help in the project, if you are willin
 - [Awakens](https://github.com/Awakens)
 - [shellac](https://github.com/shellac)
 - [SudarAbisheck](https://github.com/SudarAbisheck)
+
+## Contributors
+
+This project exists thanks to all the people who contribute. [[Contribute]](CONTRIBUTING.md).
+<a href="graphs/contributors"><img src="https://opencollective.com/blade/contributors.svg?width=890" /></a>
+
+
+## Backers
+
+Thank you to all our backers! 🙏 [[Become a backer](https://opencollective.com/blade#backer)]
+
+<a href="https://opencollective.com/blade#backers" target="_blank"><img src="https://opencollective.com/blade/backers.svg?width=890"></a>
+
+
+## Sponsors
+
+Support this project by becoming a sponsor. Your logo will show up here with a link to your website. [[Become a sponsor](https://opencollective.com/blade#sponsor)]
+
+<a href="https://opencollective.com/blade/sponsor/0/website" target="_blank"><img src="https://opencollective.com/blade/sponsor/0/avatar.svg"></a>
+<a href="https://opencollective.com/blade/sponsor/1/website" target="_blank"><img src="https://opencollective.com/blade/sponsor/1/avatar.svg"></a>
+<a href="https://opencollective.com/blade/sponsor/2/website" target="_blank"><img src="https://opencollective.com/blade/sponsor/2/avatar.svg"></a>
+<a href="https://opencollective.com/blade/sponsor/3/website" target="_blank"><img src="https://opencollective.com/blade/sponsor/3/avatar.svg"></a>
+<a href="https://opencollective.com/blade/sponsor/4/website" target="_blank"><img src="https://opencollective.com/blade/sponsor/4/avatar.svg"></a>
+<a href="https://opencollective.com/blade/sponsor/5/website" target="_blank"><img src="https://opencollective.com/blade/sponsor/5/avatar.svg"></a>
+<a href="https://opencollective.com/blade/sponsor/6/website" target="_blank"><img src="https://opencollective.com/blade/sponsor/6/avatar.svg"></a>
+<a href="https://opencollective.com/blade/sponsor/7/website" target="_blank"><img src="https://opencollective.com/blade/sponsor/7/avatar.svg"></a>
+<a href="https://opencollective.com/blade/sponsor/8/website" target="_blank"><img src="https://opencollective.com/blade/sponsor/8/avatar.svg"></a>
+<a href="https://opencollective.com/blade/sponsor/9/website" target="_blank"><img src="https://opencollective.com/blade/sponsor/9/avatar.svg"></a>
+
+
 
 ## Licenses
 
