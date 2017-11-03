@@ -30,6 +30,23 @@ public class EnvironmentTest {
     }
 
     @Test
+    public void testDefaultValue() {
+        Properties properties = new Properties();
+        properties.setProperty("name", "jack");
+        Environment environment = Environment.of(properties);
+
+        String name = environment.get("name", "rose");
+        String age  = environment.get("age", "20");
+        int version = environment.getInt("app.version", 1001);
+        long base = environment.getLong("app.base", 1002);
+
+        Assert.assertEquals("jack", name);
+        Assert.assertEquals("20", age);
+        Assert.assertEquals(1001, version);
+        Assert.assertEquals(1002, base);
+    }
+
+    @Test
     public void testEnvByMap() {
         Map<String, String> map = new HashMap<>();
         map.put("name", "mapJack");
@@ -124,7 +141,7 @@ public class EnvironmentTest {
     }
 
     @Test
-    public void testHasKey(){
+    public void testHasKey() {
         Environment environment = Environment.of("app.properties");
         Assert.assertEquals(false, environment.hasKey("hello"));
         Assert.assertEquals(true, environment.hasKey("app.version"));
