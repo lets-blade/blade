@@ -19,6 +19,7 @@ import com.blade.event.BeanProcessor;
 import com.blade.event.EventListener;
 import com.blade.event.EventManager;
 import com.blade.event.EventType;
+import com.blade.exception.BladeException;
 import com.blade.ioc.Ioc;
 import com.blade.ioc.SimpleIoc;
 import com.blade.kit.Assert;
@@ -27,6 +28,7 @@ import com.blade.mvc.SessionManager;
 import com.blade.mvc.handler.DefaultExceptionHandler;
 import com.blade.mvc.handler.ExceptionHandler;
 import com.blade.mvc.handler.RouteHandler;
+import com.blade.mvc.handler.WebSocketHandler;
 import com.blade.mvc.hook.WebHook;
 import com.blade.mvc.http.HttpMethod;
 import com.blade.mvc.http.HttpSession;
@@ -156,6 +158,16 @@ public class Blade {
      * When you need to be able to achieve similar RedisSession
      */
     private Class<? extends Session> sessionImplType = HttpSession.class;
+
+    /**
+     * WebSocket path
+     */
+    private String webSocketPath;
+
+    /**
+     * WebSocket Handler
+     */
+    private WebSocketHandler webSocketHandler;
 
     /**
      * Give your blade instance, from then on will get the energy
@@ -686,6 +698,42 @@ public class Blade {
         eventManager.fireEvent(EventType.SERVER_STOPPING, this);
         server.stopAndWait();
         eventManager.fireEvent(EventType.SERVER_STOPPED, this);
+    }
+
+    /**
+     * Register WebSocket path
+     *
+     * @param path    websocket path
+     * @param handler websocket handler
+     * @return return blade instance
+     */
+    public Blade webSocket(@NonNull String path, @NonNull WebSocketHandler handler) {
+        if (null != this.webSocketHandler) {
+            throw new BladeException(500, "There is already a WebSocket path.");
+        }
+        this.webSocketPath = path;
+        this.webSocketHandler = handler;
+        System.out.println(String.format("\n\t\t\t\t\t\t\t\t\t\t\t\t\t" +
+                "\t\t\t\t\t Register WebSocket Path: %s\n", path));
+        return this;
+    }
+
+    /**
+     * Get webSocket path
+     *
+     * @return return websocket path
+     */
+    public String webSocketPath() {
+        return webSocketPath;
+    }
+
+    /**
+     * Get WebSocket Handler
+     *
+     * @return return websocket handler
+     */
+    public WebSocketHandler webSocketHandler() {
+        return webSocketHandler;
     }
 
 }
