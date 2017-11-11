@@ -33,9 +33,12 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
+import io.netty.handler.ssl.SslContext;
+import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.util.ResourceLeakDetector;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.File;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
@@ -121,9 +124,20 @@ public class NettyServer implements Server {
 
     }
 
-    private void startServer(long startTime) throws InterruptedException {
+    private void startServer(long startTime) throws Exception {
 
         ResourceLeakDetector.setLevel(ResourceLeakDetector.Level.DISABLED);
+
+        boolean SSL = environment.getBoolean(ENV_KEY_SSL, false);
+        // Configure SSL.
+        SslContext sslCtx = null;
+        if (SSL) {
+            String certFilePath   = environment.get(ENV_KEY_SSL_CERT, "");
+            String privateKeyPath = environment.get(ENV_KEY_SSL_PRIVATEKEY, "");
+            log.info("⬢ SSL CertChainFile  Path: {}", certFilePath);
+            log.info("⬢ SSL PrivateKeyFile Path: {}", privateKeyPath);
+            sslCtx = SslContextBuilder.forServer(new File(certFilePath), new File(privateKeyPath)).build();
+        }
 
         // Configure the server.
         ServerBootstrap b = new ServerBootstrap();
@@ -148,7 +162,7 @@ public class NettyServer implements Server {
         }
 
         b.handler(new LoggingHandler(LogLevel.DEBUG))
-                .childHandler(new HttpServerInitializer(blade, bossGroup.next()));
+                .childHandler(new HttpServerInitializer(sslCtx, blade, bossGroup.next()));
 
         String address = environment.get(ENV_KEY_SERVER_ADDRESS, DEFAULT_SERVER_ADDRESS);
         int    port    = environment.getInt(ENV_KEY_SERVER_PORT, DEFAULT_SERVER_PORT);
