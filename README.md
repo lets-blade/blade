@@ -60,7 +60,7 @@ Create a basic `Maven` project
 <dependency>
     <groupId>com.bladejava</groupId>
     <artifactId>blade-mvc</artifactId>
-    <version>2.0.5-Alpha2</version>
+    <version>2.0.5-ALPHA2</version>
 </dependency>
 ```
 
@@ -69,7 +69,7 @@ Create a basic `Maven` project
 or `Gradle`:
 
 ```sh
-compile 'com.bladejava:blade-mvc:2.0.5-Alpha2'
+compile 'com.bladejava:blade-mvc:2.0.5-ALPHA2'
 ```
 
 Write `main` method, try `Hello World`：
