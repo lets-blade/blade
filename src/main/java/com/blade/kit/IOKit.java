@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.*;
 import java.nio.channels.FileChannel;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.stream.Collectors;
 
@@ -29,7 +30,11 @@ public final class IOKit {
     }
 
     public static String readToString(String file) throws IOException {
-        BufferedReader bufferedReader = Files.newBufferedReader(Paths.get(file));
+        return readToString(Paths.get(file));
+    }
+
+    public static String readToString(Path path) throws IOException {
+        BufferedReader bufferedReader = Files.newBufferedReader(path);
         return bufferedReader.lines().collect(Collectors.joining());
     }
 
@@ -47,10 +52,10 @@ public final class IOKit {
             outputChannel = new FileOutputStream(dest).getChannel();
             outputChannel.transferFrom(inputChannel, 0, inputChannel.size());
         } finally {
-            if(null != inputChannel){
+            if (null != inputChannel) {
                 inputChannel.close();
             }
-            if(null != outputChannel){
+            if (null != outputChannel) {
                 outputChannel.close();
             }
         }

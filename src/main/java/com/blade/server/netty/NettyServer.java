@@ -336,16 +336,17 @@ public class NettyServer implements Server {
      * print blade start banner text
      */
     private void printBanner() {
-        StringBuilder text  = new StringBuilder();
-        String        space = "\t\t\t\t\t\t\t   ";
-        for (String s : Const.BANNER_TEXT) {
-            text.append("\r\n").append(space).append(s);
+        if(null != blade.bannerText()){
+            System.out.println(blade.bannerText());
+        } else {
+            StringBuilder text = new StringBuilder();
+            text.append(Const.BANNER_TEXT);
+            text.append("\r\n")
+                    .append(BANNER_SPACE)
+                    .append(" :: Blade :: (v")
+                    .append(Const.VERSION + ") \r\n");
+            System.out.println(text.toString());
         }
-        text.append("\r\n")
-                .append(space)
-                .append(" :: Blade :: (v")
-                .append(Const.VERSION + ") \r\n");
-        System.out.println(text.toString());
     }
 
 }

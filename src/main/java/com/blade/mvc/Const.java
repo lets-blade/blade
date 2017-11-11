@@ -44,6 +44,7 @@ public interface Const {
     // Env key
     String ENV_KEY_DEV_MODE                = "app.devMode";
     String ENV_KEY_APP_NAME                = "app.name";
+    String ENV_KEY_BANNER_PATH             = "app.banner-path";
     String ENV_KEY_GZIP_ENABLE             = "http.gzip.enable";
     String ENV_KEY_CORS_ENABLE             = "http.cors.enable";
     String ENV_KEY_SESSION_KEY             = "http.session.key";
@@ -78,11 +79,12 @@ public interface Const {
     String TERMINAL_SERVER_PORT    = "--server.port=";
     String TERMINAL_BLADE_ENV      = "--blade.env=";
 
-    String[] BANNER_TEXT = {
-            " __, _,   _, __, __,",
-            " |_) |   /_\\ | \\ |_",
-            " |_) | , | | |_/ |",
-            " ~   ~~~ ~ ~ ~   ~~~"
-    };
+    String BANNER_SPACE = "\t\t\t\t\t\t\t  ";
+
+    String BANNER_TEXT =
+            "\r\n" + BANNER_SPACE + "    __, _,   _, __, __," +
+            "\r\n" + BANNER_SPACE + "    |_) |   /_\\ | \\ |_" +
+            "\r\n" + BANNER_SPACE + "    |_) | , | | |_/ |" +
+            "\r\n" + BANNER_SPACE + "    ~   ~~~ ~ ~ ~   ~~~";
 
 }

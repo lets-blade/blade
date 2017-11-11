@@ -24,6 +24,8 @@ import com.blade.ioc.Ioc;
 import com.blade.ioc.SimpleIoc;
 import com.blade.kit.Assert;
 import com.blade.kit.BladeKit;
+import com.blade.kit.IOKit;
+import com.blade.kit.StringKit;
 import com.blade.mvc.SessionManager;
 import com.blade.mvc.handler.DefaultExceptionHandler;
 import com.blade.mvc.handler.ExceptionHandler;
@@ -43,6 +45,8 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.function.Consumer;
@@ -163,6 +167,11 @@ public class Blade {
      * WebSocket path
      */
     private String webSocketPath;
+
+    /**
+     * Blade app start banner, default is Const.BANNER
+     */
+    private String bannerText;
 
     /**
      * WebSocket Handler
@@ -725,6 +734,24 @@ public class Blade {
      */
     public String webSocketPath() {
         return webSocketPath;
+    }
+
+    /**
+     * Get banner text
+     *
+     * @return return blade start banner text
+     */
+    public String bannerText() {
+        if (null != bannerText) return bannerText;
+        String bannerPath = environment.get(ENV_KEY_BANNER_PATH, null);
+        if (StringKit.isNotBlank(bannerPath) && Files.exists(Paths.get(bannerPath))) {
+            try {
+                bannerText = IOKit.readToString(bannerPath);
+            } catch (Exception e) {
+            }
+            return bannerText;
+        }
+        return null;
     }
 
     /**
