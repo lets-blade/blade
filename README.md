@@ -60,7 +60,7 @@ Create a basic `Maven` project
 <dependency>
     <groupId>com.bladejava</groupId>
     <artifactId>blade-mvc</artifactId>
-    <version>2.0.5-ALPHA2</version>
+    <version>2.0.5-ALPHA3</version>
 </dependency>
 ```
 
@@ -69,7 +69,7 @@ Create a basic `Maven` project
 or `Gradle`:
 
 ```sh
-compile 'com.bladejava:blade-mvc:2.0.5-ALPHA2'
+compile 'com.bladejava:blade-mvc:2.0.5-ALPHA3'
 ```
 
 Write `main` method, try `Hello World`：
@@ -642,6 +642,7 @@ java -jar blade-app.jar --server.port=9001
 server.ssl.enable=true
 server.ssl.cert-path=cert.pem
 server.ssl.private-key-path=private_key.pem
+server.ssl.private-key-pass=123456
 ```
 
 ## Custom Exception Handler
