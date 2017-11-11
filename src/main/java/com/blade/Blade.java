@@ -174,6 +174,11 @@ public class Blade {
     private String bannerText;
 
     /**
+     * Blade app start thread name, default is Const.DEFAULT_THREAD_NAME
+     */
+    private String threadName;
+
+    /**
      * WebSocket Handler
      */
     private WebSocketHandler webSocketHandler;
@@ -671,7 +676,11 @@ public class Blade {
                     startupExceptionHandler.accept(e);
                 }
             });
-            thread.setName("_(:3」∠)_");
+
+            String threadName = null != this.threadName ? this.threadName : environment.get(ENV_KEY_APP_THREAD_NAME, null);
+            threadName = null != threadName ? threadName : DEFAULT_THREAD_NAME;
+
+            thread.setName(threadName);
             thread.start();
             started = true;
         } catch (Exception e) {
@@ -737,6 +746,17 @@ public class Blade {
     }
 
     /**
+     * Set blade start banner text
+     *
+     * @param bannerText banner text
+     * @return return blade instance
+     */
+    public Blade bannerText(String bannerText) {
+        this.bannerText = bannerText;
+        return this;
+    }
+
+    /**
      * Get banner text
      *
      * @return return blade start banner text
@@ -752,6 +772,17 @@ public class Blade {
             return bannerText;
         }
         return null;
+    }
+
+    /**
+     * Set blade start thread name
+     *
+     * @param threadName thread name
+     * @return return blade instance
+     */
+    public Blade threadName(String threadName) {
+        this.threadName = threadName;
+        return this;
     }
 
     /**

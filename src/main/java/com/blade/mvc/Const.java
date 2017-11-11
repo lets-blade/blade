@@ -38,12 +38,14 @@ public interface Const {
     String       CONTENT_TYPE_TEXT          = "text/plain; charset=UTF-8";
     String       HTTP_DATE_FORMAT           = "EEE, dd MMM yyyy HH:mm:ss zzz";
     String       INTERNAL_SERVER_ERROR_HTML = "<center><h1>500 Internal Server Error</h1><hr/></center>";
+    String       DEFAULT_THREAD_NAME        = "_(:3」∠)_";
     List<String> PLUGIN_PACKAGE_NAME        = Arrays.asList("com.blade.plugin");
     List<String> DEFAULT_STATICS            = Arrays.asList("/favicon.ico", "/robots.txt", "/static/", "/upload/", "/webjars/");
 
     // Env key
     String ENV_KEY_DEV_MODE                = "app.devMode";
     String ENV_KEY_APP_NAME                = "app.name";
+    String ENV_KEY_APP_THREAD_NAME         = "app.thread-name";
     String ENV_KEY_BANNER_PATH             = "app.banner-path";
     String ENV_KEY_GZIP_ENABLE             = "http.gzip.enable";
     String ENV_KEY_CORS_ENABLE             = "http.cors.enable";
@@ -83,8 +85,8 @@ public interface Const {
 
     String BANNER_TEXT =
             "\r\n" + BANNER_SPACE + "    __, _,   _, __, __," +
-            "\r\n" + BANNER_SPACE + "    |_) |   /_\\ | \\ |_" +
-            "\r\n" + BANNER_SPACE + "    |_) | , | | |_/ |" +
-            "\r\n" + BANNER_SPACE + "    ~   ~~~ ~ ~ ~   ~~~";
+                    "\r\n" + BANNER_SPACE + "    |_) |   /_\\ | \\ |_" +
+                    "\r\n" + BANNER_SPACE + "    |_) | , | | |_/ |" +
+                    "\r\n" + BANNER_SPACE + "    ~   ~~~ ~ ~ ~   ~~~";
 
 }
