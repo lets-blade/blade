@@ -133,7 +133,7 @@ public class NettyServer implements Server {
         SslContext sslCtx = null;
         if (SSL) {
             String certFilePath   = environment.get(ENV_KEY_SSL_CERT, "");
-            String privateKeyPath = environment.get(ENV_KEY_SSL_PRIVATEKEY, "");
+            String privateKeyPath = environment.get(ENE_KEY_SSL_PRIVATE_KEY, "");
             log.info("⬢ SSL CertChainFile  Path: {}", certFilePath);
             log.info("⬢ SSL PrivateKeyFile Path: {}", privateKeyPath);
             sslCtx = SslContextBuilder.forServer(new File(certFilePath), new File(privateKeyPath)).build();

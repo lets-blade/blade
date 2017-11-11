@@ -59,7 +59,7 @@ public interface Const {
     String ENV_KEY_SERVER_PORT             = "server.port";
     String ENV_KEY_SSL                     = "server.ssl.enable";
     String ENV_KEY_SSL_CERT                = "server.ssl.cert-path";
-    String ENV_KEY_SSL_PRIVATEKEY          = "server.ssl.private-key-path";
+    String ENE_KEY_SSL_PRIVATE_KEY         = "server.ssl.private-key-path";
     String ENV_KEY_NETTY_BOOS_GROUP_NAME   = "server.netty.boos-name";
     String ENV_KEY_NETTY_WORKER_GROUP_NAME = "server.netty.worker-name";
     String ENV_KEY_NETTY_THREAD_COUNT      = "server.netty.thread-count";
