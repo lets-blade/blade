@@ -30,7 +30,7 @@ public interface Const {
     int          DEFAULT_SERVER_PORT        = 9000;
     String       DEFAULT_SERVER_ADDRESS     = "0.0.0.0";
     String       LOCAL_IP_ADDRESS           = "127.0.0.1";
-    String       VERSION                    = "2.0.5-ALPHA2";
+    String       VERSION                    = "2.0.5-ALPHA3";
     String       WEB_JARS                   = "/webjars/";
     String       CLASSPATH                  = new File(Const.class.getResource("/").getPath()).getPath();
     String       CONTENT_TYPE_HTML          = "text/html; charset=UTF-8";
@@ -63,6 +63,7 @@ public interface Const {
     String ENV_KEY_SSL                     = "server.ssl.enable";
     String ENV_KEY_SSL_CERT                = "server.ssl.cert-path";
     String ENE_KEY_SSL_PRIVATE_KEY         = "server.ssl.private-key-path";
+    String ENE_KEY_SSL_PRIVATE_KEY_PASS    = "server.ssl.private-key-pass";
     String ENV_KEY_NETTY_BOOS_GROUP_NAME   = "server.netty.boos-name";
     String ENV_KEY_NETTY_WORKER_GROUP_NAME = "server.netty.worker-name";
     String ENV_KEY_NETTY_THREAD_COUNT      = "server.netty.thread-count";

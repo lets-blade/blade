@@ -132,11 +132,13 @@ public class NettyServer implements Server {
         // Configure SSL.
         SslContext sslCtx = null;
         if (SSL) {
-            String certFilePath   = environment.get(ENV_KEY_SSL_CERT, "");
-            String privateKeyPath = environment.get(ENE_KEY_SSL_PRIVATE_KEY, "");
+            String certFilePath       = environment.get(ENV_KEY_SSL_CERT, null);
+            String privateKeyPath     = environment.get(ENE_KEY_SSL_PRIVATE_KEY, null);
+            String privateKeyPassword = environment.get(ENE_KEY_SSL_PRIVATE_KEY_PASS, null);
+
             log.info("⬢ SSL CertChainFile  Path: {}", certFilePath);
             log.info("⬢ SSL PrivateKeyFile Path: {}", privateKeyPath);
-            sslCtx = SslContextBuilder.forServer(new File(certFilePath), new File(privateKeyPath)).build();
+            sslCtx = SslContextBuilder.forServer(new File(certFilePath), new File(privateKeyPath), privateKeyPassword).build();
         }
 
         // Configure the server.
@@ -336,7 +338,7 @@ public class NettyServer implements Server {
      * print blade start banner text
      */
     private void printBanner() {
-        if(null != blade.bannerText()){
+        if (null != blade.bannerText()) {
             System.out.println(blade.bannerText());
         } else {
             StringBuilder text = new StringBuilder();
