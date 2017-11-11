@@ -1,5 +1,5 @@
 <p align="center">
-    <a href="https://lets-blade.com"><img src="http://7xls9k.dl1.z0.glb.clouddn.com/blade-logo.png" width="650"/></a>
+    <a href="https://lets-blade.com"><img src="https://static.biezhi.me/blade-logo.png" width="650"/></a>
 </p>
 <p align="center">Based on <code>Java8</code> + <code>Netty4</code> to create lightweight, high-performance, simple and elegant Web framework 😋</p>
 <p align="center">Spend <b>1 hour</b> to learn it to do something interesting, a Spring in addition to the framework of the best choice.</p>
@@ -60,7 +60,7 @@ Create a basic `Maven` project
 <dependency>
     <groupId>com.bladejava</groupId>
     <artifactId>blade-mvc</artifactId>
-    <version>2.0.5-Alpha1</version>
+    <version>2.0.5-Alpha2</version>
 </dependency>
 ```
 
@@ -69,7 +69,7 @@ Create a basic `Maven` project
 or `Gradle`:
 
 ```sh
-compile 'com.bladejava:blade-mvc:2.0.5-Alpha1'
+compile 'com.bladejava:blade-mvc:2.0.5-Alpha2'
 ```
 
 Write `main` method, try `Hello World`：
@@ -113,6 +113,7 @@ Using browser open http://localhost:9000 so you can see the first `Blade` applic
 - [**`Logging`**](#logging)
 - [**`Basic Auth`**](#basic-auth)
 - [**`Change Server Port`**](#change-server-port)
+- [**`Configuration SSL`**](#configuration-ssl)
 - [**`Custom Exception Handler`**](#custom-exception-handler)
 
 ## Register Route
@@ -631,6 +632,16 @@ server.port=9001
 
 ```bash
 java -jar blade-app.jar --server.port=9001
+```
+
+## Configuration SSL
+
+**Configuration For `app.properties`**
+
+```bash
+server.ssl.enable=true
+server.ssl.cert-path=cert.pem
+server.ssl.private-key-path=private_key.pem
 ```
 
 ## Custom Exception Handler

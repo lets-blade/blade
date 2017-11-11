@@ -1,5 +1,5 @@
 <p align="center">
-    <a href="https://lets-blade.com"><img src="http://7xls9k.dl1.z0.glb.clouddn.com/blade-logo.png" width="650"/></a>
+    <a href="https://lets-blade.com"><img src="https://static.biezhi.me/blade-logo.png" width="650"/></a>
 </p>
 <p align="center">基于 <code>Java8</code> + <code>Netty4</code> 创造的轻量级、高性能、简洁优雅的Web框架 😋</p>
 <p align="center">花 <b>1小时</b> 学会它做点有趣的项目，一款除了Spring系框架的不二之选。</p>
@@ -60,7 +60,7 @@
 <dependency>
 	<groupId>com.bladejava</groupId>
 	<artifactId>blade-mvc</artifactId>
-	<version>2.0.5-Alpha1</version>
+	<version>2.0.5-Alpha2</version>
 </dependency>
 ```
 
@@ -69,7 +69,7 @@
 或者  `Gradle`:
 
 ```sh
-compile 'com.bladejava:blade-mvc:2.0.5-Alpha1'
+compile 'com.bladejava:blade-mvc:2.0.5-Alpha2'
 ```
 
 编写 `main` 函数写一个 `Hello World`：
@@ -114,6 +114,7 @@ public static void main(String[] args) {
 - [**`日志输出`**](#日志输出)
 - [**`Basic认证`**](#Basic认证)
 - [**`修改服务端口`**](#修改服务端口)
+- [**`配置SSL`**](#配置SSL)
 - [**`自定义异常处理`**](#自定义异常处理)
 
 ## 注册路由
@@ -632,6 +633,16 @@ server.port=9001
 
 ```bash
 java -jar blade-app.jar --server.port=9001
+```
+
+## 配置SSL
+
+**配置文件 `app.properties`**
+
+```bash
+server.ssl.enable=true
+server.ssl.cert-path=cert.pem
+server.ssl.private-key-path=private_key.pem
 ```
 
 ## 自定义异常处理
