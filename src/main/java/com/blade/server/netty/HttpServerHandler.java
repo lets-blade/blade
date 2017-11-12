@@ -72,7 +72,7 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
     protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest fullHttpRequest) {
         Request  request  = HttpRequest.build(ctx, fullHttpRequest);
         Response response = HttpResponse.build(ctx, date);
-
+        boolean  isStatic = false;
         // route signature
         Signature signature = Signature.builder().request(request).response(response).build();
         try {
@@ -85,6 +85,7 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
 
             if (isStaticFile(uri)) {
                 staticFileHandler.handle(ctx, request, response);
+                isStatic = true;
                 return;
             }
 
@@ -128,14 +129,16 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
                 log.error("Blade Invoke Error", e);
             }
         } finally {
-            this.sendFinish(response);
+            if (!isStatic) this.sendFinish(response);
             WebContext.remove();
         }
     }
 
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx) {
-        ctx.flush();
+        if (ctx.channel().isOpen() && ctx.channel().isActive() && ctx.channel().isWritable()) {
+            ctx.flush();
+        }
     }
 
     @Override
@@ -145,7 +148,9 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
         } else {
             log.error("Blade Invoke Error", cause);
         }
-        ctx.close();
+        if (ctx.channel().isOpen() && ctx.channel().isActive() && ctx.channel().isWritable()) {
+            ctx.close();
+        }
     }
 
     private boolean isStaticFile(String uri) {

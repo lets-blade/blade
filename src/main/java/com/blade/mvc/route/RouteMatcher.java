@@ -138,23 +138,15 @@ public class RouteMatcher {
         }
     }
 
-    private Map<String, Route> routeMatcherCached = new HashMap<>(64);
-
     public Route lookupRoute(String httpMethod, String path) throws Exception {
-        String rKey = new StringBuilder(httpMethod).append(path).toString();
-        if (routeMatcherCached.containsKey(rKey)) {
-            return routeMatcherCached.get(rKey);
-        }
         path = parsePath(path);
         String routeKey = path + '#' + httpMethod.toUpperCase();
         Route  route    = staticRoutes.get(routeKey);
         if (null != route) {
-            routeMatcherCached.put(rKey, route);
             return route;
         }
         route = staticRoutes.get(path + "#ALL");
         if (null != route) {
-            routeMatcherCached.put(rKey, route);
             return route;
         }
 
@@ -199,7 +191,6 @@ public class RouteMatcher {
                 route.setPathParams(uriVariables);
                 log.trace("lookup path: " + path + " uri variables: " + uriVariables);
             }
-            routeMatcherCached.put(rKey, route);
             return route;
         } catch (Exception e) {
             throw e;
