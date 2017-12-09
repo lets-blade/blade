@@ -5,10 +5,10 @@
 <p align="center">花 <b>1小时</b> 学会它做点有趣的项目，一款除了Spring系框架的不二之选。</p>
 <p align="center">
     🐾 <a href="#快速入门" target="_blank">快速开始</a> | 
-    📘 <a href="https://biezhi.gitbooks.io/blade-in-action" target="_blank">BladeInAction</a> | 
-    🎬 <a href="http://v.qq.com/vplus/56171fe5fc0541ba6f356522325b0902/foldervideos/w6g0008012ruo91" target="_blank">视频教程</a> | 
+    📘 <a href="https://dev-cheats.com/topics/blade-in-action.html" target="_blank">BladeInAction</a> | 
+    🎬 <a href="https://www.bilibili.com/video/av15572599" target="_blank">视频教程</a> | 
     🌚 <a href="" target="_blank">参与贡献</a> | 
-    💰 <a href="https://lets-blade.com/donate" target="_blank">捐赠我们</a> |
+    💰 <a href="https://lets-blade.com/zh-cn/donate" target="_blank">捐赠我们</a> |
     🌾 <a href="README.md">English</a>
 </p>
 <p align="center">

@@ -5,7 +5,7 @@
 <p align="center">Spend <b>1 hour</b> to learn it to do something interesting, a Spring in addition to the framework of the best choice.</p>
 <p align="center">
     🐾 <a href="#quick-start" target="_blank">Quick Start</a> | 
-    📘 <a href="https://biezhi.gitbooks.io/blade-in-action" target="_blank">Blade In Action</a> | 
+    📘 <a href="https://dev-cheats.com/topics/blade-in-action.html" target="_blank">Blade In Action</a> | 
     🎬 <a href="https://www.youtube.com/playlist?list=PLK2w-tGRdrj5TV2lxHFj8hcg4mbmRmnWX" target="_blank">Video Tutorial</a> | 
     🌚 <a href="" target="_blank">Contribution</a> | 
     💰 <a href="https://lets-blade.com/donate" target="_blank">Donate</a> |
