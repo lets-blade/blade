@@ -87,6 +87,7 @@ public class HttpResponse implements Response {
         }
         nettyCookie.setPath(cookie.path());
         nettyCookie.setHttpOnly(cookie.httpOnly());
+        nettyCookie.setSecure(cookie.secure());
         this.cookies.add(nettyCookie);
         return this;
     }
