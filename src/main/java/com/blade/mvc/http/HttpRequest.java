@@ -82,8 +82,10 @@ public class HttpRequest implements Request {
         }
 
         // cookies
-        if (StringKit.isNotBlank(header(HttpConst.COOKIE_STRING))) {
-            ServerCookieDecoder.LAX.decode(header(HttpConst.COOKIE_STRING)).forEach(this::parseCookie);
+        String cookie = header(HttpConst.COOKIE_STRING);
+        cookie = cookie.length() > 0 ? cookie : header(HttpConst.COOKIE_STRING.toLowerCase());
+        if (StringKit.isNotBlank(cookie)) {
+            ServerCookieDecoder.LAX.decode(cookie).forEach(this::parseCookie);
         }
     }
 
