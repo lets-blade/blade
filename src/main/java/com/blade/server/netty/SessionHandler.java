@@ -63,6 +63,7 @@ public class SessionHandler {
         cookie.name(sessionKey);
         cookie.value(sessionId);
         cookie.httpOnly(true);
+        cookie.secure(request.isSecure());
 
         Session session = ReflectKit.newInstance(blade.sessionType());
         session.id(sessionId);

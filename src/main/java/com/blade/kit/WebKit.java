@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public final class WebKit {
 
-    private static final String UNKNOWN_MAGIC = "unknown";
+    public static final String UNKNOWN_MAGIC = "unknown";
 
     /**
      * Get the client IP address by request
@@ -20,7 +20,7 @@ public final class WebKit {
      * @param request Request instance
      * @return return ip address
      */
-    public static String ipAddr(Request request) {
+    public static String ipAddress(Request request) {
         String ipAddress = request.header("x-forwarded-for");
         if (StringKit.isBlank(ipAddress) || UNKNOWN_MAGIC.equalsIgnoreCase(ipAddress)) {
             ipAddress = request.header("Proxy-Client-IP");
@@ -36,12 +36,6 @@ public final class WebKit {
         }
         if (StringKit.isBlank(ipAddress) || UNKNOWN_MAGIC.equalsIgnoreCase(ipAddress)) {
             ipAddress = request.header("HTTP_X_FORWARDED_FOR");
-        }
-        if (StringKit.isBlank(ipAddress) || UNKNOWN_MAGIC.equalsIgnoreCase(ipAddress)) {
-            ipAddress = request.header("Host");
-        }
-        if (StringKit.isBlank(ipAddress)) {
-            ipAddress = "127.0.0.1";
         }
         return ipAddress;
     }

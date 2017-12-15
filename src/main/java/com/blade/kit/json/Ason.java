@@ -73,6 +73,6 @@ public class Ason<K, V> extends LinkedHashMap<K, V> {
 
     @Override
     public String toString() {
-        return JsonSerializer.serialize(this);
+        return SampleJsonSerializer.serialize(this);
     }
 }

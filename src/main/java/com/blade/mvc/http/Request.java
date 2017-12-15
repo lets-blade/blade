@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static com.blade.kit.WebKit.UNKNOWN_MAGIC;
+
 /**
  * Http Request
  *
@@ -35,6 +37,13 @@ public interface Request {
      * @return Return client request host
      */
     String host();
+
+    /**
+     * Get client remote address. e.g: 102.331.234.11:38227
+     *
+     * @return Return client ip and port
+     */
+    String remoteAddress();
 
     /**
      * Get request uri
@@ -256,7 +265,14 @@ public interface Request {
      * @return Return server remote address
      */
     default String address() {
-        return WebKit.ipAddr(this);
+        String address = WebKit.ipAddress(this);
+        if (StringKit.isBlank(address) || UNKNOWN_MAGIC.equalsIgnoreCase(address)) {
+            address = remoteAddress().split(":")[0];
+        }
+        if (StringKit.isBlank(address)) {
+            address = "Unknown";
+        }
+        return address;
     }
 
     /**

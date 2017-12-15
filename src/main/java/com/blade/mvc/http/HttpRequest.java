@@ -42,7 +42,7 @@ public class HttpRequest implements Request {
     }
 
     private ByteBuf body = Unpooled.copiedBuffer("", CharsetUtil.UTF_8);
-    private String  host;
+    private String  remoteAddress;
     private String  uri;
     private String  url;
     private String  protocol;
@@ -82,8 +82,10 @@ public class HttpRequest implements Request {
         }
 
         // cookies
-        if (StringKit.isNotBlank(header(HttpConst.COOKIE_STRING))) {
-            ServerCookieDecoder.LAX.decode(header(HttpConst.COOKIE_STRING)).forEach(this::parseCookie);
+        String cookie = header(HttpConst.COOKIE_STRING);
+        cookie = cookie.length() > 0 ? cookie : header(HttpConst.COOKIE_STRING.toLowerCase());
+        if (StringKit.isNotBlank(cookie)) {
+            ServerCookieDecoder.LAX.decode(cookie).forEach(this::parseCookie);
         }
     }
 
@@ -156,7 +158,12 @@ public class HttpRequest implements Request {
 
     @Override
     public String host() {
-        return this.host;
+        return this.header("Host");
+    }
+
+    @Override
+    public String remoteAddress() {
+        return this.remoteAddress;
     }
 
     @Override
@@ -270,7 +277,7 @@ public class HttpRequest implements Request {
         HttpRequest httpRequest = new HttpRequest();
         httpRequest.keepAlive = HttpUtil.isKeepAlive(fullHttpRequest);
         String remoteAddress = ctx.channel().remoteAddress().toString();
-        httpRequest.host = StringKit.isNotBlank(remoteAddress) ? remoteAddress.substring(1) : "Unknown";
+        httpRequest.remoteAddress = remoteAddress;
         httpRequest.url = fullHttpRequest.uri();
         int pathEndPos = httpRequest.url.indexOf('?');
         httpRequest.uri = pathEndPos < 0 ? httpRequest.url : httpRequest.url.substring(0, pathEndPos);
