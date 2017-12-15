@@ -9,7 +9,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
 
-public class JsonSerializer {
+public class SampleJsonSerializer {
 
     private       int    position;
     private final char[] buffer;
@@ -69,10 +69,10 @@ public class JsonSerializer {
      * @throws ParseException thrown when parsing a illegal json text
      */
     public static Object deserialize(String json) throws ParseException {
-        return new JsonSerializer(json).nextValue();
+        return new SampleJsonSerializer(json).nextValue();
     }
 
-    private JsonSerializer(String string) {
+    private SampleJsonSerializer(String string) {
         this.buffer = string.toCharArray();
         this.position = -1;
     }
