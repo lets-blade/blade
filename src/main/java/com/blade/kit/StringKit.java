@@ -4,42 +4,89 @@ import com.blade.mvc.multipart.MimeType;
 import lombok.NoArgsConstructor;
 
 import java.util.Random;
+import java.util.stream.Stream;
 
 /**
+ * String kit
+ *
  * @author biezhi
- *         2017/6/1
+ * 2017/6/1
  */
 @NoArgsConstructor
 public final class StringKit {
 
-    private static final Random random = new Random();
+    private static final Random RANDOM = new Random();
 
+    /**
+     * Randomly generate a number in the min and Max range
+     *
+     * @param min min value
+     * @param max max value
+     * @return return random int number
+     */
     public static int rand(int min, int max) {
-        return random.nextInt(max) % (max - min + 1) + min;
+        return RANDOM.nextInt(max) % (max - min + 1) + min;
     }
 
+    /**
+     * Generate a number of numeric strings randomly
+     *
+     * @param size string count
+     * @return return random string value
+     */
     public static String rand(int size) {
-        String num = "";
+        StringBuilder num = new StringBuilder();
         for (int i = 0; i < size; i++) {
             double a = Math.random() * 9;
             a = Math.ceil(a);
             int randomNum = new Double(a).intValue();
-            num += randomNum;
+            num.append(randomNum);
         }
-        return num;
+        return num.toString();
     }
 
+    /**
+     * Determine whether a string is not blank
+     *
+     * @param str string value
+     * @return return string is not blank
+     */
     public static boolean isNotBlank(String str) {
         return null != str && !"".equals(str.trim());
     }
 
+    /**
+     * Determine whether a string is blank
+     *
+     * @param str string value
+     * @return return string is blank
+     */
     public static boolean isBlank(String str) {
         return null == str || "".equals(str.trim());
     }
 
-    public static boolean isNumber(String string) {
+    /**
+     * There is at least one null in the array of strings
+     *
+     * @param values string array
+     * @return return whether or not there is an empty
+     */
+    public static boolean isAnyBlank(String... values) {
+        if (CollectionKit.isEmpty(values)) {
+            return true;
+        }
+        return Stream.of(values).filter(StringKit::isBlank).count() > 0;
+    }
+
+    /**
+     * determines whether the string is a numeric format
+     *
+     * @param value string value
+     * @return return value is number
+     */
+    public static boolean isNumber(String value) {
         try {
-            Double.parseDouble(string);
+            Double.parseDouble(value);
         } catch (NumberFormatException nfe) {
             return false;
         }
@@ -51,47 +98,47 @@ public final class StringKit {
     }
 
     /**
-     * 在字符串左侧填充一定数量的特殊字符
+     * Fill a certain number of special characters on the left side of the string
      *
-     * @param o     可被 toString 的对象
-     * @param width 字符数量
-     * @param c     字符
-     * @return 新字符串
+     * @param o     objects that can be to String
+     * @param width number of characters
+     * @param c     characters
+     * @return new characters
      */
     public static String alignRight(Object o, int width, char c) {
         if (null == o)
             return null;
-        String s = o.toString();
-        int len = s.length();
+        String s   = o.toString();
+        int    len = s.length();
         if (len >= width)
             return s;
         return new StringBuilder().append(dup(c, width - len)).append(s).toString();
     }
 
     /**
-     * 在字符串右侧填充一定数量的特殊字符
+     * Fill a certain number of special characters on the right side of the string
      *
-     * @param o     可被 toString 的对象
-     * @param width 字符数量
-     * @param c     字符
-     * @return 新字符串
+     * @param o     objects that can be to String
+     * @param width number of characters
+     * @param c     characters
+     * @return new characters
      */
     public static String alignLeft(Object o, int width, char c) {
         if (null == o)
             return null;
-        String s = o.toString();
-        int length = s.length();
+        String s      = o.toString();
+        int    length = s.length();
         if (length >= width)
             return s;
         return new StringBuilder().append(s).append(dup(c, width - length)).toString();
     }
 
     /**
-     * 复制字符
+     * Copy characters
      *
-     * @param c   字符
-     * @param num 数量
-     * @return 新字符串
+     * @param c   characters
+     * @param num character number
+     * @return new characters
      */
     public static String dup(char c, int num) {
         if (c == 0 || num < 1)
@@ -109,8 +156,8 @@ public final class StringKit {
         return fname.substring(fname.lastIndexOf('.') + 1);
     }
 
-    public static String mimeType(String fname) {
-        String ext = fileExt(fname);
+    public static String mimeType(String fileName) {
+        String ext = fileExt(fileName);
         if (null == ext) {
             return null;
         }
@@ -123,4 +170,5 @@ public final class StringKit {
         }
         return str1.equals(str2);
     }
+
 }
