@@ -32,15 +32,15 @@ If you think this item is good can [star](https://github.com/biezhi/blade/starga
 
 * [x] A new generation of MVC frameworks that do not depend on more libraries
 * [x] Get rid of SSH's bloated, modular design
-* [x] source less than `500kb`, learning is also simple
+* [x] Source less than `500kb`, learning is also simple
 * [x] Restful style routing design
-* [x] template engine support, view development more flexible
-* [x] high performance, 100 concurrent qps 6w/s
+* [x] Template engine support, view development more flexible
+* [x] High performance, 100 concurrent qps 14w/s
 * [x] Run the `JAR` package to open the web service
 * [x] Streaming API style
-* [x] supports plug-in extensions
-* [x] support webjars resources
-* [x] built-in a variety of commonly used middleware
+* [x] Supports plug-in extensions
+* [x] Support webjars resources
+* [x] Built-in a variety of commonly used middleware
 * [x] Built-in JSON output
 * [x] JDK8 +
 
