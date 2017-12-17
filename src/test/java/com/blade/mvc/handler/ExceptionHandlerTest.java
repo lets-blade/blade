@@ -47,7 +47,7 @@ public class ExceptionHandlerTest {
     public void testNotFoundException() throws Exception {
         DefaultExceptionHandler handler = new DefaultExceptionHandler();
         try {
-            throw new NotFoundException();
+            throw new NotFoundException("/hello");
         } catch (BladeException e) {
             handler.handle(e);
         }
@@ -59,7 +59,7 @@ public class ExceptionHandlerTest {
     public void testNotWriteBodyIfNotHtmlRequest() throws Exception {
         DefaultExceptionHandler handler = new DefaultExceptionHandler();
         try {
-            throw new NotFoundException();
+            throw new NotFoundException("/hello");
         } catch (BladeException e) {
             handler.handle(e);
         }
