@@ -671,7 +671,7 @@ How easy it all looks, but the features above are the tip of the iceberg, and th
 
 + [FirstBladeApp](https://github.com/lets-blade/first-blade-app)
 + [Blade Demos](https://github.com/lets-blade/blade-demos)
-+ [More Examples](https://lets-blade.com/about/who-used)
++ [Awesome Blade](https://github.com/lets-blade/awesome-blade)
 
 ## Change Logs
 

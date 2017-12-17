@@ -672,11 +672,11 @@ public class GolbalExceptionHandler extends DefaultExceptionHandler {
 
 + [第一个Blade程序](https://github.com/lets-blade/first-blade-app)
 + [Blade Demos](https://github.com/lets-blade/blade-demos)
-+ [更多演示](https://lets-blade.com/about/who-used)
++ [Blade 资源列表](https://github.com/lets-blade/awesome-blade)
 
 ## 联系我
 
-- Blog:[http://biezhi.me](http://biezhi.me)
+- Blog:[https://biezhi.me](http://biezhi.me)
 - Mail: biezhi.me#gmail.com
 - Java交流群: [1013565](http://shang.qq.com/wpa/qunwpa?idkey=932642920a5c0ef5f1ae902723c4f168c58ea63f3cef1139e30d68145d3b5b2f)
 
