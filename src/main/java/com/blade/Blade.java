@@ -24,7 +24,6 @@ import com.blade.ioc.Ioc;
 import com.blade.ioc.SimpleIoc;
 import com.blade.kit.Assert;
 import com.blade.kit.BladeKit;
-import com.blade.kit.IOKit;
 import com.blade.kit.StringKit;
 import com.blade.mvc.SessionManager;
 import com.blade.mvc.handler.DefaultExceptionHandler;
@@ -45,11 +44,13 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.BufferedReader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import static com.blade.mvc.Const.*;
 
@@ -766,8 +767,10 @@ public class Blade {
         String bannerPath = environment.get(ENV_KEY_BANNER_PATH, null);
         if (StringKit.isNotBlank(bannerPath) && Files.exists(Paths.get(bannerPath))) {
             try {
-                bannerText = IOKit.readToString(bannerPath);
+                BufferedReader bufferedReader = Files.newBufferedReader(Paths.get(bannerPath));
+                bannerText = bufferedReader.lines().collect(Collectors.joining("\r\n"));
             } catch (Exception e) {
+                log.error("Load Start Banner file error", e);
             }
             return bannerText;
         }

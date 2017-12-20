@@ -6,6 +6,7 @@ import com.blade.mvc.route.Route;
 import com.blade.server.netty.HttpConst;
 import com.blade.server.netty.HttpServerHandler;
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufUtil;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.FullHttpRequest;
@@ -121,7 +122,9 @@ public class HttpRequest implements Request {
             if (fileUpload.isInMemory()) {
                 FileItem fileItem = new FileItem(fileUpload.getName(), fileUpload.getFilename(),
                         contentType, fileUpload.length());
-                fileItem.setData(fileUpload.getByteBuf().array());
+
+                ByteBuf byteBuf = fileUpload.getByteBuf();
+                fileItem.setData(ByteBufUtil.getBytes(byteBuf));
                 fileItems.put(fileItem.getName(), fileItem);
             } else {
                 FileItem fileItem = new FileItem(fileUpload.getName(), fileUpload.getFilename(),
