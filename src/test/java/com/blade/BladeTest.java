@@ -30,7 +30,7 @@ public class BladeTest extends BaseTestCase {
         );
     }
 
-    @Test
+//    @Test
     public void testStartedEvent() {
         start(
                 app.event(EventType.SERVER_STARTED, (e) -> System.out.println("服务已经启动成功."))
