@@ -20,7 +20,7 @@ public class BladeTest extends BaseTestCase {
 
     @Test
     public void testStart() {
-        app.start(Hello.class, null);
+        app.start(Hello.class, (String[]) null);
     }
 
     @Test
