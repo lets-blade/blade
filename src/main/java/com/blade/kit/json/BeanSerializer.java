@@ -22,10 +22,7 @@ public class BeanSerializer {
             return null;
         }
 
-        if (ReflectKit.isPrimitive(bean)
-                || bean instanceof Number
-                || bean instanceof Date
-                || bean instanceof BigDecimal) {
+        if (ReflectKit.isPrimitive(bean) || bean instanceof Number || bean instanceof Date) {
             return bean;
         }
 
@@ -112,11 +109,11 @@ public class BeanSerializer {
         return ason;
     }
 
-    public static <T> Collection deserialize(Collection template, Class<T> genericType, Collection collection) throws Exception {
+    public static <T> Collection<Object> deserialize(Collection<Object> template, Class<T> genericType, Collection collection) throws Exception {
         return deserialize(template, genericType, collection.toArray());
     }
 
-    public static <T, A> Collection deserialize(Collection template, Class<T> genericType, A[] array) throws Exception {
+    public static <T, A> Collection<Object> deserialize(Collection<Object> template, Class<T> genericType, A[] array) throws Exception {
         Object[] list = template.toArray();
         template.clear();
         for (int i = 0; i < array.length; ++i)
@@ -160,9 +157,9 @@ public class BeanSerializer {
                             else return null;
                         } else {
                             if (value instanceof Collection)
-                                value = deserialize((Collection) tmp, genericType, (Collection) value);
+                                value = deserialize((Collection<Object>) tmp, genericType, (Collection) value);
                             else if (value.getClass().isArray())
-                                value = deserialize((Collection) tmp, genericType, (Object[]) value);
+                                value = deserialize((Collection<Object>) tmp, genericType, (Object[]) value);
                             else return null;
                         }
                     } else {
@@ -188,7 +185,7 @@ public class BeanSerializer {
         if (template instanceof Collection) {
             if (!object.getClass().isArray())
                 return null;
-            return (T) deserialize((Collection) template, Object.class, (Object[]) object);
+            return (T) deserialize((Collection<Object>) template, Object.class, (Object[]) object);
         }
         if (template.getClass().isArray()) {
             if (!object.getClass().isArray())
@@ -260,7 +257,21 @@ public class BeanSerializer {
                         value = null;
                     }
                 } else {
-                    value = deserialize(clazz, value);
+                    JsonFormat jsonFormat = field.getAnnotation(JsonFormat.class);
+                    if (null != jsonFormat) {
+                        switch (jsonFormat.type()) {
+                            case DATE_PATTEN:
+                                value = DateKit.toDateTime(value.toString(), jsonFormat.value());
+                                break;
+                            case BIGDECIMAL_KEEP:
+                                value = new BigDecimal(value.toString()).setScale(Integer.parseInt(jsonFormat.value()));
+                                break;
+                            default:
+                                break;
+                        }
+                    } else {
+                        value = deserialize(clazz, value);
+                    }
                 }
                 field.set(bean, value);
             } catch (Exception ignore) {
@@ -294,12 +305,12 @@ public class BeanSerializer {
     public static <T> T deserialize(Class<T> klass, Object object) {
         try {
             if (ReflectKit.isPrimitive(object)) {
-                return (T) object;
+                return (T) ReflectKit.convert(klass, object.toString());
             } else if (object instanceof Map) {
                 if (Map.class.isAssignableFrom(klass)) {
                     return klass.cast(object);
                 } else {
-                    return (T) deserialize(klass, (Map) object);
+                    return deserialize(klass, (Map) object);
                 }
             } else if (Collection.class.isAssignableFrom(klass)) {
                 if (object instanceof Collection) {
