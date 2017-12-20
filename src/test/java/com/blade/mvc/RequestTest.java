@@ -3,7 +3,7 @@ package com.blade.mvc;
 import com.blade.BaseTestCase;
 import com.blade.kit.JsonKit;
 import com.blade.kit.json.Ason;
-import com.blade.model.File1;
+import com.blade.model.File1Model;
 import com.blade.mvc.multipart.FileItem;
 import org.junit.Test;
 
@@ -282,13 +282,13 @@ public class RequestTest extends BaseTestCase {
                 .asString().getBody();
 
         System.out.println(body);
-        long  contentLength = this.isWindows() ? 1584 : 1551;
-        File1 file1         = JsonKit.formJson(body, File1.class);
+        long       contentLength = this.isWindows() ? 1584 : 1551;
+        File1Model file1Model    = JsonKit.formJson(body, File1Model.class);
 
-        assertEquals(contentLength, file1.getFile1().getLength());
-        assertEquals("text/plain", file1.getFile1().getContentType());
-        assertEquals("log_config.txt", file1.getFile1().getFileName());
-        assertEquals("file1", file1.getFile1().getName());
+        assertEquals(contentLength, file1Model.getFile1().getLength());
+        assertEquals("text/plain", file1Model.getFile1().getContentType());
+        assertEquals("log_config.txt", file1Model.getFile1().getFileName());
+        assertEquals("file1", file1Model.getFile1().getName());
 
         body = post("/upload2")
                 .field("file1", new File(RequestTest.class.getResource("/log_config.txt").getPath()))

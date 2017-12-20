@@ -8,7 +8,7 @@ import lombok.Data;
  * @date 2017/12/20
  */
 @Data
-public class File1 {
+public class File1Model {
 
     private FileItem file1;
 
