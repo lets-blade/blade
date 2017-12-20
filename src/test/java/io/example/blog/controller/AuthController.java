@@ -2,6 +2,7 @@ package io.example.blog.controller;
 
 import com.blade.mvc.annotation.GetRoute;
 import com.blade.mvc.annotation.Path;
+import io.example.blog.model.User;
 
 /**
  * @author biezhi
@@ -11,8 +12,8 @@ import com.blade.mvc.annotation.Path;
 public class AuthController {
 
     @GetRoute("login")
-    public void login() {
-        System.out.println("login");
+    public void login(User user) {
+        System.out.println("login: " + user);
     }
 
 }
