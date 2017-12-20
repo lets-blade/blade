@@ -92,7 +92,7 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
             Route route = routeMatcher.lookupRoute(request.method(), uri);
             if (null == route) {
                 log.warn("Not Found\t{}", uri);
-                throw new NotFoundException();
+                throw new NotFoundException(uri);
             }
 
             log.info("{}\t{}\t{}", request.protocol(), request.method(), uri);

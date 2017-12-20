@@ -13,7 +13,7 @@ public class NotFoundExceptionTest {
     @Test
     public void testNotFoundException() throws Exception {
         try {
-            throw new NotFoundException();
+            throw new NotFoundException("/hello");
         } catch (NotFoundException e) {
             assertEquals(e.getStatus(), 404);
             assertEquals(e.getName(), "Not Found");

@@ -24,15 +24,9 @@ public class RouteBuilder {
         this.routeMatcher = routeMatcher;
     }
 
-    public void addWebHook(final Class<?> webHook, Object hook) {
-        Path   path    = webHook.getAnnotation(Path.class);
-        String pattern = "/.*";
-        if (null != path) {
-            pattern = path.value();
-        }
-
-        Method before = ReflectKit.getMethod(webHook, "before", Signature.class);
-        Method after  = ReflectKit.getMethod(webHook, "after", Signature.class);
+    public void addWebHook(final Class<?> webHook, String pattern, Object hook) {
+        Method before = ReflectKit.getMethod(webHook, HttpMethod.BEFORE.name().toLowerCase(), Signature.class);
+        Method after  = ReflectKit.getMethod(webHook, HttpMethod.AFTER.name().toLowerCase(), Signature.class);
 
         routeMatcher.addRoute(com.blade.mvc.route.Route.builder()
                 .target(hook)

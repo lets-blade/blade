@@ -17,6 +17,7 @@ import com.blade.kit.StringKit;
 import com.blade.mvc.Const;
 import com.blade.mvc.WebContext;
 import com.blade.mvc.annotation.Path;
+import com.blade.mvc.annotation.UrlPattern;
 import com.blade.mvc.handler.DefaultExceptionHandler;
 import com.blade.mvc.handler.ExceptionHandler;
 import com.blade.mvc.hook.WebHook;
@@ -190,8 +191,14 @@ public class NettyServer implements Server {
             routeBuilder.addRouter(clazz, controller);
         }
         if (ReflectKit.hasInterface(clazz, WebHook.class) && null != clazz.getAnnotation(Bean.class)) {
-            Object hook = blade.ioc().getBean(clazz);
-            routeBuilder.addWebHook(clazz, hook);
+            Object     hook       = blade.ioc().getBean(clazz);
+            UrlPattern urlPattern = clazz.getAnnotation(UrlPattern.class);
+            if (null == urlPattern) {
+                routeBuilder.addWebHook(clazz, "/.*", hook);
+            } else {
+                Stream.of(urlPattern.values())
+                        .forEach(pattern -> routeBuilder.addWebHook(clazz, pattern, hook));
+            }
         }
         if (ReflectKit.hasInterface(clazz, BeanProcessor.class) && null != clazz.getAnnotation(Bean.class)) {
             this.processors.add((BeanProcessor) blade.ioc().getBean(clazz));

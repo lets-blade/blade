@@ -77,7 +77,7 @@ public class StaticFileHandler implements RequestHandler<Boolean> {
             InputStream input = StaticFileHandler.class.getResourceAsStream("/META-INF/resources" + uri);
             if (null == input) {
                 log.warn("Not Found\t{}", uri);
-                throw new NotFoundException();
+                throw new NotFoundException(uri);
             } else {
                 if (http304(ctx, request, -1)) {
                     return false;
@@ -108,7 +108,7 @@ public class StaticFileHandler implements RequestHandler<Boolean> {
         File file = new File(path);
         if (file.isHidden() || !file.exists()) {
             log.warn("Not Found\t{}", uri);
-            throw new NotFoundException();
+            throw new NotFoundException(uri);
         }
 
         if (file.isDirectory() && showFileList) {

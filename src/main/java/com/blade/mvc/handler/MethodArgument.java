@@ -202,13 +202,8 @@ public final class MethodArgument {
     }
 
     private static Object parseModel(Class<?> argType, Request request, String name) throws Exception {
+        Object  obj    = ReflectKit.newInstance(argType);
         Field[] fields = argType.getDeclaredFields();
-        if (null == fields || fields.length == 0) {
-            return null;
-        }
-        Object  obj      = ReflectKit.newInstance(argType);
-        boolean hasField = false;
-
         for (Field field : fields) {
             field.setAccessible(true);
             if ("serialVersionUID".equals(field.getName())) {
@@ -222,10 +217,9 @@ public final class MethodArgument {
             if (fieldValue.isPresent() && StringKit.isNotBlank(fieldValue.get())) {
                 Object value = ReflectKit.convert(field.getType(), fieldValue.get());
                 field.set(obj, value);
-                hasField = true;
             }
         }
-        return hasField ? obj : null;
+        return obj;
     }
 
 }

@@ -113,8 +113,18 @@ public class ModelAndView {
         this.model = model;
     }
 
+    /**
+     * Add attributes to model
+     *
+     * @param attributes current request attributes
+     */
+    public void addAll(Map<String, Object> attributes) {
+        this.model.putAll(attributes);
+    }
+
     @Override
     public String toString() {
         return "view = " + view + ", model = " + model;
     }
+
 }

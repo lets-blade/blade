@@ -62,6 +62,10 @@ public final class DateKit {
         return LocalDateTime.ofInstant(instant, ZoneId.systemDefault()).format(DateTimeFormatter.ofPattern(pattern));
     }
 
+    public static String toString(LocalDate date, String pattern) {
+        return date.format(DateTimeFormatter.ofPattern(pattern));
+    }
+
     public static String toString(LocalDateTime date, String pattern) {
         return date.format(DateTimeFormatter.ofPattern(pattern));
     }
