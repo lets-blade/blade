@@ -682,7 +682,7 @@ public class GolbalExceptionHandler extends DefaultExceptionHandler {
 
 ## 贡献
 
-非常感谢下面的开发者朋友对本项目的帮助，如果你也愿意提交PR，欢迎你！
+非常感谢下面的开发者朋友对本项目的帮助，如果你也愿意提交PR，非常欢迎！
 
 - [mfarid](https://github.com/mfarid)
 - [daimajia](https://github.com/daimajia)
