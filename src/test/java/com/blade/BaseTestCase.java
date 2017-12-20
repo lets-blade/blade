@@ -7,7 +7,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.After;
 import org.junit.Before;
 
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * @author biezhi
@@ -17,9 +18,9 @@ import java.util.concurrent.TimeUnit;
 public class BaseTestCase {
 
     protected Blade app;
-    private   String origin    = "http://127.0.0.1:10086";
-    protected String firefoxUA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:53.0) Gecko/20100101 Firefox/53.0";
-    private static volatile boolean isStarted;
+    private        String origin    = "http://127.0.0.1:10086";
+    protected      String firefoxUA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:53.0) Gecko/20100101 Firefox/53.0";
+    private static Lock   lock      = new ReentrantLock();
 
     @Before
     public void setup() throws Exception {
@@ -29,36 +30,33 @@ public class BaseTestCase {
     }
 
     protected Blade start() {
-        while (isStarted) {
-            try {
-                TimeUnit.MILLISECONDS.sleep(500);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+        lock.lock();
+        Blade blade = null;
+        try {
+            blade = Blade.me().listen(10086).start().await();
+        } finally {
+            lock.unlock();
         }
-        Blade blade = Blade.me().listen(10086).start().await();
-        isStarted = true;
         return blade;
     }
 
     protected void start(Blade blade) {
-        while (isStarted) {
-            try {
-                TimeUnit.MILLISECONDS.sleep(500);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+        lock.lock();
+        try {
+            blade.listen(10086).start().await();
+        } finally {
+            lock.unlock();
         }
-        blade.listen(10086).start().await();
-        isStarted = true;
     }
 
     @After
     public void after() {
-        if (isStarted) {
+        try {
+            lock.lock();
             app.stop();
             app.await();
-            isStarted = false;
+        } finally {
+            lock.unlock();
         }
     }
 
@@ -82,19 +80,9 @@ public class BaseTestCase {
         return Unirest.post(origin + path).asString().getBody();
     }
 
-    protected HttpRequest put(String path) throws Exception {
-        log.info("[PUT] {}", (origin + path));
-        return Unirest.put(origin + path);
-    }
-
     protected String putBodyString(String path) throws Exception {
         log.info("[PUT] {}", (origin + path));
         return Unirest.put(origin + path).asString().getBody();
-    }
-
-    protected HttpRequest delete(String path) throws Exception {
-        log.info("[DELETE] {}", (origin + path));
-        return Unirest.delete(origin + path);
     }
 
     protected String deleteBodyString(String path) throws Exception {
