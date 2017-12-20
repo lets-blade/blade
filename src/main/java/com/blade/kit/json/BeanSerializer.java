@@ -9,6 +9,8 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -22,7 +24,8 @@ public class BeanSerializer {
             return null;
         }
 
-        if (ReflectKit.isPrimitive(bean) || bean instanceof Number || bean instanceof Date) {
+        if (ReflectKit.isPrimitive(bean) || bean instanceof Number || bean instanceof Date
+                || bean instanceof LocalDate || bean instanceof LocalDateTime) {
             return bean;
         }
 
@@ -94,7 +97,12 @@ public class BeanSerializer {
             if (value instanceof Date) {
                 value = DateKit.toString((Date) value, temp.getDatePatten());
             }
-
+            if (value instanceof LocalDate) {
+                value = DateKit.toString((LocalDate) value, temp.getDatePatten());
+            }
+            if (value instanceof LocalDateTime) {
+                value = DateKit.toString((LocalDateTime) value, temp.getDatePatten());
+            }
             if (value instanceof BigDecimal) {
                 value = ((BigDecimal) value).setScale(temp.getBigDecimalKeep()).toString();
             }
