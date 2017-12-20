@@ -32,9 +32,9 @@ public class BladeTest extends BaseTestCase {
 
     @Test
     public void testStartedEvent() {
-        app.listen("127.0.0.1", 10087)
-                .event(EventType.SERVER_STARTED, (e) -> System.out.println("服务已经启动成功."))
-                .start().await();
+        start(
+                app.event(EventType.SERVER_STARTED, (e) -> System.out.println("服务已经启动成功."))
+        );
     }
 
     @Test
