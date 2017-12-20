@@ -42,6 +42,13 @@ public class BaseTestCase {
     }
 
     protected void start(Blade blade) {
+        while (isStarted) {
+            try {
+                TimeUnit.MILLISECONDS.sleep(500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
         blade.listen(10086).start().await();
         isStarted = true;
     }
