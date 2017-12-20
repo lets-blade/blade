@@ -3,7 +3,7 @@ package com.blade;
 import com.blade.event.EventType;
 import com.blade.mvc.ui.template.DefaultEngine;
 import com.blade.types.BladeBeanDefineType;
-import netty_hello.Hello;
+import io.example.blog.model.Hello;
 import org.junit.Assert;
 import org.junit.Test;
 
