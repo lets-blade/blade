@@ -17,6 +17,7 @@ public class BaseTestCase {
     protected Blade app;
     private   String origin    = "http://127.0.0.1:10086";
     protected String firefoxUA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:53.0) Gecko/20100101 Firefox/53.0";
+    protected boolean isStarted;
 
     @Before
     public void setup() throws Exception {
@@ -26,17 +27,21 @@ public class BaseTestCase {
     }
 
     protected Blade start() {
+        isStarted = true;
         return Blade.me().listen(10086).start().await();
     }
 
     protected void start(Blade blade) {
         blade.listen(10086).start().await();
+        isStarted = true;
     }
 
     @After
     public void after() {
-        app.stop();
-        app.await();
+        if(isStarted){
+            app.stop();
+            app.await();
+        }
     }
 
     protected HttpRequest get(String path) throws Exception {
