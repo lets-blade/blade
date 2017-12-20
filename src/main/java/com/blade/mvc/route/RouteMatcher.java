@@ -134,7 +134,7 @@ public class RouteMatcher {
                 }
             }
         } catch (Exception e) {
-            log.error("", e);
+            log.error("Add route method error", e);
         }
     }
 

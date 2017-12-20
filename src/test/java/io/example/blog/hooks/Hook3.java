@@ -2,6 +2,7 @@ package io.example.blog.hooks;
 
 import com.blade.ioc.annotation.Bean;
 import com.blade.ioc.annotation.Order;
+import com.blade.mvc.annotation.UrlPattern;
 import com.blade.mvc.hook.Signature;
 import com.blade.mvc.hook.WebHook;
 
@@ -11,6 +12,7 @@ import com.blade.mvc.hook.WebHook;
  */
 @Order(3)
 @Bean
+@UrlPattern(values = "/auth/*")
 public class Hook3 implements WebHook {
 
     @Override

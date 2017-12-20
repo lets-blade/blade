@@ -18,7 +18,7 @@ public class RouteBuilderTest {
         RouteMatcher routeMatcher = new RouteMatcher();
         RouteBuilder routeBuilder = new RouteBuilder(routeMatcher);
         routeBuilder.addRouter(DemoController.class, new DemoController());
-        routeBuilder.addWebHook(WebHook.class, (WebHook) signature -> true);
+        routeBuilder.addWebHook(WebHook.class, "/*", (WebHook) signature -> true);
 
         routeMatcher.register();
 
