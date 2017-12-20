@@ -3,6 +3,7 @@ package com.blade.mvc.multipart;
 
 import com.blade.kit.json.JsonIgnore;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * HTTP multipart/form-data Request
@@ -11,6 +12,7 @@ import lombok.Data;
  * @since 1.5
  */
 @Data
+@NoArgsConstructor
 public class FileItem {
 
     private String name;

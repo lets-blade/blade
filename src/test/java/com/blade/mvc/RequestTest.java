@@ -3,6 +3,8 @@ package com.blade.mvc;
 import com.blade.BaseTestCase;
 import com.blade.kit.JsonKit;
 import com.blade.kit.json.Ason;
+import com.blade.model.File1;
+import com.blade.mvc.multipart.FileItem;
 import org.junit.Test;
 
 import java.io.File;
@@ -274,18 +276,32 @@ public class RequestTest extends BaseTestCase {
                         .post("/upload2", (request, response) -> response.json(request.fileItem("file1").orElse(null)))
         );
 
-        String contentLength = this.isWindows() ? "1584" : "1551";
+
         String body = post("/upload1")
                 .field("file1", new File(RequestTest.class.getResource("/log_config.txt").getPath()))
                 .asString().getBody();
 
-        assertEquals("{\"file1\":{\"name\":\"file1\",\"fileName\":\"log_config.txt\",\"contentType\":\"text/plain\",\"length\":" + contentLength + "}}", body);
+        System.out.println(body);
+        long  contentLength = this.isWindows() ? 1584 : 1551;
+        File1 file1         = JsonKit.formJson(body, File1.class);
+
+        assertEquals(contentLength, file1.getFile1().getLength());
+        assertEquals("text/plain", file1.getFile1().getContentType());
+        assertEquals("log_config.txt", file1.getFile1().getFileName());
+        assertEquals("file1", file1.getFile1().getName());
 
         body = post("/upload2")
                 .field("file1", new File(RequestTest.class.getResource("/log_config.txt").getPath()))
                 .asString().getBody();
 
-        assertEquals("{\"name\":\"file1\",\"fileName\":\"log_config.txt\",\"contentType\":\"text/plain\",\"length\":" + contentLength + "}", body);
+        System.out.println(body);
+
+        FileItem fileItem = JsonKit.formJson(body, FileItem.class);
+
+        assertEquals(contentLength, fileItem.getLength());
+        assertEquals("text/plain", fileItem.getContentType());
+        assertEquals("log_config.txt", fileItem.getFileName());
+        assertEquals("file1", fileItem.getName());
     }
 
     private boolean isWindows() {
