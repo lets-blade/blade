@@ -7,6 +7,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.After;
 import org.junit.Before;
 
+import java.util.concurrent.TimeUnit;
+
 /**
  * @author biezhi
  * 2017/6/3
@@ -27,8 +29,16 @@ public class BaseTestCase {
     }
 
     protected Blade start() {
+        while (isStarted) {
+            try {
+                TimeUnit.MILLISECONDS.sleep(500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        Blade blade = Blade.me().listen(10086).start().await();
         isStarted = true;
-        return Blade.me().listen(10086).start().await();
+        return blade;
     }
 
     protected void start(Blade blade) {
@@ -38,7 +48,7 @@ public class BaseTestCase {
 
     @After
     public void after() {
-        if(isStarted){
+        if (isStarted) {
             app.stop();
             app.await();
             isStarted = false;
