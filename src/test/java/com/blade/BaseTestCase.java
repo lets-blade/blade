@@ -55,6 +55,8 @@ public class BaseTestCase {
             lock.lock();
             app.stop();
             app.await();
+        } catch (Exception e) {
+
         } finally {
             lock.unlock();
         }

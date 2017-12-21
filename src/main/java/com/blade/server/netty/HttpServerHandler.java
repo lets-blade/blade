@@ -3,6 +3,7 @@ package com.blade.server.netty;
 import com.blade.Blade;
 import com.blade.exception.NotFoundException;
 import com.blade.kit.DateKit;
+import com.blade.kit.NamedThreadFactory;
 import com.blade.mvc.WebContext;
 import com.blade.mvc.handler.ExceptionHandler;
 import com.blade.mvc.handler.RequestInvoker;
@@ -24,8 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 /**
  * Http Server Handler
@@ -47,8 +47,7 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
     private final boolean hasBeforeHook;
     private final boolean hasAfterHook;
 
-    private volatile CharSequence date = new AsciiString(DateKit.gmtDate(LocalDateTime.now()));
-
+    private volatile     CharSequence    date                = new AsciiString(DateKit.gmtDate(LocalDateTime.now()));
 
     HttpServerHandler(Blade blade, ScheduledExecutorService service) {
         this.statics = blade.getStatics();
@@ -76,7 +75,6 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
         // route signature
         Signature signature = Signature.builder().request(request).response(response).build();
         try {
-
             // request uri
             String uri = request.uri();
 
@@ -104,13 +102,13 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
 
             // middleware
             if (hasMiddleware && !requestInvoker.invokeMiddleware(routeMatcher.getMiddleware(), signature)) {
-                this.sendFinish(response);
+                HttpServerHandler.this.sendFinish(response);
                 return;
             }
 
             // web hook before
             if (hasBeforeHook && !requestInvoker.invokeHook(routeMatcher.getBefore(uri), signature)) {
-                this.sendFinish(response);
+                HttpServerHandler.this.sendFinish(response);
                 return;
             }
 
@@ -129,7 +127,7 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
                 log.error("Blade Invoke Error", e);
             }
         } finally {
-            if (!isStatic) this.sendFinish(response);
+            if (!isStatic) HttpServerHandler.this.sendFinish(response);
             WebContext.remove();
         }
     }
@@ -151,6 +149,25 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
         if (ctx.channel().isOpen() && ctx.channel().isActive() && ctx.channel().isWritable()) {
             ctx.close();
         }
+    }
+
+    /**
+     * Blocking ExecutorService
+     *
+     * @param size
+     * @return
+     */
+    public static ExecutorService newBlockingExecutorsUseCallerRun(int size) {
+        ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(size, size, 0L, TimeUnit.MILLISECONDS, new SynchronousQueue<>(),
+                (r, executor) -> {
+                    try {
+                        executor.getQueue().put(r);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+        threadPoolExecutor.setThreadFactory(new NamedThreadFactory("task@"));
+        return threadPoolExecutor;
     }
 
     private boolean isStaticFile(String uri) {

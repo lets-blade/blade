@@ -1,9 +1,8 @@
 package com.blade.server.netty;
 
+import com.blade.kit.NamedThreadFactory;
 import io.netty.channel.epoll.EpollEventLoopGroup;
 import io.netty.channel.epoll.EpollServerSocketChannel;
-
-import java.util.concurrent.ExecutorService;
 
 /**
  * Epool kit
@@ -15,9 +14,9 @@ import java.util.concurrent.ExecutorService;
  */
 public class EpoolKit {
 
-    public static NettyServerGroup group(int threadCount, ExecutorService bossExecutors, int workers, ExecutorService workerExecutors) {
-        EpollEventLoopGroup bossGroup   = new EpollEventLoopGroup(threadCount, bossExecutors);
-        EpollEventLoopGroup workerGroup = new EpollEventLoopGroup(workers, workerExecutors);
+    public static NettyServerGroup group(int threadCount, int workers) {
+        EpollEventLoopGroup bossGroup   = new EpollEventLoopGroup(threadCount, new NamedThreadFactory("epoll-boss@"));
+        EpollEventLoopGroup workerGroup = new EpollEventLoopGroup(workers, new NamedThreadFactory("epoll-worker@"));
         return NettyServerGroup.builder().boosGroup(bossGroup).workerGroup(workerGroup).socketChannel(EpollServerSocketChannel.class).build();
     }
 

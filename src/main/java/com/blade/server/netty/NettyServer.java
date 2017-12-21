@@ -42,8 +42,6 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.File;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.stream.Stream;
 
 import static com.blade.mvc.Const.*;
@@ -59,8 +57,6 @@ public class NettyServer implements Server {
     private Environment         environment;
     private EventLoopGroup      bossGroup;
     private EventLoopGroup      workerGroup;
-    private ExecutorService     bossExecutors;
-    private ExecutorService     workerExecutors;
     private int                 threadCount;
     private int                 workers;
     private int                 backlog;
@@ -151,16 +147,17 @@ public class NettyServer implements Server {
         // enable epoll
         if (BladeKit.epollIsAvailable()) {
             log.info("⬢ Use EpollEventLoopGroup");
+
             b.option(EpollChannelOption.SO_REUSEPORT, true);
 
-            NettyServerGroup nettyServerGroup = EpoolKit.group(threadCount, bossExecutors, workers, workerExecutors);
+            NettyServerGroup nettyServerGroup = EpoolKit.group(threadCount, workers);
             this.bossGroup = nettyServerGroup.getBoosGroup();
             this.workerGroup = nettyServerGroup.getWorkerGroup();
             b.group(bossGroup, workerGroup).channel(nettyServerGroup.getSocketChannel());
         } else {
             log.info("⬢ Use NioEventLoopGroup");
-            this.bossGroup = new NioEventLoopGroup(threadCount, bossExecutors);
-            this.workerGroup = new NioEventLoopGroup(workers, workerExecutors);
+            this.bossGroup = new NioEventLoopGroup(threadCount, new NamedThreadFactory("nio-boss@"));
+            this.workerGroup = new NioEventLoopGroup(workers, new NamedThreadFactory("nio-worker@"));
             b.group(bossGroup, workerGroup).channel(NioServerSocketChannel.class);
         }
 
@@ -277,12 +274,6 @@ public class NettyServer implements Server {
         }
         DefaultEngine.TEMPLATE_PATH = templatePath;
 
-        String boosGroupName   = environment.get(ENV_KEY_NETTY_BOOS_GROUP_NAME, "pool");
-        String workerGroupName = environment.get(ENV_KEY_NETTY_WORKER_GROUP_NAME, "pool");
-
-        bossExecutors = Executors.newCachedThreadPool(new NamedThreadFactory("boss@" + boosGroupName));
-        workerExecutors = Executors.newCachedThreadPool(new NamedThreadFactory("worker@" + workerGroupName));
-
         threadCount = environment.getInt(ENV_KEY_NETTY_THREAD_COUNT, 1);
         workers = environment.getInt(ENV_KEY_NETTY_WORKERS, 0);
         backlog = environment.getInt(ENV_KEY_NETTY_SO_BACKLOG, 8192);
@@ -302,12 +293,6 @@ public class NettyServer implements Server {
             if (this.workerGroup != null) {
                 this.workerGroup.shutdownGracefully();
             }
-            if (bossExecutors != null) {
-                bossExecutors.shutdown();
-            }
-            if (workerExecutors != null) {
-                workerExecutors.shutdown();
-            }
             log.info("⬢ Blade shutdown successful");
         } catch (Exception e) {
             log.error("Blade shutdown error", e);
@@ -323,12 +308,6 @@ public class NettyServer implements Server {
             }
             if (this.workerGroup != null) {
                 this.workerGroup.shutdownGracefully().sync();
-            }
-            if (bossExecutors != null) {
-                bossExecutors.shutdown();
-            }
-            if (workerExecutors != null) {
-                workerExecutors.shutdown();
             }
             log.info("⬢ Blade shutdown successful");
         } catch (Exception e) {
