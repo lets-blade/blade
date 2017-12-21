@@ -5,6 +5,7 @@ import com.blade.kit.StringKit;
 import com.blade.mvc.WebContext;
 import com.blade.mvc.ui.ModelAndView;
 import com.blade.mvc.wrapper.OutputStreamWrapper;
+import com.blade.server.netty.HttpServerHandler;
 import com.blade.server.netty.NettyHttpConst;
 import com.blade.server.netty.ProgressiveFutureListener;
 import io.netty.buffer.ByteBuf;
@@ -39,7 +40,6 @@ public class HttpResponse implements Response {
     private boolean               isCommit    = false;
     private ChannelHandlerContext ctx         = null;
     private CharSequence          contentType = null;
-    private CharSequence          dateString  = null;
 
     @Override
     public int statusCode() {
@@ -230,13 +230,13 @@ public class HttpResponse implements Response {
             ctx.write(response).addListener(ChannelFutureListener.CLOSE);
         } else {
             response.headers().set(NettyHttpConst.CONNECTION, KEEP_ALIVE);
-            ctx.write(response, ctx.voidPromise());
+            ctx.writeAndFlush(response);
         }
         isCommit = true;
     }
 
     private HttpHeaders getDefaultHeader() {
-        headers.set(NettyHttpConst.DATE, dateString);
+        headers.set(NettyHttpConst.DATE, HttpServerHandler.date);
         headers.set(NettyHttpConst.CONTENT_TYPE, NettyHttpConst.getContentType(this.contentType));
         headers.set(NettyHttpConst.X_POWER_BY, NettyHttpConst.VERSION);
         if (!headers.contains(NettyHttpConst.SERVER)) {
@@ -248,10 +248,9 @@ public class HttpResponse implements Response {
         return headers;
     }
 
-    public static HttpResponse build(ChannelHandlerContext ctx, CharSequence dateString) {
+    public static HttpResponse build(ChannelHandlerContext ctx) {
         HttpResponse httpResponse = new HttpResponse();
         httpResponse.ctx = ctx;
-        httpResponse.dateString = dateString;
         return httpResponse;
     }
 
