@@ -150,7 +150,7 @@ public class NettyServer implements Server {
 
             b.option(EpollChannelOption.SO_REUSEPORT, true);
 
-            NettyServerGroup nettyServerGroup = EpoolKit.group(threadCount, workers);
+            NettyServerGroup nettyServerGroup = EpollKit.group(threadCount, workers);
             this.bossGroup = nettyServerGroup.getBoosGroup();
             this.workerGroup = nettyServerGroup.getWorkerGroup();
             b.group(bossGroup, workerGroup).channel(nettyServerGroup.getSocketChannel());
@@ -266,10 +266,10 @@ public class NettyServer implements Server {
         }
 
         String templatePath = environment.get(ENV_KEY_TEMPLATE_PATH, "templates");
-        if (templatePath.charAt(0) == HttpConst.CHAR_SLASH) {
+        if (templatePath.charAt(0) == NettyHttpConst.CHAR_SLASH) {
             templatePath = templatePath.substring(1);
         }
-        if (templatePath.endsWith(HttpConst.SLASH)) {
+        if (templatePath.endsWith(NettyHttpConst.SLASH)) {
             templatePath = templatePath.substring(0, templatePath.length() - 1);
         }
         DefaultEngine.TEMPLATE_PATH = templatePath;

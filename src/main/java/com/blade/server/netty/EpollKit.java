@@ -5,14 +5,14 @@ import io.netty.channel.epoll.EpollEventLoopGroup;
 import io.netty.channel.epoll.EpollServerSocketChannel;
 
 /**
- * Epool kit
+ * Epoll kit
  * <p>
- * enable epool event loop group
+ * enable epoll event loop group
  *
  * @author biezhi
  * @date 2017/9/22
  */
-public class EpoolKit {
+public class EpollKit {
 
     public static NettyServerGroup group(int threadCount, int workers) {
         EpollEventLoopGroup bossGroup   = new EpollEventLoopGroup(threadCount, new NamedThreadFactory("epoll-boss@"));

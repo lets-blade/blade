@@ -3,8 +3,8 @@ package com.blade.mvc.http;
 import com.blade.kit.StringKit;
 import com.blade.mvc.multipart.FileItem;
 import com.blade.mvc.route.Route;
-import com.blade.server.netty.HttpConst;
 import com.blade.server.netty.HttpServerHandler;
+import com.blade.server.netty.NettyHttpConst;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufUtil;
 import io.netty.buffer.Unpooled;
@@ -77,14 +77,14 @@ public class HttpRequest implements Request {
             this.parameters.putAll(parameters);
         }
 
-        if (!HttpConst.METHOD_GET.equals(fullHttpRequest.method().name())) {
+        if (!NettyHttpConst.METHOD_GET.equals(fullHttpRequest.method().name())) {
             HttpPostRequestDecoder decoder = new HttpPostRequestDecoder(HTTP_DATA_FACTORY, fullHttpRequest);
             decoder.getBodyHttpDatas().forEach(this::parseData);
         }
 
         // cookies
-        String cookie = header(HttpConst.COOKIE_STRING);
-        cookie = cookie.length() > 0 ? cookie : header(HttpConst.COOKIE_STRING.toLowerCase());
+        String cookie = header(NettyHttpConst.COOKIE_STRING);
+        cookie = cookie.length() > 0 ? cookie : header(NettyHttpConst.COOKIE_STRING.toLowerCase());
         if (StringKit.isNotBlank(cookie)) {
             ServerCookieDecoder.LAX.decode(cookie).forEach(this::parseCookie);
         }

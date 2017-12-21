@@ -12,7 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author biezhi
  * @date 2017/10/16
  */
-public interface HttpConst {
+public interface NettyHttpConst {
     String IF_MODIFIED_SINCE   = "IF_MODIFIED_SINCE";
     String USER_AGENT          = "User-Agent";
     String CONTENT_TYPE_STRING = "Content-Type";
