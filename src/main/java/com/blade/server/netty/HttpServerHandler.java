@@ -15,7 +15,10 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
 import java.util.Set;
-import java.util.concurrent.*;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
+import static com.blade.server.netty.NettyHttpConst.BUSINESS_THREAD_POOL;
 
 /**
  * Http Server Handler
@@ -36,8 +39,11 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
     public final boolean hasBeforeHook;
     public final boolean hasAfterHook;
 
-    public static volatile CharSequence    date                = new AsciiString(DateKit.gmtDate(LocalDateTime.now()));
-    private final static   ExecutorService workerThreadService = newBlockingExecutorsUseCallerRun(Runtime.getRuntime().availableProcessors() * 2);
+    public static volatile CharSequence date = new AsciiString(DateKit.gmtDate(LocalDateTime.now()));
+
+    static {
+        BUSINESS_THREAD_POOL.setThreadFactory(new NamedThreadFactory("task@"));
+    }
 
     HttpServerHandler(Blade blade, ScheduledExecutorService service) {
         this.statics = blade.getStatics();
@@ -61,7 +67,7 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
         if (log.isDebugEnabled()) {
             log.debug("Received IO request {}", ctx);
         }
-        workerThreadService.execute(new RequestExecution(ctx, fullHttpRequest.copy(), this));
+        BUSINESS_THREAD_POOL.execute(new RequestExecution(ctx, fullHttpRequest.copy(), this));
         if (log.isDebugEnabled()) {
             log.debug("IO request processing ends {}", ctx);
         }
@@ -77,25 +83,6 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
         if (ctx.channel().isOpen() && ctx.channel().isActive() && ctx.channel().isWritable()) {
             ctx.close();
         }
-    }
-
-    /**
-     * Blocking ExecutorService
-     *
-     * @param size
-     * @return
-     */
-    public static ExecutorService newBlockingExecutorsUseCallerRun(int size) {
-        ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(size, size, 0L, TimeUnit.MILLISECONDS, new SynchronousQueue<>(),
-                (r, executor) -> {
-                    try {
-                        executor.getQueue().put(r);
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
-                    }
-                });
-        threadPoolExecutor.setThreadFactory(new NamedThreadFactory("task@"));
-        return threadPoolExecutor;
     }
 
 }

@@ -45,6 +45,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import static com.blade.mvc.Const.*;
+import static com.blade.server.netty.NettyHttpConst.BUSINESS_THREAD_POOL;
 
 /**
  * @author biezhi
@@ -287,12 +288,9 @@ public class NettyServer implements Server {
     public void stop() {
         log.info("⬢ Blade shutdown ...");
         try {
-            if (this.bossGroup != null) {
-                this.bossGroup.shutdownGracefully();
-            }
-            if (this.workerGroup != null) {
-                this.workerGroup.shutdownGracefully();
-            }
+            this.bossGroup.shutdownGracefully();
+            this.workerGroup.shutdownGracefully();
+            BUSINESS_THREAD_POOL.shutdown();
             log.info("⬢ Blade shutdown successful");
         } catch (Exception e) {
             log.error("Blade shutdown error", e);
@@ -303,12 +301,9 @@ public class NettyServer implements Server {
     public void stopAndWait() {
         log.info("⬢ Blade shutdown ...");
         try {
-            if (this.bossGroup != null) {
-                this.bossGroup.shutdownGracefully().sync();
-            }
-            if (this.workerGroup != null) {
-                this.workerGroup.shutdownGracefully().sync();
-            }
+            this.bossGroup.shutdownGracefully().sync();
+            this.workerGroup.shutdownGracefully().sync();
+            BUSINESS_THREAD_POOL.shutdown();
             log.info("⬢ Blade shutdown successful");
         } catch (Exception e) {
             log.error("Blade shutdown error", e);

@@ -52,11 +52,13 @@ public class Route {
      */
     private Method action;
 
+    @Builder.Default
     private int sort = Integer.MAX_VALUE;
 
     /**
      * Url path params
      */
+    @Builder.Default
     private Map<String, String> pathParams = new HashMap<>(8);
 
     public Route(HttpMethod httpMethod, String path, Class<?> targetType, Method action) {

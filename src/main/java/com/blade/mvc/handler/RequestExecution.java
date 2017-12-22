@@ -22,6 +22,7 @@ import com.blade.server.netty.NettyHttpConst;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.FullHttpRequest;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.InvocationTargetException;
@@ -38,6 +39,7 @@ import java.util.Optional;
 @Slf4j
 public class RequestExecution implements Runnable {
 
+    @Getter
     private final ChannelHandlerContext ctx;
     private final FullHttpRequest       fullHttpRequest;
     private final HttpServerHandler     httpServerHandler;
@@ -52,6 +54,9 @@ public class RequestExecution implements Runnable {
     public void run() {
         if (log.isDebugEnabled()) {
             log.debug("{}", fullHttpRequest);
+        }
+        if(null == this.ctx || this.ctx.isRemoved()){
+            return;
         }
         Request  request  = HttpRequest.build(ctx, fullHttpRequest);
         Response response = HttpResponse.build(ctx);
@@ -118,6 +123,7 @@ public class RequestExecution implements Runnable {
     }
 
     boolean isStaticFile(String uri) {
+        if (null == uri) return false;
         Optional<String> result = httpServerHandler.statics.stream().filter(s -> s.equals(uri) || uri.startsWith(s)).findFirst();
         return result.isPresent();
     }

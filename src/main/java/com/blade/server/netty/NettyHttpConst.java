@@ -1,10 +1,20 @@
 package com.blade.server.netty;
 
 import com.blade.mvc.Const;
+import com.blade.mvc.handler.RequestExecution;
+import io.netty.buffer.Unpooled;
+import io.netty.handler.codec.http.DefaultFullHttpResponse;
+import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.util.AsciiString;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+
+import static io.netty.handler.codec.http.HttpResponseStatus.SERVICE_UNAVAILABLE;
+import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
 /**
  * Http headers const
@@ -53,5 +63,37 @@ public interface NettyHttpConst {
         contentTypes.put(contentType, AsciiString.cached(String.valueOf(contentType)));
         return contentTypes.get(contentType);
     }
+
+    /**
+     * Minimum number of thread pool maintenance threads
+     */
+    int CORE_POOL_SIZE = Runtime.getRuntime().availableProcessors();
+
+    /**
+     * Maximum number of thread pool maintenance threads
+     */
+    int MAX_POOL_SIZE = Runtime.getRuntime().availableProcessors() * 2 + 1;
+
+    /**
+     * Thread pool maintenance threads allow free time
+     */
+    int KEEP_ALIVE_TIME = 0;
+
+    /**
+     * The size of the buffer queue used by the thread pool
+     */
+    int WORK_QUEUE_SIZE = Runtime.getRuntime().availableProcessors() * 3;
+
+    ThreadPoolExecutor BUSINESS_THREAD_POOL = new ThreadPoolExecutor(
+            CORE_POOL_SIZE, MAX_POOL_SIZE, KEEP_ALIVE_TIME,
+            TimeUnit.SECONDS,
+            new LinkedBlockingDeque<>(WORK_QUEUE_SIZE), (r, executor) -> {
+        RequestExecution requestExecution = (RequestExecution) r;
+        FullHttpResponse response         = new DefaultFullHttpResponse(HTTP_1_1, SERVICE_UNAVAILABLE, Unpooled.wrappedBuffer(("<center><h1>503</h1></center><br/>" + executor.toString()).getBytes()));
+        response.headers().set(CONTENT_TYPE, CONTENT_TYPE_HTML);
+        response.headers().setInt(CONTENT_LENGTH, response.content().readableBytes());
+        response.headers().set(CONNECTION, KEEP_ALIVE);
+        requestExecution.getCtx().writeAndFlush(response);
+    });
 
 }
