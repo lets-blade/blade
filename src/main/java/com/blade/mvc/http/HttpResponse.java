@@ -5,8 +5,8 @@ import com.blade.kit.StringKit;
 import com.blade.mvc.WebContext;
 import com.blade.mvc.ui.ModelAndView;
 import com.blade.mvc.wrapper.OutputStreamWrapper;
+import com.blade.server.netty.HttpConst;
 import com.blade.server.netty.HttpServerHandler;
-import com.blade.server.netty.NettyHttpConst;
 import com.blade.server.netty.ProgressiveFutureListener;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -162,11 +162,11 @@ public class HttpResponse implements Response {
 
         boolean keepAlive = WebContext.request().keepAlive();
         if (keepAlive) {
-            httpResponse.headers().set(NettyHttpConst.CONNECTION, KEEP_ALIVE);
+            httpResponse.headers().set(HttpConst.CONNECTION, KEEP_ALIVE);
         }
-        httpHeaders.set(NettyHttpConst.CONTENT_TYPE, this.contentType);
+        httpHeaders.set(HttpConst.CONTENT_TYPE, this.contentType);
         httpHeaders.set("Content-Disposition", "attachment; filename=" + new String(fileName.getBytes("UTF-8"), "ISO8859_1"));
-        httpHeaders.setInt(NettyHttpConst.CONTENT_LENGTH, fileLength.intValue());
+        httpHeaders.setInt(HttpConst.CONTENT_LENGTH, fileLength.intValue());
 
         // Write the initial line and the header.
         ctx.write(httpResponse);
@@ -205,7 +205,7 @@ public class HttpResponse implements Response {
 
     @Override
     public void redirect(@NonNull String newUri) {
-        headers.set(NettyHttpConst.LOCATION, newUri);
+        headers.set(HttpConst.LOCATION, newUri);
         FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.FOUND);
         this.send(response);
     }
@@ -221,29 +221,29 @@ public class HttpResponse implements Response {
 
         boolean keepAlive = WebContext.request().keepAlive();
 
-        if (!response.headers().contains(NettyHttpConst.CONTENT_LENGTH)) {
+        if (!response.headers().contains(HttpConst.CONTENT_LENGTH)) {
             // Add 'Content-Length' header only for a keep-alive connection.
-            response.headers().set(NettyHttpConst.CONTENT_LENGTH, String.valueOf(response.content().readableBytes()));
+            response.headers().set(HttpConst.CONTENT_LENGTH, String.valueOf(response.content().readableBytes()));
         }
 
         if (!keepAlive) {
             ctx.write(response).addListener(ChannelFutureListener.CLOSE);
         } else {
-            response.headers().set(NettyHttpConst.CONNECTION, KEEP_ALIVE);
+            response.headers().set(HttpConst.CONNECTION, KEEP_ALIVE);
             ctx.writeAndFlush(response);
         }
         isCommit = true;
     }
 
     private HttpHeaders getDefaultHeader() {
-        headers.set(NettyHttpConst.DATE, HttpServerHandler.date);
-        headers.set(NettyHttpConst.CONTENT_TYPE, NettyHttpConst.getContentType(this.contentType));
-        headers.set(NettyHttpConst.X_POWER_BY, NettyHttpConst.VERSION);
-        if (!headers.contains(NettyHttpConst.SERVER)) {
-            headers.set(NettyHttpConst.SERVER, NettyHttpConst.VERSION);
+        headers.set(HttpConst.DATE, HttpServerHandler.date);
+        headers.set(HttpConst.CONTENT_TYPE, HttpConst.getContentType(this.contentType));
+        headers.set(HttpConst.X_POWER_BY, HttpConst.VERSION);
+        if (!headers.contains(HttpConst.SERVER)) {
+            headers.set(HttpConst.SERVER, HttpConst.VERSION);
         }
         if (this.cookies.size() > 0) {
-            this.cookies.forEach(cookie -> headers.add(NettyHttpConst.SET_COOKIE, io.netty.handler.codec.http.cookie.ServerCookieEncoder.LAX.encode(cookie)));
+            this.cookies.forEach(cookie -> headers.add(HttpConst.SET_COOKIE, io.netty.handler.codec.http.cookie.ServerCookieEncoder.LAX.encode(cookie)));
         }
         return headers;
     }

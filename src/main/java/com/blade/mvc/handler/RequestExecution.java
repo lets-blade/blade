@@ -17,8 +17,8 @@ import com.blade.mvc.http.Request;
 import com.blade.mvc.http.Response;
 import com.blade.mvc.route.Route;
 import com.blade.mvc.ui.ModelAndView;
+import com.blade.server.netty.HttpConst;
 import com.blade.server.netty.HttpServerHandler;
-import com.blade.server.netty.NettyHttpConst;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.FullHttpRequest;
@@ -174,7 +174,7 @@ public class RequestExecution implements Runnable {
             boolean isRestful = (null != JSON) || (null != path && path.restful());
 
             // if request is restful and not InternetExplorer userAgent
-            if (isRestful && !signature.request().userAgent().contains(NettyHttpConst.IE_UA)) {
+            if (isRestful && !signature.request().userAgent().contains(HttpConst.IE_UA)) {
                 signature.response().contentType(Const.CONTENT_TYPE_JSON);
             }
 

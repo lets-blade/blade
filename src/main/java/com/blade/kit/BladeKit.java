@@ -75,7 +75,7 @@ public class BladeKit {
     public static boolean epollIsAvailable() {
         try {
             Object obj = Class.forName("io.netty.channel.epoll.Epoll").getMethod("isAvailable").invoke(null);
-            return null != obj && Boolean.valueOf(obj.toString());
+            return null != obj && Boolean.valueOf(obj.toString()) && System.getProperty("os.name").toLowerCase().contains("linux");
         } catch (Exception e) {
             return false;
         }

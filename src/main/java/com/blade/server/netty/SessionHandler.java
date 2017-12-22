@@ -36,7 +36,7 @@ public class SessionHandler {
         this.blade = blade;
         this.sessionManager = blade.sessionManager();
         this.eventManager = blade.eventManager();
-        this.sessionKey = blade.environment().get(ENV_KEY_SESSION_KEY, NettyHttpConst.DEFAULT_SESSION_KEY);
+        this.sessionKey = blade.environment().get(ENV_KEY_SESSION_KEY, HttpConst.DEFAULT_SESSION_KEY);
         this.timeout = blade.environment().getInt(ENV_KEY_SESSION_TIMEOUT, 1800);
     }
 

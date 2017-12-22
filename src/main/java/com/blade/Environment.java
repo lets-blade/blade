@@ -17,7 +17,7 @@ package com.blade;
 
 import com.blade.kit.IOKit;
 import com.blade.kit.ReflectKit;
-import com.blade.server.netty.NettyHttpConst;
+import com.blade.server.netty.HttpConst;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
@@ -162,7 +162,7 @@ public class Environment {
      */
     private static Environment loadClasspath(@NonNull String classpath) {
         String path = classpath;
-        if (classpath.startsWith(NettyHttpConst.SLASH)) {
+        if (classpath.startsWith(HttpConst.SLASH)) {
             path = classpath.substring(1);
         }
         InputStream is = getDefault().getResourceAsStream(path);

@@ -45,7 +45,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import static com.blade.mvc.Const.*;
-import static com.blade.server.netty.NettyHttpConst.BUSINESS_THREAD_POOL;
+import static com.blade.server.netty.HttpConst.BUSINESS_THREAD_POOL;
 
 /**
  * @author biezhi
@@ -267,10 +267,10 @@ public class NettyServer implements Server {
         }
 
         String templatePath = environment.get(ENV_KEY_TEMPLATE_PATH, "templates");
-        if (templatePath.charAt(0) == NettyHttpConst.CHAR_SLASH) {
+        if (templatePath.charAt(0) == HttpConst.CHAR_SLASH) {
             templatePath = templatePath.substring(1);
         }
-        if (templatePath.endsWith(NettyHttpConst.SLASH)) {
+        if (templatePath.endsWith(HttpConst.SLASH)) {
             templatePath = templatePath.substring(0, templatePath.length() - 1);
         }
         DefaultEngine.TEMPLATE_PATH = templatePath;
