@@ -148,11 +148,11 @@ public final class MethodArgument {
                     || argType.equals(LocalDate.class) || argType.equals(LocalDateTime.class)) {
                 Optional<String> val = request.query(name);
                 if (!val.isPresent()) {
-                    val = Optional.of(null != param ? param.defaultValue() : param.defaultValue());
+                    val = Optional.of(param.defaultValue());
                 }
                 return ReflectKit.convert(argType, val.get());
             } else {
-                name = null != param ? param.name() : param.name();
+                name = param.name();
                 return parseModel(argType, request, name);
             }
         }
