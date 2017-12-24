@@ -66,6 +66,7 @@ public interface Const {
     String ENE_KEY_SSL_PRIVATE_KEY_PASS       = "server.ssl.private-key-pass";
     String ENV_KEY_NETTY_ACCECPT_THREAD_COUNT = "server.netty.accept-thread-count";
     String ENV_KEY_NETTY_IO_THREAD_COUNT      = "server.netty.io-thread-count";
+    String ENV_KEY_NETTY_SO_BACKLOG           = "server.netty.so-backlog";
 
     String ENV_KEY_BOOT_CONF = "boot_conf";
 

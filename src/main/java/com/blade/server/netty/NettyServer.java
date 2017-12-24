@@ -37,7 +37,6 @@ import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.util.ResourceLeakDetector;
-import io.netty.util.concurrent.ThreadPerTaskExecutor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
@@ -58,9 +57,6 @@ public class NettyServer implements Server {
     private Environment         environment;
     private EventLoopGroup      bossGroup;
     private EventLoopGroup      workerGroup;
-    private int                 threadCount;
-    private int                 workers;
-    private int                 backlog;
     private Channel             channel;
     private RouteBuilder        routeBuilder;
     private List<BeanProcessor> processors;
@@ -140,27 +136,30 @@ public class NettyServer implements Server {
         }
 
         // Configure the server.
+        int backlog = environment.getInt(ENV_KEY_NETTY_SO_BACKLOG, 8192);
+
         ServerBootstrap b = new ServerBootstrap();
         b.option(ChannelOption.SO_BACKLOG, backlog);
         b.option(ChannelOption.SO_REUSEADDR, true);
         b.childOption(ChannelOption.SO_REUSEADDR, true);
+
+        int acceptThreadCount = environment.getInt(ENV_KEY_NETTY_ACCECPT_THREAD_COUNT, 0);
+        int ioThreadCount     = environment.getInt(ENV_KEY_NETTY_IO_THREAD_COUNT, 0);
 
         // enable epoll
         if (BladeKit.epollIsAvailable()) {
             log.info("⬢ Use EpollEventLoopGroup");
             b.option(EpollChannelOption.SO_REUSEPORT, true);
 
-            NettyServerGroup nettyServerGroup = EpollKit.group(threadCount, workers);
+            NettyServerGroup nettyServerGroup = EpollKit.group(acceptThreadCount, ioThreadCount);
             this.bossGroup = nettyServerGroup.getBoosGroup();
             this.workerGroup = nettyServerGroup.getWorkerGroup();
             b.group(bossGroup, workerGroup).channel(nettyServerGroup.getSocketChannel());
         } else {
             log.info("⬢ Use NioEventLoopGroup");
 
-            new ThreadPerTaskExecutor(new NamedThreadFactory(""));
-
-            this.bossGroup = new NioEventLoopGroup(threadCount, new NamedThreadFactory("nio-boss@"));
-            this.workerGroup = new NioEventLoopGroup(workers, new NamedThreadFactory("nio-worker@"));
+            this.bossGroup = new NioEventLoopGroup(acceptThreadCount, new NamedThreadFactory("nio-boss@"));
+            this.workerGroup = new NioEventLoopGroup(ioThreadCount, new NamedThreadFactory("nio-worker@"));
             b.group(bossGroup, workerGroup).channel(NioServerSocketChannel.class);
         }
 
