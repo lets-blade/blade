@@ -51,7 +51,7 @@ public class BladeTest extends BaseTestCase {
         start(
                 app.register(new BladeBeanDefineType())
                         .event(EventType.SERVER_STARTED, e -> {
-                            Object bladeBeanDefineType = e.blade.getBean(BladeBeanDefineType.class);
+                            Object bladeBeanDefineType = e.blade().getBean(BladeBeanDefineType.class);
                             Assert.assertNotNull(bladeBeanDefineType);
                         })
         );

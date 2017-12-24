@@ -1,6 +1,5 @@
 package com.blade.event;
 
-import com.blade.Blade;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -11,16 +10,10 @@ import org.junit.Test;
 public class EventTest {
 
     @Test
-    public void testEvent(){
-        Event event = new Event(EventType.SERVER_STARTED);
-        Assert.assertEquals("SERVER_STARTED", event.eventType.name());
-    }
-
-    @Test
     public void testEventAndBlade(){
-        Event event = new Event(EventType.SERVER_STARTED, Blade.me());
+        Event event = new Event(EventType.SERVER_STARTED, "hello");
         Assert.assertEquals("SERVER_STARTED", event.eventType.name());
-        Assert.assertNotNull(event.blade);
+        Assert.assertNotNull(event.data());
     }
 
 }

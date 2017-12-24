@@ -489,6 +489,11 @@ public class Blade {
         return environment;
     }
 
+    public Blade environment(Environment environment) {
+        this.environment = environment;
+        return this;
+    }
+
     /**
      * Set to start the web server to monitor port, the default is 9000
      *
@@ -550,14 +555,14 @@ public class Blade {
     }
 
     /**
-     * Add a event listener
+     * Add a event watcher
      * When the trigger event is executed eventListener
      *
      * @param eventType     event type
-     * @param eventListener event listener
+     * @param eventListener event watcher
      * @return blade
      */
-    public Blade event(@NonNull EventType eventType, @NonNull EventListener eventListener) {
+    public <T> Blade event(@NonNull EventType eventType, @NonNull EventListener<T> eventListener) {
         eventManager.addEventListener(eventType, eventListener);
         return this;
     }
@@ -627,6 +632,11 @@ public class Blade {
      */
     public Blade disableSession() {
         this.sessionManager = null;
+        return this;
+    }
+
+    public Blade watchEnvChange(boolean watchEnvChange){
+        this.environment.set(ENV_KEY_APP_WATCH_ENV, watchEnvChange);
         return this;
     }
 

@@ -7,7 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.RandomAccessFile;
 
 /**
- * File progressive future listener
+ * File progressive future watcher
  *
  * @author biezhi
  */
