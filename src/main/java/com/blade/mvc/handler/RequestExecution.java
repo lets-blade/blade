@@ -1,4 +1,4 @@
-package com.blade.server.netty;
+package com.blade.mvc.handler;
 
 import com.blade.exception.BladeException;
 import com.blade.exception.InternalErrorException;
@@ -9,8 +9,6 @@ import com.blade.mvc.Const;
 import com.blade.mvc.WebContext;
 import com.blade.mvc.annotation.JSON;
 import com.blade.mvc.annotation.Path;
-import com.blade.mvc.handler.ExceptionHandler;
-import com.blade.mvc.handler.RouteHandler;
 import com.blade.mvc.hook.Signature;
 import com.blade.mvc.hook.WebHook;
 import com.blade.mvc.http.HttpRequest;
@@ -20,6 +18,9 @@ import com.blade.mvc.http.Response;
 import com.blade.mvc.route.Route;
 import com.blade.mvc.route.RouteMatcher;
 import com.blade.mvc.ui.ModelAndView;
+import com.blade.server.netty.HttpConst;
+import com.blade.server.netty.HttpServerInitializer;
+import com.blade.server.netty.StaticFileHandler;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.FullHttpRequest;
@@ -32,6 +33,8 @@ import java.util.Optional;
 import java.util.Set;
 
 /**
+ * Http Request Execution Handler
+ *
  * @author biezhi
  * @date 2017/12/24
  */

@@ -33,7 +33,7 @@ public class HttpServerInitializer extends ChannelInitializer<SocketChannel> {
     private final boolean                  enableCors;
     private final ScheduledExecutorService service;
 
-    static volatile CharSequence date = new AsciiString(DateKit.gmtDate(LocalDateTime.now()));
+    public static volatile CharSequence date = new AsciiString(DateKit.gmtDate(LocalDateTime.now()));
 
     public HttpServerInitializer(SslContext sslCtx, Blade blade, ScheduledExecutorService service) {
         this.sslCtx = sslCtx;
