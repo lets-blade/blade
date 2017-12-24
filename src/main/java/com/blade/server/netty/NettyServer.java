@@ -25,6 +25,7 @@ import com.blade.mvc.route.RouteBuilder;
 import com.blade.mvc.route.RouteMatcher;
 import com.blade.mvc.ui.template.DefaultEngine;
 import com.blade.server.Server;
+import com.blade.watcher.EnvironmentWatcher;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelOption;
@@ -84,6 +85,8 @@ public class NettyServer implements Server {
 
         this.shutdownHook();
 
+        this.watchEnv();
+
         this.startServer(initStart);
 
     }
@@ -115,7 +118,6 @@ public class NettyServer implements Server {
         }
 
         this.processors.stream().sorted(new OrderComparator<>()).forEach(b -> b.processor(blade));
-
     }
 
     private void startServer(long startTime) throws Exception {
@@ -213,6 +215,17 @@ public class NettyServer implements Server {
                 ReflectKit.hasInterface(clazz, ExceptionHandler.class) || clazz.getSuperclass().equals(DefaultExceptionHandler.class)));
     }
 
+    private void watchEnv() {
+        boolean watchEnv = environment.getBoolean(ENV_KEY_APP_WATCH_ENV, true);
+        log.info("⬢ Watched environment: {}", watchEnv);
+
+        if (watchEnv) {
+            Thread t = new Thread(new EnvironmentWatcher());
+            t.setName("watch@thread");
+            t.start();
+        }
+    }
+
     private void loadConfig(String[] args) {
 
         String bootConf = blade.environment().get(ENV_KEY_BOOT_CONF, "classpath:app.properties");
@@ -278,7 +291,9 @@ public class NettyServer implements Server {
     }
 
     private void shutdownHook() {
-        Runtime.getRuntime().addShutdownHook(new Thread(this::stop));
+        Thread shutdownThread = new Thread(this::stop);
+        shutdownThread.setName("shutdown@thread");
+        Runtime.getRuntime().addShutdownHook(shutdownThread);
     }
 
     @Override
