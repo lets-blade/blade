@@ -273,7 +273,7 @@ public class RouteMatcher {
      * @return return match is success
      */
     private boolean matchesPath(String routePath, String pathToMatch) {
-        routePath = routePath.replaceAll(PathKit.VAR_REGEXP, PathKit.VAR_REPLACE);
+        routePath = PathKit.VAR_REGEXP_PATTERN.matcher(routePath).replaceAll(PathKit.VAR_REPLACE);
         return pathToMatch.matches("(?i)" + routePath);
     }
 
