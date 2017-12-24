@@ -1,6 +1,7 @@
 package com.blade.server.netty;
 
 import com.blade.Blade;
+import com.blade.kit.DateKit;
 import com.blade.mvc.Const;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
@@ -15,8 +16,11 @@ import io.netty.handler.codec.http.cors.CorsHandler;
 import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.stream.ChunkedWriteHandler;
+import io.netty.util.AsciiString;
 
+import java.time.LocalDateTime;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * HttpServerInitializer
@@ -28,6 +32,8 @@ public class HttpServerInitializer extends ChannelInitializer<SocketChannel> {
     private final boolean                  enableGzip;
     private final boolean                  enableCors;
     private final ScheduledExecutorService service;
+
+    static volatile CharSequence date = new AsciiString(DateKit.gmtDate(LocalDateTime.now()));
 
     public HttpServerInitializer(SslContext sslCtx, Blade blade, ScheduledExecutorService service) {
         this.sslCtx = sslCtx;
@@ -58,6 +64,7 @@ public class HttpServerInitializer extends ChannelInitializer<SocketChannel> {
             p.addLast(new WebSocketServerProtocolHandler(blade.webSocketPath(), null, true));
             p.addLast(new WebSockerHandler(blade));
         }
-        p.addLast(new HttpServerHandler(blade, service));
+        service.scheduleWithFixedDelay(() -> date = new AsciiString(DateKit.gmtDate(LocalDateTime.now())), 1000, 1000, TimeUnit.MILLISECONDS);
+        p.addLast(new HttpServerHandler());
     }
 }

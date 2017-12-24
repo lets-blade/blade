@@ -32,7 +32,7 @@ public class SessionHandler {
     private final String         sessionKey;
     private final int            timeout;
 
-    SessionHandler(Blade blade) {
+    public SessionHandler(Blade blade) {
         this.blade = blade;
         this.sessionManager = blade.sessionManager();
         this.eventManager = blade.eventManager();
