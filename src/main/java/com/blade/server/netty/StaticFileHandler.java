@@ -51,7 +51,7 @@ public class StaticFileHandler implements RequestHandler<Boolean> {
 
     private static final int HTTP_CACHE_SECONDS = 60;
 
-    StaticFileHandler(Blade blade) {
+    public StaticFileHandler(Blade blade) {
         this.showFileList = blade.environment().getBoolean(Const.ENV_KEY_STATIC_LIST, false);
     }
 

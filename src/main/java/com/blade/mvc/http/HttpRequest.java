@@ -1,10 +1,11 @@
 package com.blade.mvc.http;
 
 import com.blade.kit.StringKit;
+import com.blade.mvc.WebContext;
 import com.blade.mvc.multipart.FileItem;
 import com.blade.mvc.route.Route;
 import com.blade.server.netty.HttpConst;
-import com.blade.server.netty.HttpServerHandler;
+import com.blade.server.netty.SessionHandler;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufUtil;
 import io.netty.buffer.Unpooled;
@@ -34,6 +35,7 @@ import java.util.*;
 public class HttpRequest implements Request {
 
     private static final HttpDataFactory HTTP_DATA_FACTORY = new DefaultHttpDataFactory(DefaultHttpDataFactory.MINSIZE); // Disk if size exceed
+    private static final SessionHandler SESSION_HANDLER = WebContext.blade().sessionManager() != null ? new SessionHandler(WebContext.blade()) : null;
 
     static {
         DiskFileUpload.deleteOnExitTemporaryFile = true;
@@ -211,7 +213,7 @@ public class HttpRequest implements Request {
 
     @Override
     public Session session() {
-        return HttpServerHandler.SESSION_HANDLER.createSession(this);
+        return SESSION_HANDLER.createSession(this);
     }
 
     @Override
