@@ -1,47 +1,41 @@
 package com.blade;
 
+import com.blade.mvc.http.Request;
+import com.blade.mvc.http.Response;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.request.HttpRequest;
 import com.mashape.unirest.request.HttpRequestWithBody;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.After;
-import org.junit.Before;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
+ * Base Test case
+ *
  * @author biezhi
  * 2017/6/3
  */
 @Slf4j
 public class BaseTestCase {
 
-    protected Blade app;
     private   String origin    = "http://127.0.0.1:10086";
     protected String firefoxUA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:53.0) Gecko/20100101 Firefox/53.0";
-    protected boolean isStarted;
 
-    @Before
-    public void setup() throws Exception {
-//        System.setProperty("com.blade.logger.defaultLogLevel", "DEBUG");
-        app = Blade.me();
-        Unirest.setTimeouts(30_000, 10_000);
+    protected Request mockRequest(String methodName) {
+        Request request = mock(Request.class);
+        when(request.method()).thenReturn(methodName);
+        return request;
     }
 
-    protected Blade start() {
-        isStarted = true;
-        return Blade.me().listen(10086).start().await();
+    protected Response mockResponse(int code) {
+        Response response = mock(Response.class);
+        when(response.statusCode()).thenReturn(code);
+        return response;
     }
 
-    protected void start(Blade blade) {
-        blade.listen(10086).start().await();
-        isStarted = true;
-    }
-
-    @After
-    public void after() {
-        if(isStarted){
-            app.stop();
-            app.await();
-        }
+    protected Blade mockBlade(){
+        return mock(Blade.class);
     }
 
     protected HttpRequest get(String path) throws Exception {

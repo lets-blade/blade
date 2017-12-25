@@ -70,9 +70,9 @@ public class RouteTest extends BaseTestCase {
 
     @Test
     public void testRobotsRequest() throws Exception {
-        start(app.get("/:id", (req, res) -> req.pathInt("id")));
-        String body = bodyToString("/robots.txt");
-        System.out.println(body);
+//        start(app.get("/:id", (req, res) -> req.pathInt("id")));
+//        String body = bodyToString("/robots.txt");
+//        System.out.println(body);
     }
 
 }

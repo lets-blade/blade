@@ -23,7 +23,10 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.IOException;
 import java.net.URLConnection;
 import java.nio.file.Files;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Http Request Impl
@@ -35,7 +38,7 @@ import java.util.*;
 public class HttpRequest implements Request {
 
     private static final HttpDataFactory HTTP_DATA_FACTORY = new DefaultHttpDataFactory(DefaultHttpDataFactory.MINSIZE); // Disk if size exceed
-    private static final SessionHandler SESSION_HANDLER = WebContext.blade().sessionManager() != null ? new SessionHandler(WebContext.blade()) : null;
+    private static final SessionHandler  SESSION_HANDLER   = WebContext.sessionManager() != null ? new SessionHandler(WebContext.blade()) : null;
 
     static {
         DiskFileUpload.deleteOnExitTemporaryFile = true;
@@ -193,7 +196,10 @@ public class HttpRequest implements Request {
 
     @Override
     public String queryString() {
-        return this.url;
+        if (null != this.url && this.url.contains("?")) {
+            return this.url.substring(this.url.indexOf("?") + 1);
+        }
+        return "";
     }
 
     @Override
@@ -228,15 +234,13 @@ public class HttpRequest implements Request {
     }
 
     @Override
-    public Map<String, String> cookies() {
-        Map<String, String> map = new HashMap<>(cookies.size());
-        this.cookies.forEach((name, cookie) -> map.put(name, cookie.value()));
-        return map;
+    public Map<String, Cookie> cookies() {
+        return this.cookies;
     }
 
     @Override
-    public Optional<Cookie> cookieRaw(@NonNull String name) {
-        return Optional.ofNullable(this.cookies.get(name));
+    public Cookie cookieRaw(@NonNull String name) {
+        return this.cookies.get(name);
     }
 
     @Override
@@ -276,6 +280,29 @@ public class HttpRequest implements Request {
     @Override
     public String bodyToString() {
         return this.body.toString(CharsetUtil.UTF_8);
+    }
+
+    public HttpRequest() {
+    }
+
+    public HttpRequest(Request request) {
+        this.pathParams = request.pathParams();
+        this.cookies = request.cookies();
+        this.attributes = request.attributes();
+        this.body = request.body();
+        this.fileItems = request.fileItems();
+        this.headers = request.headers();
+        this.keepAlive = request.keepAlive();
+        this.method = request.method();
+        this.url = request.url();
+
+        if (null != this.url && this.url.length() > 0) {
+            int pathEndPos = this.url.indexOf('?');
+            this.uri = pathEndPos < 0 ? this.url : this.url.substring(0, pathEndPos);
+        }
+
+        this.parameters = request.parameters();
+        this.protocol = request.protocol();
     }
 
     public static HttpRequest build(ChannelHandlerContext ctx, FullHttpRequest fullHttpRequest) {

@@ -48,8 +48,4 @@ public class EventManager {
                 .forEach(listener -> listener.trigger(new Event<>(type, data)));
     }
 
-    void fireEvent(EventType type) {
-        fireEvent(type, null);
-    }
-
 }
