@@ -12,7 +12,7 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '2.0'
+    gradleVersion = '4.4.1'
 }
 
 tasks.withType(JavaCompile) {
