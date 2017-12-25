@@ -1,13 +1,17 @@
 package com.blade.mvc;
 
 import com.blade.BaseTestCase;
-import com.blade.kit.JsonKit;
-import com.blade.kit.json.Ason;
+import com.blade.mvc.http.Cookie;
+import com.blade.mvc.http.HttpRequest;
+import com.blade.mvc.http.Request;
+import com.blade.mvc.multipart.FileItem;
+import org.junit.Assert;
 import org.junit.Test;
 
-import java.io.File;
+import java.util.*;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.when;
 
 /**
  * HttpRequest TestCase
@@ -18,277 +22,257 @@ import static org.junit.Assert.assertEquals;
 public class RequestTest extends BaseTestCase {
 
     @Test
-    public void testNullCookie() throws Exception {
-        start(app.get("/cookie", (req, res) -> res.text(req.cookie("user-id").orElse("null"))));
-        assertEquals("null", bodyToString("/cookie"));
+    public void testGetHost() {
+        Request request = mockRequest("GET");
+        when(request.host()).thenReturn("localhost");
+
+        Assert.assertEquals(request.host(), "localhost");
     }
 
     @Test
-    public void testSetCookie() throws Exception {
-        start(app.get("/cookie", (req, res) -> res.text(req.cookie("user-id").orElse("null"))));
-        String body = get("/cookie").header("Cookie", "user-id=221").asString().getBody();
-        assertEquals("221", body);
-    }
+    public void testCookie() throws Exception {
+        Map<String, Cookie> cookies = new HashMap<>();
+        Cookie              c1      = new Cookie();
+        c1.httpOnly(true);
+        c1.maxAge(-1);
+        c1.value("1");
+        cookies.put("uid", c1);
 
-    @Test
-    public void testGetCookies() throws Exception {
-        start(app.get("/cookie", (req, res) -> res.json(req.cookies())));
-        String body = bodyToString("/cookie");
-        Ason   ason = JsonKit.toAson(body);
-        assertEquals("{}", ason.toString());
-    }
+        Request mockRequest = mockRequest("GET");
+        when(mockRequest.cookies()).thenReturn(cookies);
 
-    @Test
-    public void testMultipleCookies() throws Exception {
-        start(app.get("/cookie", (req, res) -> res.json(req.cookies())));
-        String body = get("/cookie").header("Cookie", "c1=a;c2=b;c3=c").asString().getBody();
-        Ason   ason = JsonKit.toAson(body);
-        assertEquals("a", ason.getString("c1"));
-        assertEquals("b", ason.getString("c2"));
-        assertEquals("c", ason.getString("c3"));
+        Request request = new HttpRequest(mockRequest);
+
+        Map<String, Cookie> reqCookies = request.cookies();
+        Cookie              cookie     = reqCookies.get("uid");
+
+        Assert.assertNotNull(cookie);
+        Assert.assertEquals(cookie.value(), "1");
+        Assert.assertEquals(cookie.maxAge(), -1);
+        assertNull(cookie.domain());
+        Assert.assertEquals(cookie.path(), "/");
+
+        Assert.assertNotNull(request.cookieRaw("uid"));
+        assertNull(request.cookieRaw("not-existent"));
     }
 
     @Test
     public void testPathParam() throws Exception {
-        start(
-                app.get("/user1/:id", (req, res) -> res.text(req.pathInt("id").toString()))
-                        .get("/user2/:id", (req, res) -> res.text(req.pathLong("id").toString()))
-                        .get("/user3/:name/:age", (req, res) -> res.text(req.pathString("name") + ":" + req.pathString("age")))
-        );
-        assertEquals("24", bodyToString("/user1/24"));
-        assertEquals("25", bodyToString("/user2/25"));
-        assertEquals("jack:18", bodyToString("/user3/jack/18"));
-    }
+        Request mockRequest = mockRequest("GET");
 
-    @Test
-    public void testPathParams() throws Exception {
-        start(
-                app.get("/user1/:id", (req, res) -> res.json(req.pathParams()))
-                        .get("/user2/:name/:age", (req, res) -> res.json(req.pathParams()))
-        );
+        Map<String, String> pathParams = new HashMap<>();
+        pathParams.put("id", "6");
+        pathParams.put("age", "24");
+        pathParams.put("name", "jack");
+        when(mockRequest.pathParams()).thenReturn(pathParams);
 
-        String body1 = getBodyString("/user1/10");
-        Ason   ason1 = JsonKit.toAson(body1);
-        assertEquals("10", ason1.getString("id"));
-
-        String body2 = getBodyString("/user2/biezhi/20");
-        Ason   ason2 = JsonKit.toAson(body2);
-
-        assertEquals("20", ason2.getString("age"));
-        assertEquals("biezhi", ason2.getString("name"));
-    }
-
-    @Test
-    public void testHost() throws Exception {
-        start(
-                app.get("/", (request, response) -> System.out.println(request.host()))
-        );
-        bodyToString("/");
+        Request request = new HttpRequest(mockRequest);
+        assertEquals(Long.valueOf(6), request.pathLong("id"));
+        assertEquals(Integer.valueOf(24), request.pathInt("age"));
+        assertEquals("jack", request.pathString("name"));
     }
 
     @Test
     public void testUri() throws Exception {
-        start(
-                app.get("/a", (request, response) -> response.text(request.uri()))
-                        .get("/a/b", (request, response) -> response.text(request.uri()))
-                        .get("/a/b/c", (request, response) -> response.text(request.uri()))
-        );
-        assertEquals("/a", bodyToString("/a"));
-        assertEquals("/a/b", bodyToString("/a/b"));
-        assertEquals("/a/b/c", bodyToString("/a/b/c?name=q1"));
+        Request mockRequest = mockRequest("GET");
+        when(mockRequest.url()).thenReturn("/a");
+
+        Request request = new HttpRequest(mockRequest);
+
+        assertEquals("/a", request.uri());
+
+        when(mockRequest.url()).thenReturn("/a/b?username=jack");
+        request = new HttpRequest(mockRequest);
+
+        assertEquals("/a/b", request.uri());
     }
 
     @Test
     public void testUrl() throws Exception {
-        start(
-                app.get("/hello", (request, response) -> response.text(request.url()))
-        );
-        assertEquals("/hello?name=q1", bodyToString("/hello?name=q1"));
+        Request mockRequest = mockRequest("GET");
+
+        when(mockRequest.url()).thenReturn("/hello?name=q1");
+
+        assertEquals("/hello?name=q1", mockRequest.url());
     }
 
     @Test
     public void testUserAgent() throws Exception {
-        start(
-                app.get("/", (request, response) -> response.text(request.userAgent()))
-        );
-        String body = get("/").header("User-Agent", firefoxUA).asString().getBody();
-        assertEquals(firefoxUA, body);
+        Map<String, String> headers = Collections.singletonMap("User-Agent", firefoxUA);
+
+        Request mockRequest = mockRequest("GET");
+        when(mockRequest.headers()).thenReturn(headers);
+
+        Request request = new HttpRequest(mockRequest);
+        assertEquals(firefoxUA, request.userAgent());
     }
 
     @Test
     public void testProtocol() throws Exception {
-        start(
-                app.get("/", (request, response) -> response.text(request.protocol()))
-        );
-        assertEquals("HTTP/1.1", bodyToString("/"));
+        Request mockRequest = mockRequest("GET");
+        when(mockRequest.protocol()).thenReturn("HTTP/1.1");
+        assertEquals("HTTP/1.1", mockRequest.protocol());
     }
 
     @Test
     public void testQueryString() throws Exception {
-        start(
-                app.get("/hello", (request, response) -> response.text(request.queryString()))
-        );
-        assertEquals("/hello?name=q1", bodyToString("/hello?name=q1"));
+        Request mockRequest = mockRequest("GET");
+        when(mockRequest.url()).thenReturn("/hello?name=q1");
+
+        Request request = new HttpRequest(mockRequest);
+        assertEquals("name=q1", request.queryString());
     }
 
     @Test
     public void testQueryParam() throws Exception {
-        start(
-                app.get("/query", (request, response) -> response.text(request.query("name", "jack")))
-                        .post("/query", (request, response) -> response.text(request.query("name", "jack")))
-                        .get("/query2", (request, response) -> response.text(request.queryDouble("price", 10.2D) + ""))
-        );
 
-        assertEquals("rose", bodyToString("/query?name=rose"));
-        assertEquals("jack", bodyToString("/query"));
-        assertEquals("22.1", bodyToString("/query2?price=22.1"));
-        assertEquals("10.2", bodyToString("/query2"));
+        Request mockRequest = mockRequest("GET");
 
-        String tom    = postBodyString("/query?name=tom");
-        String biezhi = post("/query").queryString("name", "biezhi").asString().getBody();
-        assertEquals("tom", tom);
-        assertEquals("biezhi", biezhi);
+        Map<String, List<String>> parameters = new HashMap<>();
+        parameters.put("name", Arrays.asList("jack"));
+        parameters.put("price", Arrays.asList("22.1"));
+        parameters.put("age", Arrays.asList("25"));
+        parameters.put("id", Arrays.asList("220291"));
 
+        when(mockRequest.parameters()).thenReturn(parameters);
+
+        Request request = new HttpRequest(mockRequest);
+
+        assertEquals("jack", request.query("name").get());
+        assertEquals(Double.valueOf(22.1), request.queryDouble("price").get());
+        assertEquals(Long.valueOf(220291), request.queryLong("id").get());
+        assertEquals(Integer.valueOf(25), request.queryInt("age").get());
     }
 
     @Test
     public void testHttpMethod() throws Exception {
-        start(
-                app.get("/", (request, response) -> response.text(request.method()))
-                        .post("/", (request, response) -> response.text(request.method()))
-                        .put("/", (request, response) -> response.text(request.method()))
-                        .delete("/", (request, response) -> response.text(request.method()))
-        );
-
-        assertEquals("GET", bodyToString("/"));
-        assertEquals("POST", postBodyString("/"));
-        assertEquals("PUT", putBodyString("/"));
-        assertEquals("DELETE", deleteBodyString("/"));
+        assertEquals("GET", mockRequest("GET").method());
+        assertEquals("POST", mockRequest("POST").method());
+        assertEquals("PUT", mockRequest("PUT").method());
+        assertEquals("DELETE", mockRequest("DELETE").method());
     }
 
     @Test
     public void testAddress() throws Exception {
-        start(
-                app.get("/", (request, response) -> response.text(request.address()))
-        );
-        assertEquals("127.0.0.1", bodyToString("/"));
+        Request mockRequest = mockRequest("GET");
+        when(mockRequest.address()).thenReturn("127.0.0.1");
+
+        assertEquals("127.0.0.1", mockRequest.address());
     }
 
     @Test
     public void testContentType() throws Exception {
-        start(
-                app.get("/c1", (request, response) -> response.html("Hello"))
-                        .get("/c2", (request, response) -> response.contentType("application/json; charset=UTF-8").text(response.contentType()))
-        );
 
-        assertEquals(Const.CONTENT_TYPE_HTML, get("/c1").asString().getHeaders().getFirst("Content-Type"));
-        assertEquals(Const.CONTENT_TYPE_JSON, bodyToString("/c2"));
+        Request mockRequest = mockRequest("GET");
+        when(mockRequest.contentType()).thenReturn(Const.CONTENT_TYPE_HTML);
+
+        assertEquals(Const.CONTENT_TYPE_HTML, mockRequest.contentType());
+
+        when(mockRequest.contentType()).thenReturn(Const.CONTENT_TYPE_JSON);
+        assertEquals(Const.CONTENT_TYPE_JSON, mockRequest.contentType());
     }
 
     @Test
     public void testIsSecure() throws Exception {
-        start(
-                app.get("/", (request, response) -> response.text(request.isSecure() + ""))
-        );
+        Request mockRequest = mockRequest("GET");
+        when(mockRequest.isSecure()).thenReturn(false);
 
-        assertEquals("false", bodyToString("/"));
+        assertEquals(Boolean.FALSE, mockRequest.isSecure());
     }
 
     @Test
     public void testIsAjax() throws Exception {
-        start(
-                app.get("/a1", (request, response) -> response.text(request.isAjax() + ""))
-                        .get("/a2", (request, response) -> response.text(request.isAjax() + ""))
-        );
 
-        assertEquals("false", bodyToString("/a1"));
+        Request             mockRequest = mockRequest("GET");
+        Map<String, String> headers     = Collections.singletonMap("x-requested-with", "XMLHttpRequest");
+        when(mockRequest.headers()).thenReturn(headers);
 
-        String body = get("/a2").header("x-requested-with", "XMLHttpRequest").asString().getBody();
-        assertEquals("true", body);
+        Request request = new HttpRequest(mockRequest);
+
+        assertEquals(Boolean.TRUE, request.isAjax());
+
+        when(mockRequest.headers()).thenReturn(Collections.EMPTY_MAP);
+        request = new HttpRequest(mockRequest);
+
+        assertEquals(Boolean.FALSE, request.isAjax());
+
     }
 
     @Test
     public void testIsIE() throws Exception {
-        start(
-                app.get("/", (request, response) -> response.text(request.isIE() + ""))
-        );
+        Request             mockRequest = mockRequest("GET");
+        Map<String, String> headers     = Collections.singletonMap("User-Agent", "Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; Trident/5.0)");
+        when(mockRequest.headers()).thenReturn(headers);
 
-        assertEquals("false", get("/").header("User-Agent", firefoxUA).asString().getBody());
-        assertEquals("true", get("/").header("User-Agent", "Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; Trident/5.0)").asString().getBody());
+        Request request = new HttpRequest(mockRequest);
+
+        assertEquals(Boolean.TRUE, request.isIE());
+
+        when(mockRequest.headers()).thenReturn(Collections.EMPTY_MAP);
+        request = new HttpRequest(mockRequest);
+
+        assertEquals(Boolean.FALSE, request.isIE());
     }
 
     @Test
     public void testHeaders() throws Exception {
-        start(
-                app.get("/", (request, response) -> response.json(request.headers()))
-        );
+        Request             mockRequest = mockRequest("GET");
+        Map<String, String> headers     = new HashMap<>();
+        headers.put("h1", "a1");
+        headers.put("h2", "a2");
 
-        String body = get("/")
-                .header("h1", "a1").header("h2", "a2").header("h3", "a3")
-                .asString().getBody();
+        when(mockRequest.headers()).thenReturn(headers);
 
-        Ason ason = JsonKit.toAson(body);
+        Request request = new HttpRequest(mockRequest);
 
-        assertEquals("a1", ason.getString("h1"));
-        assertEquals("a2", ason.getString("h2"));
-        assertEquals("a3", ason.getString("h3"));
-    }
-
-    @Test
-    public void testHeader() throws Exception {
-        start(
-                app.get("/", (request, response) -> response.json(request.header("h1")))
-        );
-
-        String body = get("/")
-                .header("h1", "a1").header("h2", "a2").header("h3", "a3")
-                .asString().getBody();
-
-        assertEquals("a1", body);
+        assertEquals("a1", request.header("h1"));
+        assertEquals("a2", request.header("h2"));
     }
 
     @Test
     public void testKeepAlive() throws Exception {
-        start(
-                app.get("/", (request, response) -> response.json(request.keepAlive() + ""))
-        );
+        Request mockRequest = mockRequest("GET");
+        when(mockRequest.keepAlive()).thenReturn(true);
 
-        assertEquals("true", bodyToString("/"));
+        assertEquals(Boolean.TRUE, mockRequest.keepAlive());
     }
 
     @Test
     public void testAttribute() throws Exception {
-        start(
-                app.get("/", (request, response) -> request.attribute("name", "jack"))
-                        .after("*", ((request, response) -> {
-                            System.out.println(request.attribute("name").toString());
-                        }))
-        );
-        bodyToString("/");
+        Request mockRequest = mockRequest("GET");
+
+        Map<String, Object> attr = new HashMap<>();
+        attr.put("name", "biezhi");
+
+        when(mockRequest.attributes()).thenReturn(attr);
+
+        Request request = new HttpRequest(mockRequest);
+        assertEquals("biezhi", request.attribute("name"));
     }
 
     @Test
     public void testFileItems() throws Exception {
-        start(
-                app.post("/upload1", (request, response) -> response.json(request.fileItems()))
-                        .post("/upload2", (request, response) -> response.json(request.fileItem("file1").orElse(null)))
-        );
 
-        String contentLength = this.isWindows() ? "1584" : "1551";
-        String body = post("/upload1")
-                .field("file1", new File(RequestTest.class.getResource("/log_config.txt").getPath()))
-                .asString().getBody();
+        Request mockRequest = mockRequest("GET");
 
-        assertEquals("{\"file1\":{\"name\":\"file1\",\"fileName\":\"log_config.txt\",\"contentType\":\"text/plain\",\"length\":" + contentLength + "}}", body);
+        Map<String, FileItem> attr = new HashMap<>();
+        FileItem fileItem = new FileItem("hello.png", "/usr/hello.png", "image/png", 20445L);
+        attr.put("img", fileItem);
 
-        body = post("/upload2")
-                .field("file1", new File(RequestTest.class.getResource("/log_config.txt").getPath()))
-                .asString().getBody();
+        when(mockRequest.fileItems()).thenReturn(attr);
 
-        assertEquals("{\"name\":\"file1\",\"fileName\":\"log_config.txt\",\"contentType\":\"text/plain\",\"length\":" + contentLength + "}", body);
+        Request request = new HttpRequest(mockRequest);
+        FileItem img = request.fileItem("img").get();
+
+        assertNotNull(img);
+
+        assertNull(img.getData());
+
+        assertEquals("hello.png", img.getName());
+        assertEquals("/usr/hello.png", img.getFileName());
+        assertEquals(Long.valueOf(20445), Optional.of(img.getLength()).get());
+        assertEquals("image/png", img.getContentType());
+
     }
 
-    private boolean isWindows() {
-        return System.getProperty("os.name").toLowerCase().indexOf("win") > -1;
-    }
 }
