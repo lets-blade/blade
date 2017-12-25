@@ -369,7 +369,7 @@ public class Blade {
      * @param cls bean class type
      * @return return bean instance
      */
-    public Object getBean(@NonNull Class<?> cls) {
+    public <T> T getBean(@NonNull Class<T> cls) {
         return ioc.getBean(cls);
     }
 

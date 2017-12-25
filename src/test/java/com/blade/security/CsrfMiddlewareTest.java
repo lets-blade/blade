@@ -1,17 +1,23 @@
 package com.blade.security;
 
 import com.blade.BaseTestCase;
+import com.blade.Blade;
+import com.blade.mvc.WebContext;
 import com.blade.mvc.handler.RouteHandler;
 import com.blade.mvc.hook.Signature;
+import com.blade.mvc.http.HttpRequest;
 import com.blade.mvc.http.Request;
 import com.blade.mvc.http.Response;
+import com.blade.mvc.route.Route;
 import com.blade.security.web.csrf.CsrfMiddleware;
 import com.blade.security.web.csrf.CsrfToken;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 
+import java.util.HashMap;
+
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
 
 /**
  * CsrfToken Test
@@ -24,51 +30,6 @@ public class CsrfMiddlewareTest extends BaseTestCase {
 
     private String defaultKey = "csrf_token";
     private String validId    = "_csrf.valid";
-
-    @Test
-    public void testGenToken() throws Exception {
-        CsrfMiddleware csrfMiddleware = mock(CsrfMiddleware.class);
-        Signature signature = mock(Signature.class);
-
-        when(csrfMiddleware.before(signature)).thenReturn(false);
-
-        boolean flag = csrfMiddleware.before(signature);
-
-        verify(csrfMiddleware).before(signature);
-        assertEquals(Boolean.FALSE, flag);
-    }
-
-    @Test
-    public void testValidTokenSuccess() throws Exception {
-//        start(
-//                app.use(new CsrfMiddleware()).get("/login", ((request, response) -> response.text(request.attribute(defaultKey)))).post("/login", ((request, response) -> response.text("登录成功")))
-//        );
-//
-//        String token = bodyToString("/login");
-//        log.info("token: {}", token);
-//        String body = post("/login").header(validId, "true")
-//                .queryString("csrf_token", token)
-//                .asString().getBody();
-//
-//        assertEquals("登录成功", body);
-    }
-
-    @Test
-    public void testValidTokenFail() throws Exception {
-//        start(
-//                app.use(new CsrfMiddleware())
-//                        .get("/login", new CsrfTokenClass())
-//                        .post("/login", new CsrfTokenValid())
-//        );
-//
-//        String token = bodyToString("/login");
-//        log.info("token: {}", token);
-//        token = "";
-//        String body = post("/login").header(validId, "true")
-//                .queryString("csrf_token", token).asString().getBody();
-//
-//        assertEquals("Bad Request.", body);
-    }
 
     class CsrfTokenClass implements RouteHandler {
         @CsrfToken(newToken = true)
@@ -87,16 +48,66 @@ public class CsrfMiddlewareTest extends BaseTestCase {
     }
 
     @Test
+    public void testValidTokenSuccess() throws Exception {
+        Blade blade = Blade.me()
+                .use(new CsrfMiddleware())
+                .get("/login", ((request, response) -> response.text(request.attribute(defaultKey))))
+                .post("/login", ((request, response) -> response.text("登录成功")))
+                .start().await();
+        try {
+            String token = bodyToString("/login");
+            log.info("token: {}", token);
+            String body = post("/login").header(validId, "true")
+                    .queryString("csrf_token", token)
+                    .asString().getBody();
+
+            assertEquals("登录成功", body);
+        } finally {
+            blade.stop();
+        }
+    }
+
+    @Test
+    public void testValidTokenFail() throws Exception {
+        Signature signature   = new Signature();
+        Request   mockRequest = mockRequest("POST");
+
+        when(mockRequest.parameters()).thenReturn(new HashMap<>());
+        when(mockRequest.headers()).thenReturn(new HashMap<>());
+
+        Request  request  = new HttpRequest(mockRequest);
+        Response response = mockResponse(200);
+
+        signature.setResponse(response);
+        signature.setRequest(request);
+        signature.setRoute(Route.builder()
+                .action(CsrfTokenValid.class.getMethod("handle", Request.class, Response.class))
+                .targetType(CsrfTokenValid.class)
+                .target(new CsrfTokenValid()).build());
+
+        WebContext.set(new WebContext(request, response));
+
+        CsrfMiddleware csrfMiddleware = new CsrfMiddleware(response1 -> System.out.println("Bad Request."));
+        boolean        flag           = csrfMiddleware.before(signature);
+        assertEquals(false, flag);
+    }
+
+    @Test
     public void testValidTokenNoValid() throws Exception {
-//        start(
-//                app.use(new CsrfMiddleware()).get("/login", ((request, response) -> response.text(request.attribute(defaultKey)))).post("/login", ((request, response) -> response.text("登录成功")))
-//        );
-//
-//        String token = bodyToString("/login");
-//        System.out.println(token);
-//        token = "";
-//        String body = post("/login").queryString("csrf_token", token).asString().getBody();
-//        assertEquals("登录成功", body);
+        Blade blade = Blade.me().use(new CsrfMiddleware())
+                .get("/login", ((request, response) -> response.text(request.attribute(defaultKey))))
+                .post("/login", ((request, response) -> response.text("登录成功")))
+                .start().await();
+
+        try {
+            String token = bodyToString("/login");
+            System.out.println(token);
+            token = "";
+            String body = post("/login").queryString("csrf_token", token).asString().getBody();
+            assertEquals("登录成功", body);
+        } finally {
+            blade.stop();
+        }
     }
 
 }
