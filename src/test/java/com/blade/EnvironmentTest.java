@@ -35,10 +35,10 @@ public class EnvironmentTest {
         properties.setProperty("name", "jack");
         Environment environment = Environment.of(properties);
 
-        String name = environment.get("name", "rose");
-        String age  = environment.get("age", "20");
-        int version = environment.getInt("app.version", 1001);
-        long base = environment.getLong("app.base", 1002);
+        String name    = environment.get("name", "rose");
+        String age     = environment.get("age", "20");
+        int    version = environment.getInt("app.version", 1001);
+        long   base    = environment.getLong("app.base", 1002);
 
         Assert.assertEquals("jack", name);
         Assert.assertEquals("20", age);
@@ -145,5 +145,24 @@ public class EnvironmentTest {
         Environment environment = Environment.of("app.properties");
         Assert.assertEquals(false, environment.hasKey("hello"));
         Assert.assertEquals(true, environment.hasKey("app.version"));
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void testNoEnv() {
+        Environment.of("url:http://www.biezhi.ddd");
+    }
+
+    @Test
+    public void testAddAll() {
+        Environment environment = Environment.empty();
+
+        Properties prop = new Properties();
+        prop.setProperty("a", "1");
+        environment.addAll(prop);
+
+        Assert.assertEquals(1, environment.size());
+
+        environment.addAll(Collections.singletonMap("aa", "bb"));
+        Assert.assertEquals(2, environment.size());
     }
 }

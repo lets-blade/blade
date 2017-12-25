@@ -386,4 +386,8 @@ public class Environment {
         return props;
     }
 
+    public int size() {
+        return props.size();
+    }
+
 }

@@ -15,7 +15,7 @@ public class BeanProcessorTest extends BaseTestCase {
 
     @Test
     public void testBeanProcessor(){
-        Blade blade = mockBlade();
+        Blade blade = Blade.me();
         BeanProcessor beanProcessor = mock(BeanProcessor.class);
         beanProcessor.processor(blade);
         verify(beanProcessor).processor(blade);

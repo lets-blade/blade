@@ -34,10 +34,6 @@ public class BaseTestCase {
         return response;
     }
 
-    protected Blade mockBlade(){
-        return mock(Blade.class);
-    }
-
     protected HttpRequest get(String path) throws Exception {
         log.info("[GET] {}", (origin + path));
         return Unirest.get(origin + path);
