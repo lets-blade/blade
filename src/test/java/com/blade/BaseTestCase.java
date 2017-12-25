@@ -19,7 +19,7 @@ import static org.mockito.Mockito.when;
 @Slf4j
 public class BaseTestCase {
 
-    private   String origin    = "http://127.0.0.1:10086";
+    private   String origin    = "http://127.0.0.1:9000";
     protected String firefoxUA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:53.0) Gecko/20100101 Firefox/53.0";
 
     protected Request mockRequest(String methodName) {
