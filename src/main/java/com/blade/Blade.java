@@ -859,7 +859,6 @@ public class Blade {
         if (bootEnv != null) {
             bootEnv.props().forEach((key, value) -> environment.set(key.toString(), value));
         }
-        log.info(environment.get(ENV_KEY_AUTO_REFRESH_DIR).get());
 
         if (null != args) {
             Optional<String> envArg = Stream.of(args).filter(s -> s.startsWith(Const.TERMINAL_BLADE_ENV)).findFirst();
