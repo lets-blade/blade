@@ -16,8 +16,8 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 public class FileChangeDetector {
-    WatchService watcher;
-    Map<WatchKey, Path> pathMap = new HashMap<>();
+    private WatchService watcher;
+    private Map<WatchKey, Path> pathMap = new HashMap<>();
 
     public FileChangeDetector(String dirPath) throws IOException{
         watcher = FileSystems.getDefault().newWatchService();
