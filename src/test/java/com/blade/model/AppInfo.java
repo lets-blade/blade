@@ -1,13 +1,11 @@
 package com.blade.model;
 
-import com.blade.ioc.annotation.Bean;
 import com.blade.ioc.annotation.Value;
 
 /**
  * @author : ccqy66
  * Date: 2017/12/25
  */
-@Bean
 @Value(name="app")
 public class AppInfo {
     private String users;

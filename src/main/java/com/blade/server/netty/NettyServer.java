@@ -7,6 +7,7 @@ import com.blade.event.EventType;
 import com.blade.ioc.DynamicContext;
 import com.blade.ioc.Ioc;
 import com.blade.ioc.annotation.Bean;
+import com.blade.ioc.annotation.Value;
 import com.blade.ioc.bean.BeanDefine;
 import com.blade.ioc.bean.ClassInfo;
 import com.blade.ioc.bean.OrderComparator;
@@ -186,7 +187,9 @@ public class NettyServer implements Server {
 
 
     private void parseCls(Class<?> clazz) {
-        if (null != clazz.getAnnotation(Bean.class)) blade.register(clazz);
+        if (null != clazz.getAnnotation(Bean.class) || null != clazz.getAnnotation(Value.class)) {
+            blade.register(clazz);
+        }
         if (null != clazz.getAnnotation(Path.class)) {
             if (null == blade.ioc().getBean(clazz)) {
                 blade.register(clazz);
