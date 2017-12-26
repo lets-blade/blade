@@ -25,6 +25,8 @@ import com.blade.ioc.SimpleIoc;
 import com.blade.kit.Assert;
 import com.blade.kit.BladeKit;
 import com.blade.kit.StringKit;
+import com.blade.kit.reload.FileChangeDetector;
+import com.blade.mvc.Const;
 import com.blade.mvc.SessionManager;
 import com.blade.mvc.handler.DefaultExceptionHandler;
 import com.blade.mvc.handler.ExceptionHandler;
@@ -43,10 +45,16 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import org.omg.Messaging.SYNC_WITH_TRANSPORT;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.rmi.server.ExportException;
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.function.Consumer;
@@ -674,6 +682,7 @@ public class Blade {
      */
     public Blade start(Class<?> bootClass, @NonNull String address, int port, String... args) {
         try {
+
             environment.set(ENV_KEY_SERVER_ADDRESS, address);
             Assert.greaterThan(port, 0, "server port not is negative number.");
             this.bootClass = bootClass;
@@ -683,6 +692,7 @@ public class Blade {
                     server.start(Blade.this, args);
                     latch.countDown();
                     server.join();
+
                 } catch (Exception e) {
                     startupExceptionHandler.accept(e);
                 }
@@ -694,6 +704,32 @@ public class Blade {
             thread.setName(threadName);
             thread.start();
             started = true;
+
+            Thread resourceFilesRefreshThread = new Thread(()-> {
+
+                try {
+
+                    FileChangeDetector fileChangeDetector = new FileChangeDetector("/Users/Eddie/Documents/GitHub/blade/src/test/resources");
+                    fileChangeDetector.processEvent( (event , filePath) ->{
+                        try {
+                            log.info(filePath.toString());
+                            log.info(Const.CLASSPATH + File.separator + "templates" + File.separator + filePath.getFileName().toString());
+                            Path destPath = FileChangeDetector.generateDestPath(filePath, environment);
+                            Files.copy(filePath, destPath, StandardCopyOption.REPLACE_EXISTING);
+                        }catch (IOException e){
+                            e.printStackTrace();
+                        }
+                    });
+                }catch (IOException e){
+
+                }
+
+
+            });
+
+            if (devMode()){
+                resourceFilesRefreshThread.start();
+            }
         } catch (Exception e) {
             startupExceptionHandler.accept(e);
         }
