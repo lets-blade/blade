@@ -1,16 +1,20 @@
 package com.blade.kit;
 
+import com.blade.Environment;
 import com.blade.ioc.Ioc;
 import com.blade.ioc.annotation.Inject;
 import com.blade.ioc.annotation.InjectWith;
+import com.blade.ioc.annotation.Value;
 import com.blade.ioc.bean.BeanDefine;
 import com.blade.ioc.bean.ClassDefine;
 import com.blade.ioc.bean.FieldInjector;
+import com.blade.ioc.bean.ValueInjector;
 import com.blade.mvc.http.HttpMethod;
 import lombok.NoArgsConstructor;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -43,6 +47,29 @@ public class BladeKit {
         return injectors;
     }
 
+    /**
+     * Get @Value Annotated field
+     * @param environment
+     * @param classDefine
+     * @return
+     */
+    private static List<ValueInjector> getValueInjectFields(Environment environment,ClassDefine classDefine) {
+        List<ValueInjector> valueInjectors = new ArrayList<>(8);
+        //handle class annotation
+        if (null != classDefine.getType().getAnnotation(Value.class)) {
+            String suffix = classDefine.getType().getAnnotation(Value.class).name();
+            Arrays.stream(classDefine.getDeclaredFields()).forEach(field -> valueInjectors.add(
+                    new ValueInjector(environment,field,suffix+"."+field.getName())
+            ));
+        }else {
+            Arrays.stream(classDefine.getDeclaredFields()).
+                    filter(field -> null != field.getAnnotation(Value.class)).
+                    map(field -> new ValueInjector(
+                                    environment,field,field.getAnnotation(Value.class).name())
+                    ).forEach(valueInjectors::add);
+        }
+        return valueInjectors;
+    }
     public static void injection(Ioc ioc, BeanDefine beanDefine) {
         ClassDefine         classDefine    = ClassDefine.create(beanDefine.getType());
         List<FieldInjector> fieldInjectors = getInjectFields(ioc, classDefine);
@@ -51,7 +78,12 @@ public class BladeKit {
             fieldInjector.injection(bean);
         }
     }
-
+    public static void injectionValue(Environment environment,BeanDefine beanDefine) {
+        ClassDefine         classDefine    = ClassDefine.create(beanDefine.getType());
+        List<ValueInjector> valueFileds    = getValueInjectFields(environment,classDefine);
+        Object              bean           = beanDefine.getBean();
+        valueFileds.stream().forEach(fieldInjector -> fieldInjector.injection(bean));
+    }
     public static boolean isEmpty(Collection<?> c) {
         return null == c || c.isEmpty();
     }

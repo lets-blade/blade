@@ -30,7 +30,6 @@ public final class PathKit {
             return path;
         }
         return VAR_FIXPATH_PATTERN.matcher(path).replaceAll("%20");
-
     }
 
     static String cleanPath(String path) {

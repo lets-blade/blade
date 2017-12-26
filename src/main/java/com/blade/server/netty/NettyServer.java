@@ -114,7 +114,10 @@ public class NettyServer implements Server {
 
         List<BeanDefine> beanDefines = ioc.getBeanDefines();
         if (BladeKit.isNotEmpty(beanDefines)) {
-            beanDefines.forEach(b -> BladeKit.injection(ioc, b));
+            beanDefines.forEach(b -> {
+                BladeKit.injection(ioc, b);
+                BladeKit.injectionValue(environment,b);
+            });
         }
 
         this.processors.stream().sorted(new OrderComparator<>()).forEach(b -> b.processor(blade));
