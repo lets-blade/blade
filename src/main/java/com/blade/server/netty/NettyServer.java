@@ -103,8 +103,6 @@ public class NettyServer implements Server {
                 .filter(ReflectKit::isNormalClass)
                 .forEach(this::parseCls);
 
-        log.info(blade.scanPackages().size()+"asdf");
-        blade.scanPackages().stream().forEach( a -> log.info(a) );
         routeBuilder.register();
 
         this.processors.stream().sorted(new OrderComparator<>()).forEach(b -> b.preHandle(blade));
