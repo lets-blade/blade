@@ -4,17 +4,15 @@ import com.blade.Environment;
 import com.blade.mvc.Const;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 import java.util.function.BiConsumer;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 /**
- * Created by Eddie on 12/25/17.
+ * Created by Eddie Wang on 12/25/17.
  */
 @Slf4j
 public class FileChangeDetector {
@@ -50,14 +48,13 @@ public class FileChangeDetector {
                 return;
             }
 
-            log.info("File changes detected!");
             Path dir = pathMap.get(key);
-
             for (WatchEvent<?> event: key.pollEvents()){
                 WatchEvent.Kind kind = event.kind();
                 Path filePath = dir.resolve(((WatchEvent<Path>)event).context());
 
                 if(Files.isDirectory(filePath)) continue;
+                log.info("File {} changes detected!",filePath.toString());
                 //copy updated files to target
                 processor.accept(kind, filePath);
             }
@@ -65,11 +62,11 @@ public class FileChangeDetector {
         }
     }
 
-    public static Path generateDestPath(Path src, Environment env){
-        String tempalteDir = env.get(Const.ENV_KEY_TEMPLATE_PATH,"/templates");
+    public static Path getDestPath(Path src, Environment env){
+        String templateDir = env.get(Const.ENV_KEY_TEMPLATE_PATH,"/templates");
         Optional<String> staticDir =  env.get(Const.ENV_KEY_STATIC_DIRS);
         List<String> templateOrStaticDirKeyword = new ArrayList<>();
-        templateOrStaticDirKeyword.add(tempalteDir);
+        templateOrStaticDirKeyword.add(templateDir);
         if(staticDir.isPresent()){
             templateOrStaticDirKeyword.addAll(Arrays.asList(staticDir.get().split(",")));
         }else{
@@ -78,7 +75,7 @@ public class FileChangeDetector {
 
         List result = templateOrStaticDirKeyword.stream().filter(dir -> src.toString().indexOf(dir)!=-1).collect(Collectors.toList());
         if(result.size()!=1){
-            log.info("Cannot analyse the dest dir");
+            log.info("Cannot get dest dir");
             return  null;
         }
         String key = (String)result.get(0);

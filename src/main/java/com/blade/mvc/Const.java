@@ -76,6 +76,7 @@ public interface Const {
     String ENV_KEY_NETTY_CHILD_KEEPALIVE   = "server.netty.child.keep-alive";
     String ENV_KEY_NETTY_CHILD_LINGER      = "server.netty.child.linger";
     String ENV_KEY_BOOT_CONF               = "boot_conf";
+    String ENV_KEY_AUTO_REFRESH_DIR        = "app.auto.refresh.dir";
 
     // terminal
     String TERMINAL_SERVER_ADDRESS = "--server.address=";
