@@ -273,7 +273,7 @@ public class RouteMatcher {
      * @return return match is success
      */
     private boolean matchesPath(String routePath, String pathToMatch) {
-        routePath = routePath.replaceAll(PathKit.VAR_REGEXP, PathKit.VAR_REPLACE);
+        routePath = PathKit.VAR_REGEXP_PATTERN.matcher(routePath).replaceAll(PathKit.VAR_REPLACE);
         return pathToMatch.matches("(?i)" + routePath);
     }
 
@@ -294,8 +294,10 @@ public class RouteMatcher {
         }
     }
 
-    // a bad way
-    void register() {
+    /**
+     * register route to container
+     */
+    public void register() {
         routes.values().forEach(route -> log.info("Add route => {}", route));
         hooks.values().forEach(route -> log.info("Add hook  => {}", route));
 

@@ -1,0 +1,48 @@
+apply plugin: 'java'
+apply plugin: 'maven'
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+
+group = 'com.bladejava'
+version = '2.0.6-Alpha1'
+
+description = """blade"""
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '4.4.1'
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+def bladeAsmVersion = '0.0.1'
+def bladeLogVersion = '0.0.6'
+def junitVersion = '4.12'
+def slf4jApiVersion = '1.7.21'
+def nettyVersion = '4.1.18.Final'
+
+
+repositories {
+    maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
+    maven { url "http://repo.maven.apache.org/maven2" }
+    mavenCentral()
+}
+
+dependencies {
+    compile group: 'com.bladejava', name: 'blade-asm', version: bladeAsmVersion
+    compile group: 'com.bladejava', name: 'blade-log', version: bladeLogVersion
+    compile group: 'org.slf4j', name: 'slf4j-api', version: slf4jApiVersion
+    compile group: 'io.netty', name: 'netty-codec-http', version: nettyVersion
+    compile group: 'io.netty', name: 'netty-handler', version: nettyVersion
+    testCompile group: 'junit', name: 'junit', version: junitVersion
+    testCompile group: 'com.google.code.gson', name: 'gson', version: '2.8.0'
+    testCompile group: 'org.webjars', name: 'bootstrap', version: '3.3.7'
+    testCompile group: 'org.mockito', name: 'mockito-all', version: '1.10.19'
+    testCompile group: 'com.mashape.unirest', name: 'unirest-java', version: '1.4.9'
+    compileOnly group: 'io.netty', name: 'netty-transport-native-epoll', version: '4.1.18.Final'
+    compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.16.18'
+}

@@ -15,6 +15,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.DefaultFileRegion;
 import io.netty.handler.codec.http.*;
 import io.netty.handler.codec.http.cookie.Cookie;
+import io.netty.handler.codec.http.cookie.DefaultCookie;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
@@ -246,6 +247,20 @@ public class HttpResponse implements Response {
             this.cookies.forEach(cookie -> headers.add(HttpConst.SET_COOKIE, io.netty.handler.codec.http.cookie.ServerCookieEncoder.LAX.encode(cookie)));
         }
         return headers;
+    }
+
+    public HttpResponse(Response response){
+        this.contentType = response.contentType();
+        this.statusCode = response.statusCode();
+        if(null != response.headers()){
+            response.headers().forEach(this.headers::add);
+        }
+        if(null != response.cookies()){
+            response.cookies().forEach( (k,v) -> this.cookies.add(new DefaultCookie(k, v)));
+        }
+    }
+
+    public HttpResponse(){
     }
 
     public static HttpResponse build(ChannelHandlerContext ctx, CharSequence dateString) {

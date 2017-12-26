@@ -117,8 +117,7 @@ public class JarReaderImpl extends AbstractClassReader implements ClassReader {
         } catch (IOException e) {
             log.error("The scan error when the user to define the view from a jar package file.", e);
         } catch (ClassNotFoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            log.error("", e);
         }
         return classes;
     }

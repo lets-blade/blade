@@ -16,6 +16,7 @@
 package com.blade.event;
 
 import com.blade.Blade;
+import com.blade.mvc.WebContext;
 
 /**
  * Event
@@ -23,18 +24,21 @@ import com.blade.Blade;
  * @author biezhi
  * @date 2017/9/18
  */
-public class Event {
+public class Event<T> {
 
     public EventType eventType;
-    public Blade     blade;
+    private T data;
 
-    public Event(EventType eventType) {
+    public Event(EventType eventType, T data) {
         this.eventType = eventType;
+        this.data = data;
     }
 
-    public Event(EventType eventType, Blade blade) {
-        this.eventType = eventType;
-        this.blade = blade;
+    public Blade blade(){
+        return WebContext.blade();
     }
 
+    public T data(){
+        return this.data;
+    }
 }

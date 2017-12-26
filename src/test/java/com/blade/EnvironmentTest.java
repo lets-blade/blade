@@ -1,13 +1,16 @@
 package com.blade;
 
+import com.blade.mvc.Const;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.*;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * @author biezhi
@@ -27,6 +30,8 @@ public class EnvironmentTest {
         properties.setProperty("name", "jack");
         Environment environment = Environment.of(properties);
         Assert.assertEquals("jack", environment.get("name").get());
+
+        assertNotNull(environment.props());
     }
 
     @Test
@@ -35,10 +40,10 @@ public class EnvironmentTest {
         properties.setProperty("name", "jack");
         Environment environment = Environment.of(properties);
 
-        String name = environment.get("name", "rose");
-        String age  = environment.get("age", "20");
-        int version = environment.getInt("app.version", 1001);
-        long base = environment.getLong("app.base", 1002);
+        String name    = environment.get("name", "rose");
+        String age     = environment.get("age", "20");
+        int    version = environment.getInt("app.version", 1001);
+        long   base    = environment.getLong("app.base", 1002);
 
         Assert.assertEquals("jack", name);
         Assert.assertEquals("20", age);
@@ -107,6 +112,8 @@ public class EnvironmentTest {
         Optional<Date> dateOptional = environment.getDate("app.startDate");
         assertEquals(true, dateOptional.isPresent());
 
+        Boolean helloWorld = environment.getBoolean("hello.world201", false);
+        assertEquals(Boolean.FALSE, helloWorld);
     }
 
     @Test
@@ -142,8 +149,56 @@ public class EnvironmentTest {
 
     @Test
     public void testHasKey() {
-        Environment environment = Environment.of("app.properties");
-        Assert.assertEquals(false, environment.hasKey("hello"));
-        Assert.assertEquals(true, environment.hasKey("app.version"));
+        Environment environment = Environment.of("classpath:/app.properties");
+        assertEquals(Boolean.FALSE, environment.hasKey("hello"));
+        assertEquals(Boolean.TRUE, environment.hasKey("app.version"));
+        assertEquals(Boolean.FALSE, environment.hasKey(null));
+    }
+
+    @Test
+    public void testHasValue(){
+        Environment environment = Environment.empty();
+        assertEquals(Boolean.FALSE, environment.hasValue("hello"));
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void testNoEnv() {
+        Environment.of("url:http://www.biezhi.ddd");
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void testNoEnvByFile() {
+        Environment.of(new File("a123.properties"));
+    }
+
+    @Test
+    public void testNoEnvByFileString() {
+        String path = Const.CLASSPATH + "/app.properties";
+        Environment.of("file:" + path);
+    }
+
+    @Test
+    public void testAddAll() {
+        Environment environment = Environment.empty();
+
+        Properties prop = new Properties();
+        prop.setProperty("a", "1");
+        environment.addAll(prop);
+
+        Assert.assertEquals(1, environment.size());
+
+        environment.addAll(Collections.singletonMap("aa", "bb"));
+        Assert.assertEquals(2, environment.size());
+    }
+
+    @Test
+    public void testSet(){
+        Environment environment = Environment.empty();
+        environment.set("name", "biezhi");
+
+        Assert.assertEquals("biezhi", environment.getOrNull("name"));
+
+        environment.add("age", 20);
+        Assert.assertEquals(Integer.valueOf(20), environment.getIntOrNull("age"));
     }
 }

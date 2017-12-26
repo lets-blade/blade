@@ -10,7 +10,7 @@ public class Cookie {
 
     private String  name     = null;
     private String  value    = null;
-    private String  domain   = "";
+    private String  domain   = null;
     private String  path     = "/";
     private long    maxAge   = -1;
     private boolean secure   = false;
