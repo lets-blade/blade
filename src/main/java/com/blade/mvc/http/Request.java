@@ -267,7 +267,7 @@ public interface Request {
     default String address() {
         String address = WebKit.ipAddress(this);
         if (StringKit.isBlank(address) || UNKNOWN_MAGIC.equalsIgnoreCase(address)) {
-            address = remoteAddress().split(":")[0];
+            address = remoteAddress().split(":")[0].substring(1);
         }
         if (StringKit.isBlank(address)) {
             address = "Unknown";
@@ -323,7 +323,7 @@ public interface Request {
      *
      * @return return cookies
      */
-    Map<String, String> cookies();
+    Map<String, Cookie> cookies();
 
     /**
      * Get String Cookie Value
@@ -331,12 +331,9 @@ public interface Request {
      * @param name cookie name
      * @return Return Cookie Value
      */
-    default Optional<String> cookie(@NonNull String name) {
-        String value = cookies().getOrDefault(name, "");
-        if (value.length() > 0) {
-            return Optional.of(value);
-        }
-        return Optional.empty();
+    default String cookie(@NonNull String name) {
+        Cookie cookie = cookies().get(name);
+        return null != cookie ? cookie.value() : null;
     }
 
     /**
@@ -345,7 +342,7 @@ public interface Request {
      * @param name cookie name
      * @return return Optional<Cookie>
      */
-    Optional<Cookie> cookieRaw(String name);
+    Cookie cookieRaw(String name);
 
     /**
      * Get String Cookie Value
@@ -355,7 +352,8 @@ public interface Request {
      * @return Return Cookie Value
      */
     default String cookie(@NonNull String name, @NonNull String defaultValue) {
-        return cookie(name).isPresent() ? cookie(name).get() : defaultValue;
+        String cookie = cookie(name);
+        return null != cookie ? cookie : defaultValue;
     }
 
     /**

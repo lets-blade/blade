@@ -25,6 +25,7 @@ import com.blade.mvc.route.RouteBuilder;
 import com.blade.mvc.route.RouteMatcher;
 import com.blade.mvc.ui.template.DefaultEngine;
 import com.blade.server.Server;
+import com.blade.watcher.EnvironmentWatcher;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelOption;
@@ -42,8 +43,6 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.File;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.stream.Stream;
 
 import static com.blade.mvc.Const.*;
@@ -59,11 +58,6 @@ public class NettyServer implements Server {
     private Environment         environment;
     private EventLoopGroup      bossGroup;
     private EventLoopGroup      workerGroup;
-    private ExecutorService     bossExecutors;
-    private ExecutorService     workerExecutors;
-    private int                 threadCount;
-    private int                 workers;
-    private int                 backlog;
     private Channel             channel;
     private RouteBuilder        routeBuilder;
     private List<BeanProcessor> processors;
@@ -90,6 +84,8 @@ public class NettyServer implements Server {
         this.initIoc();
 
         this.shutdownHook();
+
+        this.watchEnv();
 
         this.startServer(initStart);
 
@@ -125,7 +121,6 @@ public class NettyServer implements Server {
         }
 
         this.processors.stream().sorted(new OrderComparator<>()).forEach(b -> b.processor(blade));
-
     }
 
     private void startServer(long startTime) throws Exception {
@@ -146,24 +141,30 @@ public class NettyServer implements Server {
         }
 
         // Configure the server.
+        int backlog = environment.getInt(ENV_KEY_NETTY_SO_BACKLOG, 8192);
+
         ServerBootstrap b = new ServerBootstrap();
         b.option(ChannelOption.SO_BACKLOG, backlog);
         b.option(ChannelOption.SO_REUSEADDR, true);
         b.childOption(ChannelOption.SO_REUSEADDR, true);
+
+        int acceptThreadCount = environment.getInt(ENC_KEY_NETTY_ACCEPT_THREAD_COUNT, 0);
+        int ioThreadCount     = environment.getInt(ENV_KEY_NETTY_IO_THREAD_COUNT, 0);
 
         // enable epoll
         if (BladeKit.epollIsAvailable()) {
             log.info("⬢ Use EpollEventLoopGroup");
             b.option(EpollChannelOption.SO_REUSEPORT, true);
 
-            NettyServerGroup nettyServerGroup = EpoolKit.group(threadCount, bossExecutors, workers, workerExecutors);
+            NettyServerGroup nettyServerGroup = EpollKit.group(acceptThreadCount, ioThreadCount);
             this.bossGroup = nettyServerGroup.getBoosGroup();
             this.workerGroup = nettyServerGroup.getWorkerGroup();
             b.group(bossGroup, workerGroup).channel(nettyServerGroup.getSocketChannel());
         } else {
             log.info("⬢ Use NioEventLoopGroup");
-            this.bossGroup = new NioEventLoopGroup(threadCount, bossExecutors);
-            this.workerGroup = new NioEventLoopGroup(workers, workerExecutors);
+
+            this.bossGroup = new NioEventLoopGroup(acceptThreadCount, new NamedThreadFactory("nio-boss@"));
+            this.workerGroup = new NioEventLoopGroup(ioThreadCount, new NamedThreadFactory("nio-worker@"));
             b.group(bossGroup, workerGroup).channel(NioServerSocketChannel.class);
         }
 
@@ -215,6 +216,17 @@ public class NettyServer implements Server {
     private boolean isExceptionHandler(Class<?> clazz) {
         return (null != clazz.getAnnotation(Bean.class) && (
                 ReflectKit.hasInterface(clazz, ExceptionHandler.class) || clazz.getSuperclass().equals(DefaultExceptionHandler.class)));
+    }
+
+    private void watchEnv() {
+        boolean watchEnv = environment.getBoolean(ENV_KEY_APP_WATCH_ENV, true);
+        log.info("⬢ Watched environment: {}", watchEnv);
+
+        if (watchEnv) {
+            Thread t = new Thread(new EnvironmentWatcher());
+            t.setName("watch@thread");
+            t.start();
+        }
     }
 
     private void loadConfig(String[] args) {
@@ -279,20 +291,12 @@ public class NettyServer implements Server {
             templatePath = templatePath.substring(0, templatePath.length() - 1);
         }
         DefaultEngine.TEMPLATE_PATH = templatePath;
-
-        String boosGroupName   = environment.get(ENV_KEY_NETTY_BOOS_GROUP_NAME, "pool");
-        String workerGroupName = environment.get(ENV_KEY_NETTY_WORKER_GROUP_NAME, "pool");
-
-        bossExecutors = Executors.newCachedThreadPool(new NamedThreadFactory("boss@" + boosGroupName));
-        workerExecutors = Executors.newCachedThreadPool(new NamedThreadFactory("worker@" + workerGroupName));
-
-        threadCount = environment.getInt(ENV_KEY_NETTY_THREAD_COUNT, 1);
-        workers = environment.getInt(ENV_KEY_NETTY_WORKERS, 0);
-        backlog = environment.getInt(ENV_KEY_NETTY_SO_BACKLOG, 8192);
     }
 
     private void shutdownHook() {
-        Runtime.getRuntime().addShutdownHook(new Thread(this::stop));
+        Thread shutdownThread = new Thread(this::stop);
+        shutdownThread.setName("shutdown@thread");
+        Runtime.getRuntime().addShutdownHook(shutdownThread);
     }
 
     @Override
@@ -304,12 +308,6 @@ public class NettyServer implements Server {
             }
             if (this.workerGroup != null) {
                 this.workerGroup.shutdownGracefully();
-            }
-            if (bossExecutors != null) {
-                bossExecutors.shutdown();
-            }
-            if (workerExecutors != null) {
-                workerExecutors.shutdown();
             }
             log.info("⬢ Blade shutdown successful");
         } catch (Exception e) {
@@ -326,12 +324,6 @@ public class NettyServer implements Server {
             }
             if (this.workerGroup != null) {
                 this.workerGroup.shutdownGracefully().sync();
-            }
-            if (bossExecutors != null) {
-                bossExecutors.shutdown();
-            }
-            if (workerExecutors != null) {
-                workerExecutors.shutdown();
             }
             log.info("⬢ Blade shutdown successful");
         } catch (Exception e) {

@@ -40,6 +40,9 @@ hs_err_pid*
 .idea/**/uiDesigner.xml
 
 # Gradle:
+.gradle
+gradle/
+!gradle/wrapper/gradle-wrapper.jar
 .idea/**/gradle.xml
 .idea/**/libraries
 
@@ -54,6 +57,8 @@ hs_err_pid*
 # IntelliJ
 /out/
 .idea/
+*.iml
+*.ipr
 
 # mpeltonen/sbt-idea plugin
 .idea_modules/

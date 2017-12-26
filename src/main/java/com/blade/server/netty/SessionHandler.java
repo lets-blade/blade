@@ -13,7 +13,6 @@ import com.blade.mvc.http.Response;
 import com.blade.mvc.http.Session;
 
 import java.time.Instant;
-import java.util.Optional;
 
 import static com.blade.mvc.Const.ENV_KEY_SESSION_KEY;
 import static com.blade.mvc.Const.ENV_KEY_SESSION_TIMEOUT;
@@ -32,7 +31,7 @@ public class SessionHandler {
     private final String         sessionKey;
     private final int            timeout;
 
-    SessionHandler(Blade blade) {
+    public SessionHandler(Blade blade) {
         this.blade = blade;
         this.sessionManager = blade.sessionManager();
         this.eventManager = blade.eventManager();
@@ -86,11 +85,11 @@ public class SessionHandler {
     }
 
     private Session getSession(Request request) {
-        Optional<String> cookieHeader = request.cookie(sessionKey);
-        if (!cookieHeader.isPresent()) {
+        String cookieHeader = request.cookie(sessionKey);
+        if (null == cookieHeader) {
             return null;
         }
-        return sessionManager.getSession(cookieHeader.get());
+        return sessionManager.getSession(cookieHeader);
     }
 
 }

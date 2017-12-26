@@ -1,6 +1,7 @@
 package netty_hello;
 
 import com.blade.Blade;
+import com.blade.event.EventType;
 
 /**
  * @author biezhi
@@ -13,6 +14,7 @@ public class Hello {
 //                .devMode(false)
 //                .environment(Const.ENV_KEY_NETTY_WORKERS, Runtime.getRuntime().availableProcessors())
                 .get("/hello", ((request, response) -> response.text("Hello World.")))
+                .event(EventType.ENVIRONMENT_CHANGED, new ConfigChanged())
                 .start(Hello.class, args);
     }
 }

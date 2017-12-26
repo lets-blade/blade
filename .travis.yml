@@ -3,8 +3,14 @@ language: java
 jdk:
   - oraclejdk8
 
+notifications:
+  email: false
+
+sudo: false
+
 before_install:
     - export TZ='Asia/Shanghai'
+    - chmod +x gradlew
 
 script: "mvn clean cobertura:cobertura"
 

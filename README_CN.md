@@ -12,8 +12,8 @@
     🌾 <a href="README.md">English</a>
 </p>
 <p align="center">
-    <a href="https://travis-ci.org/biezhi/blade"><img src="https://img.shields.io/travis/biezhi/blade.svg?style=flat-square"></a>
-    <a href="http://codecov.io/github/biezhi/blade?branch=dev"><img src="https://img.shields.io/codecov/c/github/biezhi/blade/dev.svg?style=flat-square"></a>
+    <a href="https://travis-ci.org/lets-blade/blade"><img src="https://img.shields.io/travis/lets-blade/blade.svg?style=flat-square"></a>
+    <a href="http://codecov.io/github/lets-blade/blade?branch=dev"><img src="https://img.shields.io/codecov/c/github/lets-blade/blade/dev.svg?style=flat-square"></a>
     <a href="http://search.maven.org/#search%7Cga%7C1%7Cblade-mvc"><img src="https://img.shields.io/maven-central/v/com.bladejava/blade-mvc.svg?style=flat-square"></a>
     <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache%202-4EB1BA.svg?style=flat-square"></a>
     <a class="badge-align" href="https://www.codacy.com/app/biezhi/blade?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=biezhi/blade&amp;utm_campaign=Badge_Grade"><img src="https://api.codacy.com/project/badge/Grade/5f5fb55f38614f04823372db3a3c1d1b"/></a>
@@ -175,7 +175,7 @@ public static void main(String[] args) {
 
 ```java
 @PostRoute("/save")
-public void savePerson(@Param String username, @Parma Integer age){
+public void savePerson(@Param String username, @Param Integer age){
   System.out.println("username is:" + usernam + ", age is:" + age)
 }
 ```
@@ -682,7 +682,7 @@ public class GolbalExceptionHandler extends DefaultExceptionHandler {
 
 ## 贡献
 
-非常感谢下面的开发者朋友对本项目的帮助，如果你也愿意提交PR，欢迎你！
+非常感谢下面的开发者朋友对本项目的帮助，如果你也愿意提交PR，非常欢迎！
 
 - [mfarid](https://github.com/mfarid)
 - [daimajia](https://github.com/daimajia)

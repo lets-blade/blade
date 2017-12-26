@@ -148,11 +148,11 @@ public final class MethodArgument {
                     || argType.equals(LocalDate.class) || argType.equals(LocalDateTime.class)) {
                 Optional<String> val = request.query(name);
                 if (!val.isPresent()) {
-                    val = Optional.of(null != param ? param.defaultValue() : param.defaultValue());
+                    val = Optional.of(param.defaultValue());
                 }
                 return ReflectKit.convert(argType, val.get());
             } else {
-                name = null != param ? param.name() : param.name();
+                name = param.name();
                 return parseModel(argType, request, name);
             }
         }
@@ -165,12 +165,12 @@ public final class MethodArgument {
         String      paramName   = paramStrut.paramName;
         Request     request     = paramStrut.request;
 
-        String           cookieName = StringKit.isBlank(cookieParam.value()) ? paramName : cookieParam.value();
-        Optional<String> val        = request.cookie(cookieName);
-        if (!val.isPresent()) {
-            val = Optional.of(cookieParam.defaultValue());
+        String cookieName = StringKit.isBlank(cookieParam.value()) ? paramName : cookieParam.value();
+        String val        = request.cookie(cookieName);
+        if (null == val) {
+            val = cookieParam.defaultValue();
         }
-        return ReflectKit.convert(argType, val.get());
+        return ReflectKit.convert(argType, val);
     }
 
     private static Object getHeader(ParamStrut paramStrut) throws BladeException {

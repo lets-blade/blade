@@ -43,39 +43,33 @@ public interface Const {
     List<String> DEFAULT_STATICS            = Arrays.asList("/favicon.ico", "/robots.txt", "/static/", "/upload/", "/webjars/");
 
     // Env key
-    String ENV_KEY_DEV_MODE                = "app.devMode";
-    String ENV_KEY_APP_NAME                = "app.name";
-    String ENV_KEY_APP_THREAD_NAME         = "app.thread-name";
-    String ENV_KEY_BANNER_PATH             = "app.banner-path";
-    String ENV_KEY_GZIP_ENABLE             = "http.gzip.enable";
-    String ENV_KEY_CORS_ENABLE             = "http.cors.enable";
-    String ENV_KEY_SESSION_KEY             = "http.session.key";
-    String ENV_KEY_SESSION_TIMEOUT         = "http.session.timeout";
-    String ENV_KEY_AUTH_USERNAME           = "http.auth.username";
-    String ENV_KEY_AUTH_PASSWORD           = "http.auth.password";
-    String ENV_KEY_PAGE_404                = "mvc.view.404";
-    String ENV_KEY_PAGE_500                = "mvc.view.500";
-    String ENV_KEY_STATIC_DIRS             = "mvc.statics";
-    String ENV_KEY_STATIC_LIST             = "mvc.statics.show-list";
-    String ENV_KEY_TEMPLATE_PATH           = "mvc.template.path";
-    String ENV_KEY_SERVER_ADDRESS          = "server.address";
-    String ENV_KEY_SERVER_PORT             = "server.port";
-    String ENV_KEY_SSL                     = "server.ssl.enable";
-    String ENV_KEY_SSL_CERT                = "server.ssl.cert-path";
-    String ENE_KEY_SSL_PRIVATE_KEY         = "server.ssl.private-key-path";
-    String ENE_KEY_SSL_PRIVATE_KEY_PASS    = "server.ssl.private-key-pass";
-    String ENV_KEY_NETTY_BOOS_GROUP_NAME   = "server.netty.boos-name";
-    String ENV_KEY_NETTY_WORKER_GROUP_NAME = "server.netty.worker-name";
-    String ENV_KEY_NETTY_THREAD_COUNT      = "server.netty.thread-count";
-    String ENV_KEY_NETTY_WORKERS           = "server.netty.workers";
-    String ENV_KEY_NETTY_SO_BACKLOG        = "server.netty.backlog";
-    String ENV_KEY_NETTY_CONN_TIMEOUT      = "server.netty.child.conn-timeout";
-    String ENV_KEY_NETTY_REECEIVE_BUF      = "server.netty.child.receive-buf";
-    String ENV_KEY_NETTY_SEND_BUF          = "server.netty.child.send-buf";
-    String ENV_KEY_NETTY_CHILD_TCP_NODELAY = "server.netty.child.tcp-nodelay";
-    String ENV_KEY_NETTY_CHILD_KEEPALIVE   = "server.netty.child.keep-alive";
-    String ENV_KEY_NETTY_CHILD_LINGER      = "server.netty.child.linger";
-    String ENV_KEY_BOOT_CONF               = "boot_conf";
+    String ENV_KEY_DEV_MODE                  = "app.devMode";
+    String ENV_KEY_APP_NAME                  = "app.name";
+    String ENV_KEY_APP_THREAD_NAME           = "app.thread-name";
+    String ENV_KEY_APP_WATCH_ENV             = "app.watch-env";
+    String ENV_KEY_BANNER_PATH               = "app.banner-path";
+    String ENV_KEY_GZIP_ENABLE               = "http.gzip.enable";
+    String ENV_KEY_CORS_ENABLE               = "http.cors.enable";
+    String ENV_KEY_SESSION_KEY               = "http.session.key";
+    String ENV_KEY_SESSION_TIMEOUT           = "http.session.timeout";
+    String ENV_KEY_AUTH_USERNAME             = "http.auth.username";
+    String ENV_KEY_AUTH_PASSWORD             = "http.auth.password";
+    String ENV_KEY_PAGE_404                  = "mvc.view.404";
+    String ENV_KEY_PAGE_500                  = "mvc.view.500";
+    String ENV_KEY_STATIC_DIRS               = "mvc.statics";
+    String ENV_KEY_STATIC_LIST               = "mvc.statics.show-list";
+    String ENV_KEY_TEMPLATE_PATH             = "mvc.template.path";
+    String ENV_KEY_SERVER_ADDRESS            = "server.address";
+    String ENV_KEY_SERVER_PORT               = "server.port";
+    String ENV_KEY_SSL                       = "server.ssl.enable";
+    String ENV_KEY_SSL_CERT                  = "server.ssl.cert-path";
+    String ENE_KEY_SSL_PRIVATE_KEY           = "server.ssl.private-key-path";
+    String ENE_KEY_SSL_PRIVATE_KEY_PASS      = "server.ssl.private-key-pass";
+    String ENC_KEY_NETTY_ACCEPT_THREAD_COUNT = "server.netty.accept-thread-count";
+    String ENV_KEY_NETTY_IO_THREAD_COUNT     = "server.netty.io-thread-count";
+    String ENV_KEY_NETTY_SO_BACKLOG          = "server.netty.so-backlog";
+
+    String ENV_KEY_BOOT_CONF = "boot_conf";
 
     // terminal
     String TERMINAL_SERVER_ADDRESS = "--server.address=";

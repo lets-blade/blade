@@ -295,7 +295,7 @@ public class RouteMatcher {
     }
 
     // a bad way
-    void register() {
+    public void register() {
         routes.values().forEach(route -> log.info("Add route => {}", route));
         hooks.values().forEach(route -> log.info("Add hook  => {}", route));
 

@@ -24,7 +24,6 @@ import com.blade.ioc.Ioc;
 import com.blade.ioc.SimpleIoc;
 import com.blade.kit.Assert;
 import com.blade.kit.BladeKit;
-import com.blade.kit.IOKit;
 import com.blade.kit.StringKit;
 import com.blade.mvc.SessionManager;
 import com.blade.mvc.handler.DefaultExceptionHandler;
@@ -45,11 +44,13 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.BufferedReader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import static com.blade.mvc.Const.*;
 
@@ -368,7 +369,7 @@ public class Blade {
      * @param cls bean class type
      * @return return bean instance
      */
-    public Object getBean(@NonNull Class<?> cls) {
+    public <T> T getBean(@NonNull Class<T> cls) {
         return ioc.getBean(cls);
     }
 
@@ -488,6 +489,11 @@ public class Blade {
         return environment;
     }
 
+    public Blade environment(Environment environment) {
+        this.environment = environment;
+        return this;
+    }
+
     /**
      * Set to start the web server to monitor port, the default is 9000
      *
@@ -549,14 +555,14 @@ public class Blade {
     }
 
     /**
-     * Add a event listener
+     * Add a event watcher
      * When the trigger event is executed eventListener
      *
      * @param eventType     event type
-     * @param eventListener event listener
+     * @param eventListener event watcher
      * @return blade
      */
-    public Blade event(@NonNull EventType eventType, @NonNull EventListener eventListener) {
+    public <T> Blade event(@NonNull EventType eventType, @NonNull EventListener<T> eventListener) {
         eventManager.addEventListener(eventType, eventListener);
         return this;
     }
@@ -626,6 +632,11 @@ public class Blade {
      */
     public Blade disableSession() {
         this.sessionManager = null;
+        return this;
+    }
+
+    public Blade watchEnvChange(boolean watchEnvChange){
+        this.environment.set(ENV_KEY_APP_WATCH_ENV, watchEnvChange);
         return this;
     }
 
@@ -766,8 +777,10 @@ public class Blade {
         String bannerPath = environment.get(ENV_KEY_BANNER_PATH, null);
         if (StringKit.isNotBlank(bannerPath) && Files.exists(Paths.get(bannerPath))) {
             try {
-                bannerText = IOKit.readToString(bannerPath);
+                BufferedReader bufferedReader = Files.newBufferedReader(Paths.get(bannerPath));
+                bannerText = bufferedReader.lines().collect(Collectors.joining("\r\n"));
             } catch (Exception e) {
+                log.error("Load Start Banner file error", e);
             }
             return bannerText;
         }

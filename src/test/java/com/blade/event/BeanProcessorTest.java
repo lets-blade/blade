@@ -1,7 +1,11 @@
 package com.blade.event;
 
 import com.blade.BaseTestCase;
+import com.blade.Blade;
 import org.junit.Test;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 /**
  * @author biezhi
@@ -11,9 +15,10 @@ public class BeanProcessorTest extends BaseTestCase {
 
     @Test
     public void testBeanProcessor(){
-        start(
-                app.onStarted(blade -> System.out.println("Blade started"))
-        );
+        Blade blade = Blade.me();
+        BeanProcessor beanProcessor = mock(BeanProcessor.class);
+        beanProcessor.processor(blade);
+        verify(beanProcessor).processor(blade);
     }
 
 }
