@@ -16,7 +16,7 @@
     <a href="http://codecov.io/github/lets-blade/blade?branch=dev"><img src="https://img.shields.io/codecov/c/github/lets-blade/blade/dev.svg?style=flat-square"></a>
     <a href="http://search.maven.org/#search%7Cga%7C1%7Cblade-mvc"><img src="https://img.shields.io/maven-central/v/com.bladejava/blade-mvc.svg?style=flat-square"></a>
     <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache%202-4EB1BA.svg?style=flat-square"></a>
-    <a class="badge-align" href="https://www.codacy.com/app/biezhi/blade?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=biezhi/blade&amp;utm_campaign=Badge_Grade"><img src="https://api.codacy.com/project/badge/Grade/5f5fb55f38614f04823372db3a3c1d1b"/></a>
+    <a class="badge-align" href="https://www.codacy.com/app/lets-blade/blade"><img src="https://api.codacy.com/project/badge/Grade/5f5fb55f38614f04823372db3a3c1d1b"/></a>
     <a href="https://gitter.im/biezhi/blade"><img src="https://badges.gitter.im/biezhi/blade.svg?style=flat-square"></a>
 </p>
 
@@ -60,7 +60,7 @@
 <dependency>
 	<groupId>com.bladejava</groupId>
 	<artifactId>blade-mvc</artifactId>
-	<version>2.0.6-Alpha1</version>
+	<version>2.0.6-BETA</version>
 </dependency>
 ```
 
@@ -69,7 +69,7 @@
 或者  `Gradle`:
 
 ```sh
-compile 'com.bladejava:blade-mvc:2.0.6-Alpha1'
+compile 'com.bladejava:blade-mvc:2.0.6-BETA'
 ```
 
 编写 `main` 函数写一个 `Hello World`：
