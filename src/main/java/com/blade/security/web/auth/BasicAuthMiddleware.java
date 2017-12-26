@@ -21,7 +21,7 @@ import static com.blade.mvc.Const.ENV_KEY_AUTH_USERNAME;
 @Slf4j
 public class BasicAuthMiddleware implements WebHook {
 
-    private static final int AUTH_LENGTH = 6;
+    private static final int AUTH_LENGTH       = 6;
     private static final int AUTH_FIELD_LENGTH = 2;
 
     private String username;
@@ -57,7 +57,9 @@ public class BasicAuthMiddleware implements WebHook {
             auth = auth.substring(6, auth.length());
             String decodedAuth = getFromBASE64(auth);
             log.debug("Authorization decode: {}", decodedAuth);
-
+            if (null == decodedAuth || !decodedAuth.contains(":")) {
+                return false;
+            }
             String[] arr = decodedAuth.split(":");
             if (arr.length == AUTH_FIELD_LENGTH) {
                 if (username.equals(arr[0]) && password.equals(arr[1])) {

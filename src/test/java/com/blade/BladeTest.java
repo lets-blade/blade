@@ -5,7 +5,13 @@ import com.blade.event.EventType;
 import com.blade.kit.StringKit;
 import com.blade.mvc.handler.ExceptionHandler;
 import com.blade.mvc.handler.RouteHandler;
+import com.blade.mvc.handler.WebSocketHandler;
+import com.blade.mvc.hook.WebHook;
+import com.blade.mvc.http.HttpSession;
+import com.blade.mvc.route.Route;
 import com.blade.mvc.ui.template.TemplateEngine;
+import com.blade.mvc.websocket.WebSocketContext;
+import com.blade.security.web.csrf.CsrfMiddleware;
 import com.blade.types.BladeClassDefineType;
 import com.mashape.unirest.http.Unirest;
 import netty_hello.Hello;
@@ -14,6 +20,7 @@ import org.junit.Test;
 
 import java.net.ConnectException;
 import java.net.Socket;
+import java.util.List;
 
 import static com.blade.mvc.Const.*;
 import static org.mockito.Mockito.mock;
@@ -126,6 +133,85 @@ public class BladeTest extends BaseTestCase {
         Assert.assertEquals(7, blade.getStatics().size());
         Assert.assertEquals(Boolean.TRUE, blade.getStatics().contains("/assets/"));
         Assert.assertEquals(Boolean.FALSE, blade.getStatics().contains("/hello/"));
+    }
+
+    @Test
+    public void testBootConf(){
+        Blade blade = Blade.me();
+        blade.bootConf("app2.properties");
+        Assert.assertEquals("app2.properties", blade.environment().getOrNull(ENV_KEY_BOOT_CONF));
+    }
+
+    @Test
+    public void testEnv(){
+        Environment environment = Environment.empty();
+        environment.add("hello", "world");
+        Environment environment2 = Blade.me().environment(environment).environment();
+        Assert.assertEquals(environment, environment2);
+    }
+
+    @Test
+    public void testUse(){
+        Blade         blade      = Blade.me().use(new CsrfMiddleware());
+        List<WebHook> middleware = blade.middleware();
+        Assert.assertNotNull(middleware);
+        Assert.assertEquals(1, middleware.size());
+    }
+
+    @Test
+    public void testSessionType(){
+        Assert.assertEquals(HttpSession.class, Blade.me().sessionType());
+        Blade.me().sessionType(HttpSession.class);
+    }
+
+    @Test
+    public void testOnStarted(){
+        Blade.me().onStarted(blade -> System.out.println("On started.."));
+    }
+
+    @Test
+    public void testDisableSession(){
+        Blade blade = Blade.me().disableSession();
+        Assert.assertNull(blade.sessionManager());
+    }
+
+    @Test
+    public void testWatchEnvChange(){
+         Environment environment = Blade.me().watchEnvChange(false).environment();
+         Assert.assertEquals(Boolean.FALSE, environment.getBooleanOrNull(ENV_KEY_APP_WATCH_ENV));
+    }
+
+    @Test
+    public void testWebSocket(){
+        Assert.assertNull(Blade.me().webSocketHandler());
+        Blade blade = Blade.me().webSocket("/", new WebSocketHandler() {
+            @Override
+            public void onConnect(WebSocketContext ctx) {
+                System.out.println("on connect.");
+            }
+
+            @Override
+            public void onText(WebSocketContext ctx) {
+                System.out.println("on text");
+            }
+
+            @Override
+            public void onDisConnect(WebSocketContext ctx) {
+                System.out.println("on disconnect.");
+            }
+        });
+        Assert.assertNotNull(blade.webSocketHandler());
+    }
+
+    @Test
+    public void testBannerText(){
+        Blade blade = Blade.me().bannerText("qq");
+        Assert.assertEquals("qq", blade.bannerText());
+    }
+
+    @Test
+    public void testThreadName(){
+        Blade.me().threadName("-0-");
     }
 
     @Test
