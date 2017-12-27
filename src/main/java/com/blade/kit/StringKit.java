@@ -75,7 +75,7 @@ public final class StringKit {
         if (CollectionKit.isEmpty(values)) {
             return true;
         }
-        return Stream.of(values).filter(StringKit::isBlank).count() > 0;
+        return Stream.of(values).filter(StringKit::isBlank).count() == values.length;
     }
 
     /**
