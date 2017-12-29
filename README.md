@@ -235,7 +235,7 @@ curl -X GET http://127.0.0.1:9000/users/biezhi/2
 ```java
 public static void main(String[] args) {
     Blade.me().post("/body", ((request, response) -> {
-      System.out.println("body string is:" + body)
+      System.out.println("body string is:" + request.bodyToString())
     }).start();
 }
 ```
