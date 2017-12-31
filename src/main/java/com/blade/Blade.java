@@ -50,15 +50,13 @@ import org.omg.Messaging.SYNC_WITH_TRANSPORT;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
+import java.nio.file.*;
 import java.rmi.server.ExportException;
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.blade.mvc.Const.*;
 
@@ -422,6 +420,14 @@ public class Blade {
         return this;
     }
 
+    public boolean isAutoRefreshDir(){
+       return  environment.get(ENV_KEY_AUTO_REFRESH_DIR).isPresent();
+    }
+
+    public void setAutoRefreshDir(String dir){
+       environment.set(ENV_KEY_AUTO_REFRESH_DIR, dir);
+    }
+
     public Class<?> bootClass() {
         return this.bootClass;
     }
@@ -682,7 +688,7 @@ public class Blade {
      */
     public Blade start(Class<?> bootClass, @NonNull String address, int port, String... args) {
         try {
-
+            loadConfig(args);
             environment.set(ENV_KEY_SERVER_ADDRESS, address);
             Assert.greaterThan(port, 0, "server port not is negative number.");
             this.bootClass = bootClass;
@@ -708,26 +714,27 @@ public class Blade {
             Thread resourceFilesRefreshThread = new Thread(()-> {
 
                 try {
-
-                    FileChangeDetector fileChangeDetector = new FileChangeDetector("/Users/Eddie/Documents/GitHub/blade/src/test/resources");
+                    FileChangeDetector fileChangeDetector = new FileChangeDetector(environment.get(ENV_KEY_AUTO_REFRESH_DIR).get());
                     fileChangeDetector.processEvent( (event , filePath) ->{
                         try {
-                            log.info(filePath.toString());
-                            log.info(Const.CLASSPATH + File.separator + "templates" + File.separator + filePath.getFileName().toString());
-                            Path destPath = FileChangeDetector.generateDestPath(filePath, environment);
-                            Files.copy(filePath, destPath, StandardCopyOption.REPLACE_EXISTING);
+                            //TODO: add support for Create and Delete
+                            if(event.equals(StandardWatchEventKinds.ENTRY_MODIFY)) {
+                                Path destPath = FileChangeDetector.getDestPath(filePath, environment);
+                                Files.copy(filePath, destPath, StandardCopyOption.REPLACE_EXISTING);
+                            }
                         }catch (IOException e){
-                            e.printStackTrace();
+                            log.error("Exception when trying to copy updated file");
+                            startupExceptionHandler.accept(e);
                         }
                     });
                 }catch (IOException e){
-
+                    startupExceptionHandler.accept(e);
                 }
-
 
             });
 
-            if (devMode()){
+            if (devMode() && isAutoRefreshDir()){
+                log.info("auto refresh is enabled");
                 resourceFilesRefreshThread.start();
             }
         } catch (Exception e) {
@@ -843,4 +850,44 @@ public class Blade {
         return webSocketHandler;
     }
 
+    private void loadConfig(String[] args) {
+
+        String bootConf = environment().get(ENV_KEY_BOOT_CONF, "classpath:app.properties");
+
+        Environment bootEnv = Environment.of(bootConf);
+
+        if (bootEnv != null) {
+            bootEnv.props().forEach((key, value) -> environment.set(key.toString(), value));
+        }
+        log.info(environment.get(ENV_KEY_AUTO_REFRESH_DIR).get());
+
+        if (null != args) {
+            Optional<String> envArg = Stream.of(args).filter(s -> s.startsWith(Const.TERMINAL_BLADE_ENV)).findFirst();
+            envArg.ifPresent(arg -> {
+                String envName = "app-" + arg.split("=")[1] + ".properties";
+                log.info("current environment file is: {}", envName);
+                Environment customEnv = Environment.of(envName);
+                if (customEnv != null) {
+                    customEnv.props().forEach((key, value) -> environment.set(key.toString(), value));
+                }
+            });
+        }
+
+        register(environment);
+
+        // load terminal param
+        if (!BladeKit.isEmpty(args)) {
+            for (String arg : args) {
+                if (arg.startsWith(TERMINAL_SERVER_ADDRESS)) {
+                    int    pos     = arg.indexOf(TERMINAL_SERVER_ADDRESS) + TERMINAL_SERVER_ADDRESS.length();
+                    String address = arg.substring(pos);
+                    environment.set(ENV_KEY_SERVER_ADDRESS, address);
+                } else if (arg.startsWith(TERMINAL_SERVER_PORT)) {
+                    int    pos  = arg.indexOf(TERMINAL_SERVER_PORT) + TERMINAL_SERVER_PORT.length();
+                    String port = arg.substring(pos);
+                    environment.set(ENV_KEY_SERVER_PORT, port);
+                }
+            }
+        }
+    }
 }

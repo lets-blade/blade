@@ -77,7 +77,6 @@ public class NettyServer implements Server {
         log.info("Environment: file.encoding  => {}", System.getProperty("file.encoding"));
         log.info("Environment: classpath      => {}", CLASSPATH);
 
-        this.loadConfig(args);
         this.initConfig();
 
         WebContext.init(blade, "/");
@@ -104,6 +103,8 @@ public class NettyServer implements Server {
                 .filter(ReflectKit::isNormalClass)
                 .forEach(this::parseCls);
 
+        log.info(blade.scanPackages().size()+"asdf");
+        blade.scanPackages().stream().forEach( a -> log.info(a) );
         routeBuilder.register();
 
         this.processors.stream().sorted(new OrderComparator<>()).forEach(b -> b.preHandle(blade));
@@ -221,6 +222,7 @@ public class NettyServer implements Server {
                 ReflectKit.hasInterface(clazz, ExceptionHandler.class) || clazz.getSuperclass().equals(DefaultExceptionHandler.class)));
     }
 
+<<<<<<< HEAD
     private void watchEnv() {
         boolean watchEnv = environment.getBoolean(ENV_KEY_APP_WATCH_ENV, true);
         log.info("⬢ Watched environment: {}", watchEnv);
