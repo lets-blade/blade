@@ -221,6 +221,7 @@ public class NettyServer implements Server {
     }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
     private void watchEnv() {
         boolean watchEnv = environment.getBoolean(ENV_KEY_APP_WATCH_ENV, true);
         log.info("⬢ Watched environment: {}", watchEnv);
