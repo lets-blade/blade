@@ -3,12 +3,16 @@ package com.blade.kit;
 import com.blade.mvc.Const;
 import lombok.NoArgsConstructor;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Locale;
 
 /**
@@ -29,6 +33,8 @@ public final class DateKit {
      * GMT ZoneId
      */
     private static final ZoneId            GMT_ZONE_ID = ZoneId.of("GMT");
+
+    private static final int[] LASTDAYS = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
 
     /**
      * get current unix time
@@ -135,4 +141,70 @@ public final class DateKit {
 
     }
 
+    /**
+     * Get the beginning of the day
+     *
+     * @param calendar
+     * @return
+     */
+    public static Calendar beginOfDay(Calendar calendar) {
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+
+        return calendar;
+    }
+
+    /**
+     * Get the end of the day
+     *
+     * @param calendar
+     * @return
+     */
+    public static Calendar endOfDay(Calendar calendar) {
+        calendar.set(Calendar.HOUR_OF_DAY, 23);
+        calendar.set(Calendar.MINUTE, 59);
+        calendar.set(Calendar.SECOND, 59);
+        calendar.set(Calendar.MILLISECOND, 999);
+
+        return calendar;
+    }
+
+    /**
+     * Whether it is leapyear
+     *
+     * @param year
+     * @return
+     */
+    public static boolean isLeapYear(int year) {
+        return new GregorianCalendar().isLeapYear(year);
+    }
+
+    /**
+     * Is it the last day of the month
+     *
+     * @param str time
+     * @return
+     */
+    public static boolean isLastDay(String str) {
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        Calendar calendar = Calendar.getInstance();
+
+        try {
+            calendar.setTime(format.parse(str));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
+        int day = calendar.get(Calendar.DATE);
+
+        if (isLeapYear(year) && month == 2) {
+            return day == 29;
+        } else {
+            return day == LASTDAYS[month];
+        }
+    }
 }
