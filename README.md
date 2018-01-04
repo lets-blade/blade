@@ -4,10 +4,10 @@
 <p align="center">Based on <code>Java8</code> + <code>Netty4</code> to create lightweight, high-performance, simple and elegant Web framework 😋</p>
 <p align="center">Spend <b>1 hour</b> to learn it to do something interesting, a Spring in addition to the framework of the best choice.</p>
 <p align="center">
-    🐾 <a href="#quick-start" target="_blank">Quick Start</a> | 
-    📘 <a href="https://dev-cheats.com/topics/blade-in-action.html" target="_blank">Blade In Action</a> | 
-    🎬 <a href="https://www.youtube.com/playlist?list=PLK2w-tGRdrj5TV2lxHFj8hcg4mbmRmnWX" target="_blank">Video Tutorial</a> | 
-    🌚 <a href="" target="_blank">Contribution</a> | 
+    🐾 <a href="#quick-start" target="_blank">Quick Start</a> |
+    📘 <a href="https://dev-cheats.com/topics/blade-in-action.html" target="_blank">Blade In Action</a> |
+    🎬 <a href="https://www.youtube.com/playlist?list=PLK2w-tGRdrj5TV2lxHFj8hcg4mbmRmnWX" target="_blank">Video Tutorial</a> |
+    🌚 <a href="" target="_blank">Contribution</a> |
     💰 <a href="https://lets-blade.com/donate" target="_blank">Donate</a> |
     🇨🇳 <a href="README_CN.md">简体中文</a>
 </p>
@@ -18,6 +18,7 @@
     <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache%202-4EB1BA.svg?style=flat-square"></a>
     <a class="badge-align" href="https://www.codacy.com/app/lets-blade/blade"><img src="https://api.codacy.com/project/badge/Grade/5f5fb55f38614f04823372db3a3c1d1b"/></a>
     <a href="https://gitter.im/biezhi/blade"><img src="https://badges.gitter.im/biezhi/blade.svg?style=flat-square"></a>
+    <a href="https://www.codetriage.com/biezhi/blade"><img src="https://www.codetriage.com/biezhi/blade/badges/users.svg"></a>
 </p>
 
 ***
@@ -137,19 +138,19 @@ public static void main(String[] args) {
 ```java
 @Path
 public class IndexController {
-    
+
     @GetRoute("signin")
     public String signin(){
         return "signin.html";
     }
-    
+
     @PostRoute("signin")
     @JSON
     public RestResponse doSignin(Request request){
         // do something
         return RestResponse.ok();
     }
-    
+
 }
 ```
 
@@ -201,7 +202,7 @@ public static void main(String[] args) {
 		Integer uid = request.pathInt("uid");
 		response.text("uid : " + uid);
 	});
-	
+
     // Create two parameters route
     blade.get("/users/:uid/post/:pid", (request, response) -> {
 		Integer uid = request.pathInt("uid");
@@ -209,7 +210,7 @@ public static void main(String[] args) {
 		String msg = "uid = " + uid + ", pid = " + pid;
 		response.text(msg);
 	});
-	
+
     // Start blade
     blade.start();
 }
@@ -380,7 +381,7 @@ public void upload(Request request){
     request.fileItem("img").ifPresent(fileItem -> {
         byte[] data = fileItem.getData();
         // Save the temporary file to the specified path
-        Files.write(Paths.get(filePath), data);              
+        Files.write(Paths.get(filePath), data);
     });
 }
 ```
@@ -493,12 +494,12 @@ Create a `BeanProcessor` class
 ```java
 @Bean
 public class TemplateConfig implements BeanProcessor {
-    
+
     @Override
     public void processor(Blade blade) {
         blade.templateEngine(new JetbrickTemplateEngine());
     }
-    
+
 }
 ```
 
@@ -527,13 +528,13 @@ The `hello.html` template
 <body>
 
   <h1>Hello, ${user.username}</h1>
-  
+
   #if(user.age > 18)
     <p>Good Boy!</p>
   #else
     <p>Gooood Baby!</p>
   #end
-  
+
 </body>
 </html>
 ```
@@ -545,9 +546,9 @@ The `hello.html` template
 ```java
 @GetRoute("redirect")
 public void redirectToGithub(Response response){
-  
+
   response.redirect("https://github.com/biezhi");
-  
+
 }
 ```
 
@@ -558,10 +559,10 @@ public void redirectToGithub(Response response){
 ```java
 @GetRoute("write-cookie")
 public void writeCookie(Response response){
-  
+
   response.cookie("hello", "world");
   response.cookie("UID", "22", 3600);
-  
+
 }
 ```
 
@@ -652,7 +653,7 @@ Blade has already implemented an exception handler by default, and sometimes you
 ```java
 @Bean
 public class GolbalExceptionHandler extends DefaultExceptionHandler {
-    
+
     @Override
     public void handle(Exception e) {
         if (e instanceof ValidateException) {
@@ -663,7 +664,7 @@ public class GolbalExceptionHandler extends DefaultExceptionHandler {
             super.handle(e);
         }
     }
-  
+
 }
 ```
 
