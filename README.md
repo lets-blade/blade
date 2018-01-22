@@ -176,7 +176,7 @@ public static void main(String[] args) {
 ```java
 @PostRoute("/save")
 public void savePerson(@Param String username, @Param Integer age){
-  System.out.println("username is:" + usernam + ", age is:" + age)
+  System.out.println("username is:" + username + ", age is:" + age)
 }
 ```
 
