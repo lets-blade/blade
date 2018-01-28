@@ -8,6 +8,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -89,6 +90,44 @@ public class DateKitTest {
 
         unixTime = DateKit.nowUnix();
         Assert.assertNotNull(unixTime);
+    }
+
+    /**
+     * 获取今天的开始的时间
+     */
+    @Test
+    public void testToBeginOfDay() {
+        Calendar calendar = DateKit.beginOfDay(Calendar.getInstance());
+        String dateStr = DateKit.toString(calendar.getTime(), "yyyy-MM-dd HH:mm:ss");
+        System.out.println(dateStr);
+    }
+
+    /**
+     * 获取今天的结束的时间
+     */
+    @Test
+    public void testToEndOfDay() {
+        Calendar calendar = DateKit.endOfDay(Calendar.getInstance());
+        String dateStr = DateKit.toString(calendar.getTime(), "yyyy-MM-dd HH:mm:ss");
+        System.out.println(dateStr);
+    }
+
+    /**
+     * 是否为闰年
+     */
+    @Test
+    public void tesTisLeapYear() {
+        boolean leapYear = DateKit.isLeapYear(2016);
+        Assert.assertEquals(true, leapYear);
+    }
+
+    /**
+     * 是否为最后一天
+     */
+    @Test
+    public void testIsLastDay() {
+        boolean lastDay = DateKit.isLastDay("2018-1-31");
+        Assert.assertEquals(true, lastDay);
     }
 
 }
