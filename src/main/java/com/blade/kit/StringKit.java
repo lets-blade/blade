@@ -45,14 +45,20 @@ public final class StringKit {
         return num.toString();
     }
 
+
     /**
-     * Determine whether a string is not blank
-     *
-     * @param str string value
-     * @return return string is not blank
+     * Determine whether a list of string is not blank
+     * @param str a list of string value
+     * @return return any one in this list of string is not blank
      */
-    public static boolean isNotBlank(String str) {
-        return null != str && !"".equals(str.trim());
+    public static boolean isNotBlank(String... str){
+        if (str == null) return false;
+        for (String s : str){
+            if (isBlank(s)){
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
