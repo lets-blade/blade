@@ -70,7 +70,7 @@ public interface Const {
     String ENV_KEY_NETTY_SO_BACKLOG          = "server.netty.so-backlog";
 
     String ENV_KEY_BOOT_CONF = "boot_conf";
-
+    String ENV_KEY_AUTO_REFRESH_DIR        = "app.auto.refresh.dir";
     // terminal
     String TERMINAL_SERVER_ADDRESS = "--server.address=";
     String TERMINAL_SERVER_PORT    = "--server.port=";

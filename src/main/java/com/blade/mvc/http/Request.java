@@ -378,7 +378,8 @@ public interface Request {
      * @return Return header information
      */
     default String header(@NonNull String name) {
-        return headers().getOrDefault(name, "");
+        String header = headers().getOrDefault(name, "");
+        return StringKit.isBlank(header) ? headers().getOrDefault(name.toLowerCase(), "") : header;
     }
 
     /**

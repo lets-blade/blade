@@ -7,6 +7,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author biezhi
@@ -36,7 +38,19 @@ public class RouteMatcherTest {
 
 
     }
-
+    @Test
+    public void testPathRegex() {
+        Pattern PATH_VARIABLE_PATTERN = Pattern.compile("/([^:/]*):([^/]+)");
+//        Matcher matcher = PATH_REGEX_PATTERN.matcher("/$:api[1-3]/");
+        Matcher matcher= PATH_VARIABLE_PATTERN.matcher("/user/api:api[1-2]/:name/:path");
+        boolean find = false;
+        while (matcher != null && matcher.find()) {
+            if (!find) find = true;
+            System.out.println(matcher.group(1).length());
+        }
+        String s = matcher.replaceAll("{sss}");
+        System.out.println(s);
+    }
     @Test
     public void testAddRoute() throws Exception {
         routeMatcher.addRoute(Route.builder().httpMethod(HttpMethod.POST).targetType(RouteHandler.class)
