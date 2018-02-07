@@ -149,7 +149,7 @@ public class NettyServer implements Server {
         b.option(ChannelOption.SO_REUSEADDR, true);
         b.childOption(ChannelOption.SO_REUSEADDR, true);
 
-        int acceptThreadCount = environment.getInt(ENC_KEY_NETTY_ACCEPT_THREAD_COUNT, 0);
+        int acceptThreadCount = environment.getInt(ENC_KEY_NETTY_ACCEPT_THREAD_COUNT, 1);
         int ioThreadCount     = environment.getInt(ENV_KEY_NETTY_IO_THREAD_COUNT, 0);
 
         // enable epoll
