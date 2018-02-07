@@ -22,6 +22,14 @@ public class StringKitTest {
 
         Assert.assertEquals(false, StringKit.isNotBlank(""));
         Assert.assertEquals(false, StringKit.isNotBlank(null));
+
+
+        Assert.assertEquals(false,StringKit.isNotBlank("a","b","  "));
+        Assert.assertEquals(false,StringKit.isNotBlank("a","b",null));
+
+        Assert.assertEquals(true,StringKit.isNotBlank("a","b","c"));
+        Assert.assertEquals(true,StringKit.isNotBlank("abc","d ef","gh i"));
+
     }
 
     @Test
