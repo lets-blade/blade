@@ -56,12 +56,12 @@ import static com.blade.mvc.Const.*;
 @Slf4j
 public class NettyServer implements Server {
 
-    private Blade blade;
-    private Environment environment;
-    private EventLoopGroup bossGroup;
-    private EventLoopGroup workerGroup;
-    private Channel channel;
-    private RouteBuilder routeBuilder;
+    private Blade               blade;
+    private Environment         environment;
+    private EventLoopGroup      bossGroup;
+    private EventLoopGroup      workerGroup;
+    private Channel             channel;
+    private RouteBuilder        routeBuilder;
     private List<BeanProcessor> processors;
 
     @Override
@@ -118,7 +118,7 @@ public class NettyServer implements Server {
         if (BladeKit.isNotEmpty(beanDefines)) {
             beanDefines.forEach(b -> {
                 BladeKit.injection(ioc, b);
-                BladeKit.injectionValue(environment, b);
+                BladeKit.injectionValue(environment,b);
             });
         }
 
@@ -133,8 +133,8 @@ public class NettyServer implements Server {
         // Configure SSL.
         SslContext sslCtx = null;
         if (SSL) {
-            String certFilePath = environment.get(ENV_KEY_SSL_CERT, null);
-            String privateKeyPath = environment.get(ENE_KEY_SSL_PRIVATE_KEY, null);
+            String certFilePath       = environment.get(ENV_KEY_SSL_CERT, null);
+            String privateKeyPath     = environment.get(ENE_KEY_SSL_PRIVATE_KEY, null);
             String privateKeyPassword = environment.get(ENE_KEY_SSL_PRIVATE_KEY_PASS, null);
 
             log.info("⬢ SSL CertChainFile  Path: {}", certFilePath);
@@ -151,7 +151,7 @@ public class NettyServer implements Server {
         b.childOption(ChannelOption.SO_REUSEADDR, true);
 
         int acceptThreadCount = environment.getInt(ENC_KEY_NETTY_ACCEPT_THREAD_COUNT, 0);
-        int ioThreadCount = environment.getInt(ENV_KEY_NETTY_IO_THREAD_COUNT, 0);
+        int ioThreadCount     = environment.getInt(ENV_KEY_NETTY_IO_THREAD_COUNT, 0);
 
         // enable epoll
         if (BladeKit.epollIsAvailable()) {
@@ -174,7 +174,7 @@ public class NettyServer implements Server {
                 .childHandler(new HttpServerInitializer(sslCtx, blade, bossGroup.next()));
 
         String address = environment.get(ENV_KEY_SERVER_ADDRESS, DEFAULT_SERVER_ADDRESS);
-        int port = environment.getInt(ENV_KEY_SERVER_PORT, DEFAULT_SERVER_PORT);
+        int    port    = environment.getInt(ENV_KEY_SERVER_PORT, DEFAULT_SERVER_PORT);
 
         channel = b.bind(address, port).sync().channel();
         String appName = environment.get(ENV_KEY_APP_NAME, "Blade");
@@ -210,9 +210,8 @@ public class NettyServer implements Server {
                         }
                     });
         }
-
         if (ReflectKit.hasInterface(clazz, WebHook.class) && null != clazz.getAnnotation(Bean.class)) {
-            Object hook = blade.ioc().getBean(clazz);
+            Object     hook       = blade.ioc().getBean(clazz);
             UrlPattern urlPattern = clazz.getAnnotation(UrlPattern.class);
             if (null == urlPattern) {
                 routeBuilder.addWebHook(clazz, "/.*", hook);
@@ -229,7 +228,6 @@ public class NettyServer implements Server {
             blade.exceptionHandler(exceptionHandler);
         }
     }
-
 
     private boolean isExceptionHandler(Class<?> clazz) {
         return (null != clazz.getAnnotation(Bean.class) && (
@@ -275,11 +273,11 @@ public class NettyServer implements Server {
         if (!BladeKit.isEmpty(args)) {
             for (String arg : args) {
                 if (arg.startsWith(TERMINAL_SERVER_ADDRESS)) {
-                    int pos = arg.indexOf(TERMINAL_SERVER_ADDRESS) + TERMINAL_SERVER_ADDRESS.length();
+                    int    pos     = arg.indexOf(TERMINAL_SERVER_ADDRESS) + TERMINAL_SERVER_ADDRESS.length();
                     String address = arg.substring(pos);
                     environment.set(ENV_KEY_SERVER_ADDRESS, address);
                 } else if (arg.startsWith(TERMINAL_SERVER_PORT)) {
-                    int pos = arg.indexOf(TERMINAL_SERVER_PORT) + TERMINAL_SERVER_PORT.length();
+                    int    pos  = arg.indexOf(TERMINAL_SERVER_PORT) + TERMINAL_SERVER_PORT.length();
                     String port = arg.substring(pos);
                     environment.set(ENV_KEY_SERVER_PORT, port);
                 }
