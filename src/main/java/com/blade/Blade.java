@@ -26,6 +26,7 @@ import com.blade.kit.Assert;
 import com.blade.kit.BladeKit;
 import com.blade.kit.StringKit;
 import com.blade.mvc.SessionManager;
+import com.blade.mvc.WebContext;
 import com.blade.mvc.handler.DefaultExceptionHandler;
 import com.blade.mvc.handler.ExceptionHandler;
 import com.blade.mvc.handler.RouteHandler;
@@ -678,6 +679,7 @@ public class Blade {
             Assert.greaterThan(port, 0, "server port not is negative number.");
             this.bootClass = bootClass;
             eventManager.fireEvent(EventType.SERVER_STARTING, this);
+            WebContext.init(this, "/");
             Thread thread = new Thread(() -> {
                 try {
                     server.start(Blade.this, args);
