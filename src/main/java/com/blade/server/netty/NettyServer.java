@@ -7,6 +7,7 @@ import com.blade.event.EventType;
 import com.blade.ioc.DynamicContext;
 import com.blade.ioc.Ioc;
 import com.blade.ioc.annotation.Bean;
+import com.blade.ioc.annotation.Configuration;
 import com.blade.ioc.annotation.Value;
 import com.blade.ioc.bean.BeanDefine;
 import com.blade.ioc.bean.ClassInfo;
@@ -16,7 +17,6 @@ import com.blade.kit.NamedThreadFactory;
 import com.blade.kit.ReflectKit;
 import com.blade.kit.StringKit;
 import com.blade.mvc.Const;
-import com.blade.mvc.WebContext;
 import com.blade.mvc.annotation.Path;
 import com.blade.mvc.annotation.UrlPattern;
 import com.blade.mvc.handler.DefaultExceptionHandler;
@@ -42,6 +42,7 @@ import io.netty.util.ResourceLeakDetector;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -79,7 +80,7 @@ public class NettyServer implements Server {
 
         this.initConfig();
 
-        WebContext.init(blade, "/");
+        //WebContext.init(blade, "/");
 
         this.initIoc();
 
@@ -195,6 +196,18 @@ public class NettyServer implements Server {
             }
             Object controller = blade.ioc().getBean(clazz);
             routeBuilder.addRouter(clazz, controller);
+        }
+        if (null != clazz.getAnnotation(Configuration.class) && clazz.getMethods().length > 0) {
+            Object config = ReflectKit.newInstance(clazz);
+            Arrays.stream(clazz.getMethods())
+                    .filter(m -> m.getAnnotation(Bean.class) != null)
+                    .forEach(n -> {
+                        try {
+                            blade.register(n.invoke(config));
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    });
         }
         if (ReflectKit.hasInterface(clazz, WebHook.class) && null != clazz.getAnnotation(Bean.class)) {
             Object     hook       = blade.ioc().getBean(clazz);
