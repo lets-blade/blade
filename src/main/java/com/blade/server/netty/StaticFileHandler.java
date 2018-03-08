@@ -298,7 +298,7 @@ public class StaticFileHandler implements RequestHandler<Boolean> {
         // Gladle resources path
         File resourcesDirectory = new File(new File(Const.class.getResource("/").getPath()).getParent() + "/resources");
         if (resourcesDirectory.isDirectory()) {
-            return resourcesDirectory.getPath() + "/resources" + uri.substring(1);
+            return resourcesDirectory.getPath() + "/resources/" + uri.substring(1);
         }
         // Maven resources path
         return Const.CLASSPATH + File.separator + uri.substring(1);
