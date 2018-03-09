@@ -4,6 +4,7 @@ import com.blade.mvc.multipart.MimeType;
 import lombok.NoArgsConstructor;
 
 import java.util.Random;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 /**
@@ -48,17 +49,30 @@ public final class StringKit {
 
     /**
      * Determine whether a list of string is not blank
+     *
      * @param str a list of string value
      * @return return any one in this list of string is not blank
      */
-    public static boolean isNotBlank(String... str){
+    public static boolean isNotBlank(String... str) {
         if (str == null) return false;
-        for (String s : str){
-            if (isBlank(s)){
+        for (String s : str) {
+            if (isBlank(s)) {
                 return false;
             }
         }
         return true;
+    }
+
+    /**
+     * Execute consumer when the string is not empty
+     *
+     * @param str      string value
+     * @param consumer consumer
+     */
+    public static void isNotBlankThen(String str, Consumer<String> consumer) {
+        if (!isBlank(str)) {
+            consumer.accept(str);
+        }
     }
 
     /**
@@ -69,6 +83,18 @@ public final class StringKit {
      */
     public static boolean isBlank(String str) {
         return null == str || "".equals(str.trim());
+    }
+
+    /**
+     * Execute consumer when the string is empty
+     *
+     * @param str      string value
+     * @param consumer consumer
+     */
+    public static void isBlankThen(String str, Consumer<String> consumer) {
+        if (isBlank(str)) {
+            consumer.accept(str);
+        }
     }
 
     /**

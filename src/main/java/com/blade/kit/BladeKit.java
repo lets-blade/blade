@@ -17,6 +17,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 /**
  * Blade kit
@@ -49,27 +52,29 @@ public class BladeKit {
 
     /**
      * Get @Value Annotated field
+     *
      * @param environment
      * @param classDefine
      * @return
      */
-    private static List<ValueInjector> getValueInjectFields(Environment environment,ClassDefine classDefine) {
+    private static List<ValueInjector> getValueInjectFields(Environment environment, ClassDefine classDefine) {
         List<ValueInjector> valueInjectors = new ArrayList<>(8);
         //handle class annotation
         if (null != classDefine.getType().getAnnotation(Value.class)) {
             String suffix = classDefine.getType().getAnnotation(Value.class).name();
             Arrays.stream(classDefine.getDeclaredFields()).forEach(field -> valueInjectors.add(
-                    new ValueInjector(environment,field,suffix+"."+field.getName())
+                    new ValueInjector(environment, field, suffix + "." + field.getName())
             ));
-        }else {
+        } else {
             Arrays.stream(classDefine.getDeclaredFields()).
                     filter(field -> null != field.getAnnotation(Value.class)).
                     map(field -> new ValueInjector(
-                                    environment,field,field.getAnnotation(Value.class).name())
+                            environment, field, field.getAnnotation(Value.class).name())
                     ).forEach(valueInjectors::add);
         }
         return valueInjectors;
     }
+
     public static void injection(Ioc ioc, BeanDefine beanDefine) {
         ClassDefine         classDefine    = ClassDefine.create(beanDefine.getType());
         List<FieldInjector> fieldInjectors = getInjectFields(ioc, classDefine);
@@ -78,12 +83,14 @@ public class BladeKit {
             fieldInjector.injection(bean);
         }
     }
-    public static void injectionValue(Environment environment,BeanDefine beanDefine) {
-        ClassDefine         classDefine    = ClassDefine.create(beanDefine.getType());
-        List<ValueInjector> valueFileds    = getValueInjectFields(environment,classDefine);
-        Object              bean           = beanDefine.getBean();
+
+    public static void injectionValue(Environment environment, BeanDefine beanDefine) {
+        ClassDefine         classDefine = ClassDefine.create(beanDefine.getType());
+        List<ValueInjector> valueFileds = getValueInjectFields(environment, classDefine);
+        Object              bean        = beanDefine.getBean();
         valueFileds.stream().forEach(fieldInjector -> fieldInjector.injection(bean));
     }
+
     public static boolean isEmpty(Collection<?> c) {
         return null == c || c.isEmpty();
     }
@@ -110,6 +117,24 @@ public class BladeKit {
             return null != obj && Boolean.valueOf(obj.toString()) && System.getProperty("os.name").toLowerCase().contains("linux");
         } catch (Exception e) {
             return false;
+        }
+    }
+
+    public static <T> void okThen(T value, Predicate<T> predicate, Consumer<T> consumer) {
+        if (predicate.test(value)) {
+            consumer.accept(value);
+        }
+    }
+
+    public static <T> void equalThen(T a, T b, BiConsumer<T, T> consumer) {
+        if (a.equals(b)) {
+            consumer.accept(a, b);
+        }
+    }
+
+    public static <T> void notNullThen(T value, Consumer<T> consumer) {
+        if (null != value) {
+            consumer.accept(value);
         }
     }
 

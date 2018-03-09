@@ -2,7 +2,6 @@ package com.blade.server.netty;
 
 import com.blade.Blade;
 import com.blade.mvc.handler.ExceptionHandler;
-import com.blade.mvc.handler.WebSocketHandler;
 import com.blade.mvc.websocket.WebSocketContext;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
@@ -19,12 +18,12 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @ChannelHandler.Sharable
-public class WebSockerHandler extends SimpleChannelInboundHandler<WebSocketFrame> {
+public class WebSocketHandler extends SimpleChannelInboundHandler<WebSocketFrame> {
 
-    private WebSocketHandler webSocketHandler;
-    private ExceptionHandler exceptionHandler;
+    private com.blade.mvc.handler.WebSocketHandler webSocketHandler;
+    private ExceptionHandler                       exceptionHandler;
 
-    WebSockerHandler(Blade blade) {
+    WebSocketHandler(Blade blade) {
         this.webSocketHandler = blade.webSocketHandler();
     }
 

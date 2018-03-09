@@ -8,6 +8,7 @@ import com.blade.mvc.WebContext;
 import com.blade.mvc.http.Request;
 import com.blade.mvc.http.Response;
 import com.blade.mvc.ui.HtmlCreator;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -21,6 +22,7 @@ import static com.blade.mvc.Const.*;
  * @author biezhi
  * @date 2017/9/18
  */
+@Slf4j
 public class DefaultExceptionHandler implements ExceptionHandler {
 
     @Override
@@ -35,7 +37,7 @@ public class DefaultExceptionHandler implements ExceptionHandler {
     }
 
     private void handleException(Exception e, Request request, Response response) {
-        e.printStackTrace();
+        log.error("Handle exception => ", e);
         if (null != response) {
             response.status(500);
             request.attribute("title", "500 Internal Server Error");
