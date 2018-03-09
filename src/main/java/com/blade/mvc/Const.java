@@ -30,7 +30,7 @@ public interface Const {
     int          DEFAULT_SERVER_PORT        = 9000;
     String       DEFAULT_SERVER_ADDRESS     = "0.0.0.0";
     String       LOCAL_IP_ADDRESS           = "127.0.0.1";
-    String       VERSION                    = "2.0.6-BETA";
+    String       VERSION                    = "2.0.6-RELEASE";
     String       WEB_JARS                   = "/webjars/";
     String       CLASSPATH                  = new File(Const.class.getResource("/").getPath()).getPath();
     String       CONTENT_TYPE_HTML          = "text/html; charset=UTF-8";
@@ -69,12 +69,12 @@ public interface Const {
     String ENV_KEY_NETTY_IO_THREAD_COUNT     = "server.netty.io-thread-count";
     String ENV_KEY_NETTY_SO_BACKLOG          = "server.netty.so-backlog";
 
-    String ENV_KEY_BOOT_CONF = "boot_conf";
-    String ENV_KEY_AUTO_REFRESH_DIR        = "app.auto.refresh.dir";
+    String ENV_KEY_BOOT_CONF        = "boot_conf";
+    String ENV_KEY_AUTO_REFRESH_DIR = "app.auto.refresh.dir";
     // terminal
-    String TERMINAL_SERVER_ADDRESS = "--server.address=";
-    String TERMINAL_SERVER_PORT    = "--server.port=";
-    String TERMINAL_BLADE_ENV      = "--blade.env=";
+    String TERMINAL_SERVER_ADDRESS  = "--server.address=";
+    String TERMINAL_SERVER_PORT     = "--server.port=";
+    String TERMINAL_BLADE_ENV       = "--blade.env=";
 
     String BANNER_SPACE = "\t\t\t\t\t\t\t  ";
 

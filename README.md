@@ -61,7 +61,7 @@ Create a basic `Maven` project
 <dependency>
     <groupId>com.bladejava</groupId>
     <artifactId>blade-mvc</artifactId>
-    <version>2.0.6-BETA</version>
+    <version>2.0.6-RELEASE</version>
 </dependency>
 ```
 
