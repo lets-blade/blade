@@ -60,16 +60,16 @@
 <dependency>
 	<groupId>com.bladejava</groupId>
 	<artifactId>blade-mvc</artifactId>
-	<version>2.0.6-RELEASE</version>
+	<version>2.0.6-R1</version>
 </dependency>
 ```
 
-> 不需要创建 webapp 项目骨架, Blade 没这么麻烦。
+> 不需要创建 `webapp` 项目骨架, Blade 没这么麻烦。
 
 或者  `Gradle`:
 
 ```sh
-compile 'com.bladejava:blade-mvc:2.0.6-BETA'
+compile 'com.bladejava:blade-mvc:2.0.6-R1'
 ```
 
 编写 `main` 函数写一个 `Hello World`：

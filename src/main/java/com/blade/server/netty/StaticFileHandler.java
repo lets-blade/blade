@@ -107,8 +107,18 @@ public class StaticFileHandler implements RequestHandler<Boolean> {
 
         File file = new File(path);
         if (file.isHidden() || !file.exists()) {
-            log.warn("Not Found\t{}", uri);
-            throw new NotFoundException(uri);
+            // Gladle resources path
+            File resourcesDirectory = new File(new File(Const.class.getResource("/").getPath()).getParent() + "/resources");
+            if (resourcesDirectory.isDirectory()) {
+                file = new File(resourcesDirectory.getPath() + "/resources/" + uri.substring(1));
+                if (file.isHidden() || !file.exists()) {
+                    log.warn("Not Found\t{}", uri);
+                    throw new NotFoundException(uri);
+                }
+            } else {
+                log.warn("Not Found\t{}", uri);
+                throw new NotFoundException(uri);
+            }
         }
 
         if (file.isDirectory() && showFileList) {
@@ -293,12 +303,6 @@ public class StaticFileHandler implements RequestHandler<Boolean> {
                 uri.charAt(0) == '.' || uri.charAt(uri.length() - 1) == '.' ||
                 INSECURE_URI.matcher(uri).matches()) {
             return null;
-        }
-        // Convert to absolute path.
-        // Gladle resources path
-        File resourcesDirectory = new File(new File(Const.class.getResource("/").getPath()).getParent() + "/resources");
-        if (resourcesDirectory.isDirectory()) {
-            return resourcesDirectory.getPath() + "/resources/" + uri.substring(1);
         }
         // Maven resources path
         return Const.CLASSPATH + File.separator + uri.substring(1);
