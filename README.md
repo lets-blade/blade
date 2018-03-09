@@ -61,16 +61,16 @@ Create a basic `Maven` project
 <dependency>
     <groupId>com.bladejava</groupId>
     <artifactId>blade-mvc</artifactId>
-    <version>2.0.6-RELEASE</version>
+    <version>2.0.6-R1</version>
 </dependency>
 ```
 
-> Do not create a webapp project, blade is not so much trouble.
+> Do not create a `webapp` project, blade is not so much trouble.
 
 or `Gradle`:
 
 ```sh
-compile 'com.bladejava:blade-mvc:2.0.6-BETA'
+compile 'com.bladejava:blade-mvc:2.0.6-R1'
 ```
 
 Write `main` method, try `Hello World`：
