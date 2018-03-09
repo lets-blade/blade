@@ -77,7 +77,6 @@ public class NettyServer implements Server {
         log.info("Environment: file.encoding  => {}", System.getProperty("file.encoding"));
         log.info("Environment: classpath      => {}", CLASSPATH);
 
-        this.loadConfig(args);
         this.initConfig();
 
         WebContext.init(blade, "/");
@@ -149,7 +148,7 @@ public class NettyServer implements Server {
         b.option(ChannelOption.SO_REUSEADDR, true);
         b.childOption(ChannelOption.SO_REUSEADDR, true);
 
-        int acceptThreadCount = environment.getInt(ENC_KEY_NETTY_ACCEPT_THREAD_COUNT, 0);
+        int acceptThreadCount = environment.getInt(ENC_KEY_NETTY_ACCEPT_THREAD_COUNT, 1);
         int ioThreadCount     = environment.getInt(ENV_KEY_NETTY_IO_THREAD_COUNT, 0);
 
         // enable epoll
@@ -229,46 +228,6 @@ public class NettyServer implements Server {
             Thread t = new Thread(new EnvironmentWatcher());
             t.setName("watch@thread");
             t.start();
-        }
-    }
-
-    private void loadConfig(String[] args) {
-
-        String bootConf = blade.environment().get(ENV_KEY_BOOT_CONF, "classpath:app.properties");
-
-        Environment bootEnv = Environment.of(bootConf);
-
-        if (bootEnv != null) {
-            bootEnv.props().forEach((key, value) -> environment.set(key.toString(), value));
-        }
-
-        if (null != args) {
-            Optional<String> envArg = Stream.of(args).filter(s -> s.startsWith(Const.TERMINAL_BLADE_ENV)).findFirst();
-            envArg.ifPresent(arg -> {
-                String envName = "app-" + arg.split("=")[1] + ".properties";
-                log.info("current environment file is: {}", envName);
-                Environment customEnv = Environment.of(envName);
-                if (customEnv != null) {
-                    customEnv.props().forEach((key, value) -> environment.set(key.toString(), value));
-                }
-            });
-        }
-
-        blade.register(environment);
-
-        // load terminal param
-        if (!BladeKit.isEmpty(args)) {
-            for (String arg : args) {
-                if (arg.startsWith(TERMINAL_SERVER_ADDRESS)) {
-                    int    pos     = arg.indexOf(TERMINAL_SERVER_ADDRESS) + TERMINAL_SERVER_ADDRESS.length();
-                    String address = arg.substring(pos);
-                    environment.set(ENV_KEY_SERVER_ADDRESS, address);
-                } else if (arg.startsWith(TERMINAL_SERVER_PORT)) {
-                    int    pos  = arg.indexOf(TERMINAL_SERVER_PORT) + TERMINAL_SERVER_PORT.length();
-                    String port = arg.substring(pos);
-                    environment.set(ENV_KEY_SERVER_PORT, port);
-                }
-            }
         }
     }
 

@@ -25,11 +25,13 @@ public class DefaultTemplateTest {
     public void testFormatSimpleArguments() throws Exception {
         String result = template("${int3}-${int2}").arg("int3", 5).arg("int2", 7).fmt();
         assertTrue("5-7".equals(result));
+        System.out.println(result);
     }
 
     @Test
     public void testFormatSimpleFormatNullArgument() throws Exception {
         String result = template("${NULL}-${a}").args("NULL", null, "a", 5).fmt();
+
         assertTrue("null-5".equals(result));
     }
 

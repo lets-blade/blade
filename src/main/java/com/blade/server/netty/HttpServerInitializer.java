@@ -62,7 +62,7 @@ public class HttpServerInitializer extends ChannelInitializer<SocketChannel> {
         }
         if (null != blade.webSocketPath()) {
             p.addLast(new WebSocketServerProtocolHandler(blade.webSocketPath(), null, true));
-            p.addLast(new WebSockerHandler(blade));
+            p.addLast(new WebSocketHandler(blade));
         }
         service.scheduleWithFixedDelay(() -> date = new AsciiString(DateKit.gmtDate(LocalDateTime.now())), 1000, 1000, TimeUnit.MILLISECONDS);
         p.addLast(new HttpServerHandler());

@@ -1,10 +1,7 @@
 package com.blade.mvc.route;
 
 import com.blade.ioc.annotation.Order;
-import com.blade.kit.Assert;
-import com.blade.kit.BladeKit;
-import com.blade.kit.PathKit;
-import com.blade.kit.ReflectKit;
+import com.blade.kit.*;
 import com.blade.mvc.handler.RouteHandler;
 import com.blade.mvc.hook.Signature;
 import com.blade.mvc.hook.WebHook;
@@ -32,8 +29,7 @@ import java.util.stream.Stream;
 @Slf4j
 public class RouteMatcher {
 
-    private static final Pattern PATH_VARIABLE_PATTERN = Pattern.compile(":(\\w+)");
-    private static final String  PATH_VARIABLE_REPLACE = "([^/]+)";
+    private static final Pattern PATH_VARIABLE_PATTERN = Pattern.compile("/([^:/]*):([^/]+)");
     private static final String  METHOD_NAME           = "handle";
 
     // Storage URL and route
@@ -289,8 +285,8 @@ public class RouteMatcher {
             URI uri = new URI(path);
             return uri.getPath();
         } catch (URISyntaxException e) {
-            log.error("parse [" + path + "] error", e);
-            return null;
+            //log.error("parse [" + path + "] error", e);
+            return path;
         }
     }
 
@@ -328,8 +324,16 @@ public class RouteMatcher {
             if (!find) {
                 find = true;
             }
-            String group = matcher.group(0);
-            uriVariableNames.add(group.substring(1));   // {id} -> id
+            String regexName = matcher.group(1);
+            String regexValue= matcher.group(2);
+
+            // just a simple path param
+            if (StringKit.isBlank(regexName)) {
+                uriVariableNames.add(regexValue);
+            }else {
+                //regex path param
+                uriVariableNames.add(regexName);
+            }
         }
         HttpMethod httpMethod = route.getHttpMethod();
         if (find || BladeKit.isWebHook(httpMethod)) {
@@ -341,9 +345,7 @@ public class RouteMatcher {
             int i = indexes.get(httpMethod);
             regexRoutes.get(httpMethod).put(i, new FastRouteMappingInfo(route, uriVariableNames));
             indexes.put(httpMethod, i + uriVariableNames.size() + 1);
-            if (matcher != null) {
-                patternBuilders.get(httpMethod).append("(").append(matcher.replaceAll(PATH_VARIABLE_REPLACE)).append(")|");
-            }
+            patternBuilders.get(httpMethod).append(new PathRegexBuilder().parsePath(path));
         } else {
             String routeKey = path + '#' + httpMethod.toString();
             staticRoutes.putIfAbsent(routeKey, route);
