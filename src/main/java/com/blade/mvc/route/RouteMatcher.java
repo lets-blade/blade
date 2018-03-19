@@ -182,7 +182,8 @@ public class RouteMatcher {
                 String uriVariable;
                 int    j = 0;
                 while (++i <= matcher.groupCount() && (uriVariable = matcher.group(i)) != null) {
-                    uriVariables.put(mappingInfo.getVariableNames().get(j++), uriVariable);
+                    String pathVariable = cleanPathVariable(mappingInfo.getVariableNames().get(j++));
+                    uriVariables.put(pathVariable, uriVariable);
                 }
                 route.setPathParams(uriVariables);
                 log.trace("lookup path: " + path + " uri variables: " + uriVariables);
@@ -191,6 +192,13 @@ public class RouteMatcher {
         } catch (Exception e) {
             throw e;
         }
+    }
+
+    private String cleanPathVariable(String pathVariable) {
+        if (pathVariable.contains(".")) {
+            return pathVariable.substring(0, pathVariable.indexOf('.'));
+        }
+        return pathVariable;
     }
 
     public boolean hasBeforeHook() {
@@ -324,13 +332,13 @@ public class RouteMatcher {
             if (!find) {
                 find = true;
             }
-            String regexName = matcher.group(1);
-            String regexValue= matcher.group(2);
+            String regexName  = matcher.group(1);
+            String regexValue = matcher.group(2);
 
             // just a simple path param
             if (StringKit.isBlank(regexName)) {
                 uriVariableNames.add(regexValue);
-            }else {
+            } else {
                 //regex path param
                 uriVariableNames.add(regexName);
             }
