@@ -13,6 +13,7 @@ import com.blade.mvc.http.Response;
 import com.blade.mvc.http.Session;
 
 import java.time.Instant;
+import java.util.Objects;
 
 import static com.blade.mvc.Const.ENV_KEY_SESSION_KEY;
 import static com.blade.mvc.Const.ENV_KEY_SESSION_TIMEOUT;
@@ -43,10 +44,15 @@ public class SessionHandler {
         Session  session  = getSession(request);
         Response response = WebContext.response();
         if (null == session) {
-            return createSession(request, response);
+            return createSession(request, Objects.requireNonNull(response));
         } else {
-            if (session.expired() < Instant.now().getEpochSecond()) {
+            long now = Instant.now().getEpochSecond();
+            if (session.expired() < now) {
                 removeSession(session);
+            } else {
+                // renewal
+                long expired = now + timeout;
+                session.expired(expired);
             }
         }
         return session;
