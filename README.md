@@ -61,7 +61,7 @@ Create a basic `Maven` project
 <dependency>
     <groupId>com.bladejava</groupId>
     <artifactId>blade-mvc</artifactId>
-    <version>2.0.7-ALPHA</version>
+    <version>2.0.7-beta1</version>
 </dependency>
 ```
 
@@ -70,7 +70,7 @@ Create a basic `Maven` project
 or `Gradle`:
 
 ```sh
-compile 'com.bladejava:blade-mvc:2.0.7-ALPHA'
+compile 'com.bladejava:blade-mvc:2.0.7-beta1'
 ```
 
 Write `main` method, try `Hello World`：
@@ -680,22 +680,22 @@ How easy it all looks, but the features above are the tip of the iceberg, and th
 
 ## Contact
 
-- Blog:[https://biezhi.me](https://biezhi.me)
+- Findor:[https://findor.me/biezhi](https://findor.me/biezhi)
+- Twitter: [biezhi](https://twitter.com/biezhii)
 - Mail: biezhi.me@gmail.com
 
-## Contributor
+## Contributors
 
-Thank you very much for the developers to help in the project, if you are willing to contribute, welcome!
+Thanks goes to these wonderful people
 
-- [mfarid](https://github.com/mfarid)
-- [daimajia](https://github.com/daimajia)
-- [shenjie1993](https://github.com/shenjie1993)
-- [sumory](https://github.com/sumory)
-- [udaykadaboina](https://github.com/udaykadaboina)
-- [SyedWasiHaider](https://github.com/SyedWasiHaider)
-- [Awakens](https://github.com/Awakens)
-- [shellac](https://github.com/shellac)
-- [SudarAbisheck](https://github.com/SudarAbisheck)
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore -->
+| [<img src="https://avatars2.githubusercontent.com/u/3849072?s=460&v=4" width="100px;"/><br /><sub><b>王爵nice</b></sub>](https://findor.me/biezhi) | [<img src="https://avatars2.githubusercontent.com/u/9401233?s=460&v=4" width="100px;"/><br /><sub><b>ccqy66</b></sub>](https://github.com/ccqy66) | [<img src="https://avatars0.githubusercontent.com/u/9024855?s=460&v=4" width="100px;"/><br /><sub><b>王晓辉(Eddie)</b></sub>](https://github.com/eddie-wang) | [<img src="https://avatars2.githubusercontent.com/u/2503423?s=460&v=4" width="100px;"/><br /><sub><b>代码家</b></sub>](https://github.com/daimajia) | [<img src="https://avatars2.githubusercontent.com/u/9032795?s=460&v=4" width="100px;"/><br /><sub><b>David Dong</b></sub>](https://github.com/dongm2ez) | [<img src="https://avatars1.githubusercontent.com/u/10883521?s=460&v=4" width="100px;"/><br /><sub><b>José Vieira Neto</b></sub>](https://github.com/NetoDevel) | [<img src="https://avatars0.githubusercontent.com/u/59744?s=460&v=4" width="100px;"/><br /><sub><b>Schneeman</b></sub>](https://github.com/schneems) |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| [<img src="https://avatars1.githubusercontent.com/u/497803?s=460&v=4" width="100px;"/><br /><sub><b>Mohd Farid</b></sub>](https://github.com/mfarid) | [<img src="https://avatars3.githubusercontent.com/u/1326893?s=460&v=4" width="100px;"/><br /><sub><b>sumory</b></sub>](https://github.com/sumory) | [<img src="https://avatars3.githubusercontent.com/u/463602?s=460&v=4" width="100px;"/><br /><sub><b>Uday K</b></sub>](https://github.com/udaykadaboina) | [<img src="https://avatars0.githubusercontent.com/u/11169857?s=460&v=4" width="100px;"/><br /><sub><b>Antony Kwok</b></sub>](https://github.com/Awakens) | &nbsp; | &nbsp; | &nbsp; |
+<!-- ALL-CONTRIBUTORS-LIST:END -->
+
+Contributions of any kind are welcome!
 
 ## Licenses
 
