@@ -20,8 +20,11 @@ public class EnvironmentWatcher implements Runnable {
 
     @Override
     public void run() {
-        final Path path = Paths.get(Const.CLASSPATH);
+        if (Const.CLASSPATH.endsWith(".jar")) {
+            return;
+        }
 
+        final Path path = Paths.get(Const.CLASSPATH);
         try (WatchService watchService = FileSystems.getDefault().newWatchService()) {
 
             path.register(watchService, StandardWatchEventKinds.ENTRY_MODIFY, StandardWatchEventKinds.ENTRY_DELETE);

@@ -9,10 +9,13 @@ import com.blade.ioc.bean.BeanDefine;
 import com.blade.ioc.bean.ClassDefine;
 import com.blade.ioc.bean.FieldInjector;
 import com.blade.ioc.bean.ValueInjector;
+import com.blade.mvc.Const;
 import com.blade.mvc.http.HttpMethod;
 import lombok.NoArgsConstructor;
 
+import java.io.File;
 import java.lang.reflect.Field;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -136,6 +139,19 @@ public class BladeKit {
         if (null != value) {
             consumer.accept(value);
         }
+    }
+
+    public static boolean isInJar() {
+        return Const.CLASSPATH.endsWith(".jar");
+    }
+
+    public static String getCurrentClassPath() {
+        URL url = BladeKit.class.getResource("/");
+        if (null == url) {
+            File f = new File(BladeKit.class.getProtectionDomain().getCodeSource().getLocation().getPath());
+            return f.getPath();
+        }
+        return url.getPath();
     }
 
 }

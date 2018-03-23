@@ -4,6 +4,7 @@ import com.blade.Blade;
 import com.blade.event.EventType;
 
 /**
+ * 增强功能
  * @author biezhi
  * 2017/6/5
  */

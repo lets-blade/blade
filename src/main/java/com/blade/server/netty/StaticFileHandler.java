@@ -3,6 +3,7 @@ package com.blade.server.netty;
 import com.blade.Blade;
 import com.blade.exception.ForbiddenException;
 import com.blade.exception.NotFoundException;
+import com.blade.kit.BladeKit;
 import com.blade.kit.DateKit;
 import com.blade.kit.IOKit;
 import com.blade.kit.StringKit;
@@ -21,10 +22,7 @@ import io.netty.handler.stream.ChunkedFile;
 import io.netty.util.CharsetUtil;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
-import java.io.RandomAccessFile;
+import java.io.*;
 import java.net.URLConnection;
 import java.net.URLDecoder;
 import java.time.Instant;
@@ -33,6 +31,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.regex.Pattern;
 
 import static io.netty.handler.codec.http.HttpResponseStatus.*;
@@ -56,7 +55,7 @@ public class StaticFileHandler implements RequestHandler<Boolean> {
     }
 
     /**
-     * print static file to clinet
+     * print static file to client
      *
      * @param ctx
      * @param request
@@ -75,27 +74,12 @@ public class StaticFileHandler implements RequestHandler<Boolean> {
 
         if (uri.startsWith(Const.WEB_JARS)) {
             InputStream input = StaticFileHandler.class.getResourceAsStream("/META-INF/resources" + uri);
-            if (null == input) {
-                log.warn("Not Found\t{}", uri);
-                throw new NotFoundException(uri);
-            } else {
-                if (http304(ctx, request, -1)) {
-                    return false;
-                }
-                String           content      = IOKit.readToString(input);
-                FullHttpResponse httpResponse = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, OK, Unpooled.copiedBuffer(content, CharsetUtil.UTF_8));
-                setDateAndCacheHeaders(httpResponse, null);
-                String contentType = StringKit.mimeType(uri);
-                if (null != contentType) {
-                    httpResponse.headers().set(HttpConst.CONTENT_TYPE, contentType);
-                }
-                httpResponse.headers().set(HttpConst.CONTENT_LENGTH, content.length());
-                if (request.keepAlive()) {
-                    httpResponse.headers().set(HttpConst.CONNECTION, HttpConst.KEEP_ALIVE);
-                }
-                // Write the initial line and the header.
-                ctx.writeAndFlush(httpResponse);
-            }
+            if (jarResource(ctx, request, uri, input)) return false;
+            return false;
+        }
+        if (BladeKit.isInJar()) {
+            InputStream input = StaticFileHandler.class.getResourceAsStream(uri);
+            if (jarResource(ctx, request, uri, input)) return false;
             return false;
         }
 
@@ -107,7 +91,7 @@ public class StaticFileHandler implements RequestHandler<Boolean> {
 
         File file = new File(path);
         if (file.isHidden() || !file.exists()) {
-            // Gladle resources path
+            // gradle resources path
             File resourcesDirectory = new File(new File(Const.class.getResource("/").getPath()).getParent() + "/resources");
             if (resourcesDirectory.isDirectory()) {
                 file = new File(resourcesDirectory.getPath() + "/resources/" + uri.substring(1));
@@ -185,6 +169,31 @@ public class StaticFileHandler implements RequestHandler<Boolean> {
         return false;
     }
 
+    private boolean jarResource(ChannelHandlerContext ctx, Request request, String uri, InputStream input) throws IOException {
+        if (null == input) {
+            log.warn("Not Found\t{}", uri);
+            throw new NotFoundException(uri);
+        } else {
+            if (http304(ctx, request, -1)) {
+                return true;
+            }
+            String           content      = IOKit.readToString(input);
+            FullHttpResponse httpResponse = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, OK, Unpooled.copiedBuffer(content, CharsetUtil.UTF_8));
+            setDateAndCacheHeaders(httpResponse, null);
+            String contentType = StringKit.mimeType(uri);
+            if (null != contentType) {
+                httpResponse.headers().set(HttpConst.CONTENT_TYPE, contentType);
+            }
+            httpResponse.headers().set(HttpConst.CONTENT_LENGTH, content.length());
+            if (request.keepAlive()) {
+                httpResponse.headers().set(HttpConst.CONNECTION, HttpConst.KEEP_ALIVE);
+            }
+            // Write the initial line and the header.
+            ctx.writeAndFlush(httpResponse);
+        }
+        return false;
+    }
+
     private boolean http304(ChannelHandlerContext ctx, Request request, long lastModified) {
         // Cache Validation
         String ifMdf = request.header(HttpConst.IF_MODIFIED_SINCE);
@@ -217,7 +226,7 @@ public class StaticFileHandler implements RequestHandler<Boolean> {
         return Date.from(instant);
     }
 
-    private static final Pattern ALLOWED_FILE_NAME = Pattern.compile("[^-\\._]?[^<>&\\\"]*");
+    private static final Pattern ALLOWED_FILE_NAME = Pattern.compile("[^-._]?[^<>&\"]*");
 
     private static void sendListing(ChannelHandlerContext ctx, File dir, String dirPath) {
         FullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1, OK);
@@ -234,7 +243,7 @@ public class StaticFileHandler implements RequestHandler<Boolean> {
                 .append("<ul>")
                 .append("<li><a href=\"../\">..</a></li>\r\n");
 
-        for (File f : dir.listFiles()) {
+        for (File f : Objects.requireNonNull(dir.listFiles())) {
             if (f.isHidden() || !f.canRead()) {
                 continue;
             }

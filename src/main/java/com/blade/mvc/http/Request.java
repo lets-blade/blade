@@ -416,7 +416,7 @@ public interface Request {
      * @return set attribute value and return current request instance
      */
     default Request attribute(@NonNull String name, Object value) {
-        if (null != value) attributes().put(name, value);
+        this.attributes().put(name, value);
         return this;
     }
 

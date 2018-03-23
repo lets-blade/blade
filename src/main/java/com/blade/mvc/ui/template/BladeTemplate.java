@@ -200,7 +200,6 @@ public class BladeTemplate {
         final String objectName  = takeUntilDotOrEnd(param);
         final Object objectValue = arguments.get(objectName);
 
-
         Object toAppend;
         if (param.length() != 0) {
             // If this is a chain object.method1.method2.method3
@@ -211,8 +210,10 @@ public class BladeTemplate {
             // If it's an array we print it nicely
             toAppend = evaluateIfArray(objectValue);
         }
+        if (null != toAppend) {
+            result.append(toAppend);
+        }
 
-        result.append(toAppend);
     }
 
     private static Object evaluateIfArray(Object o) {
@@ -272,13 +273,15 @@ public class BladeTemplate {
 
         Object newObject;
         try {
-            // Try with the given method or with the getter as a fallback
-            Method method = getMethodOrGetter(object, methodName);
-
-            if (null == method)
-                return null;
-
-            newObject = method.invoke(object);
+            if (object instanceof Map) {
+                newObject = ((Map) object).get(methodName);
+            } else {
+                // Try with the given method or with the getter as a fallback
+                Method method = getMethodOrGetter(object, methodName);
+                if (null == method)
+                    return null;
+                newObject = method.invoke(object);
+            }
             return valueInChain(newObject, paramBuffer);
         } catch (IllegalAccessException | InvocationTargetException e) {
             // Couldn't invoke the method
