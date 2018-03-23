@@ -33,6 +33,10 @@ public final class IOKit {
         return readToString(Paths.get(file));
     }
 
+    public static String readToString(BufferedReader bufferedReader) {
+        return bufferedReader.lines().collect(Collectors.joining());
+    }
+
     public static String readToString(Path path) throws IOException {
         BufferedReader bufferedReader = Files.newBufferedReader(path);
         return bufferedReader.lines().collect(Collectors.joining());
