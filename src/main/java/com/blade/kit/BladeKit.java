@@ -174,11 +174,23 @@ public class BladeKit {
         log.info("{} | {} | {} | {}", ColorKit.yellowAndWhite("404"), getEndMs(start), method, uri);
     }
 
+    public static boolean isWindows() {
+        return System.getProperties().getProperty("os.name").toLowerCase().contains("win");
+    }
+
+    public static String getStartedSymbol() {
+        return isWindows() ? "" : "» ";
+    }
+
+    public static String getPrefixSymbol() {
+        return isWindows() ? "=> " : "» ";
+    }
+
     public static void logAddRoute(Logger log, Route route) {
         String method = StringKit.padRight(route.getHttpMethod().name(), 6);
         switch (route.getHttpMethod()) {
             case GET:
-                method = ColorKit.yellowAndWhiteDeep(method);
+                method = ColorKit.greenAndWhite(method);
                 break;
             case POST:
                 method = ColorKit.blueAndWhite(method);
@@ -187,7 +199,7 @@ public class BladeKit {
                 method = ColorKit.redAndWhite(method);
                 break;
             case PUT:
-                method = ColorKit.purpleAndWhite(method);
+                method = ColorKit.yellowAndWhite(method);
                 break;
             case OPTIONS:
                 method = ColorKit.cyanAndWhite(method);
@@ -199,7 +211,7 @@ public class BladeKit {
         }
 
         String msg = (route.getHttpMethod().equals(HttpMethod.BEFORE) || route.getHttpMethod().equals(HttpMethod.AFTER)) ? "hook" : "route";
-        log.info("⬢ Add {} {} {}", msg, method, route.getPath());
+        log.info("{}Add {} {} {}", getStartedSymbol(), msg, method, route.getPath());
     }
 
 }

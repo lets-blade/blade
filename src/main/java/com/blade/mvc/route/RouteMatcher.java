@@ -136,7 +136,7 @@ public class RouteMatcher {
         }
     }
 
-    public Route lookupRoute(String httpMethod, String path) throws Exception {
+    public Route lookupRoute(String httpMethod, String path) {
         path = parsePath(path);
         String routeKey = path + '#' + httpMethod.toUpperCase();
         Route  route    = staticRoutes.get(routeKey);
@@ -205,16 +205,12 @@ public class RouteMatcher {
 
     public boolean hasBeforeHook() {
         return hooks.values().stream()
-                .flatMap(Collection::stream)
-                .filter(route -> route.getHttpMethod().equals(HttpMethod.BEFORE))
-                .count() > 0;
+                .flatMap(Collection::stream).anyMatch(route -> route.getHttpMethod().equals(HttpMethod.BEFORE));
     }
 
     public boolean hasAfterHook() {
         return hooks.values().stream()
-                .flatMap(Collection::stream)
-                .filter(route -> route.getHttpMethod().equals(HttpMethod.AFTER))
-                .count() > 0;
+                .flatMap(Collection::stream).anyMatch(route -> route.getHttpMethod().equals(HttpMethod.AFTER));
     }
 
     /**

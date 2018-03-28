@@ -16,6 +16,7 @@
 package com.blade.mvc;
 
 import com.blade.kit.BladeKit;
+import com.blade.kit.ColorKit;
 
 import java.io.File;
 import java.util.ArrayList;
