@@ -73,7 +73,7 @@ public class StaticFileHandler implements RequestHandler<Boolean> {
         Instant start = Instant.now();
 
         String uri    = URLDecoder.decode(request.uri(), "UTF-8");
-        String method = StringKit.alignLeft(request.method(), 6, ' ');
+        String method = StringKit.padLeft(request.method(), 6);
 
         if (uri.startsWith(Const.WEB_JARS)) {
             InputStream input = StaticFileHandler.class.getResourceAsStream("/META-INF/resources" + uri);

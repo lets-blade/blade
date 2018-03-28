@@ -262,6 +262,7 @@ public class NettyServer implements Server {
 
     @Override
     public void stop() {
+        System.out.println();
         log.info("{}Blade shutdown ...", getStartedSymbol());
         try {
             if (this.bossGroup != null) {

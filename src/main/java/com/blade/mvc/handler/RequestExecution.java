@@ -77,7 +77,7 @@ public class RequestExecution implements Runnable {
             // request uri
             String uri = request.uri();
 
-            String method = StringKit.alignLeft(request.method(), 6, ' ');
+            String method = StringKit.padLeft(request.method(), 6);
 
             // write session
             WebContext.set(new WebContext(request, response));
