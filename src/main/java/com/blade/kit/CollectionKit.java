@@ -112,7 +112,11 @@ public final class CollectionKit {
      * @param <T>    list type
      * @return return array list
      */
+    @SafeVarargs
     public static <T> List<T> newLists(T... values) {
+        if(null == values || values.length == 0){
+            Assert.notNull(values, "values not is null.");
+        }
         return Arrays.asList(values);
     }
 
@@ -123,7 +127,11 @@ public final class CollectionKit {
      * @param <T>    set type
      * @return return HashSet
      */
+    @SafeVarargs
     public static <T> Set<T> newSets(T... values) {
+        if(null == values || values.length == 0){
+            Assert.notNull(values, "values not is null.");
+        }
         return new HashSet<>(Arrays.asList(values));
     }
 

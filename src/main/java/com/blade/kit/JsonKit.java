@@ -3,7 +3,6 @@ package com.blade.kit;
 import com.blade.kit.json.Ason;
 import com.blade.kit.json.DefaultJsonSupport;
 import com.blade.kit.json.JsonSupport;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * Json kit
@@ -11,7 +10,6 @@ import lombok.extern.slf4j.Slf4j;
  * @author biezhi
  * 2017/6/2
  */
-@Slf4j
 public final class JsonKit {
 
     private static final DefaultJsonSupport defaultJsonSupport = new DefaultJsonSupport();
@@ -30,7 +28,7 @@ public final class JsonKit {
         return jsonSupport.formJson(json, cls);
     }
 
-    public static Ason toAson(String value) {
+    public static Ason<?, ?> toAson(String value) {
         return defaultJsonSupport.toAson(value);
     }
 

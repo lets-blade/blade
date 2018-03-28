@@ -10,9 +10,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
 /**
- * @author <a href="mailto:chenchen_839@126.com" target="_blank">ccqy66</a>
- * @Date: 2018/1/8
- *
+ * I18n
+ * 
  * file name format：i18n_{language}_{country}.properties
  * for example:i18n_zh_CN.properties
  * <p>How to use</p>
@@ -27,10 +26,12 @@ import java.util.regex.Pattern;
  * public String getConfig(String key) {
  *     return I18nUtils.getInstance(new Locale("zh","CN")).get(key);
  * }
- *
+ * @author <a href="mailto:chenchen_839@126.com" target="_blank">ccqy66</a>
+ * @Date: 2018/1/8
  */
 @NoArgsConstructor
 public class I18nUtils {
+
     private static Map<String,ResourceHolder> CACHE = new ConcurrentHashMap<>();
     private static Pattern pattern = Pattern.compile("_");
 

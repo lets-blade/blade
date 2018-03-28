@@ -125,10 +125,6 @@ public final class StringKit {
         return true;
     }
 
-    private static boolean notIsDigit(int c) {
-        return !Character.isDigit(c);
-    }
-
     /**
      * Fill a certain number of special characters on the left side of the string
      *
