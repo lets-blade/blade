@@ -58,7 +58,7 @@ public class ColorKit {
         return "\033[41;37m " + str + " \033[0m";
     }
 
-    public static String yelloAndWhite(String str) {
+    public static String yellowAndWhite(String str) {
         return "\033[43;37m " + str + " \033[0m";
     }
 
@@ -66,4 +66,19 @@ public class ColorKit {
         return "\033[42;37m " + str + " \033[0m";
     }
 
+    public static String purpleAndWhite(String str) {
+        return "\033[45;39m " + str + " \033[0m";
+    }
+
+    public static String blueAndWhite(String str) {
+        return "\033[44;39m " + str + " \033[0m";
+    }
+
+    public static String cyanAndWhite(String str) {
+        return "\033[46;39m " + str + " \033[0m";
+    }
+
+    public static String yellowAndWhiteDeep(String str) {
+        return "\033[103;39m " + str + " \033[0m";
+    }
 }

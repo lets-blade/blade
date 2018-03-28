@@ -192,6 +192,14 @@ public final class StringKit {
         return MimeType.get(ext);
     }
 
+    public static String padRight(String s, int n) {
+        return String.format("%1$-" + n + "s", s);
+    }
+
+    public static String padLeft(String s, int n) {
+        return String.format("%1$" + n + "s", s);
+    }
+
     public static boolean equals(String str1, String str2) {
         if (null == str1) {
             return false;

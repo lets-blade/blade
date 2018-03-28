@@ -20,6 +20,8 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static com.blade.kit.BladeKit.logAddRoute;
+
 /**
  * Default Route Matcher
  *
@@ -302,8 +304,8 @@ public class RouteMatcher {
      * register route to container
      */
     public void register() {
-        routes.values().forEach(route -> log.info("⬢ Add route => {}", route));
-        hooks.values().forEach(route -> log.info("Add hook  => {}", route));
+        routes.values().forEach(route -> logAddRoute(log, route));
+        hooks.values().stream().flatMap(Collection::stream).forEach(route -> logAddRoute(log, route));
 
         Stream.of(routes.values(), hooks.values().stream().findAny().orElse(new ArrayList<>()))
                 .flatMap(Collection::stream).forEach(this::registerRoute);

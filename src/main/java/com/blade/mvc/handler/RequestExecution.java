@@ -36,6 +36,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import static com.blade.kit.BladeKit.log200;
+import static com.blade.kit.BladeKit.log404;
+
 /**
  * Http Request Execution Handler
  *
@@ -89,7 +92,7 @@ public class RequestExecution implements Runnable {
 
             Route route = ROUTE_MATCHER.lookupRoute(request.method(), uri);
             if (null == route) {
-                log.info("{} | {}ms | {} | {}", ColorKit.yelloAndWhite("404"), Duration.between(start, Instant.now()).toMillis(), method, uri);
+                log404(log, start, method, uri);
                 throw new NotFoundException(uri);
             }
 
@@ -119,7 +122,7 @@ public class RequestExecution implements Runnable {
                 this.invokeHook(ROUTE_MATCHER.getAfter(uri), signature);
             }
 
-            log.info("{} | {}ms | {} | {}", ColorKit.greenAndWhite("200"), Duration.between(start, Instant.now()).toMillis(), method, uri);
+            log200(log, start, method, uri);
         } catch (Exception e) {
             if (null != exceptionHandler) {
                 exceptionHandler.handle(e);

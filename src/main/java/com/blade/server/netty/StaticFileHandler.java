@@ -3,7 +3,10 @@ package com.blade.server.netty;
 import com.blade.Blade;
 import com.blade.exception.ForbiddenException;
 import com.blade.exception.NotFoundException;
-import com.blade.kit.*;
+import com.blade.kit.BladeKit;
+import com.blade.kit.DateKit;
+import com.blade.kit.IOKit;
+import com.blade.kit.StringKit;
 import com.blade.mvc.Const;
 import com.blade.mvc.http.Request;
 import com.blade.mvc.http.Response;
@@ -22,7 +25,6 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.*;
 import java.net.URLConnection;
 import java.net.URLDecoder;
-import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -32,6 +34,7 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
+import static com.blade.kit.BladeKit.*;
 import static io.netty.handler.codec.http.HttpResponseStatus.*;
 import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
@@ -55,9 +58,9 @@ public class StaticFileHandler implements RequestHandler<Boolean> {
     /**
      * print static file to client
      *
-     * @param ctx
-     * @param request
-     * @param response
+     * @param ctx      ChannelHandlerContext
+     * @param request  Request
+     * @param response Response
      * @throws Exception
      */
     @Override
@@ -74,18 +77,30 @@ public class StaticFileHandler implements RequestHandler<Boolean> {
 
         if (uri.startsWith(Const.WEB_JARS)) {
             InputStream input = StaticFileHandler.class.getResourceAsStream("/META-INF/resources" + uri);
-            if (jarResource(ctx, request, uri, input)) return false;
+            if (null == input) {
+                log404(log, start, method, uri);
+                throw new NotFoundException(uri);
+            }
+            if (jarResource(ctx, request, uri, input)) {
+                return false;
+            }
             return false;
         }
         if (BladeKit.isInJar()) {
             InputStream input = StaticFileHandler.class.getResourceAsStream(uri);
-            if (jarResource(ctx, request, uri, input)) return false;
+            if (null == input) {
+                log404(log, start, method, uri);
+                throw new NotFoundException(uri);
+            }
+            if (jarResource(ctx, request, uri, input)) {
+                return false;
+            }
             return false;
         }
 
         final String path = sanitizeUri(uri);
         if (path == null) {
-            log.info("{} | {}ms | {} | {}", ColorKit.yelloAndWhite("403"), Duration.between(start, Instant.now()).toMillis(), method, uri);
+            log403(log, start, method, uri);
             throw new ForbiddenException();
         }
 
@@ -96,11 +111,11 @@ public class StaticFileHandler implements RequestHandler<Boolean> {
             if (resourcesDirectory.isDirectory()) {
                 file = new File(resourcesDirectory.getPath() + "/resources/" + uri.substring(1));
                 if (file.isHidden() || !file.exists()) {
-                    log.info("{} | {}ms | {} | {}", ColorKit.yelloAndWhite("404"), Duration.between(start, Instant.now()).toMillis(), method, uri);
+                    log404(log, start, method, uri);
                     throw new NotFoundException(uri);
                 }
             } else {
-                log.info("{} | {}ms | {} | {}", ColorKit.yelloAndWhite("404"), Duration.between(start, Instant.now()).toMillis(), method, uri);
+                log404(log, start, method, uri);
                 throw new NotFoundException(uri);
             }
         }
@@ -168,32 +183,27 @@ public class StaticFileHandler implements RequestHandler<Boolean> {
             lastContentFuture.addListener(ChannelFutureListener.CLOSE);
         }
 
-        log.info("{} | {}ms | {} | {}", ColorKit.greenAndWhite("200"), Duration.between(start, Instant.now()).toMillis(), method, uri);
+        log200(log, start, method, uri);
         return false;
     }
 
     private boolean jarResource(ChannelHandlerContext ctx, Request request, String uri, InputStream input) throws IOException {
-        if (null == input) {
-            log.warn("{} {}\t{}", ColorKit.yelloAndWhite("404"), request.method(), uri);
-            throw new NotFoundException(uri);
-        } else {
-            if (http304(ctx, request, -1)) {
-                return true;
-            }
-            String           content      = IOKit.readToString(input);
-            FullHttpResponse httpResponse = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, OK, Unpooled.copiedBuffer(content, CharsetUtil.UTF_8));
-            setDateAndCacheHeaders(httpResponse, null);
-            String contentType = StringKit.mimeType(uri);
-            if (null != contentType) {
-                httpResponse.headers().set(HttpConst.CONTENT_TYPE, contentType);
-            }
-            httpResponse.headers().set(HttpConst.CONTENT_LENGTH, content.length());
-            if (request.keepAlive()) {
-                httpResponse.headers().set(HttpConst.CONNECTION, HttpConst.KEEP_ALIVE);
-            }
-            // Write the initial line and the header.
-            ctx.writeAndFlush(httpResponse);
+        if (http304(ctx, request, -1)) {
+            return true;
         }
+        String           content      = IOKit.readToString(input);
+        FullHttpResponse httpResponse = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, OK, Unpooled.copiedBuffer(content, CharsetUtil.UTF_8));
+        setDateAndCacheHeaders(httpResponse, null);
+        String contentType = StringKit.mimeType(uri);
+        if (null != contentType) {
+            httpResponse.headers().set(HttpConst.CONTENT_TYPE, contentType);
+        }
+        httpResponse.headers().set(HttpConst.CONTENT_LENGTH, content.length());
+        if (request.keepAlive()) {
+            httpResponse.headers().set(HttpConst.CONNECTION, HttpConst.KEEP_ALIVE);
+        }
+        // Write the initial line and the header.
+        ctx.writeAndFlush(httpResponse);
         return false;
     }
 

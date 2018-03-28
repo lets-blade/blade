@@ -67,12 +67,12 @@ public class NettyServer implements Server {
         this.processors = blade.processors();
 
         long initStart = System.currentTimeMillis();
-        log.info("environment.jdk.version    => {}", System.getProperty("java.version"));
-        log.info("environment.user.dir       => {}", System.getProperty("user.dir"));
-        log.info("environment.java.io.tmpdir => {}", System.getProperty("java.io.tmpdir"));
-        log.info("environment.user.timezone  => {}", System.getProperty("user.timezone"));
-        log.info("environment.file.encoding  => {}", System.getProperty("file.encoding"));
-        log.info("environment.classpath      => {}", CLASSPATH);
+        log.info("{} => {}", StringKit.padRight("environment.jdk.version", 26), System.getProperty("java.version"));
+        log.info("{} => {}", StringKit.padRight("environment.user.dir", 26), System.getProperty("user.dir"));
+        log.info("{} => {}", StringKit.padRight("environment.java.io.tmpdir", 26), System.getProperty("java.io.tmpdir"));
+        log.info("{} => {}", StringKit.padRight("environment.user.timezone", 26), System.getProperty("user.timezone"));
+        log.info("{} => {}", StringKit.padRight("environment.file.encoding", 26), System.getProperty("file.encoding"));
+        log.info("{} => {}", StringKit.padRight("environment.classpath", 26), CLASSPATH);
 
         this.initConfig();
 
@@ -113,7 +113,7 @@ public class NettyServer implements Server {
         if (BladeKit.isNotEmpty(beanDefines)) {
             beanDefines.forEach(b -> {
                 BladeKit.injection(ioc, b);
-                BladeKit.injectionValue(environment,b);
+                BladeKit.injectionValue(environment, b);
             });
         }
 
@@ -176,7 +176,7 @@ public class NettyServer implements Server {
 
         log.info("⬢ {} initialize successfully, Time elapsed: {} ms", appName, (System.currentTimeMillis() - startTime));
         log.info("⬢ Blade start with {}", ColorKit.redAndWhite(address + ":" + port));
-        log.info("⬢ Open your web browser and navigate to {}://{}:{} ⚡\r\n", "http", address.replace(DEFAULT_SERVER_ADDRESS, LOCAL_IP_ADDRESS), port);
+        log.info("⬢ Open web browser and navigate to {}://{}:{} ⚡\r\n", "http", address.replace(DEFAULT_SERVER_ADDRESS, LOCAL_IP_ADDRESS), port);
 
         blade.eventManager().fireEvent(EventType.SERVER_STARTED, blade);
     }

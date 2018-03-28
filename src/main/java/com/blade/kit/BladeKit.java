@@ -11,11 +11,15 @@ import com.blade.ioc.bean.FieldInjector;
 import com.blade.ioc.bean.ValueInjector;
 import com.blade.mvc.Const;
 import com.blade.mvc.http.HttpMethod;
+import com.blade.mvc.route.Route;
 import lombok.NoArgsConstructor;
+import org.slf4j.Logger;
 
 import java.io.File;
 import java.lang.reflect.Field;
 import java.net.URL;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -154,11 +158,48 @@ public class BladeKit {
         return url.getPath();
     }
 
-    public static void main(String[] args) {
-        System.out.println(StringKit.alignLeft("GET", 6, ' '));
-        System.out.println(StringKit.alignLeft("POST", 6, ' '));
-        System.out.println(StringKit.alignLeft("DELETE", 6, ' '));
-        System.out.println(StringKit.alignLeft("OPTION", 6, ' '));
+    public static String getEndMs(Instant start) {
+        return StringKit.padLeft(String.valueOf(Duration.between(start, Instant.now()).toMillis()) + "ms", 6);
+    }
+
+    public static void log200(Logger log, Instant start, String method, String uri) {
+        log.info("{} | {} | {} | {}", ColorKit.greenAndWhite("200"), getEndMs(start), method, uri);
+    }
+
+    public static void log403(Logger log, Instant start, String method, String uri) {
+        log.info("{} | {} | {} | {}", ColorKit.yellowAndWhite("403"), getEndMs(start), method, uri);
+    }
+
+    public static void log404(Logger log, Instant start, String method, String uri) {
+        log.info("{} | {} | {} | {}", ColorKit.yellowAndWhite("404"), getEndMs(start), method, uri);
+    }
+
+    public static void logAddRoute(Logger log, Route route) {
+        String method = StringKit.padRight(route.getHttpMethod().name(), 6);
+        switch (route.getHttpMethod()) {
+            case GET:
+                method = ColorKit.yellowAndWhiteDeep(method);
+                break;
+            case POST:
+                method = ColorKit.blueAndWhite(method);
+                break;
+            case DELETE:
+                method = ColorKit.redAndWhite(method);
+                break;
+            case PUT:
+                method = ColorKit.purpleAndWhite(method);
+                break;
+            case OPTIONS:
+                method = ColorKit.cyanAndWhite(method);
+                break;
+            case BEFORE:
+                break;
+            case AFTER:
+                break;
+        }
+
+        String msg = (route.getHttpMethod().equals(HttpMethod.BEFORE) || route.getHttpMethod().equals(HttpMethod.AFTER)) ? "hook" : "route";
+        log.info("⬢ Add {} {} {}", msg, method, route.getPath());
     }
 
 }
