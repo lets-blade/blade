@@ -11,10 +11,7 @@ import com.blade.ioc.annotation.Value;
 import com.blade.ioc.bean.BeanDefine;
 import com.blade.ioc.bean.ClassInfo;
 import com.blade.ioc.bean.OrderComparator;
-import com.blade.kit.BladeKit;
-import com.blade.kit.NamedThreadFactory;
-import com.blade.kit.ReflectKit;
-import com.blade.kit.StringKit;
+import com.blade.kit.*;
 import com.blade.mvc.Const;
 import com.blade.mvc.WebContext;
 import com.blade.mvc.annotation.Path;
@@ -70,12 +67,12 @@ public class NettyServer implements Server {
         this.processors = blade.processors();
 
         long initStart = System.currentTimeMillis();
-        log.info("Environment: jdk.version    => {}", System.getProperty("java.version"));
-        log.info("Environment: user.dir       => {}", System.getProperty("user.dir"));
-        log.info("Environment: java.io.tmpdir => {}", System.getProperty("java.io.tmpdir"));
-        log.info("Environment: user.timezone  => {}", System.getProperty("user.timezone"));
-        log.info("Environment: file.encoding  => {}", System.getProperty("file.encoding"));
-        log.info("Environment: classpath      => {}", CLASSPATH);
+        log.info("environment.jdk.version    => {}", System.getProperty("java.version"));
+        log.info("environment.user.dir       => {}", System.getProperty("user.dir"));
+        log.info("environment.java.io.tmpdir => {}", System.getProperty("java.io.tmpdir"));
+        log.info("environment.user.timezone  => {}", System.getProperty("user.timezone"));
+        log.info("environment.file.encoding  => {}", System.getProperty("file.encoding"));
+        log.info("environment.classpath      => {}", CLASSPATH);
 
         this.initConfig();
 
@@ -163,8 +160,8 @@ public class NettyServer implements Server {
         } else {
             log.info("⬢ Use NioEventLoopGroup");
 
-            this.bossGroup = new NioEventLoopGroup(acceptThreadCount, new NamedThreadFactory("nio-boss@"));
-            this.workerGroup = new NioEventLoopGroup(ioThreadCount, new NamedThreadFactory("nio-worker@"));
+            this.bossGroup = new NioEventLoopGroup(acceptThreadCount, new NamedThreadFactory("boss@"));
+            this.workerGroup = new NioEventLoopGroup(ioThreadCount, new NamedThreadFactory("worker@"));
             b.group(bossGroup, workerGroup).channel(NioServerSocketChannel.class);
         }
 
@@ -178,8 +175,8 @@ public class NettyServer implements Server {
         String appName = environment.get(ENV_KEY_APP_NAME, "Blade");
 
         log.info("⬢ {} initialize successfully, Time elapsed: {} ms", appName, (System.currentTimeMillis() - startTime));
-        log.info("⬢ Blade start with {}:{}", address, port);
-        log.info("⬢ Open your web browser and navigate to {}://{}:{} ⚡", "http", address.replace(DEFAULT_SERVER_ADDRESS, LOCAL_IP_ADDRESS), port);
+        log.info("⬢ Blade start with {}", ColorKit.redAndWhite(address + ":" + port));
+        log.info("⬢ Open your web browser and navigate to {}://{}:{} ⚡\r\n", "http", address.replace(DEFAULT_SERVER_ADDRESS, LOCAL_IP_ADDRESS), port);
 
         blade.eventManager().fireEvent(EventType.SERVER_STARTED, blade);
     }

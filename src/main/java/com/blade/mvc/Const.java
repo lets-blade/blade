@@ -34,7 +34,7 @@ public interface Const {
     int          DEFAULT_SERVER_PORT        = 9000;
     String       DEFAULT_SERVER_ADDRESS     = "0.0.0.0";
     String       LOCAL_IP_ADDRESS           = "127.0.0.1";
-    String       VERSION                    = "2.0.7-beta2";
+    String       VERSION                    = "2.0.7-beta3";
     String       WEB_JARS                   = "/webjars/";
     String       CLASSPATH                  = BladeKit.getCurrentClassPath();//new File(Const.class.getResource("/").getPath()).getPath();
     String       CONTENT_TYPE_HTML          = "text/html; charset=UTF-8";
@@ -42,7 +42,7 @@ public interface Const {
     String       CONTENT_TYPE_TEXT          = "text/plain; charset=UTF-8";
     String       HTTP_DATE_FORMAT           = "EEE, dd MMM yyyy HH:mm:ss zzz";
     String       INTERNAL_SERVER_ERROR_HTML = "<center><h1>500 Internal Server Error</h1><hr/></center>";
-    String       DEFAULT_THREAD_NAME        = "_(:3」∠)_";
+    String       DEFAULT_THREAD_NAME        = "       _(:3」∠)_";
     List<String> PLUGIN_PACKAGE_NAME        = new ArrayList<>(Collections.singletonList("com.blade.plugin"));
     List<String> DEFAULT_STATICS            = new ArrayList<>(Arrays.asList("/favicon.ico", "/robots.txt", "/static/", "/upload/", "/webjars/"));
 

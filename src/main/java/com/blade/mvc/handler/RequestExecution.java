@@ -4,7 +4,9 @@ import com.blade.exception.BladeException;
 import com.blade.exception.InternalErrorException;
 import com.blade.exception.NotFoundException;
 import com.blade.kit.BladeKit;
+import com.blade.kit.ColorKit;
 import com.blade.kit.ReflectKit;
+import com.blade.kit.StringKit;
 import com.blade.mvc.Const;
 import com.blade.mvc.WebContext;
 import com.blade.mvc.annotation.JSON;
@@ -28,6 +30,8 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -59,6 +63,7 @@ public class RequestExecution implements Runnable {
 
     @Override
     public void run() {
+
         Request  request  = HttpRequest.build(ctx, fullHttpRequest);
         Response response = HttpResponse.build(ctx, HttpServerInitializer.date);
         boolean  isStatic = false;
@@ -69,6 +74,8 @@ public class RequestExecution implements Runnable {
             // request uri
             String uri = request.uri();
 
+            String method = StringKit.alignLeft(request.method(), 6, ' ');
+
             // write session
             WebContext.set(new WebContext(request, response));
 
@@ -78,13 +85,13 @@ public class RequestExecution implements Runnable {
                 return;
             }
 
+            Instant start = Instant.now();
+
             Route route = ROUTE_MATCHER.lookupRoute(request.method(), uri);
             if (null == route) {
-                log.warn("Not Found\t{}", uri);
+                log.info("{} | {}ms | {} | {}", ColorKit.yelloAndWhite("404"), Duration.between(start, Instant.now()).toMillis(), method, uri);
                 throw new NotFoundException(uri);
             }
-
-            log.info("{}\t{}\t{}", request.protocol(), request.method(), uri);
 
             request.initPathParams(route);
 
@@ -111,6 +118,8 @@ public class RequestExecution implements Runnable {
             if (hasAfterHook) {
                 this.invokeHook(ROUTE_MATCHER.getAfter(uri), signature);
             }
+
+            log.info("{} | {}ms | {} | {}", ColorKit.greenAndWhite("200"), Duration.between(start, Instant.now()).toMillis(), method, uri);
         } catch (Exception e) {
             if (null != exceptionHandler) {
                 exceptionHandler.handle(e);

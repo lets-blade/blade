@@ -3,10 +3,7 @@ package com.blade.server.netty;
 import com.blade.Blade;
 import com.blade.exception.ForbiddenException;
 import com.blade.exception.NotFoundException;
-import com.blade.kit.BladeKit;
-import com.blade.kit.DateKit;
-import com.blade.kit.IOKit;
-import com.blade.kit.StringKit;
+import com.blade.kit.*;
 import com.blade.mvc.Const;
 import com.blade.mvc.http.Request;
 import com.blade.mvc.http.Response;
@@ -25,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.*;
 import java.net.URLConnection;
 import java.net.URLDecoder;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -69,8 +67,10 @@ public class StaticFileHandler implements RequestHandler<Boolean> {
             return false;
         }
 
-        String uri = URLDecoder.decode(request.uri(), "UTF-8");
-        log.info("{}\t{}\t{}", request.protocol(), request.method(), uri);
+        Instant start = Instant.now();
+
+        String uri    = URLDecoder.decode(request.uri(), "UTF-8");
+        String method = StringKit.alignLeft(request.method(), 6, ' ');
 
         if (uri.startsWith(Const.WEB_JARS)) {
             InputStream input = StaticFileHandler.class.getResourceAsStream("/META-INF/resources" + uri);
@@ -85,7 +85,7 @@ public class StaticFileHandler implements RequestHandler<Boolean> {
 
         final String path = sanitizeUri(uri);
         if (path == null) {
-            log.warn("Forbidden\t{}", uri);
+            log.info("{} | {}ms | {} | {}", ColorKit.yelloAndWhite("403"), Duration.between(start, Instant.now()).toMillis(), method, uri);
             throw new ForbiddenException();
         }
 
@@ -96,11 +96,11 @@ public class StaticFileHandler implements RequestHandler<Boolean> {
             if (resourcesDirectory.isDirectory()) {
                 file = new File(resourcesDirectory.getPath() + "/resources/" + uri.substring(1));
                 if (file.isHidden() || !file.exists()) {
-                    log.warn("Not Found\t{}", uri);
+                    log.info("{} | {}ms | {} | {}", ColorKit.yelloAndWhite("404"), Duration.between(start, Instant.now()).toMillis(), method, uri);
                     throw new NotFoundException(uri);
                 }
             } else {
-                log.warn("Not Found\t{}", uri);
+                log.info("{} | {}ms | {} | {}", ColorKit.yelloAndWhite("404"), Duration.between(start, Instant.now()).toMillis(), method, uri);
                 throw new NotFoundException(uri);
             }
         }
@@ -154,8 +154,9 @@ public class StaticFileHandler implements RequestHandler<Boolean> {
             lastContentFuture = ctx.writeAndFlush(LastHttpContent.EMPTY_LAST_CONTENT);
 
         } else {
-            sendFileFuture =
-                    ctx.writeAndFlush(new HttpChunkedInput(new ChunkedFile(raf, 0, fileLength, 8192)), ctx.newProgressivePromise());
+            sendFileFuture = ctx.writeAndFlush(
+                    new HttpChunkedInput(new ChunkedFile(raf, 0, fileLength, 8192)),
+                    ctx.newProgressivePromise());
             // HttpChunkedInput will write the end marker (LastHttpContent) for us.
             lastContentFuture = sendFileFuture;
         }
@@ -166,12 +167,14 @@ public class StaticFileHandler implements RequestHandler<Boolean> {
         if (!request.keepAlive()) {
             lastContentFuture.addListener(ChannelFutureListener.CLOSE);
         }
+
+        log.info("{} | {}ms | {} | {}", ColorKit.greenAndWhite("200"), Duration.between(start, Instant.now()).toMillis(), method, uri);
         return false;
     }
 
     private boolean jarResource(ChannelHandlerContext ctx, Request request, String uri, InputStream input) throws IOException {
         if (null == input) {
-            log.warn("Not Found\t{}", uri);
+            log.warn("{} {}\t{}", ColorKit.yelloAndWhite("404"), request.method(), uri);
             throw new NotFoundException(uri);
         } else {
             if (http304(ctx, request, -1)) {

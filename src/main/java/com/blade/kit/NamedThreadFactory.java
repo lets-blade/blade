@@ -15,6 +15,9 @@ public class NamedThreadFactory implements ThreadFactory {
     @Override
     public Thread newThread(Runnable runnable) {
         threadNumber.add(1);
-        return new Thread(runnable, prefix + " thread-" + threadNumber.intValue());
+        if (threadNumber.intValue() < 10) {
+            return new Thread(runnable, prefix + "thread-0" + threadNumber.intValue());
+        }
+        return new Thread(runnable, prefix + "thread-" + threadNumber.intValue());
     }
 }

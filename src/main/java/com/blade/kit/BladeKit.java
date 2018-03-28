@@ -154,4 +154,11 @@ public class BladeKit {
         return url.getPath();
     }
 
+    public static void main(String[] args) {
+        System.out.println(StringKit.alignLeft("GET", 6, ' '));
+        System.out.println(StringKit.alignLeft("POST", 6, ' '));
+        System.out.println(StringKit.alignLeft("DELETE", 6, ' '));
+        System.out.println(StringKit.alignLeft("OPTION", 6, ' '));
+    }
+
 }

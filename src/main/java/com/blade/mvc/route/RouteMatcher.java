@@ -302,7 +302,7 @@ public class RouteMatcher {
      * register route to container
      */
     public void register() {
-        routes.values().forEach(route -> log.info("Add route => {}", route));
+        routes.values().forEach(route -> log.info("⬢ Add route => {}", route));
         hooks.values().forEach(route -> log.info("Add hook  => {}", route));
 
         Stream.of(routes.values(), hooks.values().stream().findAny().orElse(new ArrayList<>()))

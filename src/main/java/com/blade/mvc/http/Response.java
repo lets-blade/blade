@@ -163,6 +163,13 @@ public interface Response {
      */
     Response removeCookie(String name);
 
+    default void success(){
+        FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(statusCode()), Unpooled.wrappedBuffer("".getBytes(CharsetUtil.UTF_8)), false);
+        if (null == this.contentType())
+            this.contentType(Const.CONTENT_TYPE_TEXT);
+        this.send(response);
+    }
+
     /**
      * Render by text
      *
