@@ -5,8 +5,10 @@ import com.blade.mvc.http.Response;
 import io.netty.channel.ChannelHandlerContext;
 
 /**
+ * Request Handler Interface
+ *
  * @author biezhi
- *         2017/6/3
+ * 2017/6/3
  */
 @FunctionalInterface
 public interface RequestHandler<R> {

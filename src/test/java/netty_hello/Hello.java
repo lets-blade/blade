@@ -14,11 +14,14 @@ import java.util.concurrent.TimeUnit;
 public class Hello {
 
     public static void main(String[] args) {
-        System.out.println("environment.java.io.tmpdir".length());
         Blade.me()
 //                .devMode(false)
 //                .environment(Const.ENV_KEY_NETTY_WORKERS, Runtime.getRuntime().availableProcessors())
                 .get("/hello", ((request, response) -> response.text("Hello World.")))
+                .get("/error", ((request, response) -> {
+                    int a = 1/0;
+                    response.text("Hello World.");
+                }))
                 .post("/hello", ((request, response) -> response.text("Hello World.")))
                 .put("/hello", ((request, response) -> response.text("Hello World.")))
                 .delete("/hello", ((request, response) -> response.text("Hello World.")))

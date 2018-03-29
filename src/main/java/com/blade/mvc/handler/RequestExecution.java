@@ -34,9 +34,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import static com.blade.kit.BladeKit.log200;
-import static com.blade.kit.BladeKit.log404;
-import static com.blade.kit.BladeKit.logCost;
+import static com.blade.kit.BladeKit.*;
 import static com.blade.mvc.Const.REQUEST_COST_TIME;
 
 /**
@@ -72,14 +70,12 @@ public class RequestExecution implements Runnable {
         boolean  isStatic = false;
         // route signature
         Signature signature = Signature.builder().request(request).response(response).build();
+        // request uri
+        String uri    = request.uri();
+        String method = StringKit.padRight(request.method(), 6);
+
         try {
-
             Instant start = Instant.now();
-
-            // request uri
-            String uri    = request.uri();
-            String method = StringKit.padRight(request.method(), 6);
-
             // write session
             WebContext.set(new WebContext(request, response));
 
@@ -94,8 +90,6 @@ public class RequestExecution implements Runnable {
                 log404(log, method, uri);
                 throw new NotFoundException(uri);
             }
-
-            log200(log, method, uri);
 
             request.initPathParams(route);
 
@@ -122,9 +116,14 @@ public class RequestExecution implements Runnable {
             if (hasAfterHook) {
                 this.invokeHook(ROUTE_MATCHER.getAfter(uri), signature);
             }
-            long cost = logCost(log, start);
+            long cost = log200(log, start, method, uri);
             request.attribute(REQUEST_COST_TIME, cost);
         } catch (Exception e) {
+            if(e instanceof BladeException){
+
+            } else {
+                log500(log, method, uri);
+            }
             if (null != exceptionHandler) {
                 exceptionHandler.handle(e);
             } else {

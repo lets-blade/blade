@@ -140,8 +140,6 @@ public class StaticFileHandler implements RequestHandler<Boolean> {
             return false;
         }
 
-        log200(log, method, uri);
-
         RandomAccessFile raf;
         try {
             raf = new RandomAccessFile(file, "r");
@@ -185,7 +183,7 @@ public class StaticFileHandler implements RequestHandler<Boolean> {
         if (!request.keepAlive()) {
             lastContentFuture.addListener(ChannelFutureListener.CLOSE);
         }
-        logCost(log, start);
+        log200(log, start, method, uri);
         return false;
     }
 

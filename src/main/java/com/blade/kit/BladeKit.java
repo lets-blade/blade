@@ -162,26 +162,31 @@ public class BladeKit {
         return Duration.between(start, Instant.now()).toMillis();
     }
 
+    public static void log500(Logger log, String method, String uri) {
+        String pad = StringKit.padLeft("", 6);
+        log.error("{} {}  {} {}", ColorKit.redAndWhite("500"), pad, method, uri);
+    }
+
     public static void log304(Logger log, String method, String uri) {
-        log.info("{} {} {}", ColorKit.greenAndWhite(" 304"), method, uri);
+        String pad = StringKit.padLeft("", 6);
+        log.warn("{} {}  {} {}", ColorKit.greenAndWhite("304"), pad, method, uri);
     }
 
-    public static void log200(Logger log, String method, String uri) {
-        log.info("{} {} {}", ColorKit.greenAndWhite(" 200"), method, uri);
-    }
-
-    public static long logCost(Logger log, Instant start) {
-        long cost = getCostMS(start);
-        log.info("{} {}ms", ColorKit.greenAndWhite("COST"), cost);
+    public static long log200(Logger log, Instant start, String method, String uri) {
+        long   cost = getCostMS(start);
+        String pad    = StringKit.padLeft(String.valueOf(cost) + "ms", 6);
+        log.info("{} {}  {} {}", ColorKit.greenAndWhite("200"), pad, method, uri);
         return cost;
     }
 
     public static void log403(Logger log, String method, String uri) {
-        log.info("{} {} {}", ColorKit.yellowAndWhite(" 403"), method, uri);
+        String pad = StringKit.padLeft("", 6);
+        log.warn("{} {}  {} {}", ColorKit.yellowAndWhite("403"), pad, method, uri);
     }
 
     public static void log404(Logger log, String method, String uri) {
-        log.info("{} {} {}", ColorKit.yellowAndWhite(" 404"), method, uri);
+        String pad = StringKit.padLeft("", 6);
+        log.warn("{} {}  {} {}", ColorKit.yellowAndWhite("404"), pad, method, uri);
     }
 
     public static boolean isWindows() {

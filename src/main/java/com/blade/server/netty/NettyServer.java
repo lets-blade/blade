@@ -304,11 +304,8 @@ public class NettyServer implements Server {
         if (null != blade.bannerText()) {
             System.out.println(blade.bannerText());
         } else {
-            String text = Const.BANNER_TEXT +
-                    "\r\n" +
-                    StringKit.padLeft(" :: Blade :: (v", Const.BANNER_PADDING - 9) +
-                    Const.VERSION + ") \r\n";
-
+            String text = Const.BANNER_TEXT + NEW_LINE +
+                    StringKit.padLeft(" :: Blade :: (v", Const.BANNER_PADDING - 9) + Const.VERSION + ") " + NEW_LINE;
             System.out.println(ColorKit.magenta(text));
         }
     }
