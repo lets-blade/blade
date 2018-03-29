@@ -40,7 +40,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Stream;
 
 import static com.blade.kit.BladeKit.getPrefixSymbol;
@@ -307,7 +306,7 @@ public class NettyServer implements Server {
         } else {
             String text = Const.BANNER_TEXT +
                     "\r\n" +
-                    StringKit.padLeft(" :: Blade :: (v", Const.base - 9) +
+                    StringKit.padLeft(" :: Blade :: (v", Const.BANNER_PADDING - 9) +
                     Const.VERSION + ") \r\n";
 
             System.out.println(ColorKit.magenta(text));

@@ -37,6 +37,7 @@ import java.util.Set;
 import static com.blade.kit.BladeKit.log200;
 import static com.blade.kit.BladeKit.log404;
 import static com.blade.kit.BladeKit.logCost;
+import static com.blade.mvc.Const.REQUEST_COST_TIME;
 
 /**
  * Http Request Execution Handler
@@ -121,7 +122,8 @@ public class RequestExecution implements Runnable {
             if (hasAfterHook) {
                 this.invokeHook(ROUTE_MATCHER.getAfter(uri), signature);
             }
-            logCost(log, start);
+            long cost = logCost(log, start);
+            request.attribute(REQUEST_COST_TIME, cost);
         } catch (Exception e) {
             if (null != exceptionHandler) {
                 exceptionHandler.handle(e);

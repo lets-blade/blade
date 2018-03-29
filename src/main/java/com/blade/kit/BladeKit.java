@@ -158,9 +158,8 @@ public class BladeKit {
         return url.getPath();
     }
 
-    public static String getEndMs(Instant start) {
-        //return StringKit.padRight(String.valueOf(Duration.between(start, Instant.now()).toMillis()) + "ms", 6);
-        return String.valueOf(Duration.between(start, Instant.now()).toMillis()) + "ms";
+    public static long getCostMS(Instant start) {
+        return Duration.between(start, Instant.now()).toMillis();
     }
 
     public static void log304(Logger log, String method, String uri) {
@@ -171,8 +170,10 @@ public class BladeKit {
         log.info("{} {} {}", ColorKit.greenAndWhite(" 200"), method, uri);
     }
 
-    public static void logCost(Logger log, Instant start) {
-        log.info("{} {}", ColorKit.greenAndWhite("COST"), getEndMs(start));
+    public static long logCost(Logger log, Instant start) {
+        long cost = getCostMS(start);
+        log.info("{} {}ms", ColorKit.greenAndWhite("COST"), cost);
+        return cost;
     }
 
     public static void log403(Logger log, String method, String uri) {

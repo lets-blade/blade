@@ -80,10 +80,15 @@ public interface Const {
     String TERMINAL_SERVER_PORT     = "--server.port=";
     String TERMINAL_BLADE_ENV       = "--blade.env=";
 
-    int    base        = 60;
-    String BANNER_TEXT =
-            "\r\n" + StringKit.padLeft("__, _,   _, __, __,", base) +
-                    "\r\n" + StringKit.padLeft("|_) |   /_\\ | \\ |_", base - 1) +
-                    "\r\n" + StringKit.padLeft("|_) | , | | |_/ |", base - 2) +
-                    "\r\n" + StringKit.padLeft("~   ~~~ ~ ~ ~   ~~~", base);
+    /**
+     * A request processing ends the elapsed time, in milliseconds.
+     */
+    String REQUEST_COST_TIME = "costTime";
+
+    int    BANNER_PADDING = 60;
+    String BANNER_TEXT    =
+            "\r\n" + StringKit.padLeft("__, _,   _, __, __,", BANNER_PADDING) +
+                    "\r\n" + StringKit.padLeft("|_) |   /_\\ | \\ |_", BANNER_PADDING - 1) +
+                    "\r\n" + StringKit.padLeft("|_) | , | | |_/ |", BANNER_PADDING - 2) +
+                    "\r\n" + StringKit.padLeft("~   ~~~ ~ ~ ~   ~~~", BANNER_PADDING);
 }
