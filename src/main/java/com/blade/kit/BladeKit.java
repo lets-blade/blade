@@ -220,8 +220,7 @@ public class BladeKit {
                 method = ColorKit.whiteAndBlank(method);
                 break;
         }
-
-        String msg = (route.getHttpMethod().equals(HttpMethod.BEFORE) || route.getHttpMethod().equals(HttpMethod.AFTER)) ? "hook" : "route";
+        String msg = (route.getHttpMethod().equals(HttpMethod.BEFORE) || route.getHttpMethod().equals(HttpMethod.AFTER)) ? " hook" : "route";
         log.info("{}Add {} {} {}", getStartedSymbol(), msg, method, route.getPath());
     }
 
