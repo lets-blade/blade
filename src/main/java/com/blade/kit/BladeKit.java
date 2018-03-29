@@ -159,19 +159,28 @@ public class BladeKit {
     }
 
     public static String getEndMs(Instant start) {
-        return StringKit.padLeft(String.valueOf(Duration.between(start, Instant.now()).toMillis()) + "ms", 6);
+        //return StringKit.padRight(String.valueOf(Duration.between(start, Instant.now()).toMillis()) + "ms", 6);
+        return String.valueOf(Duration.between(start, Instant.now()).toMillis()) + "ms";
     }
 
-    public static void log200(Logger log, Instant start, String method, String uri) {
-        log.info("{} | {} | {} | {}", ColorKit.greenAndWhite("200"), getEndMs(start), method, uri);
+    public static void log304(Logger log, String method, String uri) {
+        log.info("{} {} {}", ColorKit.greenAndWhite(" 304"), method, uri);
     }
 
-    public static void log403(Logger log, Instant start, String method, String uri) {
-        log.info("{} | {} | {} | {}", ColorKit.yellowAndWhite("403"), getEndMs(start), method, uri);
+    public static void log200(Logger log, String method, String uri) {
+        log.info("{} {} {}", ColorKit.greenAndWhite(" 200"), method, uri);
     }
 
-    public static void log404(Logger log, Instant start, String method, String uri) {
-        log.info("{} | {} | {} | {}", ColorKit.yellowAndWhite("404"), getEndMs(start), method, uri);
+    public static void logCost(Logger log, Instant start) {
+        log.info("{} {}", ColorKit.greenAndWhite("COST"), getEndMs(start));
+    }
+
+    public static void log403(Logger log, String method, String uri) {
+        log.info("{} {} {}", ColorKit.yellowAndWhite(" 403"), method, uri);
+    }
+
+    public static void log404(Logger log, String method, String uri) {
+        log.info("{} {} {}", ColorKit.yellowAndWhite(" 404"), method, uri);
     }
 
     public static boolean isWindows() {
@@ -205,8 +214,10 @@ public class BladeKit {
                 method = ColorKit.cyanAndWhite(method);
                 break;
             case BEFORE:
+                method = ColorKit.purpleAndWhite(method);
                 break;
             case AFTER:
+                method = ColorKit.whiteAndBlank(method);
                 break;
         }
 

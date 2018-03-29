@@ -221,7 +221,7 @@ public class NettyServer implements Server {
 
     private void watchEnv() {
         boolean watchEnv = environment.getBoolean(ENV_KEY_APP_WATCH_ENV, true);
-        log.info("{}Watched environment: {}", watchEnv, getStartedSymbol());
+        log.info("{}Watched environment: {}", getStartedSymbol(), watchEnv, getStartedSymbol());
 
         if (watchEnv) {
             Thread t = new Thread(new EnvironmentWatcher());

@@ -73,12 +73,12 @@ public class StaticFileHandler implements RequestHandler<Boolean> {
         Instant start = Instant.now();
 
         String uri    = URLDecoder.decode(request.uri(), "UTF-8");
-        String method = StringKit.padLeft(request.method(), 6);
+        String method = StringKit.padRight(request.method(), 6);
 
         if (uri.startsWith(Const.WEB_JARS)) {
             InputStream input = StaticFileHandler.class.getResourceAsStream("/META-INF/resources" + uri);
             if (null == input) {
-                log404(log, start, method, uri);
+                log404(log, method, uri);
                 throw new NotFoundException(uri);
             }
             if (jarResource(ctx, request, uri, input)) {
@@ -89,7 +89,7 @@ public class StaticFileHandler implements RequestHandler<Boolean> {
         if (BladeKit.isInJar()) {
             InputStream input = StaticFileHandler.class.getResourceAsStream(uri);
             if (null == input) {
-                log404(log, start, method, uri);
+                log404(log, method, uri);
                 throw new NotFoundException(uri);
             }
             if (jarResource(ctx, request, uri, input)) {
@@ -100,7 +100,7 @@ public class StaticFileHandler implements RequestHandler<Boolean> {
 
         final String path = sanitizeUri(uri);
         if (path == null) {
-            log403(log, start, method, uri);
+            log403(log, method, uri);
             throw new ForbiddenException();
         }
 
@@ -111,11 +111,11 @@ public class StaticFileHandler implements RequestHandler<Boolean> {
             if (resourcesDirectory.isDirectory()) {
                 file = new File(resourcesDirectory.getPath() + "/resources/" + uri.substring(1));
                 if (file.isHidden() || !file.exists()) {
-                    log404(log, start, method, uri);
+                    log404(log, method, uri);
                     throw new NotFoundException(uri);
                 }
             } else {
-                log404(log, start, method, uri);
+                log404(log, method, uri);
                 throw new NotFoundException(uri);
             }
         }
@@ -136,8 +136,11 @@ public class StaticFileHandler implements RequestHandler<Boolean> {
 
         // Cache Validation
         if (http304(ctx, request, file.lastModified())) {
+            log304(log, method, uri);
             return false;
         }
+
+        log200(log, method, uri);
 
         RandomAccessFile raf;
         try {
@@ -182,8 +185,7 @@ public class StaticFileHandler implements RequestHandler<Boolean> {
         if (!request.keepAlive()) {
             lastContentFuture.addListener(ChannelFutureListener.CLOSE);
         }
-
-        log200(log, start, method, uri);
+        logCost(log, start);
         return false;
     }
 

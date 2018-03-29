@@ -4,7 +4,6 @@ import com.blade.exception.BladeException;
 import com.blade.exception.InternalErrorException;
 import com.blade.exception.NotFoundException;
 import com.blade.kit.BladeKit;
-import com.blade.kit.ColorKit;
 import com.blade.kit.ReflectKit;
 import com.blade.kit.StringKit;
 import com.blade.mvc.Const;
@@ -30,7 +29,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
@@ -38,6 +36,7 @@ import java.util.Set;
 
 import static com.blade.kit.BladeKit.log200;
 import static com.blade.kit.BladeKit.log404;
+import static com.blade.kit.BladeKit.logCost;
 
 /**
  * Http Request Execution Handler
@@ -50,7 +49,7 @@ public class RequestExecution implements Runnable {
 
     private final ChannelHandlerContext ctx;
     private final FullHttpRequest       fullHttpRequest;
-    private final ExceptionHandler exceptionHandler = WebContext.blade().exceptionHandler();
+    private final ExceptionHandler      exceptionHandler = WebContext.blade().exceptionHandler();
 
     private final static Set<String>       STATICS             = WebContext.blade().getStatics();
     private final static RouteMatcher      ROUTE_MATCHER       = WebContext.blade().routeMatcher();
@@ -74,10 +73,11 @@ public class RequestExecution implements Runnable {
         Signature signature = Signature.builder().request(request).response(response).build();
         try {
 
-            // request uri
-            String uri = request.uri();
+            Instant start = Instant.now();
 
-            String method = StringKit.padLeft(request.method(), 6);
+            // request uri
+            String uri    = request.uri();
+            String method = StringKit.padRight(request.method(), 6);
 
             // write session
             WebContext.set(new WebContext(request, response));
@@ -88,13 +88,13 @@ public class RequestExecution implements Runnable {
                 return;
             }
 
-            Instant start = Instant.now();
-
             Route route = ROUTE_MATCHER.lookupRoute(request.method(), uri);
             if (null == route) {
-                log404(log, start, method, uri);
+                log404(log, method, uri);
                 throw new NotFoundException(uri);
             }
+
+            log200(log, method, uri);
 
             request.initPathParams(route);
 
@@ -121,8 +121,7 @@ public class RequestExecution implements Runnable {
             if (hasAfterHook) {
                 this.invokeHook(ROUTE_MATCHER.getAfter(uri), signature);
             }
-
-            log200(log, start, method, uri);
+            logCost(log, start);
         } catch (Exception e) {
             if (null != exceptionHandler) {
                 exceptionHandler.handle(e);
