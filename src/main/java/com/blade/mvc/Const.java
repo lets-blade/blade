@@ -16,9 +16,8 @@
 package com.blade.mvc;
 
 import com.blade.kit.BladeKit;
-import com.blade.kit.ColorKit;
+import com.blade.kit.StringKit;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -81,12 +80,10 @@ public interface Const {
     String TERMINAL_SERVER_PORT     = "--server.port=";
     String TERMINAL_BLADE_ENV       = "--blade.env=";
 
-    String BANNER_SPACE = "\t\t\t\t\t\t\t  ";
-
+    int    base        = 60;
     String BANNER_TEXT =
-            "\r\n" + BANNER_SPACE + "    __, _,   _, __, __," +
-                    "\r\n" + BANNER_SPACE + "    |_) |   /_\\ | \\ |_" +
-                    "\r\n" + BANNER_SPACE + "    |_) | , | | |_/ |" +
-                    "\r\n" + BANNER_SPACE + "    ~   ~~~ ~ ~ ~   ~~~";
-
+            "\r\n" + StringKit.padLeft("__, _,   _, __, __,", base) +
+                    "\r\n" + StringKit.padLeft("|_) |   /_\\ | \\ |_", base - 1) +
+                    "\r\n" + StringKit.padLeft("|_) | , | | |_/ |", base - 2) +
+                    "\r\n" + StringKit.padLeft("~   ~~~ ~ ~ ~   ~~~", base);
 }
