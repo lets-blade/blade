@@ -11,11 +11,15 @@ import com.blade.ioc.bean.FieldInjector;
 import com.blade.ioc.bean.ValueInjector;
 import com.blade.mvc.Const;
 import com.blade.mvc.http.HttpMethod;
+import com.blade.mvc.route.Route;
 import lombok.NoArgsConstructor;
+import org.slf4j.Logger;
 
 import java.io.File;
 import java.lang.reflect.Field;
 import java.net.URL;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -152,6 +156,78 @@ public class BladeKit {
             return f.getPath();
         }
         return url.getPath();
+    }
+
+    public static long getCostMS(Instant start) {
+        return Duration.between(start, Instant.now()).toMillis();
+    }
+
+    public static void log500(Logger log, String method, String uri) {
+        String pad = StringKit.padLeft("", 6);
+        log.error("{} {}  {} {}", ColorKit.redAndWhite("500"), pad, method, uri);
+    }
+
+    public static void log304(Logger log, String method, String uri) {
+        String pad = StringKit.padLeft("", 6);
+        log.warn("{} {}  {} {}", ColorKit.greenAndWhite("304"), pad, method, uri);
+    }
+
+    public static long log200(Logger log, Instant start, String method, String uri) {
+        long   cost = getCostMS(start);
+        String pad    = StringKit.padLeft(String.valueOf(cost) + "ms", 6);
+        log.info("{} {}  {} {}", ColorKit.greenAndWhite("200"), pad, method, uri);
+        return cost;
+    }
+
+    public static void log403(Logger log, String method, String uri) {
+        String pad = StringKit.padLeft("", 6);
+        log.warn("{} {}  {} {}", ColorKit.yellowAndWhite("403"), pad, method, uri);
+    }
+
+    public static void log404(Logger log, String method, String uri) {
+        String pad = StringKit.padLeft("", 6);
+        log.warn("{} {}  {} {}", ColorKit.yellowAndWhite("404"), pad, method, uri);
+    }
+
+    public static boolean isWindows() {
+        return System.getProperties().getProperty("os.name").toLowerCase().contains("win");
+    }
+
+    public static String getStartedSymbol() {
+        return isWindows() ? "" : "» ";
+    }
+
+    public static String getPrefixSymbol() {
+        return isWindows() ? "=> " : "» ";
+    }
+
+    public static void logAddRoute(Logger log, Route route) {
+        String method = StringKit.padRight(route.getHttpMethod().name(), 6);
+        switch (route.getHttpMethod()) {
+            case GET:
+                method = ColorKit.greenAndWhite(method);
+                break;
+            case POST:
+                method = ColorKit.blueAndWhite(method);
+                break;
+            case DELETE:
+                method = ColorKit.redAndWhite(method);
+                break;
+            case PUT:
+                method = ColorKit.yellowAndWhite(method);
+                break;
+            case OPTIONS:
+                method = ColorKit.cyanAndWhite(method);
+                break;
+            case BEFORE:
+                method = ColorKit.purpleAndWhite(method);
+                break;
+            case AFTER:
+                method = ColorKit.whiteAndBlank(method);
+                break;
+        }
+        String msg = (route.getHttpMethod().equals(HttpMethod.BEFORE) || route.getHttpMethod().equals(HttpMethod.AFTER)) ? " hook" : "route";
+        log.info("{}Add {} {} {}", getStartedSymbol(), msg, method, route.getPath());
     }
 
 }

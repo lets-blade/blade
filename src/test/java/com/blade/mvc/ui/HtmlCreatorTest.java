@@ -45,8 +45,8 @@ public class HtmlCreatorTest {
 
     @Test
     public void testBold() {
-        htmlCreator.addBold("base");
-        Assert.assertEquals(true, htmlCreator.html().contains("<b>base</b>"));
+        htmlCreator.addBold("BANNER_PADDING");
+        Assert.assertEquals(true, htmlCreator.html().contains("<b>BANNER_PADDING</b>"));
     }
 
     @Test

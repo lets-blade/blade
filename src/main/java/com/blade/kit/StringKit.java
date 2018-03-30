@@ -125,10 +125,6 @@ public final class StringKit {
         return true;
     }
 
-    private static boolean notIsDigit(int c) {
-        return !Character.isDigit(c);
-    }
-
     /**
      * Fill a certain number of special characters on the left side of the string
      *
@@ -144,7 +140,7 @@ public final class StringKit {
         int    len = s.length();
         if (len >= width)
             return s;
-        return new StringBuilder().append(dup(c, width - len)).append(s).toString();
+        return dup(c, width - len) + s;
     }
 
     /**
@@ -162,7 +158,7 @@ public final class StringKit {
         int    length = s.length();
         if (length >= width)
             return s;
-        return new StringBuilder().append(s).append(dup(c, width - length)).toString();
+        return s + dup(c, width - length);
     }
 
     /**
@@ -196,6 +192,13 @@ public final class StringKit {
         return MimeType.get(ext);
     }
 
+    public static String padRight(String s, int n) {
+        return String.format("%1$-" + n + "s", s);
+    }
+
+    public static String padLeft(String s, int n) {
+        return String.format("%1$" + n + "s", s);
+    }
     public static boolean equals(String str1, String str2) {
         if (null == str1) {
             return false;

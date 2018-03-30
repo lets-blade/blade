@@ -105,7 +105,7 @@ public class ReflectKit {
                 value = value.toString();
             }
         }
-        return (T) value;
+        return type.cast(value);
     }
 
     /**

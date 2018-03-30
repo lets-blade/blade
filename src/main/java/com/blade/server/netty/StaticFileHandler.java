@@ -34,6 +34,7 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
+import static com.blade.kit.BladeKit.*;
 import static io.netty.handler.codec.http.HttpResponseStatus.*;
 import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
@@ -57,9 +58,9 @@ public class StaticFileHandler implements RequestHandler<Boolean> {
     /**
      * print static file to client
      *
-     * @param ctx
-     * @param request
-     * @param response
+     * @param ctx      ChannelHandlerContext
+     * @param request  Request
+     * @param response Response
      * @throws Exception
      */
     @Override
@@ -69,23 +70,37 @@ public class StaticFileHandler implements RequestHandler<Boolean> {
             return false;
         }
 
-        String uri = URLDecoder.decode(request.uri(), "UTF-8");
-        log.info("{}\t{}\t{}", request.protocol(), request.method(), uri);
+        Instant start = Instant.now();
+
+        String uri    = URLDecoder.decode(request.uri(), "UTF-8");
+        String method = StringKit.padRight(request.method(), 6);
 
         if (uri.startsWith(Const.WEB_JARS)) {
             InputStream input = StaticFileHandler.class.getResourceAsStream("/META-INF/resources" + uri);
-            if (jarResource(ctx, request, uri, input)) return false;
+            if (null == input) {
+                log404(log, method, uri);
+                throw new NotFoundException(uri);
+            }
+            if (jarResource(ctx, request, uri, input)) {
+                return false;
+            }
             return false;
         }
         if (BladeKit.isInJar()) {
             InputStream input = StaticFileHandler.class.getResourceAsStream(uri);
-            if (jarResource(ctx, request, uri, input)) return false;
+            if (null == input) {
+                log404(log, method, uri);
+                throw new NotFoundException(uri);
+            }
+            if (jarResource(ctx, request, uri, input)) {
+                return false;
+            }
             return false;
         }
 
         final String path = sanitizeUri(uri);
         if (path == null) {
-            log.warn("Forbidden\t{}", uri);
+            log403(log, method, uri);
             throw new ForbiddenException();
         }
 
@@ -96,11 +111,11 @@ public class StaticFileHandler implements RequestHandler<Boolean> {
             if (resourcesDirectory.isDirectory()) {
                 file = new File(resourcesDirectory.getPath() + "/resources/" + uri.substring(1));
                 if (file.isHidden() || !file.exists()) {
-                    log.warn("Not Found\t{}", uri);
+                    log404(log, method, uri);
                     throw new NotFoundException(uri);
                 }
             } else {
-                log.warn("Not Found\t{}", uri);
+                log404(log, method, uri);
                 throw new NotFoundException(uri);
             }
         }
@@ -121,6 +136,7 @@ public class StaticFileHandler implements RequestHandler<Boolean> {
 
         // Cache Validation
         if (http304(ctx, request, file.lastModified())) {
+            log304(log, method, uri);
             return false;
         }
 
@@ -154,8 +170,9 @@ public class StaticFileHandler implements RequestHandler<Boolean> {
             lastContentFuture = ctx.writeAndFlush(LastHttpContent.EMPTY_LAST_CONTENT);
 
         } else {
-            sendFileFuture =
-                    ctx.writeAndFlush(new HttpChunkedInput(new ChunkedFile(raf, 0, fileLength, 8192)), ctx.newProgressivePromise());
+            sendFileFuture = ctx.writeAndFlush(
+                    new HttpChunkedInput(new ChunkedFile(raf, 0, fileLength, 8192)),
+                    ctx.newProgressivePromise());
             // HttpChunkedInput will write the end marker (LastHttpContent) for us.
             lastContentFuture = sendFileFuture;
         }
@@ -166,31 +183,27 @@ public class StaticFileHandler implements RequestHandler<Boolean> {
         if (!request.keepAlive()) {
             lastContentFuture.addListener(ChannelFutureListener.CLOSE);
         }
+        log200(log, start, method, uri);
         return false;
     }
 
     private boolean jarResource(ChannelHandlerContext ctx, Request request, String uri, InputStream input) throws IOException {
-        if (null == input) {
-            log.warn("Not Found\t{}", uri);
-            throw new NotFoundException(uri);
-        } else {
-            if (http304(ctx, request, -1)) {
-                return true;
-            }
-            String           content      = IOKit.readToString(input);
-            FullHttpResponse httpResponse = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, OK, Unpooled.copiedBuffer(content, CharsetUtil.UTF_8));
-            setDateAndCacheHeaders(httpResponse, null);
-            String contentType = StringKit.mimeType(uri);
-            if (null != contentType) {
-                httpResponse.headers().set(HttpConst.CONTENT_TYPE, contentType);
-            }
-            httpResponse.headers().set(HttpConst.CONTENT_LENGTH, content.length());
-            if (request.keepAlive()) {
-                httpResponse.headers().set(HttpConst.CONNECTION, HttpConst.KEEP_ALIVE);
-            }
-            // Write the initial line and the header.
-            ctx.writeAndFlush(httpResponse);
+        if (http304(ctx, request, -1)) {
+            return true;
         }
+        String           content      = IOKit.readToString(input);
+        FullHttpResponse httpResponse = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, OK, Unpooled.copiedBuffer(content, CharsetUtil.UTF_8));
+        setDateAndCacheHeaders(httpResponse, null);
+        String contentType = StringKit.mimeType(uri);
+        if (null != contentType) {
+            httpResponse.headers().set(HttpConst.CONTENT_TYPE, contentType);
+        }
+        httpResponse.headers().set(HttpConst.CONTENT_LENGTH, content.length());
+        if (request.keepAlive()) {
+            httpResponse.headers().set(HttpConst.CONNECTION, HttpConst.KEEP_ALIVE);
+        }
+        // Write the initial line and the header.
+        ctx.writeAndFlush(httpResponse);
         return false;
     }
 

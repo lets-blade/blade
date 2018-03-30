@@ -16,8 +16,8 @@
 package com.blade.mvc;
 
 import com.blade.kit.BladeKit;
+import com.blade.kit.StringKit;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -34,9 +34,9 @@ public interface Const {
     int          DEFAULT_SERVER_PORT        = 9000;
     String       DEFAULT_SERVER_ADDRESS     = "0.0.0.0";
     String       LOCAL_IP_ADDRESS           = "127.0.0.1";
-    String       VERSION                    = "2.0.7-beta2";
+    String       VERSION                    = "2.0.7-beta3";
     String       WEB_JARS                   = "/webjars/";
-    String       CLASSPATH                  = BladeKit.getCurrentClassPath();//new File(Const.class.getResource("/").getPath()).getPath();
+    String       CLASSPATH                  = BladeKit.getCurrentClassPath();
     String       CONTENT_TYPE_HTML          = "text/html; charset=UTF-8";
     String       CONTENT_TYPE_JSON          = "application/json; charset=UTF-8";
     String       CONTENT_TYPE_TEXT          = "text/plain; charset=UTF-8";
@@ -75,17 +75,23 @@ public interface Const {
 
     String ENV_KEY_BOOT_CONF        = "boot_conf";
     String ENV_KEY_AUTO_REFRESH_DIR = "app.auto.refresh.dir";
+
     // terminal
-    String TERMINAL_SERVER_ADDRESS  = "--server.address=";
-    String TERMINAL_SERVER_PORT     = "--server.port=";
-    String TERMINAL_BLADE_ENV       = "--blade.env=";
+    String TERMINAL_SERVER_ADDRESS = "--server.address=";
+    String TERMINAL_SERVER_PORT    = "--server.port=";
+    String TERMINAL_BLADE_ENV      = "--blade.env=";
 
-    String BANNER_SPACE = "\t\t\t\t\t\t\t  ";
+    /**
+     * A request processing ends the elapsed time, in milliseconds.
+     */
+    String REQUEST_COST_TIME = "costTime";
 
-    String BANNER_TEXT =
-            "\r\n" + BANNER_SPACE + "    __, _,   _, __, __," +
-                    "\r\n" + BANNER_SPACE + "    |_) |   /_\\ | \\ |_" +
-                    "\r\n" + BANNER_SPACE + "    |_) | , | | |_/ |" +
-                    "\r\n" + BANNER_SPACE + "    ~   ~~~ ~ ~ ~   ~~~";
+    String NEW_LINE = "\r\n";
 
+    int    BANNER_PADDING = 60;
+    String BANNER_TEXT    = NEW_LINE +
+            StringKit.padLeft("__, _,   _, __, __,", BANNER_PADDING) + NEW_LINE +
+            StringKit.padLeft("|_) |   /_\\ | \\ |_", BANNER_PADDING - 1) + NEW_LINE +
+            StringKit.padLeft("|_) | , | | |_/ |", BANNER_PADDING - 2) + NEW_LINE +
+            StringKit.padLeft("~   ~~~ ~ ~ ~   ~~~", BANNER_PADDING);
 }

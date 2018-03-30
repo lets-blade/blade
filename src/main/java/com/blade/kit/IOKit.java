@@ -11,6 +11,8 @@ import java.nio.file.Paths;
 import java.util.stream.Collectors;
 
 /**
+ * IO Kit
+ * 
  * @author biezhi
  * 2017/6/2
  */
@@ -47,21 +49,10 @@ public final class IOKit {
             return buffer.lines().collect(Collectors.joining("\n"));
         }
     }
-
+    
     public static void copyFile(File source, File dest) throws IOException {
-        FileChannel inputChannel  = null;
-        FileChannel outputChannel = null;
-        try {
-            inputChannel = new FileInputStream(source).getChannel();
-            outputChannel = new FileOutputStream(dest).getChannel();
-            outputChannel.transferFrom(inputChannel, 0, inputChannel.size());
-        } finally {
-            if (null != inputChannel) {
-                inputChannel.close();
-            }
-            if (null != outputChannel) {
-                outputChannel.close();
-            }
+        try (FileChannel in = new FileInputStream(source).getChannel(); FileChannel out = new FileOutputStream(dest).getChannel();){
+            out.transferFrom(in, 0, in.size());
         }
     }
 

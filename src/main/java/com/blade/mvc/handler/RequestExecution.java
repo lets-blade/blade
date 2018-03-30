@@ -5,6 +5,7 @@ import com.blade.exception.InternalErrorException;
 import com.blade.exception.NotFoundException;
 import com.blade.kit.BladeKit;
 import com.blade.kit.ReflectKit;
+import com.blade.kit.StringKit;
 import com.blade.mvc.Const;
 import com.blade.mvc.WebContext;
 import com.blade.mvc.annotation.JSON;
@@ -28,9 +29,13 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+
+import static com.blade.kit.BladeKit.*;
+import static com.blade.mvc.Const.REQUEST_COST_TIME;
 
 /**
  * Http Request Execution Handler
@@ -43,7 +48,7 @@ public class RequestExecution implements Runnable {
 
     private final ChannelHandlerContext ctx;
     private final FullHttpRequest       fullHttpRequest;
-    private final ExceptionHandler exceptionHandler = WebContext.blade().exceptionHandler();
+    private final ExceptionHandler      exceptionHandler = WebContext.blade().exceptionHandler();
 
     private final static Set<String>       STATICS             = WebContext.blade().getStatics();
     private final static RouteMatcher      ROUTE_MATCHER       = WebContext.blade().routeMatcher();
@@ -59,16 +64,18 @@ public class RequestExecution implements Runnable {
 
     @Override
     public void run() {
+
         Request  request  = HttpRequest.build(ctx, fullHttpRequest);
         Response response = HttpResponse.build(ctx, HttpServerInitializer.date);
         boolean  isStatic = false;
         // route signature
         Signature signature = Signature.builder().request(request).response(response).build();
+        // request uri
+        String uri    = request.uri();
+        String method = StringKit.padRight(request.method(), 6);
+
         try {
-
-            // request uri
-            String uri = request.uri();
-
+            Instant start = Instant.now();
             // write session
             WebContext.set(new WebContext(request, response));
 
@@ -80,11 +87,9 @@ public class RequestExecution implements Runnable {
 
             Route route = ROUTE_MATCHER.lookupRoute(request.method(), uri);
             if (null == route) {
-                log.warn("Not Found\t{}", uri);
+                log404(log, method, uri);
                 throw new NotFoundException(uri);
             }
-
-            log.info("{}\t{}\t{}", request.protocol(), request.method(), uri);
 
             request.initPathParams(route);
 
@@ -111,7 +116,14 @@ public class RequestExecution implements Runnable {
             if (hasAfterHook) {
                 this.invokeHook(ROUTE_MATCHER.getAfter(uri), signature);
             }
+            long cost = log200(log, start, method, uri);
+            request.attribute(REQUEST_COST_TIME, cost);
         } catch (Exception e) {
+            if(e instanceof BladeException){
+
+            } else {
+                log500(log, method, uri);
+            }
             if (null != exceptionHandler) {
                 exceptionHandler.handle(e);
             } else {

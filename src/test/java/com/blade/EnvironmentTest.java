@@ -43,7 +43,7 @@ public class EnvironmentTest {
         String name    = environment.get("name", "rose");
         String age     = environment.get("age", "20");
         int    version = environment.getInt("app.version", 1001);
-        long   base    = environment.getLong("app.base", 1002);
+        long   base    = environment.getLong("app.BANNER_PADDING", 1002);
 
         Assert.assertEquals("jack", name);
         Assert.assertEquals("20", age);

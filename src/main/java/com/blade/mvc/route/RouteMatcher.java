@@ -20,6 +20,8 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static com.blade.kit.BladeKit.logAddRoute;
+
 /**
  * Default Route Matcher
  *
@@ -134,7 +136,7 @@ public class RouteMatcher {
         }
     }
 
-    public Route lookupRoute(String httpMethod, String path) throws Exception {
+    public Route lookupRoute(String httpMethod, String path) {
         path = parsePath(path);
         String routeKey = path + '#' + httpMethod.toUpperCase();
         Route  route    = staticRoutes.get(routeKey);
@@ -203,16 +205,12 @@ public class RouteMatcher {
 
     public boolean hasBeforeHook() {
         return hooks.values().stream()
-                .flatMap(Collection::stream)
-                .filter(route -> route.getHttpMethod().equals(HttpMethod.BEFORE))
-                .count() > 0;
+                .flatMap(Collection::stream).anyMatch(route -> route.getHttpMethod().equals(HttpMethod.BEFORE));
     }
 
     public boolean hasAfterHook() {
         return hooks.values().stream()
-                .flatMap(Collection::stream)
-                .filter(route -> route.getHttpMethod().equals(HttpMethod.AFTER))
-                .count() > 0;
+                .flatMap(Collection::stream).anyMatch(route -> route.getHttpMethod().equals(HttpMethod.AFTER));
     }
 
     /**
@@ -302,8 +300,8 @@ public class RouteMatcher {
      * register route to container
      */
     public void register() {
-        routes.values().forEach(route -> log.info("Add route => {}", route));
-        hooks.values().forEach(route -> log.info("Add hook  => {}", route));
+        routes.values().forEach(route -> logAddRoute(log, route));
+        hooks.values().stream().flatMap(Collection::stream).forEach(route -> logAddRoute(log, route));
 
         Stream.of(routes.values(), hooks.values().stream().findAny().orElse(new ArrayList<>()))
                 .flatMap(Collection::stream).forEach(this::registerRoute);
