@@ -37,6 +37,12 @@ import java.util.function.Predicate;
 @NoArgsConstructor
 public class BladeKit {
 
+    private static boolean isWindows;
+
+    static {
+        isWindows = System.getProperties().getProperty("os.name").toLowerCase().contains("win");
+    }
+
     /**
      * Get @Inject Annotated field
      *
@@ -150,12 +156,18 @@ public class BladeKit {
     }
 
     public static String getCurrentClassPath() {
-        URL url = BladeKit.class.getResource("/");
+        URL    url = BladeKit.class.getResource("/");
+        String path;
         if (null == url) {
             File f = new File(BladeKit.class.getProtectionDomain().getCodeSource().getLocation().getPath());
-            return f.getPath();
+            path = f.getPath();
+        } else {
+            path = url.getPath();
         }
-        return url.getPath();
+        if (isWindows() && (path.startsWith("/") || path.startsWith("\\"))) {
+            return path.substring(1);
+        }
+        return path;
     }
 
     public static long getCostMS(Instant start) {
@@ -174,7 +186,7 @@ public class BladeKit {
 
     public static long log200(Logger log, Instant start, String method, String uri) {
         long   cost = getCostMS(start);
-        String pad    = StringKit.padLeft(String.valueOf(cost) + "ms", 6);
+        String pad  = StringKit.padLeft(String.valueOf(cost) + "ms", 6);
         log.info("{} {}  {} {}", ColorKit.greenAndWhite("200"), pad, method, uri);
         return cost;
     }
@@ -190,7 +202,7 @@ public class BladeKit {
     }
 
     public static boolean isWindows() {
-        return System.getProperties().getProperty("os.name").toLowerCase().contains("win");
+        return isWindows;
     }
 
     public static String getStartedSymbol() {
