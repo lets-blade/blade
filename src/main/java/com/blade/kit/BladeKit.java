@@ -164,8 +164,8 @@ public class BladeKit {
         } else {
             path = url.getPath();
         }
-        if (isWindows() && (path.startsWith("/") || path.startsWith("\\"))) {
-            return path.substring(1);
+        if (isWindows()) {
+            return path.replaceFirst("^/(.:/)", "$1");
         }
         return path;
     }
