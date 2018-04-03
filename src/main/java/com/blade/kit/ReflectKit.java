@@ -1,5 +1,7 @@
 package com.blade.kit;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
@@ -9,19 +11,37 @@ import java.util.Date;
 import java.util.stream.Stream;
 
 /**
+ * Reflect Kit
+ *
  * @author biezhi
  * 2017/5/31
  */
-public class ReflectKit {
+@Slf4j
+public final class ReflectKit {
 
+    /**
+     * Create an instance of the none constructor.
+     *
+     * @param cls target type
+     * @param <T> target type
+     * @return object instance
+     */
     public static <T> T newInstance(Class<T> cls) {
         try {
             return cls.newInstance();
         } catch (Exception e) {
+            log.warn("new instance fail", e.getMessage());
             return null;
         }
     }
 
+    /**
+     * Converts a string type to a target type
+     *
+     * @param type  target type
+     * @param value string value
+     * @return return target value
+     */
     public static Object convert(Class<?> type, String value) {
 
         if (StringKit.isBlank(value)) {
@@ -89,8 +109,19 @@ public class ReflectKit {
         return method.invoke(bean, args);
     }
 
+    /**
+     * Converts value to a specified type
+     *
+     * @param value instance value
+     * @param type  target type
+     * @param <T>   target type
+     * @return converted value
+     */
     public static <T> T cast(Object value, Class<T> type) {
-        if (value != null && !type.isAssignableFrom(value.getClass())) {
+        if (null == value) {
+            return null;
+        }
+        if (!type.isAssignableFrom(value.getClass())) {
             if (is(type, int.class, Integer.class)) {
                 value = Integer.parseInt(value.toString());
             } else if (is(type, long.class, Long.class)) {
@@ -105,29 +136,53 @@ public class ReflectKit {
                 value = value.toString();
             }
         }
-        return type.cast(value);
+        return (T) value;
     }
 
     /**
-     * 对象是否其中一个
+     * Whether the object is one of them.
+     *
+     * @param instance    instance
+     * @param maybeValues
+     * @return
      */
-    public static boolean is(Object obj, Object... mybe) {
-        if (obj != null && mybe != null) {
-            for (Object mb : mybe)
-                if (obj.equals(mb))
-                    return true;
+    public static boolean is(Object instance, Object... maybeValues) {
+        if (instance != null && maybeValues != null) {
+            for (Object mb : maybeValues)
+                if (instance.equals(mb)) return true;
         }
         return false;
     }
 
+    /**
+     * Determine whether CLS is an implementation of an inteface Type.
+     *
+     * @param cls
+     * @param inter
+     * @return
+     */
     public static boolean hasInterface(Class<?> cls, Class<?> inter) {
-        return Stream.of(cls.getInterfaces()).filter(c -> c.equals(inter)).count() > 0;
+        return Stream.of(cls.getInterfaces()).anyMatch(c -> c.equals(inter));
     }
 
+    /**
+     * Determine whether cls belong to a normal type
+     *
+     * @param cls
+     * @return
+     */
     public static boolean isNormalClass(Class<?> cls) {
         return !cls.isInterface() && !Modifier.isAbstract(cls.getModifiers());
     }
 
+    /**
+     * Get cls method name by name and parameter types
+     *
+     * @param cls
+     * @param methodName
+     * @param types
+     * @return
+     */
     public static Method getMethod(Class<?> cls, String methodName, Class<?>... types) {
         try {
             return cls.getMethod(methodName, types);
@@ -136,6 +191,12 @@ public class ReflectKit {
         }
     }
 
+    /**
+     * Is cls a basic type
+     *
+     * @param cls Class type
+     * @return true or false
+     */
     public static boolean isPrimitive(Class<?> cls) {
         return cls == boolean.class
                 || cls == Boolean.class
@@ -168,33 +229,19 @@ public class ReflectKit {
                 || cls instanceof Character;
     }
 
-    public static Object defaultPrimitiveValue(Class<?> primitiveCls) {
-        if (primitiveCls == boolean.class) {
-            return false;
-        } else if (primitiveCls == double.class) {
-            return 0d;
-        } else if (primitiveCls == float.class) {
-            return 0f;
-        } else if (primitiveCls == short.class) {
-            return (short) 0;
-        } else if (primitiveCls == int.class) {
-            return 0;
-        } else if (primitiveCls == long.class) {
-            return 0L;
-        } else if (primitiveCls == byte.class) {
-            return (byte) 0;
-        } else if (primitiveCls == char.class) {
-            return '\0';
-        } else {
-            return null;
-        }
-    }
-
+    /**
+     * Load a class according to the class name.
+     *
+     * @param typeName
+     * @return
+     */
     public static Class<?> form(String typeName) {
         try {
             return Class.forName(typeName);
         } catch (Exception e) {
+            log.warn("Class.forName fail", e.getMessage());
             return null;
         }
     }
+
 }
