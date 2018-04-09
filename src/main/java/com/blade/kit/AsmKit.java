@@ -15,6 +15,8 @@
  */
 package com.blade.kit;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.objectweb.asm.*;
 
 import java.io.IOException;
@@ -29,6 +31,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author <a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since 1.6.6
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class AsmKit {
 
     /**

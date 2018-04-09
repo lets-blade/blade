@@ -1,5 +1,8 @@
 package com.blade.kit;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 import static com.blade.kit.BladeKit.isWindows;
 
 /**
@@ -8,6 +11,7 @@ import static com.blade.kit.BladeKit.isWindows;
  * @author biezhi
  * @date 2018/3/28
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ColorKit {
 
     private static final String ANSI_RESET             = "\u001B[0m";

@@ -1,10 +1,11 @@
 package com.blade.kit;
 
+import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import java.io.*;
 
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ConvertKit {
 
     /**

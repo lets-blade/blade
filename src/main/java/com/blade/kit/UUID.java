@@ -2,10 +2,13 @@ package com.blade.kit;
 
 import java.util.Arrays;
 import java.util.Random;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
  * 封装UUID
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class UUID {
 
     private static final Random r = new Random();

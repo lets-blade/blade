@@ -1,6 +1,8 @@
 package com.blade.kit;
 
 import java.util.regex.Pattern;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
  * PathKit URL
@@ -8,6 +10,7 @@ import java.util.regex.Pattern;
  * @author <a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since 1.5
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PathKit {
 
     public static final  String  VAR_REGEXP          = ":(\\w+)";

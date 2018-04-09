@@ -1,6 +1,8 @@
 package com.blade.kit;
 
 import java.util.concurrent.Callable;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
  * Assert Kit
@@ -8,6 +10,7 @@ import java.util.concurrent.Callable;
  * @author biezhi
  *         2017/5/31
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Assert {
 
     public static void greaterThan(double num, double exp, String msg) {
