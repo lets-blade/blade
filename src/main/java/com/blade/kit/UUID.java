@@ -6,7 +6,7 @@ import java.util.Random;
 /**
  * 封装UUID
  */
-public abstract class UUID {
+public class UUID {
 
     private static final Random r = new Random();
     private static final char[] _UU64 = "-0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz".toCharArray();
