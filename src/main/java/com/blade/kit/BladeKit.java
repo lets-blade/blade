@@ -12,11 +12,14 @@ import com.blade.ioc.bean.ValueInjector;
 import com.blade.mvc.Const;
 import com.blade.mvc.http.HttpMethod;
 import com.blade.mvc.route.Route;
+import com.blade.task.TaskStruct;
+import com.blade.task.annotation.Cron;
 import lombok.NoArgsConstructor;
 import org.slf4j.Logger;
 
 import java.io.File;
 import java.lang.reflect.Field;
+import java.lang.reflect.Type;
 import java.net.URL;
 import java.time.Duration;
 import java.time.Instant;
@@ -27,6 +30,7 @@ import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
  * Blade kit
@@ -99,9 +103,22 @@ public class BladeKit {
 
     public static void injectionValue(Environment environment, BeanDefine beanDefine) {
         ClassDefine         classDefine = ClassDefine.create(beanDefine.getType());
-        List<ValueInjector> valueFileds = getValueInjectFields(environment, classDefine);
+        List<ValueInjector> valueFields = getValueInjectFields(environment, classDefine);
         Object              bean        = beanDefine.getBean();
-        valueFileds.stream().forEach(fieldInjector -> fieldInjector.injection(bean));
+        valueFields.stream().forEach(fieldInjector -> fieldInjector.injection(bean));
+    }
+
+    public static List<TaskStruct> getTasks(Class<?> type) {
+        return Arrays.stream(type.getMethods())
+                .filter(m -> null != m.getAnnotation(Cron.class))
+                .map(m -> {
+                    TaskStruct taskStruct = new TaskStruct();
+                    taskStruct.setCron(m.getAnnotation(Cron.class));
+                    taskStruct.setMethod(m);
+                    taskStruct.setType(type);
+                    return taskStruct;
+                })
+                .collect(Collectors.toList());
     }
 
     public static boolean isEmpty(Collection<?> c) {

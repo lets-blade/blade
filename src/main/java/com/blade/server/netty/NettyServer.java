@@ -23,6 +23,12 @@ import com.blade.mvc.route.RouteBuilder;
 import com.blade.mvc.route.RouteMatcher;
 import com.blade.mvc.ui.template.DefaultEngine;
 import com.blade.server.Server;
+import com.blade.task.TaskContext;
+import com.blade.task.TaskStruct;
+import com.blade.task.annotation.Cron;
+import com.blade.task.cron.CronExecutorService;
+import com.blade.task.cron.CronExpression;
+import com.blade.task.cron.CronThreadPoolExecutor;
 import com.blade.watcher.EnvironmentWatcher;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
@@ -39,7 +45,11 @@ import io.netty.util.ResourceLeakDetector;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ScheduledFuture;
 import java.util.stream.Stream;
 
 import static com.blade.kit.BladeKit.getPrefixSymbol;
@@ -60,6 +70,7 @@ public class NettyServer implements Server {
     private Channel             channel;
     private RouteBuilder        routeBuilder;
     private List<BeanProcessor> processors;
+    private List<TaskStruct>    taskStructs = new ArrayList<>();
 
     @Override
     public void start(Blade blade, String[] args) throws Exception {
@@ -87,6 +98,7 @@ public class NettyServer implements Server {
 
         this.startServer(initStart);
 
+        this.startTask();
     }
 
     private void initIoc() {
@@ -115,9 +127,12 @@ public class NettyServer implements Server {
             beanDefines.forEach(b -> {
                 BladeKit.injection(ioc, b);
                 BladeKit.injectionValue(environment, b);
+                List<TaskStruct> cronExpressions = BladeKit.getTasks(b.getType());
+                if (null != cronExpressions) {
+                    taskStructs.addAll(cronExpressions);
+                }
             });
         }
-
         this.processors.stream().sorted(new OrderComparator<>()).forEach(b -> b.processor(blade));
     }
 
@@ -182,6 +197,34 @@ public class NettyServer implements Server {
         blade.eventManager().fireEvent(EventType.SERVER_STARTED, blade);
     }
 
+    private void startTask() {
+        if (taskStructs.size() > 0) {
+            CronExecutorService cronExecutorService = new CronThreadPoolExecutor(taskStructs.size() / 2 + 1);
+            for (TaskStruct taskStruct : taskStructs) {
+                try {
+                    Cron cron = taskStruct.getCron();
+                    TaskContext taskContext = new TaskContext();
+                    ScheduledFuture<?> future = cronExecutorService.schedule(() -> {
+                        Object target = blade.ioc().getBean(taskStruct.getType());
+                        Method method = taskStruct.getMethod();
+                        try {
+                            if (method.getParameterCount() == 1 && method.getParameterTypes()[0].equals(TaskContext.class)) {
+                                taskStruct.getMethod().invoke(target, taskContext);
+                            } else {
+                                taskStruct.getMethod().invoke(target);
+                            }
+                        } catch (IllegalAccessException | InvocationTargetException e) {
+                            log.error("Task method error", e);
+                        }
+                    }, new CronExpression(cron.value()), cron.delay());
+                    taskContext.setFuture(future);
+                } catch (Exception e) {
+                    log.error("", e);
+                }
+            }
+            Runtime.getRuntime().addShutdownHook(new Thread(cronExecutorService::shutdown));
+        }
+    }
 
     private void parseCls(Class<?> clazz) {
         if (null != clazz.getAnnotation(Bean.class) || null != clazz.getAnnotation(Value.class)) {
