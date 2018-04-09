@@ -22,7 +22,7 @@ public class BeanKitTest {
         Assert.assertEquals(source.toString(), dest2.toString());
 
         MyPerson myPerson = BeanKit.copy(source, MyPerson.class);
-        System.out.println(myPerson);
+        Assert.assertNotNull(myPerson.getName());
     }
 
 }
