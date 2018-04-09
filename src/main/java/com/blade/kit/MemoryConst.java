@@ -1,11 +1,12 @@
 package com.blade.kit;
 
+import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MemoryConst {
 
     /**

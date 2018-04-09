@@ -1,6 +1,7 @@
 package com.blade.kit;
 
 import com.blade.mvc.multipart.MimeType;
+import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import java.util.Random;
@@ -13,7 +14,7 @@ import java.util.stream.Stream;
  * @author biezhi
  * 2017/6/1
  */
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class StringKit {
 
     private static final Random RANDOM = new Random();

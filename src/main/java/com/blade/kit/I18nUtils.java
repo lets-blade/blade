@@ -1,5 +1,6 @@
 package com.blade.kit;
 
+import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import java.text.MessageFormat;
@@ -29,7 +30,7 @@ import java.util.regex.Pattern;
  * @author <a href="mailto:chenchen_839@126.com" target="_blank">ccqy66</a>
  * @Date: 2018/1/8
  */
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class I18nUtils {
 
     private static Map<String,ResourceHolder> CACHE = new ConcurrentHashMap<>();

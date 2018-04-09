@@ -1,6 +1,7 @@
 package com.blade.kit;
 
 import com.blade.mvc.http.Request;
+import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
@@ -9,7 +10,7 @@ import lombok.NoArgsConstructor;
  * @author biezhi
  * 2017/6/2
  */
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class WebKit {
 
     public static final String UNKNOWN_MAGIC = "unknown";

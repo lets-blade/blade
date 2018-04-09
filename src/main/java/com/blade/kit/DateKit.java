@@ -1,6 +1,7 @@
 package com.blade.kit;
 
 import com.blade.mvc.Const;
+import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import java.time.Instant;
@@ -17,7 +18,7 @@ import java.util.Locale;
  * @author biezhi
  * 2017/6/2
  */
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DateKit {
 
     /**

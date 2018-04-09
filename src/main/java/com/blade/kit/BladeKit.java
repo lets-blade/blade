@@ -12,6 +12,7 @@ import com.blade.ioc.bean.ValueInjector;
 import com.blade.mvc.Const;
 import com.blade.mvc.http.HttpMethod;
 import com.blade.mvc.route.Route;
+import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.slf4j.Logger;
 
@@ -34,7 +35,7 @@ import java.util.function.Predicate;
  * @author biezhi
  * 2017/5/31
  */
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class BladeKit {
 
     private static boolean isWindows;

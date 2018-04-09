@@ -1,5 +1,6 @@
 package com.blade.kit;
 
+import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import java.util.*;
@@ -12,7 +13,7 @@ import java.util.concurrent.ConcurrentMap;
  * @author biezhi
  * @date 2017/12/15
  */
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class CollectionKit {
 
     /**

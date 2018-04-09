@@ -3,6 +3,8 @@ package com.blade.kit;
 import com.blade.kit.json.Ason;
 import com.blade.kit.json.DefaultJsonSupport;
 import com.blade.kit.json.JsonSupport;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
  * Json kit
@@ -10,6 +12,7 @@ import com.blade.kit.json.JsonSupport;
  * @author biezhi
  * 2017/6/2
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class JsonKit {
 
     private static final DefaultJsonSupport defaultJsonSupport = new DefaultJsonSupport();
