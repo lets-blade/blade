@@ -22,6 +22,8 @@ public @interface Cron {
      */
     String value();
 
+    String name() default "";
+
     /**
      * Delay execution, unit millisecond, start the task by default.
      *

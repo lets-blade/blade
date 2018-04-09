@@ -1,6 +1,6 @@
 package com.blade.task.cron;
 
-import com.blade.task.TaskContext;
+import com.blade.task.Task;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -20,7 +20,7 @@ public interface CronExecutorService extends ExecutorService {
      */
     ScheduledFuture<?> schedule(Runnable task, CronExpression expression, long delay);
 
-//    ScheduledFuture<?> schedule(Runnable task, TaskContext taskContext);
+    ScheduledFuture<?> submit(Task task);
 
     default ScheduledFuture<?> schedule(Runnable task, CronExpression expression) {
         return this.schedule(task, expression, 0L);

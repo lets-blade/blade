@@ -2,27 +2,47 @@ package netty_hello;
 
 import com.blade.ioc.annotation.Bean;
 import com.blade.task.TaskContext;
+import com.blade.task.TaskManager;
 import com.blade.task.annotation.Cron;
+import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author biezhi
  * @date 2018/4/9
  */
 @Bean
+@Slf4j
 public class TaskModel {
 
-    private int pos = 0;
+    private AtomicInteger run1  = new AtomicInteger();
+    private AtomicInteger run3 = new AtomicInteger();
 
     @Cron("* * * * * ?")
     public void run1(TaskContext context) {
-        if (pos == 5) {
+        if (run1.get() == 5) {
             context.stop();
             return;
         }
-        pos++;
-        System.out.println(LocalDateTime.now() + ": Hello task. " + Thread.currentThread());
+        run1.getAndIncrement();
+        log.info(LocalDateTime.now() + ": Hello task1. " + Thread.currentThread());
+    }
+
+    @Cron("* * * * * ?")
+    public void run2(TaskContext context) {
+        log.info(LocalDateTime.now() + ": Hello task2. " + Thread.currentThread());
+    }
+
+    @Cron(value = "* * * * * ?", name = "RUN3")
+    public void run3() {
+        if (run3.get() == 3) {
+            TaskManager.stopTask("RUN3");
+            return;
+        }
+        run3.getAndIncrement();
+        log.info(LocalDateTime.now() + ": Hello RUN3. " + Thread.currentThread());
     }
 
 }

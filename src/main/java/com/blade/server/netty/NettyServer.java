@@ -23,7 +23,9 @@ import com.blade.mvc.route.RouteBuilder;
 import com.blade.mvc.route.RouteMatcher;
 import com.blade.mvc.ui.template.DefaultEngine;
 import com.blade.server.Server;
+import com.blade.task.Task;
 import com.blade.task.TaskContext;
+import com.blade.task.TaskManager;
 import com.blade.task.TaskStruct;
 import com.blade.task.annotation.Cron;
 import com.blade.task.cron.CronExecutorService;
@@ -50,6 +52,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
 import static com.blade.kit.BladeKit.getPrefixSymbol;
@@ -199,12 +202,21 @@ public class NettyServer implements Server {
 
     private void startTask() {
         if (taskStructs.size() > 0) {
-            CronExecutorService cronExecutorService = new CronThreadPoolExecutor(taskStructs.size() / 2 + 1);
+            int                 corePoolSize        = Runtime.getRuntime().availableProcessors() + 1;
+            CronExecutorService cronExecutorService = new CronThreadPoolExecutor(corePoolSize, new NamedThreadFactory("task@"));
+            TaskManager.init(cronExecutorService);
+
+            AtomicInteger jobCount = new AtomicInteger();
+
             for (TaskStruct taskStruct : taskStructs) {
                 try {
-                    Cron cron = taskStruct.getCron();
-                    TaskContext taskContext = new TaskContext();
-                    ScheduledFuture<?> future = cronExecutorService.schedule(() -> {
+                    Cron   cron    = taskStruct.getCron();
+                    String jobName = StringKit.isBlank(cron.name()) ? "task-" + jobCount.getAndIncrement() : cron.name();
+                    Task   task    = new Task(jobName, new CronExpression(cron.value()), cron.delay());
+
+                    TaskContext taskContext = new TaskContext(task);
+
+                    task.setTask(() -> {
                         Object target = blade.ioc().getBean(taskStruct.getType());
                         Method method = taskStruct.getMethod();
                         try {
@@ -216,13 +228,16 @@ public class NettyServer implements Server {
                         } catch (IllegalAccessException | InvocationTargetException e) {
                             log.error("Task method error", e);
                         }
-                    }, new CronExpression(cron.value()), cron.delay());
-                    taskContext.setFuture(future);
+                    });
+
+                    ScheduledFuture<?> future = cronExecutorService.submit(task);
+                    task.setFuture(future);
+
+                    TaskManager.addTask(task);
                 } catch (Exception e) {
                     log.error("", e);
                 }
             }
-            Runtime.getRuntime().addShutdownHook(new Thread(cronExecutorService::shutdown));
         }
     }
 

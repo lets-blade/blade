@@ -15,6 +15,5 @@ public class TaskStruct {
     private Cron     cron;
     private Method   method;
     private Class<?> type;
-    private boolean  isRunning;
 
 }

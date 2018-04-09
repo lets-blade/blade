@@ -1,23 +1,22 @@
 package com.blade.task;
 
-import com.blade.task.cron.CronExpression;
-import lombok.Setter;
-
-import java.util.concurrent.ScheduledFuture;
+import lombok.Data;
 
 /**
  * @author biezhi
  * @date 2018/4/9
  */
+@Data
 public class TaskContext {
 
-    @Setter
-    private ScheduledFuture<?> future;
+    private Task task;
+
+    public TaskContext(Task task) {
+        this.task = task;
+    }
 
     public void stop() {
-        if (null != future) {
-            future.cancel(true);
-        }
+        task.stop();
     }
 
 }
