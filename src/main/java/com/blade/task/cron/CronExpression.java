@@ -1617,4 +1617,9 @@ public final class CronExpression implements Serializable, Cloneable {
         } // never happens
     }
 
+    class ValueSet {
+        int value;
+        int pos;
+    }
+
 }
