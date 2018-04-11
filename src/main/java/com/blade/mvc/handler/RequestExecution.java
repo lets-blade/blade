@@ -4,6 +4,7 @@ import com.blade.exception.BladeException;
 import com.blade.exception.InternalErrorException;
 import com.blade.exception.NotFoundException;
 import com.blade.kit.BladeKit;
+import com.blade.kit.PathKit;
 import com.blade.kit.ReflectKit;
 import com.blade.kit.StringKit;
 import com.blade.mvc.Const;
@@ -71,21 +72,22 @@ public class RequestExecution implements Runnable {
         // route signature
         Signature signature = Signature.builder().request(request).response(response).build();
         // request uri
-        String uri    = request.uri();
-        String method = StringKit.padRight(request.method(), 6);
+        String uri      = request.uri();
+        String cleanUri = PathKit.cleanPath(uri.replaceFirst(request.contextPath(), "/"));
+        String method   = StringKit.padRight(request.method(), 6);
 
         try {
             Instant start = Instant.now();
             // write session
             WebContext.set(new WebContext(request, response));
 
-            if (isStaticFile(uri)) {
+            if (isStaticFile(cleanUri)) {
                 STATIC_FILE_HANDLER.handle(ctx, request, response);
                 isStatic = true;
                 return;
             }
 
-            Route route = ROUTE_MATCHER.lookupRoute(request.method(), uri);
+            Route route = ROUTE_MATCHER.lookupRoute(request.method(), cleanUri);
             if (null == route) {
                 log404(log, method, uri);
                 throw new NotFoundException(uri);
@@ -103,7 +105,7 @@ public class RequestExecution implements Runnable {
             }
 
             // web hook before
-            if (hasBeforeHook && !invokeHook(ROUTE_MATCHER.getBefore(uri), signature)) {
+            if (hasBeforeHook && !invokeHook(ROUTE_MATCHER.getBefore(cleanUri), signature)) {
                 this.sendFinish(response);
                 return;
             }
@@ -114,12 +116,12 @@ public class RequestExecution implements Runnable {
 
             // webHook
             if (hasAfterHook) {
-                this.invokeHook(ROUTE_MATCHER.getAfter(uri), signature);
+                this.invokeHook(ROUTE_MATCHER.getAfter(cleanUri), signature);
             }
             long cost = log200(log, start, method, uri);
             request.attribute(REQUEST_COST_TIME, cost);
         } catch (Exception e) {
-            if(e instanceof BladeException){
+            if (e instanceof BladeException) {
 
             } else {
                 log500(log, method, uri);

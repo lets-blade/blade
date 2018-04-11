@@ -90,6 +90,7 @@ public class NettyServer implements Server {
     private RouteBuilder        routeBuilder;
     private List<BeanProcessor> processors;
     private List<TaskStruct>    taskStruts = new ArrayList<>();
+    private int                 padSize    = 26;
 
     @Override
     public void start(Blade blade, String[] args) throws Exception {
@@ -98,16 +99,17 @@ public class NettyServer implements Server {
         this.processors = blade.processors();
 
         long initStart = System.currentTimeMillis();
-        log.info("{} {}{}", StringKit.padRight("environment.jdk.version", 26), getPrefixSymbol(), System.getProperty("java.version"));
-        log.info("{} {}{}", StringKit.padRight("environment.user.dir", 26), getPrefixSymbol(), System.getProperty("user.dir"));
-        log.info("{} {}{}", StringKit.padRight("environment.java.io.tmpdir", 26), getPrefixSymbol(), System.getProperty("java.io.tmpdir"));
-        log.info("{} {}{}", StringKit.padRight("environment.user.timezone", 26), getPrefixSymbol(), System.getProperty("user.timezone"));
-        log.info("{} {}{}", StringKit.padRight("environment.file.encoding", 26), getPrefixSymbol(), System.getProperty("file.encoding"));
-        log.info("{} {}{}", StringKit.padRight("environment.classpath", 26), getPrefixSymbol(), CLASSPATH);
+        log.info("{} {}{}", StringKit.padRight("environment.jdk.version", padSize), getPrefixSymbol(), System.getProperty("java.version"));
+        log.info("{} {}{}", StringKit.padRight("environment.user.dir", padSize), getPrefixSymbol(), System.getProperty("user.dir"));
+        log.info("{} {}{}", StringKit.padRight("environment.java.io.tmpdir", padSize), getPrefixSymbol(), System.getProperty("java.io.tmpdir"));
+        log.info("{} {}{}", StringKit.padRight("environment.user.timezone", padSize), getPrefixSymbol(), System.getProperty("user.timezone"));
+        log.info("{} {}{}", StringKit.padRight("environment.file.encoding", padSize), getPrefixSymbol(), System.getProperty("file.encoding"));
+        log.info("{} {}{}", StringKit.padRight("environment.classpath", padSize), getPrefixSymbol(), CLASSPATH);
 
         this.initConfig();
 
-        WebContext.init(blade, "/");
+        String contextPath = environment.get(ENV_KEY_CONTEXT_PATH, "/");
+        WebContext.init(blade, contextPath);
 
         this.initIoc();
 

@@ -5,7 +5,7 @@ import com.blade.mvc.http.Request;
 import lombok.Builder;
 
 @Builder
-public class ParamStrut {
+class ParamStruct {
 
     Param          param;
     PathParam      pathParam;
