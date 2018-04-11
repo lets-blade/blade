@@ -21,21 +21,21 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Cron expression
+ * Schedule
  *
  * @author biezhi
  * @date 2018/4/9
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD})
-public @interface Cron {
+public @interface Schedule {
 
     /**
      * cron expression
      *
      * @return
      */
-    String value();
+    String cron();
 
     /**
      * The name of this task, when you don't specify it, will use the "task-0" index to start with 0,

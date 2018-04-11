@@ -15,7 +15,7 @@
  */
 package com.blade.task;
 
-import com.blade.task.annotation.Cron;
+import com.blade.task.annotation.Schedule;
 import lombok.Data;
 
 import java.lang.reflect.Method;
@@ -31,7 +31,7 @@ import java.lang.reflect.Method;
 @Data
 public class TaskStruct {
 
-    private Cron     cron;
+    private Schedule schedule;
     private Method   method;
     private Class<?> type;
 

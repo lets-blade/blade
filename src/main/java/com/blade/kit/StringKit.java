@@ -18,6 +18,8 @@ public final class StringKit {
 
     private static final Random RANDOM = new Random();
 
+    private static final char SEPARATOR = '_';
+
     /**
      * Randomly generate a number in the min and Max range
      *
@@ -85,6 +87,14 @@ public final class StringKit {
         return null == str || "".equals(str.trim());
     }
 
+    public static boolean isEmpty(String str) {
+        return null == str || str.isEmpty();
+    }
+
+    public static boolean isNotEmpty(String str) {
+        return !isEmpty(str);
+    }
+
     /**
      * Execute consumer when the string is empty
      *
@@ -126,24 +136,6 @@ public final class StringKit {
     }
 
     /**
-     * Fill a certain number of special characters on the left side of the string
-     *
-     * @param o     objects that can be to String
-     * @param width number of characters
-     * @param c     characters
-     * @return new characters
-     */
-    public static String alignRight(Object o, int width, char c) {
-        if (null == o)
-            return null;
-        String s   = o.toString();
-        int    len = s.length();
-        if (len >= width)
-            return s;
-        return dup(c, width - len) + s;
-    }
-
-    /**
      * Fill a certain number of special characters on the right side of the string
      *
      * @param o     objects that can be to String
@@ -159,6 +151,24 @@ public final class StringKit {
         if (length >= width)
             return s;
         return s + dup(c, width - length);
+    }
+
+    /**
+     * Fill a certain number of special characters on the left side of the string
+     *
+     * @param o     objects that can be to String
+     * @param width number of characters
+     * @param c     characters
+     * @return new characters
+     */
+    public static String alignRight(Object o, int width, char c) {
+        if (null == o)
+            return null;
+        String s   = o.toString();
+        int    len = s.length();
+        if (len >= width)
+            return s;
+        return new StringBuilder().append(dup(c, width - len)).append(s).toString();
     }
 
     /**
@@ -199,11 +209,74 @@ public final class StringKit {
     public static String padLeft(String s, int n) {
         return String.format("%1$" + n + "s", s);
     }
+
     public static boolean equals(String str1, String str2) {
         if (null == str1) {
             return false;
         }
         return str1.equals(str2);
+    }
+
+    public static String toUnderlineName(String s) {
+        if (s == null) {
+            return null;
+        }
+
+        StringBuilder sb        = new StringBuilder();
+        boolean       upperCase = false;
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+
+            boolean nextUpperCase = true;
+
+            if (i < (s.length() - 1)) {
+                nextUpperCase = Character.isUpperCase(s.charAt(i + 1));
+            }
+
+            if (Character.isUpperCase(c)) {
+                if (!upperCase || !nextUpperCase) {
+                    if (i > 0) sb.append(SEPARATOR);
+                }
+                upperCase = true;
+            } else {
+                upperCase = false;
+            }
+
+            sb.append(Character.toLowerCase(c));
+        }
+
+        return sb.toString();
+    }
+
+    public static String toCamelCase(String s) {
+        if (s == null) {
+            return null;
+        }
+        s = s.toLowerCase();
+        StringBuilder sb        = new StringBuilder(s.length());
+        boolean       upperCase = false;
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+
+            if (c == SEPARATOR) {
+                upperCase = true;
+            } else if (upperCase) {
+                sb.append(Character.toUpperCase(c));
+                upperCase = false;
+            } else {
+                sb.append(c);
+            }
+        }
+
+        return sb.toString();
+    }
+
+    public static String toCapitalizeCamelCase(String s) {
+        if (s == null) {
+            return null;
+        }
+        s = toCamelCase(s);
+        return s.substring(0, 1).toUpperCase() + s.substring(1);
     }
 
 }

@@ -4,11 +4,9 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.time.*;
 import java.util.Date;
+import java.util.Locale;
 
 /**
  * @author biezhi
@@ -89,6 +87,18 @@ public class DateKitTest {
 
         unixTime = DateKit.nowUnix();
         Assert.assertNotNull(unixTime);
+    }
+
+    @Test
+    public void testPrettyTime() {
+        Assert.assertEquals("去年", DateKit.prettyTime(LocalDateTime.now().plusYears(-1), Locale.CHINESE));
+        Assert.assertEquals("上个月", DateKit.prettyTime(LocalDateTime.now().plusMonths(-1), Locale.CHINESE));
+        Assert.assertEquals("上周", DateKit.prettyTime(LocalDateTime.now().plusWeeks(-1), Locale.CHINESE));
+        Assert.assertEquals("昨天", DateKit.prettyTime(LocalDateTime.now().plusDays(-1), Locale.CHINESE));
+        Assert.assertEquals("1小时前", DateKit.prettyTime(LocalDateTime.now().plusHours(-1), Locale.CHINESE));
+        Assert.assertEquals("1分钟前", DateKit.prettyTime(LocalDateTime.now().plusMinutes(-1), Locale.CHINESE));
+        Assert.assertEquals("刚刚", DateKit.prettyTime(LocalDateTime.now().plusSeconds(-1), Locale.CHINESE));
+        Assert.assertEquals("10秒前", DateKit.prettyTime(LocalDateTime.now().plusSeconds(-10), Locale.CHINESE));
     }
 
 }

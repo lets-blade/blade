@@ -1,3 +1,18 @@
+/**
+ * Copyright (c) 2017, biezhi 王爵 (biezhi.me@gmail.com)
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.blade.kit;
 
 import com.blade.Environment;
@@ -13,13 +28,13 @@ import com.blade.mvc.Const;
 import com.blade.mvc.http.HttpMethod;
 import com.blade.mvc.route.Route;
 import com.blade.task.TaskStruct;
-import com.blade.task.annotation.Cron;
+import com.blade.task.annotation.Schedule;
+import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.slf4j.Logger;
 
 import java.io.File;
 import java.lang.reflect.Field;
-import java.lang.reflect.Type;
 import java.net.URL;
 import java.time.Duration;
 import java.time.Instant;
@@ -38,8 +53,8 @@ import java.util.stream.Collectors;
  * @author biezhi
  * 2017/5/31
  */
-@NoArgsConstructor
-public class BladeKit {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class BladeKit {
 
     private static boolean isWindows;
 
@@ -110,10 +125,10 @@ public class BladeKit {
 
     public static List<TaskStruct> getTasks(Class<?> type) {
         return Arrays.stream(type.getMethods())
-                .filter(m -> null != m.getAnnotation(Cron.class))
+                .filter(m -> null != m.getAnnotation(Schedule.class))
                 .map(m -> {
                     TaskStruct taskStruct = new TaskStruct();
-                    taskStruct.setCron(m.getAnnotation(Cron.class));
+                    taskStruct.setSchedule(m.getAnnotation(Schedule.class));
                     taskStruct.setMethod(m);
                     taskStruct.setType(type);
                     return taskStruct;

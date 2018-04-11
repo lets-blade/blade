@@ -1,3 +1,18 @@
+/**
+ * Copyright (c) 2017, biezhi 王爵 (biezhi.me@gmail.com)
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.blade.server.netty;
 
 import com.blade.Blade;
@@ -27,7 +42,7 @@ import com.blade.task.Task;
 import com.blade.task.TaskContext;
 import com.blade.task.TaskManager;
 import com.blade.task.TaskStruct;
-import com.blade.task.annotation.Cron;
+import com.blade.task.annotation.Schedule;
 import com.blade.task.cron.CronExecutorService;
 import com.blade.task.cron.CronExpression;
 import com.blade.task.cron.CronThreadPoolExecutor;
@@ -47,7 +62,6 @@ import io.netty.util.ResourceLeakDetector;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
@@ -60,6 +74,8 @@ import static com.blade.kit.BladeKit.getStartedSymbol;
 import static com.blade.mvc.Const.*;
 
 /**
+ * Netty Web Server
+ *
  * @author biezhi
  * 2017/5/31
  */
@@ -73,7 +89,7 @@ public class NettyServer implements Server {
     private Channel             channel;
     private RouteBuilder        routeBuilder;
     private List<BeanProcessor> processors;
-    private List<TaskStruct>    taskStructs = new ArrayList<>();
+    private List<TaskStruct>    taskStruts = new ArrayList<>();
 
     @Override
     public void start(Blade blade, String[] args) throws Exception {
@@ -132,7 +148,7 @@ public class NettyServer implements Server {
                 BladeKit.injectionValue(environment, b);
                 List<TaskStruct> cronExpressions = BladeKit.getTasks(b.getType());
                 if (null != cronExpressions) {
-                    taskStructs.addAll(cronExpressions);
+                    taskStruts.addAll(cronExpressions);
                 }
             });
         }
@@ -201,18 +217,21 @@ public class NettyServer implements Server {
     }
 
     private void startTask() {
-        if (taskStructs.size() > 0) {
-            int                 corePoolSize        = Runtime.getRuntime().availableProcessors() + 1;
-            CronExecutorService cronExecutorService = new CronThreadPoolExecutor(corePoolSize, new NamedThreadFactory("task@"));
-            TaskManager.init(cronExecutorService);
+        if (taskStruts.size() > 0) {
+            int                 corePoolSize    = environment.getInt(ENV_KEY_TASK_THREAD_COUNT, Runtime.getRuntime().availableProcessors() + 1);
+            CronExecutorService executorService = TaskManager.getExecutorService();
+            if (null == executorService) {
+                executorService = new CronThreadPoolExecutor(corePoolSize, new NamedThreadFactory("task@"));
+                TaskManager.init(executorService);
+            }
 
             AtomicInteger jobCount = new AtomicInteger();
 
-            for (TaskStruct taskStruct : taskStructs) {
+            for (TaskStruct taskStruct : taskStruts) {
                 try {
-                    Cron   cron    = taskStruct.getCron();
-                    String jobName = StringKit.isBlank(cron.name()) ? "task-" + jobCount.getAndIncrement() : cron.name();
-                    Task   task    = new Task(jobName, new CronExpression(cron.value()), cron.delay());
+                    Schedule schedule = taskStruct.getSchedule();
+                    String   jobName  = StringKit.isBlank(schedule.name()) ? "task-" + jobCount.getAndIncrement() : schedule.name();
+                    Task     task     = new Task(jobName, new CronExpression(schedule.cron()), schedule.delay());
 
                     TaskContext taskContext = new TaskContext(task);
 
@@ -225,17 +244,16 @@ public class NettyServer implements Server {
                             } else {
                                 taskStruct.getMethod().invoke(target);
                             }
-                        } catch (IllegalAccessException | InvocationTargetException e) {
-                            log.error("Task method error", e);
+                        } catch (Exception e) {
+                            log.warn("{}Task method error", getPrefixSymbol(), e.getMessage());
                         }
                     });
 
-                    ScheduledFuture<?> future = cronExecutorService.submit(task);
+                    ScheduledFuture<?> future = executorService.submit(task);
                     task.setFuture(future);
-
                     TaskManager.addTask(task);
                 } catch (Exception e) {
-                    log.error("", e);
+                    log.warn("{}Add task fail: {}", getPrefixSymbol(), e.getMessage());
                 }
             }
         }

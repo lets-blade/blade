@@ -1,5 +1,21 @@
+/**
+ * Copyright (c) 2017, biezhi 王爵 (biezhi.me@gmail.com)
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.blade.kit;
 
+import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import javax.crypto.Cipher;
@@ -19,8 +35,8 @@ import static com.blade.kit.ConvertKit.hex2Dec;
  * @author <a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since 1.0
  */
-@NoArgsConstructor
-public class EncryptKit {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class EncryptKit {
 
     private static final char[] HEX_DIGITS = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
 

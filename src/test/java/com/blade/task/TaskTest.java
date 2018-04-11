@@ -5,7 +5,6 @@ import com.blade.task.cron.CronExpression;
 import com.blade.task.cron.CronThreadPoolExecutor;
 
 import java.text.ParseException;
-import java.time.LocalDateTime;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -24,8 +23,8 @@ public class TaskTest {
 
         scheduledThreadPoolExecutor.shutdown();
 
-        CronExecutorService cronExecutorService = new CronThreadPoolExecutor(2);
-        cronExecutorService.schedule(() -> System.out.println(LocalDateTime.now() + ": " + Thread.currentThread()), new CronExpression("* * * * * ?"));
+        CronExecutorService cronExecutorService = new CronThreadPoolExecutor(2, null);
+        cronExecutorService.submit(new Task("task1", new CronExpression("* * * * ?"), 0L));
     }
 
 }
