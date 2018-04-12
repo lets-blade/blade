@@ -34,7 +34,7 @@ public interface Const {
     int          DEFAULT_SERVER_PORT        = 9000;
     String       DEFAULT_SERVER_ADDRESS     = "0.0.0.0";
     String       LOCAL_IP_ADDRESS           = "127.0.0.1";
-    String       VERSION                    = "2.0.7-R3";
+    String       VERSION                    = "2.0.8-ALPHA1";
     String       WEB_JARS                   = "/webjars/";
     String       CLASSPATH                  = BladeKit.getCurrentClassPath();
     String       CONTENT_TYPE_HTML          = "text/html; charset=UTF-8";
@@ -52,6 +52,8 @@ public interface Const {
     String ENV_KEY_APP_THREAD_NAME           = "app.thread-name";
     String ENV_KEY_APP_WATCH_ENV             = "app.watch-env";
     String ENV_KEY_BANNER_PATH               = "app.banner-path";
+    String ENV_KEY_TASK_THREAD_COUNT         = "app.task.thread-count";
+    String ENV_KEY_CONTEXT_PATH              = "app.context-path";
     String ENV_KEY_GZIP_ENABLE               = "http.gzip.enable";
     String ENV_KEY_CORS_ENABLE               = "http.cors.enable";
     String ENV_KEY_SESSION_KEY               = "http.session.key";

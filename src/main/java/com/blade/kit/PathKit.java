@@ -1,5 +1,8 @@
 package com.blade.kit;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 import java.util.regex.Pattern;
 
 /**
@@ -8,6 +11,7 @@ import java.util.regex.Pattern;
  * @author <a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since 1.5
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PathKit {
 
     public static final  String  VAR_REGEXP          = ":(\\w+)";
@@ -32,7 +36,7 @@ public final class PathKit {
         return VAR_FIXPATH_PATTERN.matcher(path).replaceAll("%20");
     }
 
-    static String cleanPath(String path) {
+    public static String cleanPath(String path) {
         if (path == null) {
             return null;
         }

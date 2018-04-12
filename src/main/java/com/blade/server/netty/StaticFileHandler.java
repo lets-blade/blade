@@ -3,10 +3,7 @@ package com.blade.server.netty;
 import com.blade.Blade;
 import com.blade.exception.ForbiddenException;
 import com.blade.exception.NotFoundException;
-import com.blade.kit.BladeKit;
-import com.blade.kit.DateKit;
-import com.blade.kit.IOKit;
-import com.blade.kit.StringKit;
+import com.blade.kit.*;
 import com.blade.mvc.Const;
 import com.blade.mvc.http.Request;
 import com.blade.mvc.http.Response;
@@ -72,33 +69,34 @@ public class StaticFileHandler implements RequestHandler<Boolean> {
 
         Instant start = Instant.now();
 
-        String uri    = URLDecoder.decode(request.uri(), "UTF-8");
-        String method = StringKit.padRight(request.method(), 6);
+        String uri      = URLDecoder.decode(request.uri(), "UTF-8");
+        String cleanUri = PathKit.cleanPath(uri.replaceFirst(request.contextPath(), "/"));
+        String method   = StringKit.padRight(request.method(), 6);
 
-        if (uri.startsWith(Const.WEB_JARS)) {
+        if (cleanUri.startsWith(Const.WEB_JARS)) {
             InputStream input = StaticFileHandler.class.getResourceAsStream("/META-INF/resources" + uri);
             if (null == input) {
                 log404(log, method, uri);
                 throw new NotFoundException(uri);
             }
-            if (jarResource(ctx, request, uri, input)) {
+            if (jarResource(ctx, request, cleanUri, input)) {
                 return false;
             }
             return false;
         }
         if (BladeKit.isInJar()) {
-            InputStream input = StaticFileHandler.class.getResourceAsStream(uri);
+            InputStream input = StaticFileHandler.class.getResourceAsStream(cleanUri);
             if (null == input) {
                 log404(log, method, uri);
                 throw new NotFoundException(uri);
             }
-            if (jarResource(ctx, request, uri, input)) {
+            if (jarResource(ctx, request, cleanUri, input)) {
                 return false;
             }
             return false;
         }
 
-        final String path = sanitizeUri(uri);
+        final String path = sanitizeUri(cleanUri);
         if (path == null) {
             log403(log, method, uri);
             throw new ForbiddenException();
@@ -109,7 +107,7 @@ public class StaticFileHandler implements RequestHandler<Boolean> {
             // gradle resources path
             File resourcesDirectory = new File(new File(Const.class.getResource("/").getPath()).getParent() + "/resources");
             if (resourcesDirectory.isDirectory()) {
-                file = new File(resourcesDirectory.getPath() + "/resources/" + uri.substring(1));
+                file = new File(resourcesDirectory.getPath() + "/resources/" + cleanUri.substring(1));
                 if (file.isHidden() || !file.exists()) {
                     log404(log, method, uri);
                     throw new NotFoundException(uri);
@@ -121,8 +119,8 @@ public class StaticFileHandler implements RequestHandler<Boolean> {
         }
 
         if (file.isDirectory() && showFileList) {
-            if (uri.endsWith(HttpConst.SLASH)) {
-                sendListing(ctx, file, uri);
+            if (cleanUri.endsWith(HttpConst.SLASH)) {
+                sendListing(ctx, file, cleanUri);
             } else {
                 response.redirect(uri + HttpConst.SLASH);
             }

@@ -96,24 +96,24 @@ public final class MethodArgument {
         Class<?> argType = parameter.getType();
         Param    param   = parameter.getAnnotation(Param.class);
         if (null != param) {
-            return getQueryParam(ParamStrut.builder().argType(argType).param(param).paramName(paramName).request(request).build());
+            return getQueryParam(ParamStruct.builder().argType(argType).param(param).paramName(paramName).request(request).build());
         }
         BodyParam bodyParam = parameter.getAnnotation(BodyParam.class);
         if (null != bodyParam) {
-            return getBodyParam(ParamStrut.builder().argType(argType).request(request).build());
+            return getBodyParam(ParamStruct.builder().argType(argType).request(request).build());
         }
         PathParam pathParam = parameter.getAnnotation(PathParam.class);
         if (null != pathParam) {
-            return getPathParam(ParamStrut.builder().argType(argType).pathParam(pathParam).paramName(paramName).request(request).build());
+            return getPathParam(ParamStruct.builder().argType(argType).pathParam(pathParam).paramName(paramName).request(request).build());
         }
         HeaderParam headerParam = parameter.getAnnotation(HeaderParam.class);
         if (null != headerParam) {
-            return getHeader(ParamStrut.builder().argType(argType).headerParam(headerParam).paramName(paramName).request(request).build());
+            return getHeader(ParamStruct.builder().argType(argType).headerParam(headerParam).paramName(paramName).request(request).build());
         }
         // cookie param
         CookieParam cookieParam = parameter.getAnnotation(CookieParam.class);
         if (null != cookieParam) {
-            return getCookie(ParamStrut.builder().argType(argType).cookieParam(cookieParam).paramName(paramName).request(request).build());
+            return getCookie(ParamStruct.builder().argType(argType).cookieParam(cookieParam).paramName(paramName).request(request).build());
         }
         // form multipart
         MultipartParam multipartParam = parameter.getAnnotation(MultipartParam.class);
@@ -124,9 +124,9 @@ public final class MethodArgument {
         return null;
     }
 
-    private static Object getBodyParam(ParamStrut paramStrut) throws Exception {
-        Class<?> argType = paramStrut.argType;
-        Request  request = paramStrut.request;
+    private static Object getBodyParam(ParamStruct paramStruct) throws Exception {
+        Class<?> argType = paramStruct.argType;
+        Request  request = paramStruct.request;
 
         if (ReflectKit.isPrimitive(argType)) {
             return ReflectKit.convert(argType, request.bodyToString());
@@ -136,11 +136,11 @@ public final class MethodArgument {
         }
     }
 
-    private static Object getQueryParam(ParamStrut paramStrut) throws Exception {
-        Param    param     = paramStrut.param;
-        String   paramName = paramStrut.paramName;
-        Class<?> argType   = paramStrut.argType;
-        Request  request   = paramStrut.request;
+    private static Object getQueryParam(ParamStruct paramStruct) throws Exception {
+        Param    param     = paramStruct.param;
+        String   paramName = paramStruct.paramName;
+        Class<?> argType   = paramStruct.argType;
+        Request  request   = paramStruct.request;
         String   name;
         if (null != param) {
             name = StringKit.isBlank(param.name()) ? paramName : param.name();
@@ -159,11 +159,11 @@ public final class MethodArgument {
         return null;
     }
 
-    private static Object getCookie(ParamStrut paramStrut) throws BladeException {
-        Class<?>    argType     = paramStrut.argType;
-        CookieParam cookieParam = paramStrut.cookieParam;
-        String      paramName   = paramStrut.paramName;
-        Request     request     = paramStrut.request;
+    private static Object getCookie(ParamStruct paramStruct) throws BladeException {
+        Class<?>    argType     = paramStruct.argType;
+        CookieParam cookieParam = paramStruct.cookieParam;
+        String      paramName   = paramStruct.paramName;
+        Request     request     = paramStruct.request;
 
         String cookieName = StringKit.isBlank(cookieParam.value()) ? paramName : cookieParam.value();
         String val        = request.cookie(cookieName);
@@ -173,11 +173,11 @@ public final class MethodArgument {
         return ReflectKit.convert(argType, val);
     }
 
-    private static Object getHeader(ParamStrut paramStrut) throws BladeException {
-        Class<?>    argType     = paramStrut.argType;
-        HeaderParam headerParam = paramStrut.headerParam;
-        String      paramName   = paramStrut.paramName;
-        Request     request     = paramStrut.request;
+    private static Object getHeader(ParamStruct paramStruct) throws BladeException {
+        Class<?>    argType     = paramStruct.argType;
+        HeaderParam headerParam = paramStruct.headerParam;
+        String      paramName   = paramStruct.paramName;
+        Request     request     = paramStruct.request;
 
         String key = StringKit.isBlank(headerParam.value()) ? paramName : headerParam.value();
         String val = request.header(key);
@@ -187,11 +187,11 @@ public final class MethodArgument {
         return ReflectKit.convert(argType, val);
     }
 
-    private static Object getPathParam(ParamStrut paramStrut) {
-        Class<?>  argType   = paramStrut.argType;
-        PathParam pathParam = paramStrut.pathParam;
-        String    paramName = paramStrut.paramName;
-        Request   request   = paramStrut.request;
+    private static Object getPathParam(ParamStruct paramStruct) {
+        Class<?>  argType   = paramStruct.argType;
+        PathParam pathParam = paramStruct.pathParam;
+        String    paramName = paramStruct.paramName;
+        Request   request   = paramStruct.request;
 
         String name = StringKit.isBlank(pathParam.name()) ? paramName : pathParam.name();
         String val  = request.pathString(name);

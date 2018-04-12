@@ -1,3 +1,18 @@
+/**
+ * Copyright (c) 2017, biezhi 王爵 (biezhi.me@gmail.com)
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.blade.server.netty;
 
 import com.blade.Blade;
@@ -23,6 +38,14 @@ import com.blade.mvc.route.RouteBuilder;
 import com.blade.mvc.route.RouteMatcher;
 import com.blade.mvc.ui.template.DefaultEngine;
 import com.blade.server.Server;
+import com.blade.task.Task;
+import com.blade.task.TaskContext;
+import com.blade.task.TaskManager;
+import com.blade.task.TaskStruct;
+import com.blade.task.annotation.Schedule;
+import com.blade.task.cron.CronExecutorService;
+import com.blade.task.cron.CronExpression;
+import com.blade.task.cron.CronThreadPoolExecutor;
 import com.blade.watcher.EnvironmentWatcher;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
@@ -39,7 +62,11 @@ import io.netty.util.ResourceLeakDetector;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
 import static com.blade.kit.BladeKit.getPrefixSymbol;
@@ -47,6 +74,8 @@ import static com.blade.kit.BladeKit.getStartedSymbol;
 import static com.blade.mvc.Const.*;
 
 /**
+ * Netty Web Server
+ *
  * @author biezhi
  * 2017/5/31
  */
@@ -60,6 +89,8 @@ public class NettyServer implements Server {
     private Channel             channel;
     private RouteBuilder        routeBuilder;
     private List<BeanProcessor> processors;
+    private List<TaskStruct>    taskStruts = new ArrayList<>();
+    private int                 padSize    = 26;
 
     @Override
     public void start(Blade blade, String[] args) throws Exception {
@@ -68,16 +99,17 @@ public class NettyServer implements Server {
         this.processors = blade.processors();
 
         long initStart = System.currentTimeMillis();
-        log.info("{} {}{}", StringKit.padRight("environment.jdk.version", 26), getPrefixSymbol(), System.getProperty("java.version"));
-        log.info("{} {}{}", StringKit.padRight("environment.user.dir", 26), getPrefixSymbol(), System.getProperty("user.dir"));
-        log.info("{} {}{}", StringKit.padRight("environment.java.io.tmpdir", 26), getPrefixSymbol(), System.getProperty("java.io.tmpdir"));
-        log.info("{} {}{}", StringKit.padRight("environment.user.timezone", 26), getPrefixSymbol(), System.getProperty("user.timezone"));
-        log.info("{} {}{}", StringKit.padRight("environment.file.encoding", 26), getPrefixSymbol(), System.getProperty("file.encoding"));
-        log.info("{} {}{}", StringKit.padRight("environment.classpath", 26), getPrefixSymbol(), CLASSPATH);
+        log.info("{} {}{}", StringKit.padRight("environment.jdk.version", padSize), getPrefixSymbol(), System.getProperty("java.version"));
+        log.info("{} {}{}", StringKit.padRight("environment.user.dir", padSize), getPrefixSymbol(), System.getProperty("user.dir"));
+        log.info("{} {}{}", StringKit.padRight("environment.java.io.tmpdir", padSize), getPrefixSymbol(), System.getProperty("java.io.tmpdir"));
+        log.info("{} {}{}", StringKit.padRight("environment.user.timezone", padSize), getPrefixSymbol(), System.getProperty("user.timezone"));
+        log.info("{} {}{}", StringKit.padRight("environment.file.encoding", padSize), getPrefixSymbol(), System.getProperty("file.encoding"));
+        log.info("{} {}{}", StringKit.padRight("environment.classpath", padSize), getPrefixSymbol(), CLASSPATH);
 
         this.initConfig();
 
-        WebContext.init(blade, "/");
+        String contextPath = environment.get(ENV_KEY_CONTEXT_PATH, "/");
+        WebContext.init(blade, contextPath);
 
         this.initIoc();
 
@@ -87,6 +119,7 @@ public class NettyServer implements Server {
 
         this.startServer(initStart);
 
+        this.startTask();
     }
 
     private void initIoc() {
@@ -115,9 +148,12 @@ public class NettyServer implements Server {
             beanDefines.forEach(b -> {
                 BladeKit.injection(ioc, b);
                 BladeKit.injectionValue(environment, b);
+                List<TaskStruct> cronExpressions = BladeKit.getTasks(b.getType());
+                if (null != cronExpressions) {
+                    taskStruts.addAll(cronExpressions);
+                }
             });
         }
-
         this.processors.stream().sorted(new OrderComparator<>()).forEach(b -> b.processor(blade));
     }
 
@@ -182,6 +218,48 @@ public class NettyServer implements Server {
         blade.eventManager().fireEvent(EventType.SERVER_STARTED, blade);
     }
 
+    private void startTask() {
+        if (taskStruts.size() > 0) {
+            int                 corePoolSize    = environment.getInt(ENV_KEY_TASK_THREAD_COUNT, Runtime.getRuntime().availableProcessors() + 1);
+            CronExecutorService executorService = TaskManager.getExecutorService();
+            if (null == executorService) {
+                executorService = new CronThreadPoolExecutor(corePoolSize, new NamedThreadFactory("task@"));
+                TaskManager.init(executorService);
+            }
+
+            AtomicInteger jobCount = new AtomicInteger();
+
+            for (TaskStruct taskStruct : taskStruts) {
+                try {
+                    Schedule schedule = taskStruct.getSchedule();
+                    String   jobName  = StringKit.isBlank(schedule.name()) ? "task-" + jobCount.getAndIncrement() : schedule.name();
+                    Task     task     = new Task(jobName, new CronExpression(schedule.cron()), schedule.delay());
+
+                    TaskContext taskContext = new TaskContext(task);
+
+                    task.setTask(() -> {
+                        Object target = blade.ioc().getBean(taskStruct.getType());
+                        Method method = taskStruct.getMethod();
+                        try {
+                            if (method.getParameterCount() == 1 && method.getParameterTypes()[0].equals(TaskContext.class)) {
+                                taskStruct.getMethod().invoke(target, taskContext);
+                            } else {
+                                taskStruct.getMethod().invoke(target);
+                            }
+                        } catch (Exception e) {
+                            log.warn("{}Task method error", getPrefixSymbol(), e.getMessage());
+                        }
+                    });
+
+                    ScheduledFuture<?> future = executorService.submit(task);
+                    task.setFuture(future);
+                    TaskManager.addTask(task);
+                } catch (Exception e) {
+                    log.warn("{}Add task fail: {}", getPrefixSymbol(), e.getMessage());
+                }
+            }
+        }
+    }
 
     private void parseCls(Class<?> clazz) {
         if (null != clazz.getAnnotation(Bean.class) || null != clazz.getAnnotation(Value.class)) {

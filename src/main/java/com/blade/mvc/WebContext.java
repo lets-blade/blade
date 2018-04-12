@@ -26,7 +26,7 @@ public class WebContext {
     private static Blade blade;
 
     /**
-     * ContextPath, are currently /
+     * ContextPath, default is "/"
      */
     private static String contextPath;
 
@@ -110,7 +110,7 @@ public class WebContext {
         return blade;
     }
 
-    public static SessionManager sessionManager(){
+    public static SessionManager sessionManager() {
         return null != blade() ? blade().sessionManager() : null;
     }
 

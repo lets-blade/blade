@@ -40,6 +40,7 @@
 * [x] 流式API风格
 * [x] 支持插件扩展
 * [x] 支持 webjars 资源
+* [x] `cron` 表达式的定时任务
 * [x] 内置多种常用中间件
 * [x] 内置JSON输出
 * [x] JDK8+
@@ -60,7 +61,7 @@
 <dependency>
 	<groupId>com.bladejava</groupId>
 	<artifactId>blade-mvc</artifactId>
-	<version>2.0.7-R3</version>
+	<version>2.0.8-ALPHA1</version>
 </dependency>
 ```
 
@@ -69,7 +70,7 @@
 或者  `Gradle`:
 
 ```sh
-compile 'com.bladejava:blade-mvc:2.0.7-R3'
+compile 'com.bladejava:blade-mvc:2.0.8-ALPHA1'
 ```
 
 编写 `main` 函数写一个 `Hello World`：

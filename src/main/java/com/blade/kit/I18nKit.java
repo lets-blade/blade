@@ -1,5 +1,6 @@
 package com.blade.kit;
 
+import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import java.text.MessageFormat;
@@ -29,8 +30,8 @@ import java.util.regex.Pattern;
  * @author <a href="mailto:chenchen_839@126.com" target="_blank">ccqy66</a>
  * @Date: 2018/1/8
  */
-@NoArgsConstructor
-public class I18nUtils {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class I18nKit {
 
     private static Map<String,ResourceHolder> CACHE = new ConcurrentHashMap<>();
     private static Pattern pattern = Pattern.compile("_");
@@ -38,9 +39,11 @@ public class I18nUtils {
     public static synchronized ResourceHolder getInstance(String baseName){
         return createResourceHolder(baseName,null);
     }
+
     public static synchronized ResourceHolder getInstance(Locale locale) {
         return createResourceHolder(null,locale);
     }
+
     private static ResourceHolder createResourceHolder(String baseName,Locale locale) {
         Tuple2<String,Locale> localeModel = toLocaleModel(baseName, locale);
         ResourceHolder holder = CACHE.get(localeModel._1());
@@ -51,6 +54,7 @@ public class I18nUtils {
         CACHE.putIfAbsent(localeModel._1(),holder);
         return holder;
     }
+
     public static Tuple2<String,Locale> toLocaleModel(String baseName,Locale locale) {
         if (StringKit.isBlank(baseName)) {
             return new Tuple2<>("i18n_"+locale.getLanguage()+"_"+locale.getCountry(),locale);
