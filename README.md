@@ -41,6 +41,7 @@ If you think this item is good can [star](https://github.com/biezhi/blade/starga
 * [x] Streaming API style
 * [x] Supports plug-in extensions
 * [x] Support webjars resources
+* [x] Based on `cron` expression of tasks
 * [x] Built-in a variety of commonly used middleware
 * [x] Built-in JSON output
 * [x] JDK8 +
@@ -61,7 +62,7 @@ Create a basic `Maven` project
 <dependency>
     <groupId>com.bladejava</groupId>
     <artifactId>blade-mvc</artifactId>
-    <version>2.0.7-R3</version>
+    <version>2.0.8-ALPHA1</version>
 </dependency>
 ```
 
@@ -70,7 +71,7 @@ Create a basic `Maven` project
 or `Gradle`:
 
 ```sh
-compile 'com.bladejava:blade-mvc:2.0.7-R3'
+compile 'com.bladejava:blade-mvc:2.0.8-ALPHA1'
 ```
 
 Write `main` method, try `Hello World`：
