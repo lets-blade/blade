@@ -111,7 +111,6 @@ public class RequestExecution implements Runnable {
             }
 
             // execute
-            signature.setRoute(route);
             this.routeHandle(signature);
 
             // webHook
