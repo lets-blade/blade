@@ -48,6 +48,9 @@ public final class ReflectKit {
     public static Object convert(Class<?> type, String value) {
 
         if (StringKit.isBlank(value)) {
+            if (type.equals(String.class)) {
+                return value;
+            }
             if (type.equals(int.class) || type.equals(double.class) ||
                     type.equals(short.class) || type.equals(long.class) ||
                     type.equals(byte.class) || type.equals(float.class)) {
