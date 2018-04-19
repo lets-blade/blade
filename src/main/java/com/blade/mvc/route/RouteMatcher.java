@@ -153,6 +153,12 @@ public class RouteMatcher {
         try {
             Pattern pattern = regexRoutePatterns.get(requestMethod);
             if (null == pattern) {
+                pattern = regexRoutePatterns.get(HttpMethod.ALL);
+                if (null != pattern) {
+                    requestMethod = HttpMethod.ALL;
+                }
+            }
+            if (null == pattern) {
                 return null;
             }
             Matcher matcher = null;

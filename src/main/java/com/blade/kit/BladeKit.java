@@ -248,6 +248,9 @@ public final class BladeKit {
     public static void logAddRoute(Logger log, Route route) {
         String method = StringKit.padRight(route.getHttpMethod().name(), 6);
         switch (route.getHttpMethod()) {
+            case ALL:
+                method = ColorKit.blankAndWhite(method);
+                break;
             case GET:
                 method = ColorKit.greenAndWhite(method);
                 break;
