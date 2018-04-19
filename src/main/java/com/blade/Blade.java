@@ -782,8 +782,7 @@ public class Blade {
         }
         this.webSocketPath = path;
         this.webSocketHandler = handler;
-        System.out.println(String.format("\n\t\t\t\t\t\t\t\t\t\t\t\t\t" +
-                "\t\t\t\t\t Register WebSocket Path: %s\n", path));
+        routeMatcher.addWebSocket(path);
         return this;
     }
 

@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.blade.kit.BladeKit.logAddRoute;
+import static com.blade.kit.BladeKit.logWebSocket;
 
 /**
  * Default Route Matcher
@@ -46,6 +47,8 @@ public class RouteMatcher {
     private Map<HttpMethod, Pattern>                            regexRoutePatterns = new HashMap<>();
     private Map<HttpMethod, Integer>                            indexes            = new HashMap<>();
     private Map<HttpMethod, StringBuilder>                      patternBuilders    = new HashMap<>();
+
+    private List<String> webSockets = new ArrayList<>(4);
 
     private Route addRoute(HttpMethod httpMethod, String path, RouteHandler handler, String methodName) throws NoSuchMethodException {
         Class<?> handleType = handler.getClass();
@@ -322,6 +325,8 @@ public class RouteMatcher {
                     log.debug("Fast Route Method: {}, regex: {}", httpMethod, patternBuilder);
                     regexRoutePatterns.put(httpMethod, Pattern.compile(patternBuilder.toString()));
                 });
+
+        webSockets.forEach(path -> logWebSocket(log, path));
     }
 
     private void registerRoute(Route route) {
@@ -381,6 +386,10 @@ public class RouteMatcher {
             Method method = ReflectKit.getMethod(WebHook.class, "before", Signature.class);
             return new Route(HttpMethod.BEFORE, "/.*", webHook, WebHook.class, method);
         }).collect(Collectors.toList());
+    }
+
+    public void addWebSocket(String path) {
+        webSockets.add(path);
     }
 
     private class FastRouteMappingInfo {

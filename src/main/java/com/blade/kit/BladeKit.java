@@ -277,4 +277,8 @@ public final class BladeKit {
         log.info("{}Add {} {} {}", getStartedSymbol(), msg, method, route.getPath());
     }
 
+    public static void logWebSocket(Logger log, String path) {
+        log.info("{}Add WebSocket {}", getStartedSymbol(), path);
+    }
+
 }
