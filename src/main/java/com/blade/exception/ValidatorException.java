@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2018, biezhi 王爵nice (biezhi.me@gmail.com)
+ * Copyright (c) 2018, biezhi 王爵 (biezhi.me@gmail.com)
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,18 +15,26 @@
  */
 package com.blade.exception;
 
-public class TemplateException extends RuntimeException {
+import lombok.Getter;
 
-	public TemplateException(String message, Throwable cause) {
-		super(message, cause);
-	}
+/**
+ * Java Bean Validator Exception
+ *
+ * @author biezhi
+ * @date 2018/4/21
+ */
+public class ValidatorException extends BladeException {
 
-	public TemplateException(String message) {
-		super(message);
-	}
+    @Getter
+    private String code;
 
-	public TemplateException(Throwable cause) {
-		super(cause);
-	}
+    public ValidatorException(String code, String message) {
+        super(message);
+        this.code = code;
+    }
+
+    public ValidatorException(String message) {
+        super(message);
+    }
 
 }

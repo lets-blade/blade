@@ -13,20 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.blade.exception;
+package com.blade.validator;
 
-public class TemplateException extends RuntimeException {
+@FunctionalInterface
+public interface Validation<T> {
 
-	public TemplateException(String message, Throwable cause) {
-		super(message, cause);
-	}
+    ValidationResult test(T param);
 
-	public TemplateException(String message) {
-		super(message);
-	}
+    default Validation<T> and(Validation<T> other) {
+        return param -> {
+            ValidationResult firstResult = this.test(param);
+            return !firstResult.isValid() ? firstResult : other.test(param);
+        };
+    }
 
-	public TemplateException(Throwable cause) {
-		super(cause);
-	}
+    default Validation<T> or(Validation<T> other) {
+        return (param) -> {
+            ValidationResult firstResult = this.test(param);
+            return firstResult.isValid() ? firstResult : other.test(param);
+        };
+    }
 
 }

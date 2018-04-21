@@ -13,20 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.blade.exception;
+package com.blade.validator;
 
-public class TemplateException extends RuntimeException {
+import lombok.AllArgsConstructor;
 
-	public TemplateException(String message, Throwable cause) {
-		super(message, cause);
-	}
+import java.util.function.Predicate;
 
-	public TemplateException(String message) {
-		super(message);
-	}
+@AllArgsConstructor
+public class SimpleValidation<T> implements Validation<T> {
 
-	public TemplateException(Throwable cause) {
-		super(cause);
-	}
+    private Predicate<T> predicate;
+    private String       onErrorMessage;
+
+    public static <T> SimpleValidation<T> from(Predicate<T> predicate, String onErrorMessage) {
+        return new SimpleValidation<>(predicate, onErrorMessage);
+    }
+
+    @Override
+    public ValidationResult test(T param) {
+        return predicate.test(param) ? ValidationResult.ok() : ValidationResult.fail(onErrorMessage);
+    }
 
 }
