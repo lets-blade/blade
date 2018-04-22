@@ -23,7 +23,7 @@ import lombok.Getter;
  * @author biezhi
  * @date 2018/4/21
  */
-public class ValidatorException extends BladeException {
+public class ValidatorException extends RuntimeException {
 
     @Getter
     private String code;

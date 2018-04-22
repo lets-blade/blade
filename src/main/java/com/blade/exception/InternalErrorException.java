@@ -16,7 +16,7 @@
 package com.blade.exception;
 
 /**
- * 500 internal error exception
+ * HTTP 500 internal error exception
  *
  * @author biezhi
  * @date 2017/9/18

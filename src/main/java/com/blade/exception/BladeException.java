@@ -40,8 +40,4 @@ public class BladeException extends RuntimeException {
         this.name = name;
     }
 
-    public BladeException(String message) {
-        super(message);
-    }
-
 }

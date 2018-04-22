@@ -16,6 +16,7 @@
 package com.blade.validator;
 
 import com.blade.exception.ValidatorException;
+import com.blade.kit.BladeKit;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -31,6 +32,10 @@ public class ValidationResult {
         return new ValidationResult(true, null, null);
     }
 
+    public static ValidationResult ok(String code) {
+        return new ValidationResult(true, null, code);
+    }
+
     public static ValidationResult fail(String message) {
         return new ValidationResult(false, message, null);
     }
@@ -44,7 +49,12 @@ public class ValidationResult {
     }
 
     public void throwIfInvalid(String fieldName) {
-        if (!isValid()) throw new ValidatorException(fieldName + " : " + getMessage());
+        if (!isValid()) throw new ValidatorException("\"" + fieldName + "\" " + getMessage());
+    }
+
+    public <T, R> void throwIfInvalid(TypeFunction<T, R> function) {
+        String fieldName = BladeKit.getLambdaFieldName(function);
+        throwIfInvalid(fieldName);
     }
 
 }

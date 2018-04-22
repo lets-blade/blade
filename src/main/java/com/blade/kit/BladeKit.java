@@ -34,7 +34,11 @@ import lombok.NoArgsConstructor;
 import org.slf4j.Logger;
 
 import java.io.File;
+import java.io.Serializable;
+import java.lang.invoke.SerializedLambda;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.time.Duration;
 import java.time.Instant;
@@ -121,6 +125,34 @@ public final class BladeKit {
         List<ValueInjector> valueFields = getValueInjectFields(environment, classDefine);
         Object              bean        = beanDefine.getBean();
         valueFields.stream().forEach(fieldInjector -> fieldInjector.injection(bean));
+    }
+
+    public static String getLambdaFieldName(Serializable lambda) {
+        for (Class<?> cl = lambda.getClass(); cl != null; cl = cl.getSuperclass()) {
+            try {
+                Method m = cl.getDeclaredMethod("writeReplace");
+                m.setAccessible(true);
+                Object replacement = m.invoke(lambda);
+                if (!(replacement instanceof SerializedLambda)) {
+                    break; // custom interface implementation
+                }
+                SerializedLambda serializedLambda = (SerializedLambda) replacement;
+                return BladeCache.getLambdaFieldName(serializedLambda);
+            } catch (NoSuchMethodException e) {
+                // do nothing
+            } catch (IllegalAccessException | InvocationTargetException e) {
+                break;
+            }
+        }
+        return null;
+    }
+
+    public static String methodToFieldName(String methodName) {
+        return capitalize(methodName.replace("get", ""));
+    }
+
+    public static String capitalize(String input) {
+        return input.substring(0, 1).toLowerCase() + input.substring(1, input.length());
     }
 
     public static List<TaskStruct> getTasks(Class<?> type) {

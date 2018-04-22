@@ -16,7 +16,7 @@
 package com.blade.exception;
 
 /**
- * 400 Exception
+ * HTTP 400 Exception
  *
  * @author biezhi
  * @date 2017/9/19

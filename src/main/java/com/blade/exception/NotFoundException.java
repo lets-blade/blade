@@ -16,7 +16,7 @@
 package com.blade.exception;
 
 /**
- * 404 not found exception
+ * HTTP 404 not found exception
  *
  * @author biezhi
  * @date 2017/9/18

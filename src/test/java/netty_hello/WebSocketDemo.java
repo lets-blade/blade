@@ -12,6 +12,7 @@ public class WebSocketDemo {
 
     public static void main(String[] args) {
         Blade.me()
+                .get("/hello", (req, res) -> {})
                 .webSocket("/webscoket", new WebSocketHandler() {
                     @Override
                     public void onConnect(WebSocketContext ctx) {
