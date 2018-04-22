@@ -5,7 +5,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static com.blade.validator.Validators.between;
-import static com.blade.validator.Validators.range;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -46,6 +45,7 @@ public class ValidatorTest {
         topic.setContent("world");
         topic.setEmail("123@gmail.com");
         topic.setUrl("https://github.com/biezhi");
+        topic.setRange(15);
         TopicValidator.valid(topic);
     }
 
