@@ -61,7 +61,7 @@
 <dependency>
 	<groupId>com.bladejava</groupId>
 	<artifactId>blade-mvc</artifactId>
-	<version>2.0.8-ALPHA2</version>
+	<version>2.0.8-BETA1</version>
 </dependency>
 ```
 
@@ -70,7 +70,7 @@
 或者  `Gradle`:
 
 ```sh
-compile 'com.bladejava:blade-mvc:2.0.8-ALPHA2'
+compile 'com.bladejava:blade-mvc:2.0.8-BETA1'
 ```
 
 编写 `main` 函数写一个 `Hello World`：

@@ -13,25 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.blade.exception;
+package com.blade.validator;
 
-/**
- * HTTP 400 Exception
- *
- * @author biezhi
- * @date 2017/9/19
- */
-public class BadRequestException extends BladeException {
+import lombok.AllArgsConstructor;
 
-    private static final int    STATUS = 400;
-    private static final String NAME   = "Bad Request";
+import java.util.function.Predicate;
 
-    public BadRequestException() {
-        super(STATUS, NAME);
+@AllArgsConstructor
+public class SimpleValidation<T> implements Validation<T> {
+
+    private Predicate<T> predicate;
+    private String       onErrorMessage;
+
+    public static <T> SimpleValidation<T> from(Predicate<T> predicate, String onErrorMessage) {
+        return new SimpleValidation<>(predicate, onErrorMessage);
     }
 
-    public BadRequestException(String message) {
-        super(STATUS, NAME, message);
+    @Override
+    public ValidationResult test(T param) {
+        return predicate.test(param) ? ValidationResult.ok() : ValidationResult.fail(onErrorMessage);
     }
 
 }

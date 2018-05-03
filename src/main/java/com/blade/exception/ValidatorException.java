@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2018, biezhi 王爵nice (biezhi.me@gmail.com)
+ * Copyright (c) 2018, biezhi 王爵 (biezhi.me@gmail.com)
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,23 +15,26 @@
  */
 package com.blade.exception;
 
+import lombok.Getter;
+
 /**
- * HTTP 400 Exception
+ * Java Bean Validator Exception
  *
  * @author biezhi
- * @date 2017/9/19
+ * @date 2018/4/21
  */
-public class BadRequestException extends BladeException {
+public class ValidatorException extends RuntimeException {
 
-    private static final int    STATUS = 400;
-    private static final String NAME   = "Bad Request";
+    @Getter
+    private String code;
 
-    public BadRequestException() {
-        super(STATUS, NAME);
+    public ValidatorException(String code, String message) {
+        super(message);
+        this.code = code;
     }
 
-    public BadRequestException(String message) {
-        super(STATUS, NAME, message);
+    public ValidatorException(String message) {
+        super(message);
     }
 
 }

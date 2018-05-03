@@ -13,25 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.blade.exception;
+package com.blade.validator;
 
-/**
- * HTTP 400 Exception
- *
- * @author biezhi
- * @date 2017/9/19
- */
-public class BadRequestException extends BladeException {
+@FunctionalInterface
+public interface Validation<T> {
 
-    private static final int    STATUS = 400;
-    private static final String NAME   = "Bad Request";
+    ValidationResult test(T param);
 
-    public BadRequestException() {
-        super(STATUS, NAME);
+    default Validation<T> and(Validation<T> other) {
+        return param -> {
+            ValidationResult firstResult = this.test(param);
+            return !firstResult.isValid() ? firstResult : other.test(param);
+        };
     }
 
-    public BadRequestException(String message) {
-        super(STATUS, NAME, message);
+    default Validation<T> or(Validation<T> other) {
+        return (param) -> {
+            ValidationResult firstResult = this.test(param);
+            return firstResult.isValid() ? firstResult : other.test(param);
+        };
     }
 
 }
