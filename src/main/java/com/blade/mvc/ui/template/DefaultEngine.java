@@ -13,7 +13,6 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * default template implment
@@ -29,26 +28,33 @@ public class DefaultEngine implements TemplateEngine {
     @Override
     public void render(ModelAndView modelAndView, Writer writer) throws TemplateException {
         String view = modelAndView.getView();
+        String body;
 
         String viewPath = Const.CLASSPATH + File.separator + TEMPLATE_PATH + File.separator + view;
         viewPath = viewPath.replace("//", "/");
 
         try {
-            String body;
-            if (BladeKit.isInJar()) {
-                viewPath = File.separator + TEMPLATE_PATH + File.separator + view;
-                viewPath = viewPath.replace("//", "/");
-                InputStream    in     = getClass().getResourceAsStream(viewPath);
-                BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+            if (view.startsWith("jar:")) {
+                String         jarPath = view.substring(4);
+                InputStream    input   = DefaultEngine.class.getResourceAsStream(jarPath);
+                BufferedReader reader  = new BufferedReader(new InputStreamReader(input));
                 body = IOKit.readToString(reader);
             } else {
-                body = IOKit.readToString(viewPath);
+                if (BladeKit.isInJar()) {
+                    viewPath = File.separator + TEMPLATE_PATH + File.separator + view;
+                    viewPath = viewPath.replace("//", "/");
+                    InputStream    in     = getClass().getResourceAsStream(viewPath);
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+                    body = IOKit.readToString(reader);
+                } else {
+                    body = IOKit.readToString(viewPath);
+                }
             }
 
             Request request = WebContext.request();
 
             Map<String, Object> attributes = new HashMap<>();
-            Map<String, Object> reqAttrs = request.attributes();
+            Map<String, Object> reqAttrs   = request.attributes();
             attributes.putAll(reqAttrs);
             attributes.putAll(modelAndView.getModel());
 
