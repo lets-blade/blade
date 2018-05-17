@@ -21,6 +21,8 @@ import com.blade.kit.json.JsonSupport;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+import java.lang.reflect.Type;
+
 /**
  * Json kit
  *
@@ -42,8 +44,8 @@ public final class JsonKit {
         return jsonSupport.toString(object);
     }
 
-    public static <T> T formJson(String json, Class<T> cls) {
-        return jsonSupport.formJson(json, cls);
+    public static <T> T formJson(String json, Type type) {
+        return jsonSupport.formJson(json, type);
     }
 
     public static Ason<?, ?> toAson(String value) {

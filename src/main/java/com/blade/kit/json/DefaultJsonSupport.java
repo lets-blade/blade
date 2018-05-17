@@ -1,6 +1,9 @@
 package com.blade.kit.json;
 
+import com.blade.kit.ReflectKit;
 import lombok.extern.slf4j.Slf4j;
+
+import java.lang.reflect.Type;
 
 /**
  * @author biezhi
@@ -15,8 +18,9 @@ public class DefaultJsonSupport implements JsonSupport {
     }
 
     @Override
-    public <T> T formJson(String json, Class<T> cls) {
+    public <T> T formJson(String json, Type type) {
         Object jsonObj = SampleJsonSerializer.deserialize(json);
+        Class<T> cls = (Class<T>) ReflectKit.typeToClass(type);
         return BeanSerializer.deserialize(cls, jsonObj);
     }
 

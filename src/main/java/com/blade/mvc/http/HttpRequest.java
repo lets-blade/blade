@@ -1,7 +1,9 @@
 package com.blade.mvc.http;
 
+import com.blade.kit.JsonKit;
 import com.blade.kit.StringKit;
 import com.blade.mvc.WebContext;
+import com.blade.mvc.handler.MethodArgument;
 import com.blade.mvc.multipart.FileItem;
 import com.blade.mvc.route.Route;
 import com.blade.server.netty.HttpConst;
@@ -23,7 +25,10 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.IOException;
 import java.net.URLConnection;
 import java.nio.file.Files;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Http Request Impl
@@ -267,13 +272,14 @@ public class HttpRequest implements Request {
     }
 
     @Override
-    public <T> T bindForm(Class<T> modelClass) {
-        return null;
+    public <T> T bindWithForm(Class<T> modelClass) {
+        return MethodArgument.parseModel(modelClass, this, null);
     }
 
     @Override
-    public <T> T bindBody(Class<T> modelClass) {
-        return null;
+    public <T> T bindWithBody(Class<T> modelClass) {
+        String json = this.bodyToString();
+        return StringKit.isNotBlank(json) ? JsonKit.formJson(json, modelClass) : null;
     }
 
     @Override

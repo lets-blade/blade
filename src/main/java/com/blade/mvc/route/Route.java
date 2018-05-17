@@ -175,6 +175,10 @@ public class Route {
         this.sort = sort;
     }
 
+    public String getAllPath() {
+        return this.path + "#" + this.httpMethod.name();
+    }
+
     /**
      * Route to string
      *
