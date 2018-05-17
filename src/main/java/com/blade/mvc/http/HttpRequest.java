@@ -23,10 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.IOException;
 import java.net.URLConnection;
 import java.nio.file.Files;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Http Request Impl
@@ -102,7 +99,17 @@ public class HttpRequest implements Request {
                     Attribute attribute = (Attribute) data;
                     String name = attribute.getName();
                     String value = attribute.getValue();
-                    this.parameters.put(name, Collections.singletonList(value));
+
+                    List<String> values;
+                    if (this.parameters.containsKey(name)) {
+                        values = this.parameters.get(name);
+                        values.add(value);
+                    } else {
+                        values = new ArrayList<>();
+                        values.add(value);
+                        this.parameters.put(name, values);
+                    }
+
                     break;
                 case FileUpload:
                     FileUpload fileUpload = (FileUpload) data;
@@ -257,6 +264,16 @@ public class HttpRequest implements Request {
     @Override
     public boolean keepAlive() {
         return this.keepAlive;
+    }
+
+    @Override
+    public <T> T bindForm(Class<T> modelClass) {
+        return null;
+    }
+
+    @Override
+    public <T> T bindBody(Class<T> modelClass) {
+        return null;
     }
 
     @Override
