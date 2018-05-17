@@ -2,6 +2,7 @@ package netty_hello;
 
 import com.blade.Blade;
 import com.blade.event.EventType;
+import com.blade.security.web.csrf.CsrfMiddleware;
 
 import java.io.File;
 import java.time.LocalDateTime;
@@ -35,6 +36,7 @@ public class Hello {
                     }
                     response.success();
                 }))
+                .use(new CsrfMiddleware())
                 .event(EventType.ENVIRONMENT_CHANGED, new ConfigChanged())
                 .start(Hello.class, args);
     }

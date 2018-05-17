@@ -13,7 +13,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author biezhi
  * @date 2018/4/9
  */
-@Bean
+//@Bean
 @Slf4j
 public class TaskModel {
 
