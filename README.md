@@ -653,7 +653,7 @@ Blade has already implemented an exception handler by default, and sometimes you
 
 ```java
 @Bean
-public class GolbalExceptionHandler extends DefaultExceptionHandler {
+public class GlobalExceptionHandler extends DefaultExceptionHandler {
 
     @Override
     public void handle(Exception e) {
