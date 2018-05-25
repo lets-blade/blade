@@ -24,7 +24,7 @@ public class BeanSerializer {
             return null;
         }
 
-        if (ReflectKit.isPrimitive(bean) || bean instanceof Number || bean instanceof Date
+        if (ReflectKit.isPrimitive(bean.getClass()) || bean instanceof Number || bean instanceof Date
                 || bean instanceof LocalDate || bean instanceof LocalDateTime) {
             return bean;
         }
@@ -312,7 +312,7 @@ public class BeanSerializer {
 
     public static <T> T deserialize(Class<T> klass, Object object) {
         try {
-            if (ReflectKit.isPrimitive(object)) {
+            if (ReflectKit.isPrimitive(object.getClass())) {
                 return (T) ReflectKit.convert(klass, object.toString());
             } else if (object instanceof Map) {
                 if (Map.class.isAssignableFrom(klass)) {

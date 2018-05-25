@@ -36,7 +36,7 @@ public class Hello {
                     }
                     response.success();
                 }))
-                .use(new CsrfMiddleware())
+//                .use(new CsrfMiddleware())
                 .event(EventType.ENVIRONMENT_CHANGED, new ConfigChanged())
                 .start(Hello.class, args);
     }

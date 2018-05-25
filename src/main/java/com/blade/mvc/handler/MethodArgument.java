@@ -46,7 +46,7 @@ public final class MethodArgument {
                 args[i] = getAnnotationParam(parameter, paramName, request);
                 continue;
             }
-            if (ReflectKit.isPrimitive(argType)) {
+            if (ReflectKit.isBasicType(argType)) {
                 args[i] = request.query(paramName);
                 continue;
             }
@@ -159,13 +159,13 @@ public final class MethodArgument {
             return null;
         }
         name = StringKit.isBlank(param.name()) ? paramName : param.name();
-        if (ReflectKit.isPrimitive(argType) || argType.equals(Date.class) || argType.equals(BigDecimal.class)
+
+        if (ReflectKit.isBasicType(argType) || argType.equals(Date.class) || argType.equals(BigDecimal.class)
                 || argType.equals(LocalDate.class) || argType.equals(LocalDateTime.class)) {
-            Optional<String> val = request.query(name);
-            if (!val.isPresent()) {
-                val = Optional.of(param.defaultValue());
-            }
-            return ReflectKit.convert(argType, val.get());
+
+            String value = request.query(name).orElseGet(() -> getDefaultValue(param.defaultValue(), argType));
+
+            return ReflectKit.convert(argType, value);
         } else {
             if (ParameterizedType.class.isInstance(argType)) {
                 List<String> values = request.parameters().get(param.name());
@@ -173,6 +173,27 @@ public final class MethodArgument {
             }
             return parseModel(ReflectKit.typeToClass(argType), request, param.name());
         }
+    }
+
+    private static String getDefaultValue(String defaultValue, Type argType) {
+        if (argType.equals(String.class)) {
+            if (StringKit.isNotEmpty(defaultValue)) {
+                return defaultValue;
+            }
+            return null;
+        }
+        if (ReflectKit.isPrimitive(argType)) {
+            if (argType.equals(int.class) || argType.equals(long.class) || argType.equals(double.class) ||
+                    argType.equals(float.class) || argType.equals(short.class) ||
+                    argType.equals(byte.class)) {
+                return "0";
+            }
+            if (argType.equals(boolean.class)) {
+                return "false";
+            }
+            return "";
+        }
+        return null;
     }
 
     private static Object getCookie(ParamStruct paramStruct) throws BladeException {

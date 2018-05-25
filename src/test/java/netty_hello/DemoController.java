@@ -33,6 +33,13 @@ public class DemoController {
         System.out.println("ids: " + Arrays.toString(ids));
     }
 
+    @PostRoute("def")
+    public void postCk(@Param String hello, @Param Integer aa, @Param int bb) {
+        System.out.println("hello:" + hello);
+        System.out.println("aa:" + aa);
+        System.out.println("bb:" + bb);
+    }
+
     @GetRoute("csrf")
     public void getCsrfToken(Request request, Response response) {
         response.text("token: " + request.attribute("_csrf_token"));

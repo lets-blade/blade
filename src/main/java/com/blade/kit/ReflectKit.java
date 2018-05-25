@@ -84,8 +84,12 @@ public final class ReflectKit {
      * @return return target value
      */
     public static Object convert(Type type, String value) {
+        if (null == value) {
+            return value;
+        }
 
-        if (StringKit.isBlank(value)) {
+        if ("".equals(value)) {
+
             if (type.equals(String.class)) {
                 return value;
             }
@@ -244,42 +248,37 @@ public final class ReflectKit {
         }
     }
 
+    public static boolean isPrimitive(Object bean) {
+        return isPrimitive(bean.getClass());
+    }
+
     /**
      * Is cls a basic type
      *
-     * @param cls Class type
+     * @param type Class type
      * @return true or false
      */
-    public static boolean isPrimitive(Class<?> cls) {
-        return cls == boolean.class
-                || cls == Boolean.class
-                || cls == double.class
-                || cls == Double.class
-                || cls == float.class
-                || cls == Float.class
-                || cls == short.class
-                || cls == Short.class
-                || cls == int.class
-                || cls == Integer.class
-                || cls == long.class
-                || cls == Long.class
-                || cls == String.class
-                || cls == byte.class
-                || cls == Byte.class
-                || cls == char.class
-                || cls == Character.class;
+    public static boolean isPrimitive(Type type) {
+        return type.equals(boolean.class)
+                || type.equals(double.class)
+                || type.equals(float.class)
+                || type.equals(short.class)
+                || type.equals(int.class)
+                || type.equals(long.class)
+                || type.equals(byte.class)
+                || type.equals(char.class);
     }
 
-    public static boolean isPrimitive(Object cls) {
-        return cls instanceof Boolean
-                || cls instanceof Double
-                || cls instanceof Float
-                || cls instanceof Short
-                || cls instanceof Integer
-                || cls instanceof Long
-                || cls instanceof String
-                || cls instanceof Byte
-                || cls instanceof Character;
+    public static boolean isBasicType(Type type) {
+        return type.equals(String.class) || type.equals(Integer.class) ||
+                type.equals(Long.class) || type.equals(Double.class) ||
+                type.equals(Float.class) || type.equals(Short.class) ||
+                type.equals(Boolean.class) || type.equals(Byte.class) ||
+                type.equals(Character.class) || type.equals(int.class) ||
+                type.equals(long.class) || type.equals(double.class) ||
+                type.equals(float.class) || type.equals(short.class) ||
+                type.equals(boolean.class) || type.equals(byte.class) ||
+                type.equals(char.class);
     }
 
     public static boolean isArray(Type type) {

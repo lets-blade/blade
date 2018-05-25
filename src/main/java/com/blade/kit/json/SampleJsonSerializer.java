@@ -23,7 +23,7 @@ public class SampleJsonSerializer {
                     .replace("\t", "\\t").replace("\r", "\\r")
                     .replace("\f", "\\f").replace("\n", "\\n") + '\"';
         }
-        if (ReflectKit.isPrimitive(object)) {
+        if (ReflectKit.isPrimitive(object.getClass())) {
             return object.toString();
         }
         if (object instanceof Date || object instanceof BigDecimal) {
