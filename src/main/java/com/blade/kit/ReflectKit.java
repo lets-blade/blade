@@ -269,6 +269,10 @@ public final class ReflectKit {
                 || type.equals(char.class);
     }
 
+    public static boolean isBasicType(Object bean) {
+        return isBasicType(bean.getClass());
+    }
+
     public static boolean isBasicType(Type type) {
         return type.equals(String.class) || type.equals(Integer.class) ||
                 type.equals(Long.class) || type.equals(Double.class) ||

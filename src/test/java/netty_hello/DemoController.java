@@ -3,6 +3,7 @@ package netty_hello;
 import com.blade.mvc.annotation.*;
 import com.blade.mvc.http.Request;
 import com.blade.mvc.http.Response;
+import com.blade.mvc.multipart.FileItem;
 
 import java.util.Arrays;
 import java.util.List;
@@ -43,6 +44,13 @@ public class DemoController {
     @GetRoute("csrf")
     public void getCsrfToken(Request request, Response response) {
         response.text("token: " + request.attribute("_csrf_token"));
+    }
+
+    @PostRoute("upload")
+    public void upload(@MultipartParam FileItem fileItem) {
+        System.out.println(fileItem.getFileName());
+        System.out.println(fileItem.getContentType());
+        System.out.println(fileItem.getLength());
     }
 
 }
