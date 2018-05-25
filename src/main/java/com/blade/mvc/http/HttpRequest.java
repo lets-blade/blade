@@ -39,7 +39,7 @@ import java.util.Map;
 @Slf4j
 public class HttpRequest implements Request {
 
-    private static final HttpDataFactory HTTP_DATA_FACTORY = new DefaultHttpDataFactory(DefaultHttpDataFactory.MINSIZE); // Disk if size exceed
+    private static final HttpDataFactory HTTP_DATA_FACTORY = new DefaultHttpDataFactory(DefaultHttpDataFactory.MAXSIZE);
     private static final SessionHandler  SESSION_HANDLER   = WebContext.sessionManager() != null ? new SessionHandler(WebContext.blade()) : null;
 
     static {
@@ -78,10 +78,14 @@ public class HttpRequest implements Request {
         this.body = fullHttpRequest.content().copy();
 
         // request query parameters
-        Map<String, List<String>> parameters = new QueryStringDecoder(fullHttpRequest.uri(), CharsetUtil.UTF_8).parameters();
-        if (null != parameters) {
-            this.parameters = new HashMap<>();
-            this.parameters.putAll(parameters);
+        QueryStringDecoder queryStringDecoder = new QueryStringDecoder(fullHttpRequest.uri(), CharsetUtil.UTF_8);
+        if (!queryStringDecoder.path().equals(contextPath()) && !fullHttpRequest.uri().contains("?")) {
+
+            Map<String, List<String>> parameters = queryStringDecoder.parameters();
+            if (null != parameters) {
+                this.parameters = new HashMap<>();
+                this.parameters.putAll(parameters);
+            }
         }
 
         if (!HttpConst.METHOD_GET.equals(fullHttpRequest.method().name())) {
