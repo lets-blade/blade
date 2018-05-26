@@ -3,6 +3,8 @@ package com.blade.kit;
 import com.blade.model.TestBean;
 import org.junit.Test;
 
+import java.time.LocalDateTime;
+
 /**
  * @author biezhi
  *         2017/6/6
@@ -25,5 +27,11 @@ public class JsonKitTest {
         System.out.println(bean);
     }
 
+    @Test
+    public void test2(){
+        TestBean testBean = new TestBean();
+        testBean.setDateTime(LocalDateTime.now());
+        System.out.println(JsonKit.toString(testBean));
+    }
 }
 

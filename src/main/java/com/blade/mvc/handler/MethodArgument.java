@@ -18,10 +18,8 @@ import java.lang.reflect.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Route method param parse
@@ -43,16 +41,16 @@ public final class MethodArgument {
         for (int i = 0, len = parameters.length; i < len; i++) {
             Parameter parameter = parameters[i];
             String    paramName = parameterNames[i];
-            Class<?>  argType   = parameter.getType();
+            Type      argType   = parameter.getParameterizedType();
             if (containsAnnotation(parameter)) {
                 args[i] = getAnnotationParam(parameter, paramName, request);
                 continue;
             }
-            if (ReflectKit.isPrimitive(argType)) {
+            if (ReflectKit.isBasicType(argType)) {
                 args[i] = request.query(paramName);
                 continue;
             }
-            args[i] = getCustomType(parameter, signature);
+            args[i] = getCustomType(parameter, paramName, signature);
         }
         return args;
     }
@@ -66,8 +64,8 @@ public final class MethodArgument {
                 parameter.getAnnotation(MultipartParam.class) != null;
     }
 
-    private static Object getCustomType(Parameter parameter, Signature signature) throws Exception {
-        Class<?> argType = parameter.getType();
+    private static Object getCustomType(Parameter parameter, String paramName, Signature signature) {
+        Type argType = parameter.getParameterizedType();
         if (argType == Signature.class) {
             return signature;
         } else if (argType == Request.class) {
@@ -87,14 +85,29 @@ public final class MethodArgument {
             Type              paramsOfFirstGeneric = firstParam.getActualTypeArguments()[0];
             Class<?>          modelType            = ReflectKit.form(paramsOfFirstGeneric.getTypeName());
             return Optional.ofNullable(parseModel(modelType, signature.request(), null));
+        } else if (ParameterizedType.class.isInstance(argType)) {
+            String       name   = parameter.getName();
+            List<String> values = signature.request().parameters().get(name);
+            return getParameterizedTypeValues(values, argType);
+        } else if (ReflectKit.isArray(argType)) {
+            List<String> values = signature.request().parameters().get(paramName);
+            if (null == values) {
+                return null;
+            }
+            Class  arrayCls = (Class) argType;
+            Object aObject  = Array.newInstance(arrayCls.getComponentType(), values.size());
+            for (int i = 0; i < values.size(); i++) {
+                Array.set(aObject, i, ReflectKit.convert(arrayCls.getComponentType(), values.get(i)));
+            }
+            return aObject;
         } else {
-            return parseModel(argType, signature.request(), null);
+            return parseModel(ReflectKit.typeToClass(argType), signature.request(), null);
         }
     }
 
-    private static Object getAnnotationParam(Parameter parameter, String paramName, Request request) throws Exception {
-        Class<?> argType = parameter.getType();
-        Param    param   = parameter.getAnnotation(Param.class);
+    private static Object getAnnotationParam(Parameter parameter, String paramName, Request request) {
+        Type  argType = parameter.getParameterizedType();
+        Param param   = parameter.getAnnotation(Param.class);
         if (null != param) {
             return getQueryParam(ParamStruct.builder().argType(argType).param(param).paramName(paramName).request(request).build());
         }
@@ -124,43 +137,67 @@ public final class MethodArgument {
         return null;
     }
 
-    private static Object getBodyParam(ParamStruct paramStruct) throws Exception {
-        Class<?> argType = paramStruct.argType;
-        Request  request = paramStruct.request;
+    private static Object getBodyParam(ParamStruct paramStruct) {
+        Type    argType = paramStruct.argType;
+        Request request = paramStruct.request;
 
         if (ReflectKit.isPrimitive(argType)) {
             return ReflectKit.convert(argType, request.bodyToString());
         } else {
             String json = request.bodyToString();
-            return StringKit.isNotBlank(json) ? JsonKit.formJson(request.bodyToString(), argType) : null;
+            return StringKit.isNotBlank(json) ? JsonKit.formJson(json, argType) : null;
         }
     }
 
-    private static Object getQueryParam(ParamStruct paramStruct) throws Exception {
-        Param    param     = paramStruct.param;
-        String   paramName = paramStruct.paramName;
-        Class<?> argType   = paramStruct.argType;
-        Request  request   = paramStruct.request;
-        String   name;
-        if (null != param) {
-            name = StringKit.isBlank(param.name()) ? paramName : param.name();
-            if (ReflectKit.isPrimitive(argType) || argType.equals(Date.class) || argType.equals(BigDecimal.class)
-                    || argType.equals(LocalDate.class) || argType.equals(LocalDateTime.class)) {
-                Optional<String> val = request.query(name);
-                if (!val.isPresent()) {
-                    val = Optional.of(param.defaultValue());
-                }
-                return ReflectKit.convert(argType, val.get());
-            } else {
-                name = param.name();
-                return parseModel(argType, request, name);
+    private static Object getQueryParam(ParamStruct paramStruct) {
+        Param   param     = paramStruct.param;
+        String  paramName = paramStruct.paramName;
+        Type    argType   = paramStruct.argType;
+        Request request   = paramStruct.request;
+        String  name;
+        if (null == param) {
+            return null;
+        }
+        name = StringKit.isBlank(param.name()) ? paramName : param.name();
+
+        if (ReflectKit.isBasicType(argType) || argType.equals(Date.class) || argType.equals(BigDecimal.class)
+                || argType.equals(LocalDate.class) || argType.equals(LocalDateTime.class)) {
+
+            String value = request.query(name).orElseGet(() -> getDefaultValue(param.defaultValue(), argType));
+
+            return ReflectKit.convert(argType, value);
+        } else {
+            if (ParameterizedType.class.isInstance(argType)) {
+                List<String> values = request.parameters().get(param.name());
+                return getParameterizedTypeValues(values, argType);
             }
+            return parseModel(ReflectKit.typeToClass(argType), request, param.name());
+        }
+    }
+
+    private static String getDefaultValue(String defaultValue, Type argType) {
+        if (argType.equals(String.class)) {
+            if (StringKit.isNotEmpty(defaultValue)) {
+                return defaultValue;
+            }
+            return null;
+        }
+        if (ReflectKit.isPrimitive(argType)) {
+            if (argType.equals(int.class) || argType.equals(long.class) || argType.equals(double.class) ||
+                    argType.equals(float.class) || argType.equals(short.class) ||
+                    argType.equals(byte.class)) {
+                return "0";
+            }
+            if (argType.equals(boolean.class)) {
+                return "false";
+            }
+            return "";
         }
         return null;
     }
 
     private static Object getCookie(ParamStruct paramStruct) throws BladeException {
-        Class<?>    argType     = paramStruct.argType;
+        Type        argType     = paramStruct.argType;
         CookieParam cookieParam = paramStruct.cookieParam;
         String      paramName   = paramStruct.paramName;
         Request     request     = paramStruct.request;
@@ -174,7 +211,7 @@ public final class MethodArgument {
     }
 
     private static Object getHeader(ParamStruct paramStruct) throws BladeException {
-        Class<?>    argType     = paramStruct.argType;
+        Type        argType     = paramStruct.argType;
         HeaderParam headerParam = paramStruct.headerParam;
         String      paramName   = paramStruct.paramName;
         Request     request     = paramStruct.request;
@@ -188,7 +225,7 @@ public final class MethodArgument {
     }
 
     private static Object getPathParam(ParamStruct paramStruct) {
-        Class<?>  argType   = paramStruct.argType;
+        Type      argType   = paramStruct.argType;
         PathParam pathParam = paramStruct.pathParam;
         String    paramName = paramStruct.paramName;
         Request   request   = paramStruct.request;
@@ -201,25 +238,37 @@ public final class MethodArgument {
         return ReflectKit.convert(argType, val);
     }
 
-    private static Object parseModel(Class<?> argType, Request request, String name) throws Exception {
-        Object  obj    = ReflectKit.newInstance(argType);
+    public static <T> T parseModel(Class<T> argType, Request request, String name) {
+        T       obj    = ReflectKit.newInstance(argType);
         Field[] fields = argType.getDeclaredFields();
+
         for (Field field : fields) {
-            field.setAccessible(true);
             if ("serialVersionUID".equals(field.getName())) {
                 continue;
             }
+            Object value = null;
+
             Optional<String> fieldValue = request.query(field.getName());
             if (StringKit.isNotBlank(name)) {
                 String fieldName = name + "[" + field.getName() + "]";
                 fieldValue = request.query(fieldName);
             }
             if (fieldValue.isPresent() && StringKit.isNotBlank(fieldValue.get())) {
-                Object value = ReflectKit.convert(field.getType(), fieldValue.get());
-                field.set(obj, value);
+                value = ReflectKit.convert(field.getType(), fieldValue.get());
             }
+            ReflectKit.setFieldValue(field, obj, value);
         }
         return obj;
     }
 
+    private static Object getParameterizedTypeValues(List<String> values, Type argType) {
+        if (null == values || null == argType) {
+            return null;
+        }
+        ParameterizedType parameterizedType = (ParameterizedType) argType;
+        Class<?>          realType          = (Class) parameterizedType.getActualTypeArguments()[0];
+        return values.stream()
+                .map(s -> ReflectKit.convert(realType, s))
+                .collect(Collectors.toList());
+    }
 }

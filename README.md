@@ -62,7 +62,7 @@ Create a basic `Maven` project
 <dependency>
     <groupId>com.bladejava</groupId>
     <artifactId>blade-mvc</artifactId>
-    <version>2.0.8-BETA1</version>
+    <version>2.0.8-BETA2</version>
 </dependency>
 ```
 
@@ -71,7 +71,7 @@ Create a basic `Maven` project
 or `Gradle`:
 
 ```sh
-compile 'com.bladejava:blade-mvc:2.0.8-BETA1'
+compile 'com.bladejava:blade-mvc:2.0.8-BETA2'
 ```
 
 Write `main` method, try `Hello World`：
@@ -653,7 +653,7 @@ Blade has already implemented an exception handler by default, and sometimes you
 
 ```java
 @Bean
-public class GolbalExceptionHandler extends DefaultExceptionHandler {
+public class GlobalExceptionHandler extends DefaultExceptionHandler {
 
     @Override
     public void handle(Exception e) {

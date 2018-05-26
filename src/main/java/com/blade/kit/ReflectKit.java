@@ -1,11 +1,14 @@
 package com.blade.kit;
 
+import com.blade.exception.BladeException;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -22,20 +25,55 @@ import java.util.stream.Stream;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ReflectKit {
 
+    private static final String TYPE_NAME_PREFIX = "class ";
+
     /**
      * Create an instance of the none constructor.
      *
-     * @param cls target type
-     * @param <T> target type
+     * @param type target type
+     * @param <T>  target type
      * @return object instance
      */
-    public static <T> T newInstance(Class<T> cls) {
+    public static <T> T newInstance(Type type) {
         try {
-            return cls.newInstance();
+            Class<T> clazz = (Class<T>) getClass(type);
+            if (clazz == null) {
+                return null;
+            }
+            return clazz.newInstance();
         } catch (Exception e) {
             log.warn("new instance fail", e.getMessage());
             return null;
         }
+    }
+
+    public static Class<?> getClass(Type type)
+            throws ClassNotFoundException {
+        String className = getClassName(type);
+        if (className == null || className.isEmpty()) {
+            return null;
+        }
+        return Class.forName(className);
+    }
+
+    public static String getClassName(Type type) {
+        if (type == null) {
+            return "";
+        }
+        String className = type.toString();
+        if (className.startsWith(TYPE_NAME_PREFIX)) {
+            className = className.substring(TYPE_NAME_PREFIX.length());
+        }
+        return className;
+    }
+
+    public static Class<?> typeToClass(Type type) {
+        if (type instanceof Class) {
+            @SuppressWarnings("unchecked")
+            Class<?> clazz = (Class<?>) type;
+            return clazz;
+        }
+        return null;
     }
 
     /**
@@ -45,9 +83,13 @@ public final class ReflectKit {
      * @param value string value
      * @return return target value
      */
-    public static Object convert(Class<?> type, String value) {
+    public static Object convert(Type type, String value) {
+        if (null == value) {
+            return value;
+        }
 
-        if (StringKit.isBlank(value)) {
+        if ("".equals(value)) {
+
             if (type.equals(String.class)) {
                 return value;
             }
@@ -197,42 +239,60 @@ public final class ReflectKit {
         }
     }
 
+    public static void setFieldValue(Field field, Object target, Object value) {
+        field.setAccessible(true);
+        try {
+            field.set(target, value);
+        } catch (IllegalAccessException e) {
+            throw new BladeException(500, "", e.getMessage());
+        }
+    }
+
+    public static boolean isPrimitive(Object bean) {
+        return isPrimitive(bean.getClass());
+    }
+
     /**
      * Is cls a basic type
      *
-     * @param cls Class type
+     * @param type Class type
      * @return true or false
      */
-    public static boolean isPrimitive(Class<?> cls) {
-        return cls == boolean.class
-                || cls == Boolean.class
-                || cls == double.class
-                || cls == Double.class
-                || cls == float.class
-                || cls == Float.class
-                || cls == short.class
-                || cls == Short.class
-                || cls == int.class
-                || cls == Integer.class
-                || cls == long.class
-                || cls == Long.class
-                || cls == String.class
-                || cls == byte.class
-                || cls == Byte.class
-                || cls == char.class
-                || cls == Character.class;
+    public static boolean isPrimitive(Type type) {
+        return type.equals(boolean.class)
+                || type.equals(double.class)
+                || type.equals(float.class)
+                || type.equals(short.class)
+                || type.equals(int.class)
+                || type.equals(long.class)
+                || type.equals(byte.class)
+                || type.equals(char.class);
     }
 
-    public static boolean isPrimitive(Object cls) {
-        return cls instanceof Boolean
-                || cls instanceof Double
-                || cls instanceof Float
-                || cls instanceof Short
-                || cls instanceof Integer
-                || cls instanceof Long
-                || cls instanceof String
-                || cls instanceof Byte
-                || cls instanceof Character;
+    public static boolean isBasicType(Object bean) {
+        return isBasicType(bean.getClass());
+    }
+
+    public static boolean isBasicType(Type type) {
+        return type.equals(String.class) || type.equals(Integer.class) ||
+                type.equals(Long.class) || type.equals(Double.class) ||
+                type.equals(Float.class) || type.equals(Short.class) ||
+                type.equals(Boolean.class) || type.equals(Byte.class) ||
+                type.equals(Character.class) || type.equals(int.class) ||
+                type.equals(long.class) || type.equals(double.class) ||
+                type.equals(float.class) || type.equals(short.class) ||
+                type.equals(boolean.class) || type.equals(byte.class) ||
+                type.equals(char.class);
+    }
+
+    public static boolean isArray(Type type) {
+        return type == String[].class || type == int[].class ||
+                type == Integer[].class || type == Long[].class ||
+                type == Double[].class || type == double[].class ||
+                type == Float[].class || type == float[].class ||
+                type == Boolean[].class || type == boolean[].class ||
+                type == Short[].class || type == short[].class ||
+                type == Byte[].class || type == byte[].class;
     }
 
     /**

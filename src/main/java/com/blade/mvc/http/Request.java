@@ -402,6 +402,22 @@ public interface Request {
     boolean keepAlive();
 
     /**
+     * Bind form parameter to model
+     *
+     * @param modelClass
+     * @param <T>
+     */
+    <T> T bindWithForm(Class<T> modelClass);
+
+    /**
+     * Bind body parameter to model
+     *
+     * @param modelClass
+     * @param <T>
+     */
+    <T> T bindWithBody(Class<T> modelClass);
+
+    /**
      * Get current request attributes
      *
      * @return Return all Attribute in Request

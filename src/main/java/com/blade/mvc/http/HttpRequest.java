@@ -1,7 +1,9 @@
 package com.blade.mvc.http;
 
+import com.blade.kit.JsonKit;
 import com.blade.kit.StringKit;
 import com.blade.mvc.WebContext;
+import com.blade.mvc.handler.MethodArgument;
 import com.blade.mvc.multipart.FileItem;
 import com.blade.mvc.route.Route;
 import com.blade.server.netty.HttpConst;
@@ -23,7 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.IOException;
 import java.net.URLConnection;
 import java.nio.file.Files;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,7 +39,7 @@ import java.util.Map;
 @Slf4j
 public class HttpRequest implements Request {
 
-    private static final HttpDataFactory HTTP_DATA_FACTORY = new DefaultHttpDataFactory(DefaultHttpDataFactory.MINSIZE); // Disk if size exceed
+    private static final HttpDataFactory HTTP_DATA_FACTORY = new DefaultHttpDataFactory(DefaultHttpDataFactory.MAXSIZE);
     private static final SessionHandler  SESSION_HANDLER   = WebContext.sessionManager() != null ? new SessionHandler(WebContext.blade()) : null;
 
     static {
@@ -76,10 +78,14 @@ public class HttpRequest implements Request {
         this.body = fullHttpRequest.content().copy();
 
         // request query parameters
-        Map<String, List<String>> parameters = new QueryStringDecoder(fullHttpRequest.uri(), CharsetUtil.UTF_8).parameters();
-        if (null != parameters) {
-            this.parameters = new HashMap<>();
-            this.parameters.putAll(parameters);
+        QueryStringDecoder queryStringDecoder = new QueryStringDecoder(fullHttpRequest.uri(), CharsetUtil.UTF_8);
+        if (!queryStringDecoder.path().equals(contextPath()) && !fullHttpRequest.uri().contains("?")) {
+
+            Map<String, List<String>> parameters = queryStringDecoder.parameters();
+            if (null != parameters) {
+                this.parameters = new HashMap<>();
+                this.parameters.putAll(parameters);
+            }
         }
 
         if (!HttpConst.METHOD_GET.equals(fullHttpRequest.method().name())) {
@@ -102,7 +108,17 @@ public class HttpRequest implements Request {
                     Attribute attribute = (Attribute) data;
                     String name = attribute.getName();
                     String value = attribute.getValue();
-                    this.parameters.put(name, Collections.singletonList(value));
+
+                    List<String> values;
+                    if (this.parameters.containsKey(name)) {
+                        values = this.parameters.get(name);
+                        values.add(value);
+                    } else {
+                        values = new ArrayList<>();
+                        values.add(value);
+                        this.parameters.put(name, values);
+                    }
+
                     break;
                 case FileUpload:
                     FileUpload fileUpload = (FileUpload) data;
@@ -257,6 +273,17 @@ public class HttpRequest implements Request {
     @Override
     public boolean keepAlive() {
         return this.keepAlive;
+    }
+
+    @Override
+    public <T> T bindWithForm(Class<T> modelClass) {
+        return MethodArgument.parseModel(modelClass, this, null);
+    }
+
+    @Override
+    public <T> T bindWithBody(Class<T> modelClass) {
+        String json = this.bodyToString();
+        return StringKit.isNotBlank(json) ? JsonKit.formJson(json, modelClass) : null;
     }
 
     @Override

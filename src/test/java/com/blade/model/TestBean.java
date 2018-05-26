@@ -2,11 +2,14 @@ package com.blade.model;
 
 import com.blade.kit.json.JsonIgnore;
 import com.blade.kit.json.JsonProperty;
+import lombok.Data;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+@Data
 public class TestBean {
 
     @JsonProperty(value = "Name")
@@ -26,67 +29,6 @@ public class TestBean {
     @JsonIgnore
     private Double price;
 
-    public TestBean() {
+    private LocalDateTime dateTime;
 
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public boolean isSex() {
-        return sex;
-    }
-
-    public void setSex(boolean sex) {
-        this.sex = sex;
-    }
-
-    public int getAge() {
-        return age;
-    }
-
-    public void setAge(int age) {
-        this.age = age;
-    }
-
-    public List<TestBean> getFriend() {
-        return friend;
-    }
-
-    public void setFriend(List<TestBean> friend) {
-        this.friend = friend;
-    }
-
-    public Object[] getOtherList() {
-        return otherList;
-    }
-
-    public void setOtherList(Object[] otherList) {
-        this.otherList = otherList;
-    }
-
-    public Double getPrice() {
-        return price;
-    }
-
-    public void setPrice(Double price) {
-        this.price = price;
-    }
-
-    @Override
-    public String toString() {
-        return "TestBean(" +
-                "name='" + name + '\'' +
-                ", sex=" + sex +
-                ", age=" + age +
-                ", friend=" + friend +
-                ", otherList=" + Arrays.toString(otherList) +
-                ", price=" + price +
-                ')';
-    }
 }

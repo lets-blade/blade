@@ -4,6 +4,8 @@ import com.blade.mvc.annotation.*;
 import com.blade.mvc.http.Request;
 import lombok.Builder;
 
+import java.lang.reflect.Type;
+
 @Builder
 class ParamStruct {
 
@@ -13,7 +15,7 @@ class ParamStruct {
     HeaderParam    headerParam;
     CookieParam    cookieParam;
     MultipartParam multipartParam;
-    Class<?>       argType;
+    Type           argType;
     String         paramName;
     Request        request;
 }

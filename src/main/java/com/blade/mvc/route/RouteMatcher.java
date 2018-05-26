@@ -369,6 +369,22 @@ public class RouteMatcher {
         }
     }
 
+    public Map<String, Route> getRoutes() {
+        return routes;
+    }
+
+    public List<String> getWebSockets() {
+        return webSockets;
+    }
+
+    public Map<String, List<Route>> getHooks() {
+        return hooks;
+    }
+
+    public Map<String, Route> getStaticRoutes() {
+        return staticRoutes;
+    }
+
     public void clear() {
         this.routes.clear();
         this.hooks.clear();
