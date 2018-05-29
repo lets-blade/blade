@@ -35,6 +35,7 @@ import org.slf4j.Logger;
 
 import java.io.File;
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
 import java.lang.invoke.SerializedLambda;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -229,9 +230,17 @@ public final class BladeKit {
             path = url.getPath();
         }
         if (isWindows()) {
-            return path.replaceFirst("^/(.:/)", "$1");
+            return decode(path.replaceFirst("^/(.:/)", "$1"));
         }
-        return path;
+        return decode(path);
+    }
+
+    private static String decode(String path) {
+        try {
+            return java.net.URLDecoder.decode(path, "utf-8");
+        } catch (UnsupportedEncodingException e) {
+            return path;
+        }
     }
 
     public static long getCostMS(Instant start) {
