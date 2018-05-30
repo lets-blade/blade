@@ -34,9 +34,7 @@ import static org.mockito.Mockito.mock;
 public class BladeTest extends BaseTestCase {
 
     @Test
-    public void testRouteCode() throws Exception {
-        Blade blade = Blade.me();
-
+    public void testRouteCode() {
         RouteHandler routeHandler = mock(RouteHandler.class);
         blade.get("/", routeHandler);
         blade.post("/", routeHandler);

@@ -1,16 +1,19 @@
 package com.blade.mvc;
 
 import com.blade.BaseTestCase;
-import com.blade.mvc.http.Cookie;
 import com.blade.mvc.http.HttpRequest;
 import com.blade.mvc.http.Request;
 import com.blade.mvc.multipart.FileItem;
+import com.mashape.unirest.http.Unirest;
+import com.mashape.unirest.http.exceptions.UnirestException;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.*;
 
-import static org.junit.Assert.*;
+import static junit.framework.TestCase.assertNotNull;
+import static junit.framework.TestCase.assertNull;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
 /**
@@ -21,40 +24,33 @@ import static org.mockito.Mockito.when;
  */
 public class RequestTest extends BaseTestCase {
 
-    @Test
-    public void testGetHost() {
-        Request request = mockRequest("GET");
-        when(request.host()).thenReturn("localhost");
-
-        Assert.assertEquals(request.host(), "localhost");
-    }
-
-    @Test
-    public void testCookie() throws Exception {
-        Map<String, Cookie> cookies = new HashMap<>();
-        Cookie              c1      = new Cookie();
-        c1.httpOnly(true);
-        c1.maxAge(-1);
-        c1.value("1");
-        cookies.put("uid", c1);
-
-        Request mockRequest = mockRequest("GET");
-        when(mockRequest.cookies()).thenReturn(cookies);
-
-        Request request = new HttpRequest(mockRequest);
-
-        Map<String, Cookie> reqCookies = request.cookies();
-        Cookie              cookie     = reqCookies.get("uid");
-
-        Assert.assertNotNull(cookie);
-        Assert.assertEquals(cookie.value(), "1");
-        Assert.assertEquals(cookie.maxAge(), -1);
-        assertNull(cookie.domain());
-        Assert.assertEquals(cookie.path(), "/");
-
-        Assert.assertNotNull(request.cookieRaw("uid"));
-        assertNull(request.cookieRaw("not-existent"));
-    }
+//    @Test
+//    public void testGetHost() throws UnirestException {
+//        app(blade -> blade.get("/", (req, res) -> res.text(req.host())));
+//        String body = Unirest.get(origin).asString().getBody();
+//        Assert.assertEquals(body, "127.0.0.1:9000");
+//    }
+//
+//    @Test
+//    public void testCookie() throws Exception {
+//
+//        app(blade -> {
+//            blade.get("/c1", (req, res) -> res.text(req.cookie("c1")));
+//            blade.get("/c2", (req, res) -> res.text(req.cookie("c2", "default2")));
+//            blade.get("/c3", (req, res) -> res.json(req.cookies()));
+//        });
+//
+//        String c1body = Unirest.get(origin + "/c1").header("Cookie", "c1=hello1").asString().getBody();
+//        Assert.assertEquals("hello1", c1body);
+//
+//        String c2body = Unirest.get(origin + "/c2").asString().getBody();
+//        Assert.assertEquals("default2", c2body);
+//
+//        String c3body = Unirest.get(origin + "/c3").header("Cookie", "c1=hello1;c2=hello2").asString().getBody();
+//        // {"c1":{"name":"c1","value":"hello1","domain":null,"path":null,"maxAge":-9223372036854775808,"secure":false,"httpOnly":false},"c2":{"name":"c2","value":"hello2","domain":null,"path":null,"maxAge":-9223372036854775808,"secure":false,"httpOnly":false}}
+//        System.out.println(c3body);
+//
+//    }
 
     @Test
     public void testPathParam() throws Exception {
@@ -255,14 +251,14 @@ public class RequestTest extends BaseTestCase {
 
         Request mockRequest = mockRequest("GET");
 
-        Map<String, FileItem> attr = new HashMap<>();
-        FileItem fileItem = new FileItem("hello.png", "/usr/hello.png", "image/png", 20445L);
+        Map<String, FileItem> attr     = new HashMap<>();
+        FileItem              fileItem = new FileItem("hello.png", "/usr/hello.png", "image/png", 20445L);
         attr.put("img", fileItem);
 
         when(mockRequest.fileItems()).thenReturn(attr);
 
-        Request request = new HttpRequest(mockRequest);
-        FileItem img = request.fileItem("img").get();
+        Request  request = new HttpRequest(mockRequest);
+        FileItem img     = request.fileItem("img").get();
 
         assertNotNull(img);
 
