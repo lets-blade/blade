@@ -78,14 +78,10 @@ public class HttpRequest implements Request {
         this.body = fullHttpRequest.content().copy();
 
         // request query parameters
-        QueryStringDecoder queryStringDecoder = new QueryStringDecoder(fullHttpRequest.uri(), CharsetUtil.UTF_8);
-        if (!queryStringDecoder.path().equals(contextPath()) && !fullHttpRequest.uri().contains("?")) {
-
-            Map<String, List<String>> parameters = queryStringDecoder.parameters();
-            if (null != parameters) {
-                this.parameters = new HashMap<>();
-                this.parameters.putAll(parameters);
-            }
+        Map<String, List<String>> parameters = new QueryStringDecoder(fullHttpRequest.uri(), CharsetUtil.UTF_8).parameters();
+        if (null != parameters) {
+            this.parameters = new HashMap<>();
+            this.parameters.putAll(parameters);
         }
 
         if (!HttpConst.METHOD_GET.equals(fullHttpRequest.method().name())) {

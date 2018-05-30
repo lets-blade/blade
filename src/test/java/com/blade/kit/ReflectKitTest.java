@@ -40,14 +40,17 @@ public class ReflectKitTest {
     @Test
     public void testIsPrimitive() {
         Assert.assertEquals(true, ReflectKit.isPrimitive(int.class));
-        Assert.assertEquals(true, ReflectKit.isPrimitive(Integer.class));
+        Assert.assertEquals(true, ReflectKit.isPrimitive(long.class));
+        Assert.assertEquals(true, ReflectKit.isPrimitive(boolean.class));
+        Assert.assertEquals(true, ReflectKit.isPrimitive(short.class));
+        Assert.assertEquals(true, ReflectKit.isPrimitive(byte.class));
+        Assert.assertEquals(true, ReflectKit.isPrimitive(char.class));
+        Assert.assertEquals(false, ReflectKit.isPrimitive(Integer.class));
         Assert.assertEquals(false, ReflectKit.isPrimitive(Date.class));
         Assert.assertEquals(false, ReflectKit.isPrimitive(BigDecimal.class));
 
-        Assert.assertEquals(true, ReflectKit.isPrimitive(20));
+        Assert.assertEquals(false, ReflectKit.isPrimitive(20));
         Assert.assertEquals(true, ReflectKit.isPrimitive(true));
-        Assert.assertEquals(true, ReflectKit.isPrimitive(1.2D));
-        Assert.assertEquals(true, ReflectKit.isPrimitive(1.2f));
 
         Assert.assertEquals(false, ReflectKit.isPrimitive(new BigDecimal("22")));
     }

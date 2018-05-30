@@ -32,7 +32,7 @@ public class DefaultTemplateTest {
     public void testFormatSimpleFormatNullArgument() throws Exception {
         String result = template("${NULL}-${a}").args("NULL", null, "a", 5).fmt();
 
-        assertTrue("null-5".equals(result));
+        assertTrue("-5".equals(result));
     }
 
     @Test

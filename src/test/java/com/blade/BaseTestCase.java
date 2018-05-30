@@ -6,6 +6,10 @@ import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.request.HttpRequest;
 import com.mashape.unirest.request.HttpRequestWithBody;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.After;
+import org.junit.Before;
+
+import java.util.function.Consumer;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -19,8 +23,23 @@ import static org.mockito.Mockito.when;
 @Slf4j
 public class BaseTestCase {
 
-    private   String origin    = "http://127.0.0.1:9000";
+    protected Blade  blade;
+    protected String origin    = "http://127.0.0.1:9000";
     protected String firefoxUA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:53.0) Gecko/20100101 Firefox/53.0";
+
+    @Before
+    public void before() {
+        blade = Blade.me();
+    }
+
+    @After
+    public void after() {
+    }
+
+    protected void app(Consumer<Blade> consumer) {
+        consumer.accept(blade);
+        blade.start().await();
+    }
 
     protected Request mockRequest(String methodName) {
         Request request = mock(Request.class);

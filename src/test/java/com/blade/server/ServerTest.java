@@ -20,7 +20,7 @@ public class ServerTest {
     @Test
     public void testStart() throws Exception {
         NettyServer nettyServer = new NettyServer();
-        nettyServer.start(Blade.me(), new String[]{"--server.address=127.0.0.1"});
+        nettyServer.start(Blade.me().listen(10087), new String[]{"--server.address=127.0.0.1"});
         nettyServer.stop();
     }
 }

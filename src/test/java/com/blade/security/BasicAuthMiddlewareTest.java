@@ -65,7 +65,7 @@ public class BasicAuthMiddlewareTest extends BaseTestCase {
 
         BasicAuthMiddleware basicAuthMiddleware = new BasicAuthMiddleware();
         boolean             flag                = basicAuthMiddleware.before(signature);
-        assertEquals(true, flag);
+        assertEquals(false, flag);
     }
 
     @Test
