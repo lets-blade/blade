@@ -142,14 +142,16 @@ public class RequestExecution implements Runnable {
     }
 
     private void render(Response response) {
-        StringWriter sw = new StringWriter();
-        try {
-            WebContext.blade().templateEngine().render(response.modelAndView(), sw);
-            ByteBuf          buffer           = Unpooled.wrappedBuffer(sw.toString().getBytes("utf-8"));
-            FullHttpResponse fullHttpResponse = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(response.statusCode()), buffer);
-            response.send(fullHttpResponse);
-        } catch (Exception e) {
-            log.error("Render view error", e);
+        if (!response.isCommit() && StringKit.isNotEmpty(response.modelAndView().getView())) {
+            StringWriter sw = new StringWriter();
+            try {
+                WebContext.blade().templateEngine().render(response.modelAndView(), sw);
+                ByteBuf          buffer           = Unpooled.wrappedBuffer(sw.toString().getBytes("utf-8"));
+                FullHttpResponse fullHttpResponse = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(response.statusCode()), buffer);
+                response.send(fullHttpResponse);
+            } catch (Exception e) {
+                log.error("Render view error", e);
+            }
         }
     }
 

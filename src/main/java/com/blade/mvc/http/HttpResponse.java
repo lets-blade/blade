@@ -35,11 +35,12 @@ public class HttpResponse implements Response {
     private HttpHeaders           headers      = new DefaultHttpHeaders(false);
     private Set<Cookie>           cookies      = new HashSet<>(4);
     private int                   statusCode   = 200;
-    private boolean               isCommit     = false;
     private ChannelHandlerContext ctx          = null;
     private CharSequence          contentType  = null;
     private CharSequence          dateString   = null;
     private ModelAndView          modelAndView = new ModelAndView();
+
+    private volatile boolean isCommit = false;
 
     @Override
     public int statusCode() {
@@ -209,10 +210,9 @@ public class HttpResponse implements Response {
 
     @Override
     public void send(@NonNull FullHttpResponse response) {
+        isCommit = true;
         response.headers().set(getDefaultHeader());
-
         boolean keepAlive = WebContext.request().keepAlive();
-
         if (!response.headers().contains(HttpConst.CONTENT_LENGTH)) {
             // Add 'Content-Length' header only for a keep-alive connection.
             response.headers().set(HttpConst.CONTENT_LENGTH, String.valueOf(response.content().readableBytes()));
@@ -224,7 +224,7 @@ public class HttpResponse implements Response {
             response.headers().set(HttpConst.CONNECTION, KEEP_ALIVE);
             ctx.write(response, ctx.voidPromise());
         }
-        isCommit = true;
+
     }
 
     @Override
