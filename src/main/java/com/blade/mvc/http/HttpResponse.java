@@ -7,8 +7,6 @@ import com.blade.mvc.ui.ModelAndView;
 import com.blade.mvc.wrapper.OutputStreamWrapper;
 import com.blade.server.netty.HttpConst;
 import com.blade.server.netty.ProgressiveFutureListener;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
@@ -34,13 +32,14 @@ import static io.netty.handler.codec.http.HttpHeaderValues.KEEP_ALIVE;
 @Slf4j
 public class HttpResponse implements Response {
 
-    private HttpHeaders           headers     = new DefaultHttpHeaders(false);
-    private Set<Cookie>           cookies     = new HashSet<>(4);
-    private int                   statusCode  = 200;
-    private boolean               isCommit    = false;
-    private ChannelHandlerContext ctx         = null;
-    private CharSequence          contentType = null;
-    private CharSequence          dateString  = null;
+    private HttpHeaders           headers      = new DefaultHttpHeaders(false);
+    private Set<Cookie>           cookies      = new HashSet<>(4);
+    private int                   statusCode   = 200;
+    private boolean               isCommit     = false;
+    private ChannelHandlerContext ctx          = null;
+    private CharSequence          contentType  = null;
+    private CharSequence          dateString   = null;
+    private ModelAndView          modelAndView = new ModelAndView();
 
     @Override
     public int statusCode() {
@@ -193,15 +192,7 @@ public class HttpResponse implements Response {
 
     @Override
     public void render(@NonNull ModelAndView modelAndView) {
-        StringWriter sw = new StringWriter();
-        try {
-            WebContext.blade().templateEngine().render(modelAndView, sw);
-            ByteBuf          buffer   = Unpooled.wrappedBuffer(sw.toString().getBytes("utf-8"));
-            FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(statusCode), buffer);
-            this.send(response);
-        } catch (Exception e) {
-            log.error("render error", e);
-        }
+        this.modelAndView = modelAndView;
     }
 
     @Override
@@ -236,6 +227,11 @@ public class HttpResponse implements Response {
         isCommit = true;
     }
 
+    @Override
+    public ModelAndView modelAndView() {
+        return this.modelAndView;
+    }
+
     private HttpHeaders getDefaultHeader() {
         headers.set(HttpConst.DATE, dateString);
         headers.set(HttpConst.CONTENT_TYPE, HttpConst.getContentType(this.contentType));
@@ -249,18 +245,18 @@ public class HttpResponse implements Response {
         return headers;
     }
 
-    public HttpResponse(Response response){
+    public HttpResponse(Response response) {
         this.contentType = response.contentType();
         this.statusCode = response.statusCode();
-        if(null != response.headers()){
+        if (null != response.headers()) {
             response.headers().forEach(this.headers::add);
         }
-        if(null != response.cookies()){
-            response.cookies().forEach( (k,v) -> this.cookies.add(new DefaultCookie(k, v)));
+        if (null != response.cookies()) {
+            response.cookies().forEach((k, v) -> this.cookies.add(new DefaultCookie(k, v)));
         }
     }
 
-    public HttpResponse(){
+    public HttpResponse() {
     }
 
     public static HttpResponse build(ChannelHandlerContext ctx, CharSequence dateString) {

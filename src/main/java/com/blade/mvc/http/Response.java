@@ -1,6 +1,8 @@
 package com.blade.mvc.http;
 
+import com.blade.exception.BladeException;
 import com.blade.kit.JsonKit;
+import com.blade.kit.StringKit;
 import com.blade.mvc.Const;
 import com.blade.mvc.WebContext;
 import com.blade.mvc.ui.ModelAndView;
@@ -163,7 +165,7 @@ public interface Response {
      */
     Response removeCookie(String name);
 
-    default void success(){
+    default void success() {
         FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(statusCode()), Unpooled.wrappedBuffer("".getBytes(CharsetUtil.UTF_8)), false);
         if (null == this.contentType())
             this.contentType(Const.CONTENT_TYPE_TEXT);
@@ -271,18 +273,20 @@ public interface Response {
     OutputStreamWrapper outputStream() throws IOException;
 
     /**
-     * Render view
+     * Render view, can be modified after WebHook
      *
      * @param view view page
      * @return Return Response
      */
     default void render(String view) {
-        if (null == view) return;
+        if (StringKit.isEmpty(view)) {
+            throw new BladeException(500, "Render view not empty.");
+        }
         this.render(new ModelAndView(view));
     }
 
     /**
-     * Render view And Setting Data
+     * Render view And Setting Data, can be modified after WebHook
      *
      * @param modelAndView ModelAndView object
      * @return Return Response
@@ -304,10 +308,16 @@ public interface Response {
     boolean isCommit();
 
     /**
-     * Send response by FullHttpResponse, custom build, please be careful
+     * Send response by FullHttpResponse, custom build, please be careful.
      *
      * @param response FullHttpResponse instance
      */
     void send(FullHttpResponse response);
+
+    /**
+     * @return Returns the currently set view, returning an empty Optional type when not set
+     * @since 2.0.8
+     */
+    ModelAndView modelAndView();
 
 }

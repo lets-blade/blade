@@ -23,11 +23,13 @@ import com.blade.mvc.ui.ModelAndView;
 import com.blade.server.netty.HttpConst;
 import com.blade.server.netty.HttpServerInitializer;
 import com.blade.server.netty.StaticFileHandler;
+import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.handler.codec.http.FullHttpRequest;
+import io.netty.handler.codec.http.*;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.time.Instant;
@@ -117,6 +119,9 @@ public class RequestExecution implements Runnable {
             if (hasAfterHook) {
                 this.invokeHook(ROUTE_MATCHER.getAfter(cleanUri), signature);
             }
+
+            this.render(response);
+
             long cost = log200(log, start, method, uri);
             request.attribute(REQUEST_COST_TIME, cost);
         } catch (Exception e) {
@@ -128,11 +133,23 @@ public class RequestExecution implements Runnable {
             if (null != exceptionHandler) {
                 exceptionHandler.handle(e);
             } else {
-                log.error("Blade Invoke Error", e);
+                log.error("Request execution error", e);
             }
         } finally {
             if (!isStatic) this.sendFinish(response);
             WebContext.remove();
+        }
+    }
+
+    private void render(Response response) {
+        StringWriter sw = new StringWriter();
+        try {
+            WebContext.blade().templateEngine().render(response.modelAndView(), sw);
+            ByteBuf          buffer           = Unpooled.wrappedBuffer(sw.toString().getBytes("utf-8"));
+            FullHttpResponse fullHttpResponse = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(response.statusCode()), buffer);
+            response.send(fullHttpResponse);
+        } catch (Exception e) {
+            log.error("Render view error", e);
         }
     }
 
@@ -180,8 +197,10 @@ public class RequestExecution implements Runnable {
                 signature.response().contentType(Const.CONTENT_TYPE_JSON);
             }
 
-            int    len         = actionMethod.getParameterTypes().length;
+            int len = actionMethod.getParameterTypes().length;
+
             Object returnParam = ReflectKit.invokeMethod(target, actionMethod, len > 0 ? signature.getParameters() : null);
+
             if (null == returnParam) return;
 
             if (isRestful) {
@@ -203,7 +222,7 @@ public class RequestExecution implements Runnable {
     }
 
     /**
-     * invoke webhook
+     * Invoke WebHook
      *
      * @param routeSignature current execute route handler signature
      * @param hookRoute      current webhook route handler
