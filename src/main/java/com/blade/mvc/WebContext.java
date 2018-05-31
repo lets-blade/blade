@@ -123,4 +123,9 @@ public class WebContext {
         return contextPath;
     }
 
+    public static void clean() {
+        fastThreadLocal.remove();
+        blade = null;
+    }
+
 }

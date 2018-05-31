@@ -33,6 +33,8 @@ import static org.mockito.Mockito.mock;
  */
 public class BladeTest extends BaseTestCase {
 
+    private Blade blade = Blade.me();
+
     @Test
     public void testRouteCode() {
         RouteHandler routeHandler = mock(RouteHandler.class);
@@ -79,17 +81,14 @@ public class BladeTest extends BaseTestCase {
             Assert.assertEquals(404, code);
         } finally {
             blade.stop();
-            try {
-                new Socket("localhost", 9002);
-                Assert.fail("Server is still running");
-            } catch (ConnectException e) {
-            }
         }
     }
 
     @Test
     public void testStart() {
-        Blade.me().start(Hello.class, null);
+        String[] args = null;
+        Blade start = Blade.me().start(Hello.class, args);
+        start.stop();
     }
 
     @Test
@@ -134,14 +133,14 @@ public class BladeTest extends BaseTestCase {
     }
 
     @Test
-    public void testBootConf(){
+    public void testBootConf() {
         Blade blade = Blade.me();
         blade.bootConf("app2.properties");
         Assert.assertEquals("app2.properties", blade.environment().getOrNull(ENV_KEY_BOOT_CONF));
     }
 
     @Test
-    public void testEnv(){
+    public void testEnv() {
         Environment environment = Environment.empty();
         environment.add("hello", "world");
         Environment environment2 = Blade.me().environment(environment).environment();
@@ -149,7 +148,7 @@ public class BladeTest extends BaseTestCase {
     }
 
     @Test
-    public void testUse(){
+    public void testUse() {
         Blade         blade      = Blade.me().use(new CsrfMiddleware());
         List<WebHook> middleware = blade.middleware();
         Assert.assertNotNull(middleware);
@@ -157,30 +156,30 @@ public class BladeTest extends BaseTestCase {
     }
 
     @Test
-    public void testSessionType(){
+    public void testSessionType() {
         Assert.assertEquals(HttpSession.class, Blade.me().sessionType());
         Blade.me().sessionType(HttpSession.class);
     }
 
     @Test
-    public void testOnStarted(){
+    public void testOnStarted() {
         Blade.me().onStarted(blade -> System.out.println("On started.."));
     }
 
     @Test
-    public void testDisableSession(){
+    public void testDisableSession() {
         Blade blade = Blade.me().disableSession();
         Assert.assertNull(blade.sessionManager());
     }
 
     @Test
-    public void testWatchEnvChange(){
-         Environment environment = Blade.me().watchEnvChange(false).environment();
-         Assert.assertEquals(Boolean.FALSE, environment.getBooleanOrNull(ENV_KEY_APP_WATCH_ENV));
+    public void testWatchEnvChange() {
+        Environment environment = Blade.me().watchEnvChange(false).environment();
+        Assert.assertEquals(Boolean.FALSE, environment.getBooleanOrNull(ENV_KEY_APP_WATCH_ENV));
     }
 
     @Test
-    public void testWebSocket(){
+    public void testWebSocket() {
         Assert.assertNull(Blade.me().webSocketHandler());
         Blade blade = Blade.me().webSocket("/", new WebSocketHandler() {
             @Override
@@ -202,13 +201,13 @@ public class BladeTest extends BaseTestCase {
     }
 
     @Test
-    public void testBannerText(){
+    public void testBannerText() {
         Blade blade = Blade.me().bannerText("qq");
         Assert.assertEquals("qq", blade.bannerText());
     }
 
     @Test
-    public void testThreadName(){
+    public void testThreadName() {
         Blade.me().threadName("-0-");
     }
 

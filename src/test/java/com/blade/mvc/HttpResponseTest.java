@@ -17,19 +17,19 @@ import static org.mockito.Mockito.when;
  * @author biezhi
  * 2017/6/3
  */
-public class ResponseTest extends BaseTestCase {
+public class HttpResponseTest extends BaseTestCase {
 
     private static final String CONTENT_TYPE = "Content-Type";
 
     @Test
-    public void testStatus() throws Exception {
-        Response mockResponse = mockResponse(666);
+    public void testStatus() {
+        Response mockResponse = mockHttpResponse(666);
         assertEquals(666, mockResponse.statusCode());
     }
 
     @Test
-    public void testBadRequest() throws Exception {
-        Response mockResponse = mockResponse(200);
+    public void testBadRequest() {
+        Response mockResponse = mockHttpResponse(200);
         Response response = new HttpResponse(mockResponse);
         response.badRequest();
 
@@ -37,8 +37,8 @@ public class ResponseTest extends BaseTestCase {
     }
 
     @Test
-    public void testUnauthorized() throws Exception {
-        Response mockResponse = mockResponse(200);
+    public void testUnauthorized() {
+        Response mockResponse = mockHttpResponse(200);
         Response response = new HttpResponse(mockResponse);
         response.unauthorized();
 
@@ -46,8 +46,8 @@ public class ResponseTest extends BaseTestCase {
     }
 
     @Test
-    public void testNotFound() throws Exception {
-        Response mockResponse = mockResponse(200);
+    public void testNotFound() {
+        Response mockResponse = mockHttpResponse(200);
         Response response = new HttpResponse(mockResponse);
         response.notFound();
 
@@ -55,8 +55,8 @@ public class ResponseTest extends BaseTestCase {
     }
 
     @Test
-    public void testContentType() throws Exception {
-        Response mockResponse = mockResponse(200);
+    public void testContentType() {
+        Response mockResponse = mockHttpResponse(200);
 
         Response response = new HttpResponse(mockResponse);
         response.contentType(Const.CONTENT_TYPE_HTML);
@@ -68,8 +68,8 @@ public class ResponseTest extends BaseTestCase {
     }
 
     @Test
-    public void testHeaders() throws Exception {
-        Response mockResponse = mockResponse(200);
+    public void testHeaders() {
+        Response mockResponse = mockHttpResponse(200);
 
         when(mockResponse.headers()).thenReturn(new HashMap<>());
 
@@ -81,9 +81,9 @@ public class ResponseTest extends BaseTestCase {
     }
 
     @Test
-    public void testHeader() throws Exception {
+    public void testHeader() {
 
-        Response mockResponse = mockResponse(200);
+        Response mockResponse = mockHttpResponse(200);
 
         when(mockResponse.headers()).thenReturn(Collections.singletonMap("Server", "Nginx"));
 
@@ -93,9 +93,9 @@ public class ResponseTest extends BaseTestCase {
     }
 
     @Test
-    public void testCookie() throws Exception {
+    public void testCookie() {
 
-        Response mockResponse = mockResponse(200);
+        Response mockResponse = mockHttpResponse(200);
 
         when(mockResponse.cookies()).thenReturn(Collections.singletonMap("c1", "value1"));
 

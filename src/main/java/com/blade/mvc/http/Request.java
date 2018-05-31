@@ -1,12 +1,15 @@
 package com.blade.mvc.http;
 
+import com.blade.kit.JsonKit;
 import com.blade.kit.StringKit;
 import com.blade.kit.WebKit;
 import com.blade.mvc.WebContext;
+import com.blade.mvc.handler.MethodArgument;
 import com.blade.mvc.multipart.FileItem;
 import com.blade.mvc.route.Route;
 import com.blade.server.netty.HttpConst;
 import io.netty.buffer.ByteBuf;
+import io.netty.util.CharsetUtil;
 import lombok.NonNull;
 
 import java.util.List;
@@ -407,7 +410,9 @@ public interface Request {
      * @param modelClass
      * @param <T>
      */
-    <T> T bindWithForm(Class<T> modelClass);
+    default <T> T bindWithForm(Class<T> modelClass) {
+        return MethodArgument.parseModel(modelClass, this, null);
+    }
 
     /**
      * Bind body parameter to model
@@ -415,7 +420,10 @@ public interface Request {
      * @param modelClass
      * @param <T>
      */
-    <T> T bindWithBody(Class<T> modelClass);
+    default <T> T bindWithBody(Class<T> modelClass) {
+        String json = this.bodyToString();
+        return StringKit.isNotBlank(json) ? JsonKit.formJson(json, modelClass) : null;
+    }
 
     /**
      * Get current request attributes
@@ -477,6 +485,8 @@ public interface Request {
      *
      * @return return request body to string
      */
-    String bodyToString();
+    default String bodyToString() {
+        return this.body().toString(CharsetUtil.UTF_8);
+    }
 
 }

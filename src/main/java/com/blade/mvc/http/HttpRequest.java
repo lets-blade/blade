@@ -252,12 +252,12 @@ public class HttpRequest implements Request {
 
     @Override
     public Cookie cookieRaw(@NonNull String name) {
-        return this.cookies.get(name);
+        return this.cookies().get(name);
     }
 
     @Override
     public Request cookie(@NonNull Cookie cookie) {
-        this.cookies.put(cookie.name(), cookie);
+        this.cookies().put(cookie.name(), cookie);
         return this;
     }
 
@@ -269,17 +269,6 @@ public class HttpRequest implements Request {
     @Override
     public boolean keepAlive() {
         return this.keepAlive;
-    }
-
-    @Override
-    public <T> T bindWithForm(Class<T> modelClass) {
-        return MethodArgument.parseModel(modelClass, this, null);
-    }
-
-    @Override
-    public <T> T bindWithBody(Class<T> modelClass) {
-        String json = this.bodyToString();
-        return StringKit.isNotBlank(json) ? JsonKit.formJson(json, modelClass) : null;
     }
 
     @Override
@@ -298,11 +287,6 @@ public class HttpRequest implements Request {
     @Override
     public ByteBuf body() {
         return this.body;
-    }
-
-    @Override
-    public String bodyToString() {
-        return this.body.toString(CharsetUtil.UTF_8);
     }
 
     public HttpRequest() {
