@@ -4,7 +4,7 @@ apply plugin: 'eclipse'
 apply plugin: 'idea'
 
 group = 'com.bladejava'
-version = '2.0.6-Alpha1'
+version = '2.0.8-SNAPSHOT'
 
 description = """blade"""
 
@@ -12,7 +12,7 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '4.4.1'
+    gradleVersion = '4.5'
 }
 
 tasks.withType(JavaCompile) {
@@ -20,10 +20,10 @@ tasks.withType(JavaCompile) {
 }
 
 def bladeAsmVersion = '0.0.1'
-def bladeLogVersion = '0.1.1'
+def bladeLogVersion = '0.1.3'
 def junitVersion = '4.12'
 def slf4jApiVersion = '1.7.21'
-def nettyVersion = '4.1.22.Final'
+def nettyVersion = '4.1.25.Final'
 
 
 repositories {
@@ -43,6 +43,6 @@ dependencies {
     testCompile group: 'org.webjars', name: 'bootstrap', version: '3.3.7'
     testCompile group: 'org.mockito', name: 'mockito-all', version: '1.10.19'
     testCompile group: 'com.mashape.unirest', name: 'unirest-java', version: '1.4.9'
-    compileOnly group: 'io.netty', name: 'netty-transport-native-epoll', version: '4.1.22.Final'
-    compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.16.18'
+    compileOnly group: 'io.netty', name: 'netty-transport-native-epoll', version: '4.1.25.Final'
+    compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.16.20'
 }

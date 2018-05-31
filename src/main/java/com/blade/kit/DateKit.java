@@ -38,19 +38,12 @@ public final class DateKit {
     /**
      * GMT Format
      */
-    private static final DateTimeFormatter GMT_FMT = DateTimeFormatter.ofPattern(Const.HTTP_DATE_FORMAT, Locale.US);
+    public static final DateTimeFormatter GMT_FMT = DateTimeFormatter.ofPattern(Const.HTTP_DATE_FORMAT, Locale.US);
 
     /**
      * GMT ZoneId
      */
-    private static final ZoneId GMT_ZONE_ID = ZoneId.of("GMT");
-//
-//    private final static long second = 1000;
-//    private final static long minute = 60 * second;
-//    private final static long hour   = 60 * minute;
-//    private final static long day    = 24 * hour;
-//    private final static long month  = 31 * day;
-//    private final static long year   = 12 * month;
+    public static final ZoneId GMT_ZONE_ID = ZoneId.of("GMT");
 
     /**
      * get current unix time
@@ -154,6 +147,11 @@ public final class DateKit {
 
     public static String gmtDate(Date date) {
         return GMT_FMT.format(LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault()).atZone(GMT_ZONE_ID));
+    }
+
+    public static void main(String[] args) {
+        String s = "Thu, 31 May 2018 00:38:15 GMT";
+        System.out.println(LocalDateTime.parse(s, GMT_FMT).atZone(GMT_ZONE_ID).toInstant().getEpochSecond());
     }
 
     private static final Map<String, String> PRETTY_TIME_I18N = new HashMap<>();
