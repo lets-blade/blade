@@ -35,7 +35,7 @@ public interface HttpConst {
     CharSequence LAST_MODIFIED  = AsciiString.cached("Last-Modified");
     CharSequence SERVER         = AsciiString.cached("Server");
     CharSequence SET_COOKIE     = AsciiString.cached("Set-Cookie");
-    CharSequence KEEP_ALIVE     = AsciiString.cached("Keep-Alive");
+    CharSequence KEEP_ALIVE     = AsciiString.cached("keep-alive");
 
     String CONTENT_TYPE_HTML = "text/html; charset=UTF-8";
 

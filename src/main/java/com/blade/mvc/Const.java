@@ -60,6 +60,7 @@ public interface Const {
     String ENV_KEY_SESSION_TIMEOUT           = "http.session.timeout";
     String ENV_KEY_AUTH_USERNAME             = "http.auth.username";
     String ENV_KEY_AUTH_PASSWORD             = "http.auth.password";
+    String ENV_KEY_HTTP_CACHE_TIMEOUT        = "http.cache.timeout";
     String ENV_KEY_PAGE_404                  = "mvc.view.404";
     String ENV_KEY_PAGE_500                  = "mvc.view.500";
     String ENV_KEY_STATIC_DIRS               = "mvc.statics";
