@@ -39,7 +39,7 @@ import java.util.Map;
 @Slf4j
 public class HttpRequest implements Request {
 
-    private static final HttpDataFactory HTTP_DATA_FACTORY = new DefaultHttpDataFactory(DefaultHttpDataFactory.MAXSIZE);
+    private static final HttpDataFactory HTTP_DATA_FACTORY = new DefaultHttpDataFactory(DefaultHttpDataFactory.MINSIZE);
     private static final SessionHandler  SESSION_HANDLER   = WebContext.sessionManager() != null ? new SessionHandler(WebContext.blade()) : null;
 
     static {
@@ -124,7 +124,7 @@ public class HttpRequest implements Request {
                     break;
             }
         } catch (IOException e) {
-            log.error("parse request parameter error", e);
+            log.error("Parse request parameter error", e);
         } finally {
             data.release();
         }
