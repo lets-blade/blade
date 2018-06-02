@@ -10,7 +10,6 @@ import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 /**
- * 增强功能
  * @author biezhi
  * 2017/6/5
  */

@@ -39,7 +39,7 @@ import java.util.Map;
 @Slf4j
 public class HttpRequest implements Request {
 
-    private static final HttpDataFactory HTTP_DATA_FACTORY = new DefaultHttpDataFactory(DefaultHttpDataFactory.MAXSIZE);
+    private static final HttpDataFactory HTTP_DATA_FACTORY = new DefaultHttpDataFactory(DefaultHttpDataFactory.MINSIZE);
     private static final SessionHandler  SESSION_HANDLER   = WebContext.sessionManager() != null ? new SessionHandler(WebContext.blade()) : null;
 
     static {
@@ -124,7 +124,7 @@ public class HttpRequest implements Request {
                     break;
             }
         } catch (IOException e) {
-            log.error("parse request parameter error", e);
+            log.error("Parse request parameter error", e);
         } finally {
             data.release();
         }
@@ -252,12 +252,12 @@ public class HttpRequest implements Request {
 
     @Override
     public Cookie cookieRaw(@NonNull String name) {
-        return this.cookies.get(name);
+        return this.cookies().get(name);
     }
 
     @Override
     public Request cookie(@NonNull Cookie cookie) {
-        this.cookies.put(cookie.name(), cookie);
+        this.cookies().put(cookie.name(), cookie);
         return this;
     }
 
@@ -269,17 +269,6 @@ public class HttpRequest implements Request {
     @Override
     public boolean keepAlive() {
         return this.keepAlive;
-    }
-
-    @Override
-    public <T> T bindWithForm(Class<T> modelClass) {
-        return MethodArgument.parseModel(modelClass, this, null);
-    }
-
-    @Override
-    public <T> T bindWithBody(Class<T> modelClass) {
-        String json = this.bodyToString();
-        return StringKit.isNotBlank(json) ? JsonKit.formJson(json, modelClass) : null;
     }
 
     @Override
@@ -298,11 +287,6 @@ public class HttpRequest implements Request {
     @Override
     public ByteBuf body() {
         return this.body;
-    }
-
-    @Override
-    public String bodyToString() {
-        return this.body.toString(CharsetUtil.UTF_8);
     }
 
     public HttpRequest() {

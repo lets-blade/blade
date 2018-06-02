@@ -4,9 +4,11 @@ import com.blade.mvc.annotation.*;
 import com.blade.mvc.http.Request;
 import com.blade.mvc.http.Response;
 import com.blade.mvc.multipart.FileItem;
+import com.blade.mvc.ui.RestResponse;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author biezhi
@@ -51,6 +53,12 @@ public class DemoController {
         System.out.println(fileItem.getFileName());
         System.out.println(fileItem.getContentType());
         System.out.println(fileItem.getLength());
+    }
+
+    @PostRoute("save")
+    @JSON
+    public RestResponse savePerson(@BodyParam Map<String, Object> person) {
+        return RestResponse.ok(person);
     }
 
 }

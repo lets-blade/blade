@@ -42,6 +42,7 @@ hs_err_pid*
 # Gradle:
 .gradle
 gradle/
+build/
 !gradle/wrapper/gradle-wrapper.jar
 .idea/**/gradle.xml
 .idea/**/libraries
@@ -92,3 +93,5 @@ local.properties
 .classpath
 
 /target/
+
+.vscode/

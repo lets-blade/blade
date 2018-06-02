@@ -3,7 +3,11 @@ package com.blade.kit;
 import com.blade.model.TestBean;
 import org.junit.Test;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author biezhi
@@ -33,5 +37,15 @@ public class JsonKitTest {
         testBean.setDateTime(LocalDateTime.now());
         System.out.println(JsonKit.toString(testBean));
     }
+
+    @Test
+    public void testLocal(){
+        Map<String,Object> result = new HashMap<>(8);
+        result.put("date1", new Date());
+        result.put("date2", LocalDate.now());
+        result.put("date3", LocalDateTime.now());
+        System.out.println(JsonKit.toString(result));
+    }
+
 }
 

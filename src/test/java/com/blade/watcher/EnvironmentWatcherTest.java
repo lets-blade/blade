@@ -11,12 +11,16 @@ import java.util.concurrent.TimeUnit;
 public class EnvironmentWatcherTest {
 
     @Test
-    public void testWatcher() throws InterruptedException {
+    public void testWatcher(){
         EnvironmentWatcher environmentWatcher = new EnvironmentWatcher();
         Thread thread = new Thread(environmentWatcher);
         thread.start();
-        TimeUnit.SECONDS.sleep(2);
-        thread.interrupt();
+        try {
+            TimeUnit.SECONDS.sleep(2);
+            thread.interrupt();
+        } catch (Exception e){
+
+        }
     }
 
 }

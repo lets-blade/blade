@@ -62,7 +62,7 @@ Create a basic `Maven` project
 <dependency>
     <groupId>com.bladejava</groupId>
     <artifactId>blade-mvc</artifactId>
-    <version>2.0.8-BETA3</version>
+    <version>2.0.8-R1</version>
 </dependency>
 ```
 
@@ -71,7 +71,7 @@ Create a basic `Maven` project
 or `Gradle`:
 
 ```sh
-compile 'com.bladejava:blade-mvc:2.0.8-BETA3'
+compile 'com.bladejava:blade-mvc:2.0.8-R1'
 ```
 
 Write `main` method, try `Hello World`：
@@ -166,9 +166,9 @@ Here is an example:
 ```java
 public static void main(String[] args) {
     Blade.me().get("/user", ((request, response) -> {
-         Optional<Integer> ageOptional = request.queryInt("age");
-         ageOptional.ifPresent(age -> System.out.println("age is:" + age));
-     })).start();
+        Optional<Integer> ageOptional = request.queryInt("age");
+        ageOptional.ifPresent(age -> System.out.println("age is:" + age));
+    })).start();
 }
 ```
 
@@ -177,7 +177,7 @@ public static void main(String[] args) {
 ```java
 @PostRoute("/save")
 public void savePerson(@Param String username, @Param Integer age){
-  System.out.println("username is:" + username + ", age is:" + age)
+    System.out.println("username is:" + username + ", age is:" + age)
 }
 ```
 
@@ -200,17 +200,17 @@ public static void main(String[] args) {
     Blade blade = Blade.me();
     // Create a route: /user/:uid
     blade.get("/user/:uid", (request, response) -> {
-		Integer uid = request.pathInt("uid");
-		response.text("uid : " + uid);
-	});
+        Integer uid = request.pathInt("uid");
+        response.text("uid : " + uid);
+    });
 
     // Create two parameters route
     blade.get("/users/:uid/post/:pid", (request, response) -> {
-		Integer uid = request.pathInt("uid");
-		Integer pid = request.pathInt("pid");
-		String msg = "uid = " + uid + ", pid = " + pid;
-		response.text(msg);
-	});
+        Integer uid = request.pathInt("uid");
+        Integer pid = request.pathInt("pid");
+        String msg = "uid = " + uid + ", pid = " + pid;
+        response.text(msg);
+    });
 
     // Start blade
     blade.start();
@@ -222,7 +222,7 @@ public static void main(String[] args) {
 ```java
 @GetRoute("/users/:username/:page")
 public void userTopics(@PathParam String username, @PathParam Integer page){
-  System.out.println("username is:" + usernam + ", page is:" + page)
+    System.out.println("username is:" + usernam + ", page is:" + page)
 }
 ```
 
@@ -237,7 +237,7 @@ curl -X GET http://127.0.0.1:9000/users/biezhi/2
 ```java
 public static void main(String[] args) {
     Blade.me().post("/body", ((request, response) -> {
-      System.out.println("body string is:" + request.bodyToString())
+        System.out.println("body string is:" + request.bodyToString())
     }).start();
 }
 ```
@@ -254,9 +254,9 @@ This is `User` model.
 
 ```java
 public class User {
-  private String username;
-  private Integer age;
-  // getter and setter
+    private String username;
+    private Integer age;
+    // getter and setter
 }
 ```
 
@@ -318,11 +318,11 @@ String version = environment.get("app.version", "0.0.1");;
 ```java
 @GetRoute("header")
 public void getHeader(Request request){
-  System.out.println("Host => " + request.header("Host"));
-  // get useragent
-  System.out.println("UserAgent => " + request.userAgent());
-  // get client ip
-  System.out.println("Client Address => " + request.address());
+    System.out.println("Host => " + request.header("Host"));
+    // get useragent
+    System.out.println("UserAgent => " + request.userAgent());
+    // get client ip
+    System.out.println("Client Address => " + request.address());
 }
 ```
 
@@ -331,7 +331,7 @@ public void getHeader(Request request){
 ```java
 @GetRoute("header")
 public void getHeader(@HeaderParam String Host){
-  System.out.println("Host => " + Host);
+    System.out.println("Host => " + Host);
 }
 ```
 
@@ -342,8 +342,8 @@ public void getHeader(@HeaderParam String Host){
 ```java
 @GetRoute("cookie")
 public void getCookie(Request request){
-  System.out.println("UID => " + request.cookie("UID").get());
-  request.cookie("UID").ifPresent(System.out::println);
+    System.out.println("UID => " + request.cookie("UID").get());
+    request.cookie("UID").ifPresent(System.out::println);
 }
 ```
 
@@ -352,7 +352,7 @@ public void getCookie(Request request){
 ```java
 @GetRoute("cookie")
 public void getCookie(@CookieParam String UID){
-  System.out.println("Cookie UID => " + UID);
+    System.out.println("Cookie UID => " + UID);
 }
 ```
 
@@ -402,8 +402,8 @@ public void upload(@MultipartParam FileItem fileItem){
 
 ```java
 public void login(Session session){
-  // if login success
-  session.attribute("login_key", SOME_MODEL);
+    // if login success
+    session.attribute("login_key", SOME_MODEL);
 }
 ```
 
@@ -416,8 +416,8 @@ public void login(Session session){
 ```java
 @GetRoute("users/json")
 public void printJSON(Response response){
-  User user = new User("biezhi", 18);
-  response.json(user);
+    User user = new User("biezhi", 18);
+    response.json(user);
 }
 ```
 
@@ -429,7 +429,7 @@ This form looks more concise 😶
 @GetRoute("users/json")
 @JSON
 public User printJSON(){
-  return new User("biezhi", 18);
+    return new User("biezhi", 18);
 }
 ```
 
@@ -438,7 +438,7 @@ public User printJSON(){
 ```java
 @GetRoute("text")
 public void printText(Response response){
-  response.text("I Love Blade!");
+    response.text("I Love Blade!");
 }
 ```
 
@@ -447,7 +447,7 @@ public void printText(Response response){
 ```java
 @GetRoute("html")
 public void printHtml(Response response){
-  response.html("<center><h1>I Love Blade!</h1></center>");
+    response.html("<center><h1>I Love Blade!</h1></center>");
 }
 ```
 
@@ -462,10 +462,9 @@ By default, the Blade uses the built-in template engine, which is very simple if
 ```java
 public static void main(String[] args) {
     Blade.me().get("/hello", ((request, response) -> {
-                request.attribute("name", "biezhi");
-                response.render("hello.html");
-            }))
-            .start(Hello.class, args);
+        request.attribute("name", "biezhi");
+        response.render("hello.html");
+    })).start(Hello.class, args);
 }
 ```
 
@@ -480,7 +479,7 @@ The `hello.html` template
 </head>
 <body>
 
-  <h1>Hello, ${name}</h1>
+    <h1>Hello, ${name}</h1>
 
 </body>
 </html>
@@ -509,11 +508,10 @@ Write some data for the template engine to render
 ```java
 public static void main(String[] args) {
     Blade.me().get("/hello", ((request, response) -> {
-                User user = new User("biezhi", 50);
-                request.attribute("user", user);
-                response.render("hello.html");
-            }))
-            .start(Hello.class, args);
+        User user = new User("biezhi", 50);
+        request.attribute("user", user);
+        response.render("hello.html");
+    })).start(Hello.class, args);
 }
 ```
 
@@ -528,13 +526,13 @@ The `hello.html` template
 </head>
 <body>
 
-  <h1>Hello, ${user.username}</h1>
+    <h1>Hello, ${user.username}</h1>
 
-  #if(user.age > 18)
-    <p>Good Boy!</p>
-  #else
-    <p>Gooood Baby!</p>
-  #end
+    #if(user.age > 18)
+        <p>Good Boy!</p>
+    #else
+        <p>Gooood Baby!</p>
+    #end
 
 </body>
 </html>
@@ -547,9 +545,7 @@ The `hello.html` template
 ```java
 @GetRoute("redirect")
 public void redirectToGithub(Response response){
-
-  response.redirect("https://github.com/biezhi");
-
+    response.redirect("https://github.com/biezhi");
 }
 ```
 
@@ -560,10 +556,8 @@ public void redirectToGithub(Response response){
 ```java
 @GetRoute("write-cookie")
 public void writeCookie(Response response){
-
-  response.cookie("hello", "world");
-  response.cookie("UID", "22", 3600);
-
+    response.cookie("hello", "world");
+    response.cookie("UID", "22", 3600);
 }
 ```
 
@@ -590,10 +584,10 @@ Blade using slf4-api as a log interface, the default implementation of a simple 
 private static final Logger log = LoggerFactory.getLogger(Hello.class);
 
 public static void main(String[] args) {
-  log.info("Hello Info, {}", "2017");
-  log.warn("Hello Warn");
-  log.debug("Hello Debug");
-  log.error("Hello Error");
+    log.info("Hello Info, {}", "2017");
+    log.warn("Hello Warn");
+    log.debug("Hello Debug");
+    log.error("Hello Error");
 }
 ```
 
@@ -603,7 +597,7 @@ Blade built a few middleware, when you need Basic certification can be used, of 
 
 ```java
 public static void main(String[] args) {
-  Blade.me().use(new BasicAuthMiddleware()).start();
+    Blade.me().use(new BasicAuthMiddleware()).start();
 }
 ```
 

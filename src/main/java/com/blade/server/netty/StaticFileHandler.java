@@ -3,7 +3,10 @@ package com.blade.server.netty;
 import com.blade.Blade;
 import com.blade.exception.ForbiddenException;
 import com.blade.exception.NotFoundException;
-import com.blade.kit.*;
+import com.blade.kit.BladeKit;
+import com.blade.kit.DateKit;
+import com.blade.kit.PathKit;
+import com.blade.kit.StringKit;
 import com.blade.mvc.Const;
 import com.blade.mvc.http.Request;
 import com.blade.mvc.http.Response;
@@ -46,10 +49,14 @@ public class StaticFileHandler implements RequestHandler<Boolean> {
 
     private boolean showFileList;
 
-    private static final int HTTP_CACHE_SECONDS = 60;
+    /**
+     * default cache 30 days.
+     */
+    private final long HTTP_CACHE_SECONDS;
 
     public StaticFileHandler(Blade blade) {
         this.showFileList = blade.environment().getBoolean(Const.ENV_KEY_STATIC_LIST, false);
+        this.HTTP_CACHE_SECONDS = blade.environment().getLong(Const.ENV_KEY_HTTP_CACHE_TIMEOUT, 86400 * 30);
     }
 
     /**
@@ -79,7 +86,8 @@ public class StaticFileHandler implements RequestHandler<Boolean> {
                 log404(log, method, uri);
                 throw new NotFoundException(uri);
             }
-            if (jarResource(ctx, request, cleanUri, input)) {
+            if (writeJarResource(ctx, request, cleanUri, input)) {
+                log200(log, start, method, uri);
                 return false;
             }
             return false;
@@ -90,7 +98,8 @@ public class StaticFileHandler implements RequestHandler<Boolean> {
                 log404(log, method, uri);
                 throw new NotFoundException(uri);
             }
-            if (jarResource(ctx, request, cleanUri, input)) {
+            if (writeJarResource(ctx, request, cleanUri, input)) {
+                log200(log, start, method, uri);
                 return false;
             }
             return false;
@@ -133,7 +142,7 @@ public class StaticFileHandler implements RequestHandler<Boolean> {
         }
 
         // Cache Validation
-        if (http304(ctx, request, file.lastModified())) {
+        if (isHttp304(ctx, request, file.length(), file.lastModified())) {
             log304(log, method, uri);
             return false;
         }
@@ -151,6 +160,7 @@ public class StaticFileHandler implements RequestHandler<Boolean> {
         HttpResponse httpResponse = new DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
         setContentTypeHeader(httpResponse, file);
         setDateAndCacheHeaders(httpResponse, file);
+
         httpResponse.headers().set(HttpConst.CONTENT_LENGTH, fileLength);
         if (request.keepAlive()) {
             httpResponse.headers().set(HttpConst.CONNECTION, HttpConst.KEEP_ALIVE);
@@ -185,47 +195,59 @@ public class StaticFileHandler implements RequestHandler<Boolean> {
         return false;
     }
 
-    private boolean jarResource(ChannelHandlerContext ctx, Request request, String uri, InputStream input) throws IOException {
-        if (http304(ctx, request, -1)) {
-            return true;
+    private boolean writeJarResource(ChannelHandlerContext ctx, Request request, String uri, InputStream input) throws IOException {
+
+        StaticInputStream staticInputStream = new StaticInputStream(input);
+
+        int size = staticInputStream.size();
+
+        if (isHttp304(ctx, request, size, -1)) {
+            log304(log, request.method(), uri);
+            return false;
         }
-        String           content      = IOKit.readToString(input);
-        FullHttpResponse httpResponse = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, OK, Unpooled.copiedBuffer(content, CharsetUtil.UTF_8));
+
+        FullHttpResponse httpResponse = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, OK, staticInputStream.asByteBuf());
+
         setDateAndCacheHeaders(httpResponse, null);
         String contentType = StringKit.mimeType(uri);
         if (null != contentType) {
             httpResponse.headers().set(HttpConst.CONTENT_TYPE, contentType);
         }
-        httpResponse.headers().set(HttpConst.CONTENT_LENGTH, content.length());
+        httpResponse.headers().set(HttpConst.CONTENT_LENGTH, size);
+
         if (request.keepAlive()) {
             httpResponse.headers().set(HttpConst.CONNECTION, HttpConst.KEEP_ALIVE);
         }
         // Write the initial line and the header.
         ctx.writeAndFlush(httpResponse);
-        return false;
+        return true;
     }
 
-    private boolean http304(ChannelHandlerContext ctx, Request request, long lastModified) {
-        // Cache Validation
-        String ifMdf = request.header(HttpConst.IF_MODIFIED_SINCE);
-        if (StringKit.isBlank(ifMdf)) {
-            return false;
-        }
+    private boolean isHttp304(ChannelHandlerContext ctx, Request request, long size, long lastModified) {
+        String ifModifiedSince = request.header(HttpConst.IF_MODIFIED_SINCE);
 
-        Date ifModifiedSinceDate = format(ifMdf, Const.HTTP_DATE_FORMAT);
-        // Only compare up to the second because the datetime format we send to the client
-        // does not have milliseconds
-        long ifModifiedSinceDateSeconds = ifModifiedSinceDate.getTime() / 1000;
+        if (StringKit.isNotEmpty(ifModifiedSince) && HTTP_CACHE_SECONDS > 0) {
 
-        if (lastModified < 0 && ifModifiedSinceDateSeconds <= Instant.now().getEpochSecond()) {
-            sendNotModified(ctx);
-            return true;
-        }
+            Date ifModifiedSinceDate = format(ifModifiedSince, Const.HTTP_DATE_FORMAT);
 
-        long fileLastModifiedSeconds = lastModified / 1000;
-        if (ifModifiedSinceDateSeconds == fileLastModifiedSeconds) {
-            sendNotModified(ctx);
-            return true;
+            // Only compare up to the second because the datetime format we send to the client
+            // does not have milliseconds
+            long ifModifiedSinceDateSeconds = ifModifiedSinceDate.getTime() / 1000;
+            if (ifModifiedSinceDateSeconds == lastModified / 1000) {
+                FullHttpResponse response    = new DefaultFullHttpResponse(HTTP_1_1, NOT_MODIFIED);
+                String           contentType = StringKit.mimeType(request.uri());
+                if (null != contentType) {
+                    response.headers().set(HttpConst.CONTENT_TYPE, contentType);
+                }
+                response.headers().set(HttpConst.DATE, DateKit.gmtDate());
+                response.headers().set(HttpConst.CONTENT_LENGTH, size);
+                if (request.keepAlive()) {
+                    response.headers().set(HttpConst.CONNECTION, HttpConst.KEEP_ALIVE);
+                }
+                // Close the connection as soon as the error message is sent.
+                ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
+                return true;
+            }
         }
         return false;
     }
@@ -235,6 +257,26 @@ public class StaticFileHandler implements RequestHandler<Boolean> {
         LocalDateTime     formatted = LocalDateTime.parse(date, fmt);
         Instant           instant   = formatted.atZone(ZoneId.systemDefault()).toInstant();
         return Date.from(instant);
+    }
+
+    /**
+     * Sets the Date and Cache headers for the HTTP Response
+     *
+     * @param response    HTTP response
+     * @param fileToCache file to extract content type
+     */
+    private void setDateAndCacheHeaders(HttpResponse response, File fileToCache) {
+        response.headers().set(HttpConst.DATE, DateKit.gmtDate());
+        // Add cache headers
+        if (HTTP_CACHE_SECONDS > 0) {
+            response.headers().set(HttpConst.EXPIRES, DateKit.gmtDate(LocalDateTime.now().plusSeconds(HTTP_CACHE_SECONDS)));
+            response.headers().set(HttpConst.CACHE_CONTROL, "private, max-age=" + HTTP_CACHE_SECONDS);
+            if (null != fileToCache) {
+                response.headers().set(HttpConst.LAST_MODIFIED, DateKit.gmtDate(new Date(fileToCache.lastModified())));
+            } else {
+                response.headers().set(HttpConst.LAST_MODIFIED, DateKit.gmtDate(LocalDateTime.now().plusDays(-1)));
+            }
+        }
     }
 
     private static final Pattern ALLOWED_FILE_NAME = Pattern.compile("[^-._]?[^<>&\"]*");
@@ -286,28 +328,6 @@ public class StaticFileHandler implements RequestHandler<Boolean> {
         ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
     }
 
-    /**
-     * When file timestamp is the same as what the browser is sending up, send a "304 Not Modified"
-     *
-     * @param ctx Context
-     */
-    private static void sendNotModified(ChannelHandlerContext ctx) {
-        FullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1, NOT_MODIFIED);
-        setDateHeader(response);
-
-        // Close the connection as soon as the error message is sent.
-        ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
-    }
-
-    /**
-     * Sets the Date header for the HTTP response
-     *
-     * @param response HTTP response
-     */
-    private static void setDateHeader(FullHttpResponse response) {
-        response.headers().set(HttpConst.DATE, DateKit.gmtDate());
-    }
-
     private static final Pattern INSECURE_URI = Pattern.compile(".*[<>&\"].*");
 
     private static String sanitizeUri(String uri) {
@@ -326,31 +346,6 @@ public class StaticFileHandler implements RequestHandler<Boolean> {
         }
         // Maven resources path
         return Const.CLASSPATH + File.separator + uri.substring(1);
-    }
-
-
-    /**
-     * Sets the Date and Cache headers for the HTTP Response
-     *
-     * @param response    HTTP response
-     * @param fileToCache file to extract content type
-     */
-    private static void setDateAndCacheHeaders(HttpResponse response, File fileToCache) {
-        // Date header
-        LocalDateTime localTime = LocalDateTime.now();
-        String        date      = DateKit.gmtDate(localTime);
-        response.headers().set(HttpConst.DATE, date);
-        String        lastModifed = date;
-        LocalDateTime newTime     = localTime.plusSeconds(HTTP_CACHE_SECONDS);
-        date = DateKit.gmtDate(newTime);
-
-        // Add cache headers
-        response.headers().set(HttpConst.EXPIRES, date);
-        response.headers().set(HttpConst.CACHE_CONTROL, "private, max-age=" + HTTP_CACHE_SECONDS);
-        if (null != fileToCache) {
-            lastModifed = DateKit.gmtDate(new Date(fileToCache.lastModified()));
-        }
-        response.headers().set(HttpConst.LAST_MODIFIED, lastModifed);
     }
 
     /**

@@ -87,11 +87,6 @@ public class RouteBuilder {
         }
     }
 
-    // register route object to ioc
-    public void register() {
-        routeMatcher.register();
-    }
-
     private void parseRoute(RouteStruct routeStruct) {
         // build multiple route
         HttpMethod methodType = routeStruct.getMethod();

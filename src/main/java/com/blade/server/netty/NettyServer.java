@@ -92,6 +92,8 @@ public class NettyServer implements Server {
     private List<TaskStruct>    taskStruts = new ArrayList<>();
     private int                 padSize    = 26;
 
+    private volatile boolean isStop;
+
     @Override
     public void start(Blade blade, String[] args) throws Exception {
         this.blade = blade;
@@ -113,13 +115,13 @@ public class NettyServer implements Server {
 
         this.initIoc();
 
-        this.shutdownHook();
-
         this.watchEnv();
 
         this.startServer(initStart);
 
         this.startTask();
+
+        this.shutdownHook();
     }
 
     private void initIoc() {
@@ -134,7 +136,8 @@ public class NettyServer implements Server {
                 .filter(ReflectKit::isNormalClass)
                 .forEach(this::parseCls);
 
-        routeBuilder.register();
+        routeMatcher.register();
+//        routeBuilder.register();
 
         this.processors.stream().sorted(new OrderComparator<>()).forEach(b -> b.preHandle(blade));
 
@@ -332,16 +335,21 @@ public class NettyServer implements Server {
     }
 
     private void shutdownHook() {
-        Thread shutdownThread = new Thread(this::stop);
+        Thread shutdownThread = new Thread(() -> stop());
         shutdownThread.setName("shutdown@thread");
         Runtime.getRuntime().addShutdownHook(shutdownThread);
     }
 
     @Override
     public void stop() {
+        if (isStop) {
+            return;
+        }
+        isStop = true;
         System.out.println();
         log.info("{}Blade shutdown ...", getStartedSymbol());
         try {
+            WebContext.clean();
             if (this.bossGroup != null) {
                 this.bossGroup.shutdownGracefully();
             }
@@ -356,6 +364,11 @@ public class NettyServer implements Server {
 
     @Override
     public void stopAndWait() {
+        if (isStop) {
+            return;
+        }
+        isStop = true;
+        System.out.println();
         log.info("{}Blade shutdown ...", getStartedSymbol());
         try {
             if (this.bossGroup != null) {

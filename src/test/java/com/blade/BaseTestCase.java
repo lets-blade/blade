@@ -1,15 +1,11 @@
 package com.blade;
 
-import com.blade.mvc.http.Request;
+import com.blade.mvc.http.HttpMethod;
 import com.blade.mvc.http.Response;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.request.HttpRequest;
 import com.mashape.unirest.request.HttpRequestWithBody;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.After;
-import org.junit.Before;
-
-import java.util.function.Consumer;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -23,37 +19,23 @@ import static org.mockito.Mockito.when;
 @Slf4j
 public class BaseTestCase {
 
-    protected Blade  blade;
-    protected String origin    = "http://127.0.0.1:9000";
+    private   String origin    = "http://127.0.0.1:9000";
     protected String firefoxUA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:53.0) Gecko/20100101 Firefox/53.0";
 
-    @Before
-    public void before() {
-        blade = Blade.me();
-    }
-
-    @After
-    public void after() {
-    }
-
-    protected void app(Consumer<Blade> consumer) {
-        consumer.accept(blade);
-        blade.start().await();
-    }
-
-    protected Request mockRequest(String methodName) {
-        Request request = mock(Request.class);
+    protected com.blade.mvc.http.HttpRequest mockHttpRequest(String methodName) {
+        com.blade.mvc.http.HttpRequest request = mock(com.blade.mvc.http.HttpRequest.class);
         when(request.method()).thenReturn(methodName);
+        when(request.httpMethod()).thenReturn(HttpMethod.valueOf(methodName));
         return request;
     }
 
-    protected Response mockResponse(int code) {
+    protected Response mockHttpResponse(int code) {
         Response response = mock(Response.class);
         when(response.statusCode()).thenReturn(code);
         return response;
     }
 
-    protected HttpRequest get(String path) throws Exception {
+    protected HttpRequest get(String path) {
         log.info("[GET] {}", (origin + path));
         return Unirest.get(origin + path);
     }
@@ -63,7 +45,7 @@ public class BaseTestCase {
         return Unirest.get(origin + path).asString().getBody();
     }
 
-    protected HttpRequestWithBody post(String path) throws Exception {
+    protected HttpRequestWithBody post(String path) {
         log.info("[POST] {}", (origin + path));
         return Unirest.post(origin + path);
     }
@@ -73,7 +55,7 @@ public class BaseTestCase {
         return Unirest.post(origin + path).asString().getBody();
     }
 
-    protected HttpRequest put(String path) throws Exception {
+    protected HttpRequest put(String path) {
         log.info("[PUT] {}", (origin + path));
         return Unirest.put(origin + path);
     }
@@ -83,7 +65,7 @@ public class BaseTestCase {
         return Unirest.put(origin + path).asString().getBody();
     }
 
-    protected HttpRequest delete(String path) throws Exception {
+    protected HttpRequest delete(String path) {
         log.info("[DELETE] {}", (origin + path));
         return Unirest.delete(origin + path);
     }

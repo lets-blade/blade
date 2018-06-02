@@ -1,6 +1,7 @@
 package com.blade.model;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 /**
@@ -9,6 +10,7 @@ import lombok.ToString;
  */
 @Data
 @ToString(callSuper = true)
+@EqualsAndHashCode(callSuper = true)
 public class MyPerson extends Person {
 
     private Boolean sex;

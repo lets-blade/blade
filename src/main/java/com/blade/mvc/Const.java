@@ -34,7 +34,7 @@ public interface Const {
     int          DEFAULT_SERVER_PORT        = 9000;
     String       DEFAULT_SERVER_ADDRESS     = "0.0.0.0";
     String       LOCAL_IP_ADDRESS           = "127.0.0.1";
-    String       VERSION                    = "2.0.8-BETA3";
+    String       VERSION                    = "2.0.8-R1";
     String       WEB_JARS                   = "/webjars/";
     String       CLASSPATH                  = BladeKit.getCurrentClassPath();
     String       CONTENT_TYPE_HTML          = "text/html; charset=UTF-8";
@@ -60,6 +60,7 @@ public interface Const {
     String ENV_KEY_SESSION_TIMEOUT           = "http.session.timeout";
     String ENV_KEY_AUTH_USERNAME             = "http.auth.username";
     String ENV_KEY_AUTH_PASSWORD             = "http.auth.password";
+    String ENV_KEY_HTTP_CACHE_TIMEOUT        = "http.cache.timeout";
     String ENV_KEY_PAGE_404                  = "mvc.view.404";
     String ENV_KEY_PAGE_500                  = "mvc.view.500";
     String ENV_KEY_STATIC_DIRS               = "mvc.statics";

@@ -13,7 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @date 2017/10/16
  */
 public interface HttpConst {
-    String IF_MODIFIED_SINCE   = "IF_MODIFIED_SINCE";
+    String IF_MODIFIED_SINCE   = "If-Modified-Since";
     String USER_AGENT          = "User-Agent";
     String CONTENT_TYPE_STRING = "Content-Type";
     String COOKIE_STRING       = "Cookie";
@@ -35,7 +35,7 @@ public interface HttpConst {
     CharSequence LAST_MODIFIED  = AsciiString.cached("Last-Modified");
     CharSequence SERVER         = AsciiString.cached("Server");
     CharSequence SET_COOKIE     = AsciiString.cached("Set-Cookie");
-    CharSequence KEEP_ALIVE     = AsciiString.cached("Keep-Alive");
+    CharSequence KEEP_ALIVE     = AsciiString.cached("keep-alive");
 
     String CONTENT_TYPE_HTML = "text/html; charset=UTF-8";
 

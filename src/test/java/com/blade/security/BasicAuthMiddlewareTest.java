@@ -13,9 +13,7 @@ import com.blade.security.web.auth.BasicAuthMiddleware;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
@@ -40,7 +38,7 @@ public class BasicAuthMiddlewareTest extends BaseTestCase {
     @Test
     public void testAuthSuccess() throws Exception {
         Signature signature   = new Signature();
-        Request   mockRequest = mockRequest("GET");
+        Request   mockRequest = mockHttpRequest("GET");
 
         WebContext.init(Blade.me(), "/");
 
@@ -52,7 +50,7 @@ public class BasicAuthMiddlewareTest extends BaseTestCase {
         when(mockRequest.headers()).thenReturn(headers);
 
         Request  request  = new HttpRequest(mockRequest);
-        Response response = mockResponse(200);
+        Response response = mockHttpResponse(200);
 
         signature.setResponse(response);
         signature.setRequest(request);
@@ -71,7 +69,7 @@ public class BasicAuthMiddlewareTest extends BaseTestCase {
     @Test
     public void testAuthFail() throws Exception {
         Signature signature   = new Signature();
-        Request   mockRequest = mockRequest("GET");
+        Request   mockRequest = mockHttpRequest("GET");
 
         WebContext.init(Blade.me(), "/");
 
@@ -82,7 +80,7 @@ public class BasicAuthMiddlewareTest extends BaseTestCase {
         when(mockRequest.headers()).thenReturn(headers);
 
         Request  request  = new HttpRequest(mockRequest);
-        Response response = mockResponse(200);
+        Response response = mockHttpResponse(200);
 
         signature.setResponse(response);
         signature.setRequest(request);
