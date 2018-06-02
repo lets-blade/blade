@@ -1,12 +1,16 @@
 package netty_hello;
 
+import com.blade.kit.DateKit;
+import com.blade.mvc.Const;
 import com.blade.mvc.annotation.*;
 import com.blade.mvc.http.Request;
 import com.blade.mvc.http.Response;
 import com.blade.mvc.multipart.FileItem;
+import com.blade.mvc.ui.RestResponse;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author biezhi
@@ -51,6 +55,16 @@ public class DemoController {
         System.out.println(fileItem.getFileName());
         System.out.println(fileItem.getContentType());
         System.out.println(fileItem.getLength());
+    }
+
+    @PostRoute("save")
+    @JSON
+    public RestResponse savePerson(@BodyParam Map<String, Object> person) {
+        return RestResponse.ok(person);
+    }
+
+    public static void main(String[] args) {
+        System.out.println(DateKit.toString(DateKit.toDateTime("Tue, 08 May 2018 16:01:09 GMT", Const.HTTP_DATE_FORMAT), "yyyy-MM-dd HH:mm:ss"));
     }
 
 }
