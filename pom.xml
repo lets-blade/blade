@@ -39,11 +39,11 @@
         <netty.version>4.1.25.Final</netty.version>
         <blade-asm.version>0.0.1</blade-asm.version>
         <blade-log.version>0.1.3</blade-log.version>
-        <gson.version>2.8.0</gson.version>
-        <bootstrap.version>3.3.7</bootstrap.version>
-        <mockito.version>1.10.19</mockito.version>
+        <gson.version>2.8.5</gson.version>
+        <bootstrap.version>4.1.0</bootstrap.version>
+        <mockito.version>2.18.3</mockito.version>
         <unirest-java.version>1.4.9</unirest-java.version>
-        <lombok.version>1.16.20</lombok.version>
+        <lombok.version>1.16.22</lombok.version>
     </properties>
 
     <dependencies>

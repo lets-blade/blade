@@ -4,15 +4,15 @@ apply plugin: 'eclipse'
 apply plugin: 'idea'
 
 group = 'com.bladejava'
-version = '2.0.8-SNAPSHOT'
+version = '2.0.8-R1'
 
-description = """blade"""
+description = 'blade-mvc'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '4.5'
+    gradleVersion = '4.7'
 }
 
 tasks.withType(JavaCompile) {
@@ -24,7 +24,6 @@ def bladeLogVersion = '0.1.3'
 def junitVersion = '4.12'
 def slf4jApiVersion = '1.7.21'
 def nettyVersion = '4.1.25.Final'
-
 
 repositories {
     maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
@@ -38,11 +37,11 @@ dependencies {
     compile group: 'org.slf4j', name: 'slf4j-api', version: slf4jApiVersion
     compile group: 'io.netty', name: 'netty-codec-http', version: nettyVersion
     compile group: 'io.netty', name: 'netty-handler', version: nettyVersion
-    testCompile group: 'junit', name: 'junit', version: junitVersion
+    provided group: 'junit', name: 'junit', version: junitVersion
     testCompile group: 'com.google.code.gson', name: 'gson', version: '2.8.0'
     testCompile group: 'org.webjars', name: 'bootstrap', version: '3.3.7'
     testCompile group: 'org.mockito', name: 'mockito-all', version: '1.10.19'
     testCompile group: 'com.mashape.unirest', name: 'unirest-java', version: '1.4.9'
     compileOnly group: 'io.netty', name: 'netty-transport-native-epoll', version: '4.1.25.Final'
-    compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.16.20'
+    compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.16.22'
 }
