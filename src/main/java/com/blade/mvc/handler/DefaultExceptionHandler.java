@@ -8,6 +8,13 @@ import com.blade.mvc.WebContext;
 import com.blade.mvc.http.Request;
 import com.blade.mvc.http.Response;
 import com.blade.mvc.ui.HtmlCreator;
+import com.blade.mvc.ui.ModelAndView;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
+import io.netty.handler.codec.http.DefaultFullHttpResponse;
+import io.netty.handler.codec.http.FullHttpResponse;
+import io.netty.handler.codec.http.HttpResponseStatus;
+import io.netty.handler.codec.http.HttpVersion;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.PrintWriter;
@@ -50,8 +57,11 @@ public class DefaultExceptionHandler implements ExceptionHandler {
     private void handleBladeException(BladeException e, Request request, Response response) {
         Blade blade = WebContext.blade();
         response.status(e.getStatus());
-        request.attribute("title", e.getStatus() + " " + e.getName());
-        request.attribute("message", e.getMessage());
+
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.add("title", e.getStatus() + " " + e.getName());
+        modelAndView.add("message", e.getMessage());
+
         if (null != e.getCause()) {
             request.attribute(VARIABLE_STACKTRACE, getStackTrace(e));
         }
@@ -63,6 +73,8 @@ public class DefaultExceptionHandler implements ExceptionHandler {
         if (e.getStatus() == NotFoundException.STATUS) {
             Optional<String> page404 = Optional.ofNullable(blade.environment().get(ENV_KEY_PAGE_404, null));
             if (page404.isPresent()) {
+                modelAndView.setView(page404.get());
+                renderPage(response, modelAndView);
                 response.render(page404.get());
             } else {
                 HtmlCreator htmlCreator = new HtmlCreator();
@@ -77,7 +89,7 @@ public class DefaultExceptionHandler implements ExceptionHandler {
         Blade            blade   = WebContext.blade();
         Optional<String> page500 = Optional.ofNullable(blade.environment().get(ENV_KEY_PAGE_500, null));
         if (page500.isPresent()) {
-            response.render(page500.get());
+            renderPage(response, new ModelAndView(page500.get()));
         } else {
             if (blade.devMode()) {
                 HtmlCreator htmlCreator = new HtmlCreator();
@@ -94,6 +106,18 @@ public class DefaultExceptionHandler implements ExceptionHandler {
             } else {
                 response.html(INTERNAL_SERVER_ERROR_HTML);
             }
+        }
+    }
+
+    protected void renderPage(Response response, ModelAndView modelAndView) {
+        StringWriter sw = new StringWriter();
+        try {
+            WebContext.blade().templateEngine().render(modelAndView, sw);
+            ByteBuf          buffer           = Unpooled.wrappedBuffer(sw.toString().getBytes("utf-8"));
+            FullHttpResponse fullHttpResponse = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(response.statusCode()), buffer);
+            response.send(fullHttpResponse);
+        } catch (Exception e) {
+            log.error("Render view error", e);
         }
     }
 
