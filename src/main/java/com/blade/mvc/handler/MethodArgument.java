@@ -251,14 +251,18 @@ public final class MethodArgument {
             Object value = null;
 
             Optional<String> fieldValue = request.query(field.getName());
+
             if (StringKit.isNotBlank(name)) {
                 String fieldName = name + "[" + field.getName() + "]";
                 fieldValue = request.query(fieldName);
             }
+
             if (fieldValue.isPresent() && StringKit.isNotBlank(fieldValue.get())) {
                 value = ReflectKit.convert(field.getType(), fieldValue.get());
             }
-            ReflectKit.setFieldValue(field, obj, value);
+            if (null != value) {
+                ReflectKit.setFieldValue(field, obj, value);
+            }
         }
         return obj;
     }

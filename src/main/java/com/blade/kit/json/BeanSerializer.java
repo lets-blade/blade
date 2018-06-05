@@ -11,10 +11,7 @@ import java.lang.reflect.ParameterizedType;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 public class BeanSerializer {
@@ -289,6 +286,12 @@ public class BeanSerializer {
     }
 
     public static <T, A> Collection<T> deserialize(Class<? extends Collection> klass, Class<T> genericType, A[] array) throws Exception {
+        if (klass.equals(List.class)) {
+            klass = ArrayList.class;
+        }
+        if (klass.equals(Set.class)) {
+            klass = HashSet.class;
+        }
         Collection collection = klass.newInstance();
         for (int i = 0; i < array.length; ++i)
             collection.add(deserialize(genericType, array[i]));
