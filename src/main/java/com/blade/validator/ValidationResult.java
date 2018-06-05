@@ -45,16 +45,20 @@ public class ValidationResult {
     }
 
     public void throwIfInvalid() {
-        if (!isValid()) throw new ValidatorException(getMessage());
+        this.throwMessage(getMessage());
     }
 
     public void throwIfInvalid(String fieldName) {
-        if (!isValid()) throw new ValidatorException("\"" + fieldName + "\" " + getMessage());
+        if (!isValid()) throw new ValidatorException(fieldName + " " + getMessage());
     }
 
     public <T, R> void throwIfInvalid(TypeFunction<T, R> function) {
         String fieldName = BladeKit.getLambdaFieldName(function);
         throwIfInvalid(fieldName);
+    }
+
+    public void throwMessage(String msg) {
+        if (!isValid()) throw new ValidatorException(msg);
     }
 
 }

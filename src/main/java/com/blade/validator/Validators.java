@@ -40,6 +40,7 @@ public final class Validators {
 
     static {
         I18N_MAP.put("CN_NOT_NULL", "不允许为 NULL");
+        I18N_MAP.put("CN_IS_EMPTY", "为空");
         I18N_MAP.put("CN_NOT_EMPTY", "不允许为空");
         I18N_MAP.put("CN_MORE_THAN", "必须大于等于 %s 个字符");
         I18N_MAP.put("CN_LESS_THAN", "必须小于等于 %s 个字符");
@@ -50,7 +51,8 @@ public final class Validators {
         I18N_MAP.put("CN_IS_URL", "不是一个合法的URL");
 
         I18N_MAP.put("EN_NOT_NULL", "must not be null.");
-        I18N_MAP.put("EN_NOT_EMPTY", "must not be empty.");
+        I18N_MAP.put("CN_IS_EMPTY", "must not be empty.");
+        I18N_MAP.put("EN_NOT_EMPTY", "must be empty.");
         I18N_MAP.put("EN_MORE_THAN", "must have more than %s chars.");
         I18N_MAP.put("EN_LESS_THAN", "must have less than %s chars.");
         I18N_MAP.put("EN_CONTAINS", "must contain %s");
@@ -72,6 +74,14 @@ public final class Validators {
         return SimpleValidation.from(Objects::nonNull, msg);
     }
 
+    public static Validation<String> isEmpty() {
+        return isEmpty(I18N_MAP.get(i18nPrefix + "IS_EMPTY"));
+    }
+
+    public static Validation<String> isEmpty(String msg) {
+        return SimpleValidation.from(s -> null == s || s.isEmpty(), msg);
+    }
+
     public static Validation<String> notEmpty() {
         return notEmpty(I18N_MAP.get(i18nPrefix + "NOT_EMPTY"));
     }
@@ -81,11 +91,11 @@ public final class Validators {
     }
 
     public static Validation<String> moreThan(int size) {
-        return notEmpty().and(moreThan(size, I18N_MAP.get(i18nPrefix + "MORE_THAN")));
+        return isEmpty().and(moreThan(size, I18N_MAP.get(i18nPrefix + "MORE_THAN")));
     }
 
     public static Validation<String> moreThan(int size, String msg) {
-        return notEmpty().and(SimpleValidation.from((s) -> s.length() >= size, format(msg, size)));
+        return isEmpty().and(SimpleValidation.from((s) -> s.length() >= size, format(msg, size)));
     }
 
     public static Validation<String> lessThan(int size) {
