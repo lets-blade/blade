@@ -23,14 +23,14 @@ public interface Validation<T> {
     default Validation<T> and(Validation<T> other) {
         return param -> {
             ValidationResult firstResult = this.test(param);
-            return !firstResult.isValid() ? other.test(param) : firstResult;
+            return !firstResult.isValid() ? firstResult : other.test(param);
         };
     }
 
     default Validation<T> or(Validation<T> other) {
         return (param) -> {
             ValidationResult firstResult = this.test(param);
-            return firstResult.isValid() ? other.test(param) : firstResult;
+            return firstResult.isValid() ? firstResult : other.test(param);
         };
     }
 
