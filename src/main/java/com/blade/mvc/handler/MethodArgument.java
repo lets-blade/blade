@@ -239,8 +239,10 @@ public final class MethodArgument {
     }
 
     public static <T> T parseModel(Class<T> argType, Request request, String name) {
-        T       obj    = ReflectKit.newInstance(argType);
-        Field[] fields = argType.getDeclaredFields();
+
+        T obj = ReflectKit.newInstance(argType);
+
+        List<Field> fields = ReflectKit.loopFields(argType);
 
         for (Field field : fields) {
             if ("serialVersionUID".equals(field.getName())) {
