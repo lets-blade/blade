@@ -182,10 +182,11 @@ public final class MethodArgument {
             }
             return null;
         }
-        if (ReflectKit.isPrimitive(argType)) {
+        if ("".equals(defaultValue) && ReflectKit.isBasicType(argType)) {
             if (argType.equals(int.class) || argType.equals(long.class) || argType.equals(double.class) ||
                     argType.equals(float.class) || argType.equals(short.class) ||
-                    argType.equals(byte.class)) {
+                    argType.equals(byte.class)
+                    ) {
                 return "0";
             }
             if (argType.equals(boolean.class)) {
@@ -193,7 +194,7 @@ public final class MethodArgument {
             }
             return "";
         }
-        return null;
+        return defaultValue;
     }
 
     private static Object getCookie(ParamStruct paramStruct) throws BladeException {

@@ -31,7 +31,7 @@ public class SimpleValidation<T> implements Validation<T> {
 
     @Override
     public ValidationResult test(T param) {
-        return predicate.test(param) ? ValidationResult.fail(onErrorMessage) : ValidationResult.ok();
+        return predicate.test(param) ? ValidationResult.ok() : ValidationResult.fail(onErrorMessage);
     }
 
 }
