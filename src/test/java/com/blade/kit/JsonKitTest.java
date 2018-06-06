@@ -47,5 +47,12 @@ public class JsonKitTest {
         System.out.println(JsonKit.toString(result));
     }
 
+    @Test
+    public void test3(){
+        TestBean testBean = new TestBean();
+        testBean.setName("\"hello\"_world");
+        System.out.println(JsonKit.toString(testBean));
+    }
+
 }
 

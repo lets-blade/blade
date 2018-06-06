@@ -21,6 +21,10 @@ public class BeanSerializer {
             return null;
         }
 
+        if (bean instanceof String) {
+            return bean.toString().replaceAll("\"", "\\\\\"");
+        }
+
         if (ReflectKit.isBasicType(bean.getClass()) || bean instanceof Number || bean instanceof Date
                 || bean instanceof LocalDate || bean instanceof LocalDateTime) {
             return bean;
