@@ -541,7 +541,9 @@ public class Blade {
     public Blade use(@NonNull WebHook... middleware) {
         if (!BladeKit.isEmpty(middleware)) {
             this.middleware.addAll(Arrays.asList(middleware));
-            this.register(middleware);
+            for (WebHook webHook : middleware) {
+                this.register(webHook);
+            }
         }
         return this;
     }

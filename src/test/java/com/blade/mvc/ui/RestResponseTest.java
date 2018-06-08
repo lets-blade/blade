@@ -35,7 +35,6 @@ public class RestResponseTest {
     @Test
     public void testFail(){
         Assert.assertEquals(false, RestResponse.fail().isSuccess());
-        Assert.assertEquals(500, RestResponse.fail(500).getCode());
         Assert.assertEquals("error", RestResponse.fail("error").getMsg());
         Assert.assertEquals("error", RestResponse.fail(500, "error").getMsg());
     }

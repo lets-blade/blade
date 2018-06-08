@@ -5,14 +5,14 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.lang.reflect.Type;
+import java.lang.reflect.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.stream.Stream;
 
 /**
@@ -72,6 +72,9 @@ public final class ReflectKit {
             @SuppressWarnings("unchecked")
             Class<?> clazz = (Class<?>) type;
             return clazz;
+        } else if (type instanceof ParameterizedType) {
+            ParameterizedType parameterizedType = (ParameterizedType) type;
+            return (Class<?>) parameterizedType.getRawType();
         }
         return null;
     }
@@ -310,4 +313,26 @@ public final class ReflectKit {
         }
     }
 
+    public static List<Field> loopFields(Class<?> type) {
+        Class<?> superCls = type.getSuperclass();
+        if (superCls.equals(Object.class)) {
+            if (null != type.getDeclaredFields() && type.getDeclaredFields().length > 0) {
+                return Arrays.asList(type.getDeclaredFields());
+            }
+            return new ArrayList<>();
+        }
+
+        List<Field> fields = new ArrayList<>();
+        if (null != type.getDeclaredFields() && type.getDeclaredFields().length > 0) {
+            fields.addAll(Arrays.asList(type.getDeclaredFields()));
+        }
+
+        while (!superCls.equals(Object.class)) {
+            if (null != superCls.getDeclaredFields() && superCls.getDeclaredFields().length > 0) {
+                fields.addAll(Arrays.asList(superCls.getDeclaredFields()));
+            }
+            superCls = superCls.getSuperclass();
+        }
+        return fields;
+    }
 }

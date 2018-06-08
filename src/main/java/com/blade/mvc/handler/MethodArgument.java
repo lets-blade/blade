@@ -182,10 +182,11 @@ public final class MethodArgument {
             }
             return null;
         }
-        if (ReflectKit.isPrimitive(argType)) {
+        if ("".equals(defaultValue) && ReflectKit.isBasicType(argType)) {
             if (argType.equals(int.class) || argType.equals(long.class) || argType.equals(double.class) ||
                     argType.equals(float.class) || argType.equals(short.class) ||
-                    argType.equals(byte.class)) {
+                    argType.equals(byte.class)
+                    ) {
                 return "0";
             }
             if (argType.equals(boolean.class)) {
@@ -193,7 +194,7 @@ public final class MethodArgument {
             }
             return "";
         }
-        return null;
+        return defaultValue;
     }
 
     private static Object getCookie(ParamStruct paramStruct) throws BladeException {
@@ -239,8 +240,10 @@ public final class MethodArgument {
     }
 
     public static <T> T parseModel(Class<T> argType, Request request, String name) {
-        T       obj    = ReflectKit.newInstance(argType);
-        Field[] fields = argType.getDeclaredFields();
+
+        T obj = ReflectKit.newInstance(argType);
+
+        List<Field> fields = ReflectKit.loopFields(argType);
 
         for (Field field : fields) {
             if ("serialVersionUID".equals(field.getName())) {
@@ -249,14 +252,18 @@ public final class MethodArgument {
             Object value = null;
 
             Optional<String> fieldValue = request.query(field.getName());
+
             if (StringKit.isNotBlank(name)) {
                 String fieldName = name + "[" + field.getName() + "]";
                 fieldValue = request.query(fieldName);
             }
+
             if (fieldValue.isPresent() && StringKit.isNotBlank(fieldValue.get())) {
                 value = ReflectKit.convert(field.getType(), fieldValue.get());
             }
-            ReflectKit.setFieldValue(field, obj, value);
+            if (null != value) {
+                ReflectKit.setFieldValue(field, obj, value);
+            }
         }
         return obj;
     }
