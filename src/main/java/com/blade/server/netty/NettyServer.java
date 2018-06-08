@@ -250,7 +250,7 @@ public class NettyServer implements Server {
                                 taskStruct.getMethod().invoke(target);
                             }
                         } catch (Exception e) {
-                            log.warn("{}Task method error", getPrefixSymbol(), e.getMessage());
+                            log.error("Task method error", e);
                         }
                     });
 
