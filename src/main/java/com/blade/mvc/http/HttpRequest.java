@@ -1,9 +1,7 @@
 package com.blade.mvc.http;
 
-import com.blade.kit.JsonKit;
 import com.blade.kit.StringKit;
 import com.blade.mvc.WebContext;
-import com.blade.mvc.handler.MethodArgument;
 import com.blade.mvc.multipart.FileItem;
 import com.blade.mvc.route.Route;
 import com.blade.server.netty.HttpConst;
@@ -25,10 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.IOException;
 import java.net.URLConnection;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Http Request Impl
@@ -216,7 +211,17 @@ public class HttpRequest implements Request {
 
     @Override
     public Map<String, List<String>> parameters() {
-        return parameters;
+        return this.parameters;
+    }
+
+    @Override
+    public Set<String> parameterNames() {
+        return this.parameters.keySet();
+    }
+
+    @Override
+    public List<String> parameterValues(String paramName) {
+        return this.parameters.get(paramName);
     }
 
     @Override
