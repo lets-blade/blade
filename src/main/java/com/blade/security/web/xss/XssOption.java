@@ -1,12 +1,10 @@
 package com.blade.security.web.xss;
 
-import com.blade.mvc.http.Response;
 import lombok.*;
 
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.function.Consumer;
 
 /**
  * @author biezhi
@@ -17,11 +15,6 @@ import java.util.function.Consumer;
 @AllArgsConstructor
 @NoArgsConstructor
 public class XssOption {
-
-    static final Consumer<Response> DEFAULT_ERROR_HANDLER = response -> response.badRequest().text("XSS token mismatch.");
-
-    @Builder.Default
-    private Consumer<Response> errorHandler = DEFAULT_ERROR_HANDLER;
 
     @Builder.Default
     private Set<String> urlExclusions = new HashSet<>();
