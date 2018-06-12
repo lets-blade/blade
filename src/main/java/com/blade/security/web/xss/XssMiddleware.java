@@ -1,14 +1,15 @@
 package com.blade.security.web.xss;
 
+import com.blade.kit.StringKit;
 import com.blade.mvc.hook.Signature;
 import com.blade.mvc.hook.WebHook;
 import com.blade.mvc.http.Request;
+import com.blade.security.web.filter.HTMLFilter;
 import lombok.NoArgsConstructor;
 
-import java.text.Normalizer;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -17,6 +18,8 @@ import java.util.stream.Collectors;
  */
 @NoArgsConstructor
 public class XssMiddleware implements WebHook {
+
+    private final static HTMLFilter HTML_FILTER = new HTMLFilter();
 
     private XssOption xssOption = XssOption.builder().build();
 
@@ -30,11 +33,25 @@ public class XssMiddleware implements WebHook {
         if (xssOption.isExclusion(request.uri())) {
             return true;
         }
-        this.filter(request.parameters());
+
+        this.filterHeaders(request.headers());
+        this.filterParameters(request.parameters());
+
+        if (request.contentType().toLowerCase().contains("json")) {
+            String body = request.bodyToString();
+            if (StringKit.isNotEmpty(body)) {
+                String filterBody = stripXSS(body);
+                request.body().clear().writeBytes(filterBody.getBytes(StandardCharsets.UTF_8));
+            }
+        }
         return true;
     }
 
-    protected void filter(Map<String, List<String>> parameters) {
+    protected void filterHeaders(Map<String, String> headers) {
+        headers.forEach((key, value) -> headers.put(key, this.stripXSS(value)));
+    }
+
+    protected void filterParameters(Map<String, List<String>> parameters) {
         parameters.forEach((key, values) -> {
             List<String> snzValues = values.stream().map(this::stripXSS).collect(Collectors.toList());
             parameters.put(key, snzValues);
@@ -48,53 +65,7 @@ public class XssMiddleware implements WebHook {
      * @return the sanitized string
      */
     protected String stripXSS(String value) {
-        String cleanValue = null;
-        if (value != null) {
-            cleanValue = Normalizer.normalize(value, Normalizer.Form.NFD);
-
-            // Avoid null characters
-            cleanValue = cleanValue.replaceAll("\0", "");
-
-            // Avoid anything between script tags
-            Pattern scriptPattern = Pattern.compile("<script>(.*?)</script>", Pattern.CASE_INSENSITIVE);
-            cleanValue = scriptPattern.matcher(cleanValue).replaceAll("");
-
-            // Avoid anything in a src='...' type of expression
-            scriptPattern = Pattern.compile("src[\r\n]*=[\r\n]*\\\'(.*?)\\\'", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL);
-            cleanValue = scriptPattern.matcher(cleanValue).replaceAll("");
-
-            scriptPattern = Pattern.compile("src[\r\n]*=[\r\n]*\\\"(.*?)\\\"", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL);
-            cleanValue = scriptPattern.matcher(cleanValue).replaceAll("");
-
-            // Remove any lonesome </script> tag
-            scriptPattern = Pattern.compile("</script>", Pattern.CASE_INSENSITIVE);
-            cleanValue = scriptPattern.matcher(cleanValue).replaceAll("");
-
-            // Remove any lonesome <script ...> tag
-            scriptPattern = Pattern.compile("<script(.*?)>", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL);
-            cleanValue = scriptPattern.matcher(cleanValue).replaceAll("");
-
-            // Avoid eval(...) expressions
-            scriptPattern = Pattern.compile("eval\\((.*?)\\)", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL);
-            cleanValue = scriptPattern.matcher(cleanValue).replaceAll("");
-
-            // Avoid expression(...) expressions
-            scriptPattern = Pattern.compile("expression\\((.*?)\\)", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL);
-            cleanValue = scriptPattern.matcher(cleanValue).replaceAll("");
-
-            // Avoid javascript:... expressions
-            scriptPattern = Pattern.compile("javascript:", Pattern.CASE_INSENSITIVE);
-            cleanValue = scriptPattern.matcher(cleanValue).replaceAll("");
-
-            // Avoid vbscript:... expressions
-            scriptPattern = Pattern.compile("vbscript:", Pattern.CASE_INSENSITIVE);
-            cleanValue = scriptPattern.matcher(cleanValue).replaceAll("");
-
-            // Avoid onload= expressions
-            scriptPattern = Pattern.compile("onload(.*?)=", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL);
-            cleanValue = scriptPattern.matcher(cleanValue).replaceAll("");
-        }
-        return cleanValue;
+        return HTML_FILTER.filter(value);
     }
 
 }
