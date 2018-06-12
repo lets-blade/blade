@@ -37,32 +37,32 @@ public class CsrfOption {
     });
 
     @Builder.Default
-    private Set<String>               excludeURLs      = new HashSet<>();
+    private Set<String>               urlExclusions      = new HashSet<>();
     @Builder.Default
-    private Set<String>               excludeStartURLs = new HashSet<>();
+    private Set<String>               urlStartExclusions = new HashSet<>();
     @Builder.Default
-    private Set<String>               ignoreMethods    = DEFAULT_IGNORE_METHODS;
+    private Set<String>               ignoreMethods      = DEFAULT_IGNORE_METHODS;
     @Builder.Default
-    private Consumer<Response>        errorHandler     = DEFAULT_ERROR_HANDLER;
+    private Consumer<Response>        errorHandler       = DEFAULT_ERROR_HANDLER;
     @Builder.Default
-    private Function<Request, String> tokenGetter      = DEFAULT_TOKEN_GETTER;
+    private Function<Request, String> tokenGetter        = DEFAULT_TOKEN_GETTER;
 
     public boolean isIgnoreMethod(String method) {
         return ignoreMethods.contains(method);
     }
 
-    public CsrfOption excludeStartWith(@NonNull String... urls) {
-        this.excludeStartURLs.addAll(Arrays.asList(urls));
+    public CsrfOption startExclusion(@NonNull String... urls) {
+        this.urlStartExclusions.addAll(Arrays.asList(urls));
         return this;
     }
 
-    public CsrfOption excludeWith(@NonNull String... urls) {
-        this.excludeURLs.addAll(Arrays.asList(urls));
+    public CsrfOption exclusion(@NonNull String... urls) {
+        this.urlExclusions.addAll(Arrays.asList(urls));
         return this;
     }
 
-    public boolean isExcludeStartWith(@NonNull String url) {
-        for (String excludeURL : excludeStartURLs) {
+    public boolean isStartExclusion(@NonNull String url) {
+        for (String excludeURL : urlStartExclusions) {
             if (url.startsWith(excludeURL)) {
                 return true;
             }
@@ -70,8 +70,8 @@ public class CsrfOption {
         return false;
     }
 
-    public boolean isExcludeWith(@NonNull String url) {
-        for (String excludeURL : excludeURLs) {
+    public boolean isExclusion(@NonNull String url) {
+        for (String excludeURL : this.urlExclusions) {
             if (url.equals(excludeURL)) {
                 return true;
             }

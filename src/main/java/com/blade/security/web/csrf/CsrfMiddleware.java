@@ -39,14 +39,14 @@ public class CsrfMiddleware implements WebHook {
         Session session = request.session();
 
         if (csrfOption.isIgnoreMethod(request.method())) {
-            if (csrfOption.isExcludeStartWith(request.uri())) {
+            if (csrfOption.isStartExclusion(request.uri())) {
                 return true;
             }
             this.genToken(request);
             return true;
         }
 
-        if (csrfOption.isExcludeWith(request.uri())) {
+        if (csrfOption.isExclusion(request.uri())) {
             return true;
         }
 
