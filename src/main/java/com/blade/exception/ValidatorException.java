@@ -26,9 +26,9 @@ import lombok.Getter;
 public class ValidatorException extends RuntimeException {
 
     @Getter
-    private String code;
+    private Integer code;
 
-    public ValidatorException(String code, String message) {
+    public ValidatorException(Integer code, String message) {
         super(message);
         this.code = code;
     }

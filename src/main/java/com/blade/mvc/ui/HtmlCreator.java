@@ -17,10 +17,10 @@ public class HtmlCreator {
         html.append("<style type='text/css'>.version{padding:10px;text-decoration-line: none;}.message-header{" +
                 "background-color: #900C3F;\n" +
                 "color: #fff;\n" +
+                "font-weight: bold;" +
                 "-webkit-box-align: center;\n" +
                 "-ms-flex-align: center;\n" +
                 "align-items: center;\n" +
-                "border-radius: 3px 3px 0 0;\n" +
                 "color: #fff;\n" +
                 "display: -webkit-box;\n" +
                 "display: -ms-flexbox;\n" +
@@ -30,7 +30,8 @@ public class HtmlCreator {
                 "justify-content: space-between;\n" +
                 "line-height: 1.25;\n" +
                 "padding: 0.5em 0.75em;\n" +
-                "position: relative;}" +
+                "position: relative;" +
+                "}" +
                 ".message-body{" +
                 "background-color: #fff5f7;" +
                 "font-size:1rem;" +

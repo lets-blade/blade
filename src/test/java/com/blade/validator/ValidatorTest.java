@@ -5,7 +5,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import static com.blade.validator.Validators.between;
+import static com.blade.validator.Validators.isEmail;
+import static com.blade.validator.Validators.length;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -30,13 +31,17 @@ public class ValidatorTest {
 
         str1 = "hello";
         try {
-            Validators.notEmpty().and(Validators.isEmail()).test(str1).throwIfInvalid("登录邮箱");
+            Validators.notEmpty().and(isEmail()).test(str1).throwIfInvalid("登录邮箱");
         } catch (Exception e) {
             Assert.assertEquals("登录邮箱 不是一个合法的邮箱", e.getMessage());
         }
 
         Integer num = 2;
-        Validators.range(3, 5).test(num).throwIfInvalid("num");
+        try {
+            Validators.range(3, 5).test(num).throwIfInvalid("num");
+        } catch (Exception e) {
+            Assert.assertEquals("num 必须大于 3", e.getMessage());
+        }
     }
 
     @Test
@@ -55,8 +60,8 @@ public class ValidatorTest {
         param.setTitle("hello");
         param.setContent("blade is good mvc framework.");
         Validators.notNull().test(param).throwIfInvalid("topic");
-        Validators.notEmpty().and(between(3, 20)).test(param.getTitle()).throwIfInvalid("title");
-        Validators.notEmpty().and(between(5, 100)).test(param.getContent()).throwIfInvalid("content");
+        Validators.notEmpty().and(length(3, 20)).test(param.getTitle()).throwIfInvalid("title");
+        Validators.notEmpty().and(length(5, 100)).test(param.getContent()).throwIfInvalid("content");
     }
 
     @Test
@@ -73,9 +78,9 @@ public class ValidatorTest {
     static class TopicValidator {
         public static void valid(Topic param) {
             Validators.notNull().test(param).throwIfInvalid("topic");
-            Validators.between(3, 20).test(param.getTitle()).throwIfInvalid("title");
-            Validators.between(5, 100).test(param.getContent()).throwIfInvalid("content");
-            Validators.isEmail().test(param.getEmail()).throwIfInvalid("email");
+            Validators.length(3, 20).test(param.getTitle()).throwIfInvalid("title");
+            Validators.length(5, 100).test(param.getContent()).throwIfInvalid("content");
+            isEmail().test(param.getEmail()).throwIfInvalid("email");
             Validators.isURL().test(param.getUrl()).throwIfInvalid(Topic::getUrl);
             Validators.notNull().test(param.getRange()).throwIfInvalid(Topic::getRange);
             Validators.range(10, 20).test(param.getRange()).throwIfInvalid(Topic::getRange);

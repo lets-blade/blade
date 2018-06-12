@@ -33,7 +33,7 @@ public class RestResponse<T> {
      * Status code
      */
     @Builder.Default
-    private int code = -1;
+    private int code = 0;
 
     /**
      * Server response time

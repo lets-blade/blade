@@ -4,11 +4,13 @@ import com.blade.Blade;
 import com.blade.exception.BladeException;
 import com.blade.exception.InternalErrorException;
 import com.blade.exception.NotFoundException;
+import com.blade.exception.ValidatorException;
 import com.blade.mvc.WebContext;
 import com.blade.mvc.http.Request;
 import com.blade.mvc.http.Response;
 import com.blade.mvc.ui.HtmlCreator;
 import com.blade.mvc.ui.ModelAndView;
+import com.blade.mvc.ui.RestResponse;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.handler.codec.http.DefaultFullHttpResponse;
@@ -36,25 +38,38 @@ public class DefaultExceptionHandler implements ExceptionHandler {
     public void handle(Exception e) {
         Response response = WebContext.response();
         Request  request  = WebContext.request();
+
         if (e instanceof BladeException) {
-            handleBladeException((BladeException) e, request, response);
+            this.handleBladeException((BladeException) e, request, response);
+        } else if (ValidatorException.class.isInstance(e)) {
+            this.handleValidators(ValidatorException.class.cast(e), request, response);
         } else {
-            handleException(e, request, response);
+            this.handleException(e, request, response);
         }
     }
 
-    private void handleException(Exception e, Request request, Response response) {
-        log.error("Handle exception => ", e);
-        if (null != response) {
-            response.status(500);
-            request.attribute("title", "500 Internal Server Error");
-            request.attribute("message", e.getMessage());
-            request.attribute("stackTrace", getStackTrace(e));
-            this.render500(request, response);
+    protected void handleValidators(ValidatorException validatorException, Request request, Response response) {
+        Integer code = Optional.ofNullable(validatorException.getCode()).orElse(500);
+        if (request.isAjax() || request.contentType().toLowerCase().contains("json")) {
+            response.json(RestResponse.fail(code, validatorException.getMessage()));
+        } else {
+            this.handleException(validatorException, request, response);
         }
     }
 
-    private void handleBladeException(BladeException e, Request request, Response response) {
+    protected void handleException(Exception e, Request request, Response response) {
+        log.error("Request Exception", e);
+        if (null == response) {
+            return;
+        }
+        response.status(500);
+        request.attribute("title", "500 Internal Server Error");
+        request.attribute("message", e.getMessage());
+        request.attribute("stackTrace", getStackTrace(e));
+        this.render500(request, response);
+    }
+
+    protected void handleBladeException(BladeException e, Request request, Response response) {
         Blade blade = WebContext.blade();
         response.status(e.getStatus());
 
@@ -67,9 +82,10 @@ public class DefaultExceptionHandler implements ExceptionHandler {
         }
 
         if (e.getStatus() == InternalErrorException.STATUS) {
-            e.printStackTrace();
+            log.error("Request Exception", e);
             this.render500(request, response);
         }
+
         if (e.getStatus() == NotFoundException.STATUS) {
             Optional<String> page404 = Optional.ofNullable(blade.environment().get(ENV_KEY_PAGE_404, null));
             if (page404.isPresent()) {
@@ -85,15 +101,18 @@ public class DefaultExceptionHandler implements ExceptionHandler {
         }
     }
 
-    private void render500(Request request, Response response) {
+    protected void render500(Request request, Response response) {
         Blade            blade   = WebContext.blade();
         Optional<String> page500 = Optional.ofNullable(blade.environment().get(ENV_KEY_PAGE_500, null));
+
         if (page500.isPresent()) {
             renderPage(response, new ModelAndView(page500.get()));
         } else {
             if (blade.devMode()) {
                 HtmlCreator htmlCreator = new HtmlCreator();
                 htmlCreator.center("<h1>" + request.attribute("title") + "</h1>");
+                htmlCreator.startP("message-header");
+                htmlCreator.add("Request URI: " + request.uri());
                 htmlCreator.startP("message-header");
                 htmlCreator.add("Error Message: " + request.attribute("message"));
                 htmlCreator.endP();
@@ -121,7 +140,7 @@ public class DefaultExceptionHandler implements ExceptionHandler {
         }
     }
 
-    private String getStackTrace(Throwable exception) {
+    protected String getStackTrace(Throwable exception) {
         StringWriter errors = new StringWriter();
         exception.printStackTrace(new PrintWriter(errors));
         return errors.toString();
