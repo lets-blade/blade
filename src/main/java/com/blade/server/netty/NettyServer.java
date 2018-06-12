@@ -216,7 +216,7 @@ public class NettyServer implements Server {
         String appName = environment.get(ENV_KEY_APP_NAME, "Blade");
 
         log.info("{}{} initialize successfully, Time elapsed: {} ms", getStartedSymbol(), appName, (System.currentTimeMillis() - startTime));
-        String url = Ansi.Black.and(Ansi.BgRed).format(" %s:%d ", address, port);
+        String url = Ansi.BgRed.and(Ansi.Black).format(" %s:%d ", address, port);
         log.info("{}Blade start with {}", getStartedSymbol(), url);
         log.info("{}Open browser access http://{}:{} ⚡\r\n", getStartedSymbol(), address.replace(DEFAULT_SERVER_ADDRESS, LOCAL_IP_ADDRESS), port);
 

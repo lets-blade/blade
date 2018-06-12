@@ -250,33 +250,33 @@ public final class BladeKit {
 
     public static void log500(Logger log, String method, String uri) {
         String pad = StringKit.padLeft("", 6);
-        String msg500 = Ansi.Black.and(Ansi.BgRed).format(" 500 ");
+        String msg500 = Ansi.BgRed.and(Ansi.Black).format(" 500 ");
         log.error("{} {}  {} {}", msg500, pad, method, uri);
     }
 
     public static void log304(Logger log, String method, String uri) {
         String pad = StringKit.padLeft("", 6);
-        String msg304 = Ansi.Black.and(Ansi.BgGreen).format(" 304 ");
+        String msg304 = Ansi.BgGreen.and(Ansi.Black).format(" 304 ");
         log.warn("{} {}  {} {}", msg304, pad, method, uri);
     }
 
     public static long log200(Logger log, Instant start, String method, String uri) {
         long   cost = getCostMS(start);
         String pad  = StringKit.padLeft(String.valueOf(cost) + "ms", 6);
-        String msg200 = Ansi.Black.and(Ansi.BgGreen).format(" 200 ");
+        String msg200 = Ansi.BgGreen.and(Ansi.Black).format(" 200 ");
         log.info("{} {}  {} {}", msg200, pad, method, uri);
         return cost;
     }
 
     public static void log403(Logger log, String method, String uri) {
         String pad = StringKit.padLeft("", 6);
-        String msg403 = Ansi.Black.and(Ansi.BgYellow).format(" 403 ");
+        String msg403 = Ansi.BgYellow.and(Ansi.Black).format(" 403 ");
         log.warn("{} {}  {} {}", msg403, pad, method, uri);
     }
 
     public static void log404(Logger log, String method, String uri) {
         String pad    = StringKit.padLeft("", 6);
-        String msg404 = Ansi.Black.and(Ansi.BgRed).format(" 404 ");
+        String msg404 = Ansi.BgRed.and(Ansi.Black).format(" 404 ");
         log.warn("{} {}  {} {}", msg404, pad, method, uri);
     }
 
@@ -296,28 +296,28 @@ public final class BladeKit {
         String method = StringKit.padRight(route.getHttpMethod().name(), 6);
         switch (route.getHttpMethod()) {
             case ALL:
-                method = Ansi.White.and(Ansi.BgBlack).format(" %s ", method);
+                method = Ansi.BgBlack.and(Ansi.White).format(" %s ", method);
                 break;
             case GET:
-                method = Ansi.Black.and(Ansi.BgGreen).format(" %s ", method);
+                method = Ansi.BgGreen.and(Ansi.Black).format(" %s ", method);
                 break;
             case POST:
-                method = Ansi.Black.and(Ansi.BgBlue).format(" %s ", method);
+                method = Ansi.BgBlue.and(Ansi.Black).format(" %s ", method);
                 break;
             case DELETE:
-                method = Ansi.Black.and(Ansi.BgRed).format(" %s ", method);
+                method = Ansi.BgRed.and(Ansi.Black).format(" %s ", method);
                 break;
             case PUT:
-                method = Ansi.Black.and(Ansi.BgYellow).format(" %s ", method);
+                method = Ansi.BgYellow.and(Ansi.Black).format(" %s ", method);
                 break;
             case OPTIONS:
-                method = Ansi.Black.and(Ansi.BgCyan).format(" %s ", method);
+                method = Ansi.BgCyan.and(Ansi.Black).format(" %s ", method);
                 break;
             case BEFORE:
-                method = Ansi.Black.and(Ansi.BgMagenta).format(" %s ", method);
+                method = Ansi.BgMagenta.and(Ansi.Black).format(" %s ", method);
                 break;
             case AFTER:
-                method = Ansi.Black.and(Ansi.BgWhite).format(" %s ", method);
+                method = Ansi.BgWhite.and(Ansi.Black).format(" %s ", method);
                 break;
         }
         String msg = (route.getHttpMethod().equals(HttpMethod.BEFORE) || route.getHttpMethod().equals(HttpMethod.AFTER)) ? " hook" : "route";
