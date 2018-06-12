@@ -1,6 +1,7 @@
 package com.blade.validator;
 
 import com.blade.exception.ValidatorException;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -14,8 +15,28 @@ import static org.junit.Assert.assertTrue;
 public class ValidatorTest {
 
     @Before
-    public void before(){
+    public void before() {
         Validators.useChinese();
+    }
+
+    @Test
+    public void testNormal() {
+        String str1 = "";
+        try {
+            Validators.notEmpty().test(str1).throwMessage("str1不能为空");
+        } catch (Exception e) {
+            Assert.assertEquals("str1不能为空", e.getMessage());
+        }
+
+        str1 = "hello";
+        try {
+            Validators.notEmpty().and(Validators.isEmail()).test(str1).throwIfInvalid("登录邮箱");
+        } catch (Exception e) {
+            Assert.assertEquals("登录邮箱 不是一个合法的邮箱", e.getMessage());
+        }
+
+        Integer num = 2;
+        Validators.range(3, 5).test(num).throwIfInvalid("num");
     }
 
     @Test
@@ -39,7 +60,7 @@ public class ValidatorTest {
     }
 
     @Test
-    public void testStaticClass(){
+    public void testStaticClass() {
         Topic topic = new Topic();
         topic.setTitle("hello");
         topic.setContent("world");
