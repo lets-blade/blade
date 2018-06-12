@@ -319,7 +319,7 @@ public class BeanSerializer {
         return deserialize(klass, genericType, array.toArray());
     }
 
-    public static <T> T[] deserialize(Class<T> componentType, Collection array) throws Exception {
+    public static <T> T[] deserialize(Class<T> componentType, Collection array) {
         return deserialize(componentType, array.toArray());
     }
 
