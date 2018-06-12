@@ -32,6 +32,7 @@ import com.blade.task.annotation.Schedule;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.slf4j.Logger;
+import org.slf4j.impl.Ansi;
 
 import java.io.File;
 import java.io.Serializable;
@@ -249,29 +250,34 @@ public final class BladeKit {
 
     public static void log500(Logger log, String method, String uri) {
         String pad = StringKit.padLeft("", 6);
-        log.error("{} {}  {} {}", ColorKit.redAndWhite("500"), pad, method, uri);
+        String msg500 = Ansi.Black.and(Ansi.BgRed).format(" 500 ");
+        log.error("{} {}  {} {}", msg500, pad, method, uri);
     }
 
     public static void log304(Logger log, String method, String uri) {
         String pad = StringKit.padLeft("", 6);
-        log.warn("{} {}  {} {}", ColorKit.greenAndWhite("304"), pad, method, uri);
+        String msg304 = Ansi.Black.and(Ansi.BgGreen).format(" 304 ");
+        log.warn("{} {}  {} {}", msg304, pad, method, uri);
     }
 
     public static long log200(Logger log, Instant start, String method, String uri) {
         long   cost = getCostMS(start);
         String pad  = StringKit.padLeft(String.valueOf(cost) + "ms", 6);
-        log.info("{} {}  {} {}", ColorKit.greenAndWhite("200"), pad, method, uri);
+        String msg200 = Ansi.Black.and(Ansi.BgGreen).format(" 200 ");
+        log.info("{} {}  {} {}", msg200, pad, method, uri);
         return cost;
     }
 
     public static void log403(Logger log, String method, String uri) {
         String pad = StringKit.padLeft("", 6);
-        log.warn("{} {}  {} {}", ColorKit.yellowAndWhite("403"), pad, method, uri);
+        String msg403 = Ansi.Black.and(Ansi.BgYellow).format(" 403 ");
+        log.warn("{} {}  {} {}", msg403, pad, method, uri);
     }
 
     public static void log404(Logger log, String method, String uri) {
-        String pad = StringKit.padLeft("", 6);
-        log.warn("{} {}  {} {}", ColorKit.yellowAndWhite("404"), pad, method, uri);
+        String pad    = StringKit.padLeft("", 6);
+        String msg404 = Ansi.Black.and(Ansi.BgRed).format(" 404 ");
+        log.warn("{} {}  {} {}", msg404, pad, method, uri);
     }
 
     public static boolean isWindows() {
@@ -290,28 +296,28 @@ public final class BladeKit {
         String method = StringKit.padRight(route.getHttpMethod().name(), 6);
         switch (route.getHttpMethod()) {
             case ALL:
-                method = ColorKit.blankAndWhite(method);
+                method = Ansi.White.and(Ansi.BgBlack).format(" %s ", method);
                 break;
             case GET:
-                method = ColorKit.greenAndWhite(method);
+                method = Ansi.Black.and(Ansi.BgGreen).format(" %s ", method);
                 break;
             case POST:
-                method = ColorKit.blueAndWhite(method);
+                method = Ansi.Black.and(Ansi.BgBlue).format(" %s ", method);
                 break;
             case DELETE:
-                method = ColorKit.redAndWhite(method);
+                method = Ansi.Black.and(Ansi.BgRed).format(" %s ", method);
                 break;
             case PUT:
-                method = ColorKit.yellowAndWhite(method);
+                method = Ansi.Black.and(Ansi.BgYellow).format(" %s ", method);
                 break;
             case OPTIONS:
-                method = ColorKit.cyanAndWhite(method);
+                method = Ansi.Black.and(Ansi.BgCyan).format(" %s ", method);
                 break;
             case BEFORE:
-                method = ColorKit.purpleAndWhite(method);
+                method = Ansi.Black.and(Ansi.BgMagenta).format(" %s ", method);
                 break;
             case AFTER:
-                method = ColorKit.whiteAndBlank(method);
+                method = Ansi.Black.and(Ansi.BgWhite).format(" %s ", method);
                 break;
         }
         String msg = (route.getHttpMethod().equals(HttpMethod.BEFORE) || route.getHttpMethod().equals(HttpMethod.AFTER)) ? " hook" : "route";

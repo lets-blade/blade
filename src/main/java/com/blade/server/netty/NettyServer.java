@@ -60,6 +60,7 @@ import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.util.ResourceLeakDetector;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.impl.Ansi;
 
 import java.io.File;
 import java.lang.reflect.Method;
@@ -215,7 +216,8 @@ public class NettyServer implements Server {
         String appName = environment.get(ENV_KEY_APP_NAME, "Blade");
 
         log.info("{}{} initialize successfully, Time elapsed: {} ms", getStartedSymbol(), appName, (System.currentTimeMillis() - startTime));
-        log.info("{}Blade start with {}", getStartedSymbol(), ColorKit.redAndWhite(address + ":" + port));
+        String url = Ansi.Black.and(Ansi.BgRed).format(" %s:%d ", address, port);
+        log.info("{}Blade start with {}", getStartedSymbol(), url);
         log.info("{}Open browser access http://{}:{} ⚡\r\n", getStartedSymbol(), address.replace(DEFAULT_SERVER_ADDRESS, LOCAL_IP_ADDRESS), port);
 
         blade.eventManager().fireEvent(EventType.SERVER_STARTED, blade);
@@ -397,7 +399,7 @@ public class NettyServer implements Server {
         } else {
             String text = Const.BANNER_TEXT + NEW_LINE +
                     StringKit.padLeft(" :: Blade :: (v", Const.BANNER_PADDING - 9) + Const.VERSION + ") " + NEW_LINE;
-            System.out.println(ColorKit.magenta(text));
+            System.out.println(Ansi.Magenta.format(text));
         }
     }
 

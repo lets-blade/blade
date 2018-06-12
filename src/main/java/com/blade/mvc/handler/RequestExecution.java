@@ -126,7 +126,6 @@ public class RequestExecution implements Runnable {
             request.attribute(REQUEST_COST_TIME, cost);
         } catch (Exception e) {
             if (e instanceof BladeException) {
-
             } else {
                 log500(log, method, uri);
             }
