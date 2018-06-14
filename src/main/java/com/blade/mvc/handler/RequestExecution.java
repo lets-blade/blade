@@ -3,10 +3,7 @@ package com.blade.mvc.handler;
 import com.blade.exception.BladeException;
 import com.blade.exception.InternalErrorException;
 import com.blade.exception.NotFoundException;
-import com.blade.kit.BladeKit;
-import com.blade.kit.PathKit;
-import com.blade.kit.ReflectKit;
-import com.blade.kit.StringKit;
+import com.blade.kit.*;
 import com.blade.mvc.Const;
 import com.blade.mvc.WebContext;
 import com.blade.mvc.annotation.JSON;
@@ -20,6 +17,7 @@ import com.blade.mvc.http.Response;
 import com.blade.mvc.route.Route;
 import com.blade.mvc.route.RouteMatcher;
 import com.blade.mvc.ui.ModelAndView;
+import com.blade.reflectasm.MethodAccess;
 import com.blade.server.netty.HttpConst;
 import com.blade.server.netty.HttpServerInitializer;
 import com.blade.server.netty.StaticFileHandler;
@@ -30,12 +28,14 @@ import io.netty.handler.codec.http.*;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.StringWriter;
+import java.lang.invoke.*;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 
 import static com.blade.kit.BladeKit.*;
 import static com.blade.mvc.Const.REQUEST_COST_TIME;
@@ -200,7 +200,8 @@ public class RequestExecution implements Runnable {
 
             int len = actionMethod.getParameterTypes().length;
 
-            Object returnParam = ReflectKit.invokeMethod(target, actionMethod, len > 0 ? signature.getParameters() : null);
+            MethodAccess methodAccess = BladeCache.getMethodAccess(target.getClass());
+            Object       returnParam  = methodAccess.invoke(target, actionMethod.getName(), len > 0 ? signature.getParameters() : null);
 
             if (null == returnParam) return;
 
@@ -217,9 +218,29 @@ public class RequestExecution implements Runnable {
                 response.render(modelAndView);
             }
         } catch (Exception e) {
-            if (e instanceof InvocationTargetException) e = (Exception) e.getCause();
             throw e;
         }
+    }
+
+    private MethodHandles.Lookup lookup = MethodHandles.lookup();
+
+
+    private void invokeMethod(Method actionMethod, Object[] args) {
+        CallSite site = null;
+        try {
+            MethodHandle handle = lookup.unreflect(actionMethod);
+
+            site = LambdaMetafactory.metafactory(lookup,
+                    "apply",
+                    MethodType.methodType(Function.class),
+                    MethodType.methodType(Object.class, Object.class),
+                    handle, handle.type());
+            Function function = (Function) site.getTarget().invokeExact(args);
+
+        } catch (Throwable throwable) {
+            throwable.printStackTrace();
+        }
+
     }
 
     /**
