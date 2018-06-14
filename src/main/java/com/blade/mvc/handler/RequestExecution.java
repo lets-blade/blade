@@ -75,8 +75,12 @@ public class RequestExecution implements Runnable {
         Signature signature = Signature.builder().request(request).response(response).build();
         // request uri
         String uri      = request.uri();
-        String cleanUri = PathKit.cleanPath(uri.replaceFirst(request.contextPath(), "/"));
-        String method   = StringKit.padRight(request.method(), 6);
+        String cleanUri = uri;
+        if (!"/".equals(request.contextPath())) {
+            cleanUri = PathKit.cleanPath(uri.replaceFirst(request.contextPath(), "/"));
+        }
+
+        String method = BladeCache.getPaddingMethod(request.method());
 
         try {
             Instant start = Instant.now();

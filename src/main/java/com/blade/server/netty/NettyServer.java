@@ -138,7 +138,6 @@ public class NettyServer implements Server {
                 .forEach(this::parseCls);
 
         routeMatcher.register();
-//        routeBuilder.register();
 
         this.processors.stream().sorted(new OrderComparator<>()).forEach(b -> b.preHandle(blade));
 

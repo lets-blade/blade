@@ -417,11 +417,11 @@ public class Blade {
         return this;
     }
 
-    public boolean isAutoRefreshDir(){
-        return  environment.get(ENV_KEY_AUTO_REFRESH_DIR).isPresent();
+    public boolean isAutoRefreshDir() {
+        return environment.get(ENV_KEY_AUTO_REFRESH_DIR).isPresent();
     }
 
-    public void setAutoRefreshDir(String dir){
+    public void setAutoRefreshDir(String dir) {
         environment.set(ENV_KEY_AUTO_REFRESH_DIR, dir);
     }
 
@@ -649,7 +649,7 @@ public class Blade {
         return this;
     }
 
-    public Blade watchEnvChange(boolean watchEnvChange){
+    public Blade watchEnvChange(boolean watchEnvChange) {
         this.environment.set(ENV_KEY_APP_WATCH_ENV, watchEnvChange);
         return this;
     }
@@ -711,29 +711,29 @@ public class Blade {
             thread.start();
             started = true;
 
-            Thread resourceFilesRefreshThread = new Thread(()-> {
+            Thread resourceFilesRefreshThread = new Thread(() -> {
 
                 try {
                     FileChangeDetector fileChangeDetector = new FileChangeDetector(environment.get(ENV_KEY_AUTO_REFRESH_DIR).get());
-                    fileChangeDetector.processEvent( (event , filePath) ->{
+                    fileChangeDetector.processEvent((event, filePath) -> {
                         try {
                             //TODO: add support for Create and Delete
-                            if(event.equals(StandardWatchEventKinds.ENTRY_MODIFY)) {
+                            if (event.equals(StandardWatchEventKinds.ENTRY_MODIFY)) {
                                 Path destPath = FileChangeDetector.getDestPath(filePath, environment);
                                 Files.copy(filePath, destPath, StandardCopyOption.REPLACE_EXISTING);
                             }
-                        }catch (IOException e){
+                        } catch (IOException e) {
                             log.error("Exception when trying to copy updated file");
                             startupExceptionHandler.accept(e);
                         }
                     });
-                }catch (IOException e){
+                } catch (IOException e) {
                     startupExceptionHandler.accept(e);
                 }
 
             });
 
-            if (devMode() && isAutoRefreshDir()){
+            if (devMode() && isAutoRefreshDir()) {
                 log.info("auto refresh is enabled");
                 resourceFilesRefreshThread.start();
             }
@@ -837,6 +837,18 @@ public class Blade {
      */
     public Blade threadName(String threadName) {
         this.threadName = threadName;
+        return this;
+    }
+
+    /**
+     * Set context path, default is "/"
+     *
+     * @param contextPath context path
+     * @return return blade instance
+     * @since 2.0.8-RELEASE
+     */
+    public Blade contextPath(String contextPath) {
+        environment.set(ENV_KEY_CONTEXT_PATH, contextPath);
         return this;
     }
 
