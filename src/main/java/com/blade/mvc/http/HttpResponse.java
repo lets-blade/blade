@@ -233,11 +233,11 @@ public class HttpResponse implements Response {
     }
 
     private HttpHeaders getDefaultHeader() {
-        headers.set(HttpConst.DATE, dateString);
-        headers.set(HttpConst.CONTENT_TYPE, HttpConst.getContentType(this.contentType));
-        headers.set(HttpConst.X_POWER_BY, HttpConst.VERSION);
+        headers.add(HttpConst.DATE, dateString);
+        headers.add(HttpConst.CONTENT_TYPE, HttpConst.getContentType(this.contentType));
+        headers.add(HttpConst.X_POWER_BY, HttpConst.VERSION);
         if (!headers.contains(HttpConst.SERVER)) {
-            headers.set(HttpConst.SERVER, HttpConst.VERSION);
+            headers.add(HttpConst.SERVER, HttpConst.VERSION);
         }
         if (this.cookies.size() > 0) {
             this.cookies.forEach(cookie -> headers.add(HttpConst.SET_COOKIE, io.netty.handler.codec.http.cookie.ServerCookieEncoder.LAX.encode(cookie)));

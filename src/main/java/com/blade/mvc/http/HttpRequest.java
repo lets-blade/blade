@@ -62,9 +62,13 @@ public class HttpRequest implements Request {
     private void init(FullHttpRequest fullHttpRequest) {
         // headers
         HttpHeaders httpHeaders = fullHttpRequest.headers();
-        if (httpHeaders.size() > 0) {
+        if (httpHeaders.isEmpty()) {
             this.headers = new HashMap<>(httpHeaders.size());
-            httpHeaders.forEach((header) -> headers.put(header.getKey(), header.getValue()));
+            Iterator<Map.Entry<String, String>> entryIterator = httpHeaders.iteratorAsString();
+            while (entryIterator.hasNext()) {
+                Map.Entry<String, String> entry = entryIterator.next();
+                headers.put(entry.getKey(), entry.getValue());
+            }
         } else {
             this.headers = new HashMap<>();
         }
@@ -79,7 +83,7 @@ public class HttpRequest implements Request {
             this.parameters.putAll(parameters);
         }
 
-        if (!HttpConst.METHOD_GET.equals(fullHttpRequest.method().name())) {
+        if (HttpConst.METHOD_POST.equals(this.method)) {
             HttpPostRequestDecoder decoder = new HttpPostRequestDecoder(HTTP_DATA_FACTORY, fullHttpRequest);
             decoder.getBodyHttpDatas().forEach(this::parseData);
         }
@@ -87,7 +91,7 @@ public class HttpRequest implements Request {
         // cookies
         String cookie = header(HttpConst.COOKIE_STRING);
         cookie = cookie.length() > 0 ? cookie : header(HttpConst.COOKIE_STRING.toLowerCase());
-        if (StringKit.isNotBlank(cookie)) {
+        if (StringKit.isNotEmpty(cookie)) {
             ServerCookieDecoder.LAX.decode(cookie).forEach(this::parseCookie);
         }
     }

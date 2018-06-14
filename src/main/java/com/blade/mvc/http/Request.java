@@ -113,7 +113,7 @@ public interface Request {
      */
     default Integer pathInt(@NonNull String name) {
         String val = pathString(name);
-        return StringKit.isNotBlank(val) ? Integer.parseInt(val) : null;
+        return StringKit.isNotEmpty(val) ? Integer.parseInt(val) : null;
     }
 
     /**
@@ -124,7 +124,7 @@ public interface Request {
      */
     default Long pathLong(@NonNull String name) {
         String val = pathString(name);
-        return StringKit.isNotBlank(val) ? Long.parseLong(val) : null;
+        return StringKit.isNotEmpty(val) ? Long.parseLong(val) : null;
     }
 
     /**
@@ -144,8 +144,8 @@ public interface Request {
     /**
      * Get current request query parameter names
      *
-     * @since 2.0.8-RELEASE
      * @return Return request query names
+     * @since 2.0.8-RELEASE
      */
     Set<String> parameterNames();
 
@@ -153,8 +153,8 @@ public interface Request {
      * Get current request query parameter values
      *
      * @param paramName param name
-     * @since 2.0.8-RELEASE
      * @return Return request query values
+     * @since 2.0.8-RELEASE
      */
     List<String> parameterValues(String paramName);
 
@@ -385,8 +385,13 @@ public interface Request {
      * @return Return header information
      */
     default String header(@NonNull String name) {
-        String header = headers().getOrDefault(name, "");
-        return StringKit.isBlank(header) ? headers().getOrDefault(name.toLowerCase(), "") : header;
+        String header = "";
+        if (headers().containsKey(name)) {
+            header = headers().get(name);
+        } else if (headers().containsKey(name.toLowerCase())) {
+            header = headers().get(name.toLowerCase());
+        }
+        return header;
     }
 
     /**
@@ -426,7 +431,7 @@ public interface Request {
      */
     default <T> T bindWithBody(Class<T> modelClass) {
         String json = this.bodyToString();
-        return StringKit.isNotBlank(json) ? JsonKit.formJson(json, modelClass) : null;
+        return StringKit.isNotEmpty(json) ? JsonKit.formJson(json, modelClass) : null;
     }
 
     /**

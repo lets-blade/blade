@@ -14,7 +14,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Bean
-public @interface UrlPattern {
+public @interface URLPattern {
 
     /**
      * @return URL patterns
