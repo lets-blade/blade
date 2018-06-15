@@ -23,10 +23,9 @@ public class OutputStreamWrapper implements Closeable, Flushable {
     private File                  file;
     private ChannelHandlerContext ctx;
 
-    public OutputStreamWrapper(OutputStream outputStream, File file, ChannelHandlerContext ctx) {
+    public OutputStreamWrapper(OutputStream outputStream, File file) {
         this.outputStream = outputStream;
         this.file = file;
-        this.ctx = ctx;
     }
 
     public File getFile() {

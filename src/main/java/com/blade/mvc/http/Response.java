@@ -7,17 +7,12 @@ import com.blade.mvc.Const;
 import com.blade.mvc.WebContext;
 import com.blade.mvc.ui.ModelAndView;
 import com.blade.mvc.wrapper.OutputStreamWrapper;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
-import io.netty.handler.codec.http.DefaultFullHttpResponse;
-import io.netty.handler.codec.http.FullHttpResponse;
-import io.netty.handler.codec.http.HttpResponseStatus;
-import io.netty.handler.codec.http.HttpVersion;
-import io.netty.util.CharsetUtil;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 
 /**
  * Http Response
@@ -75,7 +70,7 @@ public interface Response {
      * @param contentType content type
      * @return Return Response
      */
-    Response contentType(CharSequence contentType);
+    Response contentType(String contentType);
 
     /**
      * Get current response headers: contentType
@@ -106,6 +101,8 @@ public interface Response {
      * @return return response cookies
      */
     Map<String, String> cookies();
+
+    Set<io.netty.handler.codec.http.cookie.Cookie> cookiesRaw();
 
     /**
      * add raw response cookie
@@ -165,13 +162,6 @@ public interface Response {
      */
     Response removeCookie(String name);
 
-    default void success() {
-        FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(statusCode()), Unpooled.wrappedBuffer("".getBytes(CharsetUtil.UTF_8)), false);
-        if (null == this.contentType())
-            this.contentType(Const.CONTENT_TYPE_TEXT);
-        this.send(response);
-    }
-
     /**
      * Render by text
      *
@@ -179,10 +169,8 @@ public interface Response {
      */
     default void text(String text) {
         if (null == text) return;
-        FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(statusCode()), Unpooled.wrappedBuffer(text.getBytes(CharsetUtil.UTF_8)), false);
-        if (null == this.contentType())
-            this.contentType(Const.CONTENT_TYPE_TEXT);
-        this.send(response);
+        this.contentType(Const.CONTENT_TYPE_TEXT);
+        this.body(text);
     }
 
     /**
@@ -192,10 +180,8 @@ public interface Response {
      */
     default void html(String html) {
         if (null == html) return;
-        FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(statusCode()), Unpooled.wrappedBuffer(html.getBytes(CharsetUtil.UTF_8)), false);
-        if (null == this.contentType())
-            this.contentType(Const.CONTENT_TYPE_HTML);
-        this.send(response);
+        this.contentType(Const.CONTENT_TYPE_HTML);
+        this.body(html);
     }
 
     /**
@@ -205,11 +191,12 @@ public interface Response {
      */
     default void json(String json) {
         if (null == json) return;
-        FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(statusCode()), Unpooled.wrappedBuffer(json.getBytes(CharsetUtil.UTF_8)), false);
-        if (null == this.contentType() && !WebContext.request().isIE()) {
+        if (Objects.requireNonNull(WebContext.request()).isIE()) {
+            this.contentType(Const.CONTENT_TYPE_HTML);
+        } else {
             this.contentType(Const.CONTENT_TYPE_JSON);
         }
-        this.send(response);
+        this.body(json);
     }
 
     /**
@@ -222,38 +209,16 @@ public interface Response {
         this.json(JsonKit.toString(bean));
     }
 
-    /**
-     * send body to client
-     *
-     * @param data body string
-     */
-    default void body(String data) {
-        if (null == data) return;
-        FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(statusCode()), Unpooled.wrappedBuffer(data.getBytes(CharsetUtil.UTF_8)), false);
-        this.send(response);
+    default void body(String body) {
+        this.body(new StringBody(body));
     }
 
     /**
-     * Send response body by byte array.
+     * Send body to client
      *
-     * @param data byte array data
+     * @param body
      */
-    default void body(byte[] data) {
-        if (null == data) return;
-        FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(statusCode()), Unpooled.wrappedBuffer(data), false);
-        this.send(response);
-    }
-
-    /**
-     * Send response body by ByteBuf.
-     *
-     * @param byteBuf ByteBuf data
-     */
-    default void body(ByteBuf byteBuf) {
-        if (null == byteBuf) return;
-        FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(statusCode()), byteBuf, false);
-        this.send(response);
-    }
+    void body(Body body);
 
     /**
      * download some file to client
@@ -301,23 +266,11 @@ public interface Response {
     void redirect(String newUri);
 
     /**
-     * Judge whether the current response has been submitted to the client
-     *
-     * @return return current response is commit
-     */
-    boolean isCommit();
-
-    /**
-     * Send response by FullHttpResponse, custom build, please be careful.
-     *
-     * @param response FullHttpResponse instance
-     */
-    void send(FullHttpResponse response);
-
-    /**
      * @return Returns the currently set view, returning an empty Optional type when not set
      * @since 2.0.8
      */
     ModelAndView modelAndView();
+
+    Body body();
 
 }

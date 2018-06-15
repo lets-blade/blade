@@ -6,6 +6,7 @@ import com.blade.exception.InternalErrorException;
 import com.blade.exception.NotFoundException;
 import com.blade.exception.ValidatorException;
 import com.blade.mvc.WebContext;
+import com.blade.mvc.http.RawBody;
 import com.blade.mvc.http.Request;
 import com.blade.mvc.http.Response;
 import com.blade.mvc.ui.HtmlCreator;
@@ -137,7 +138,7 @@ public class DefaultExceptionHandler implements ExceptionHandler {
             WebContext.blade().templateEngine().render(modelAndView, sw);
             ByteBuf          buffer           = Unpooled.wrappedBuffer(sw.toString().getBytes("utf-8"));
             FullHttpResponse fullHttpResponse = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(response.statusCode()), buffer);
-            response.send(fullHttpResponse);
+            response.body(new RawBody(fullHttpResponse));
         } catch (Exception e) {
             log.error("Render view error", e);
         }

@@ -1,17 +1,13 @@
 package com.blade.mvc.http;
 
+import com.blade.exception.BladeException;
 import com.blade.exception.NotFoundException;
 import com.blade.kit.StringKit;
-import com.blade.mvc.WebContext;
 import com.blade.mvc.ui.ModelAndView;
 import com.blade.mvc.wrapper.OutputStreamWrapper;
 import com.blade.server.netty.HttpConst;
-import com.blade.server.netty.ProgressiveFutureListener;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelFutureListener;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.DefaultFileRegion;
-import io.netty.handler.codec.http.*;
+import io.netty.handler.codec.http.DefaultHttpHeaders;
+import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.cookie.Cookie;
 import io.netty.handler.codec.http.cookie.DefaultCookie;
 import lombok.NonNull;
@@ -20,8 +16,6 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.*;
 import java.nio.file.Files;
 import java.util.*;
-
-import static io.netty.handler.codec.http.HttpHeaderValues.KEEP_ALIVE;
 
 /**
  * HttpResponse
@@ -32,15 +26,11 @@ import static io.netty.handler.codec.http.HttpHeaderValues.KEEP_ALIVE;
 @Slf4j
 public class HttpResponse implements Response {
 
-    private HttpHeaders           headers      = new DefaultHttpHeaders(false);
-    private Set<Cookie>           cookies      = new HashSet<>(4);
-    private int                   statusCode   = 200;
-    private ChannelHandlerContext ctx          = null;
-    private CharSequence          contentType  = null;
-    private CharSequence          dateString   = null;
-    private ModelAndView          modelAndView = new ModelAndView();
-
-    private volatile boolean isCommit = false;
+    private HttpHeaders headers     = new DefaultHttpHeaders(false);
+    private Set<Cookie> cookies     = new HashSet<>(4);
+    private int         statusCode  = 200;
+    private String      contentType = null;
+    private Body        body;
 
     @Override
     public int statusCode() {
@@ -54,7 +44,7 @@ public class HttpResponse implements Response {
     }
 
     @Override
-    public Response contentType(@NonNull CharSequence contentType) {
+    public Response contentType(@NonNull String contentType) {
         this.contentType = contentType;
         return this;
     }
@@ -68,6 +58,9 @@ public class HttpResponse implements Response {
     public Map<String, String> headers() {
         Map<String, String> map = new HashMap<>(this.headers.size());
         this.headers.forEach(header -> map.put(header.getKey(), header.getValue()));
+        if (StringKit.isNotEmpty(this.contentType)) {
+            map.put(HttpConst.CONTENT_TYPE_STRING, this.contentType);
+        }
         return map;
     }
 
@@ -149,101 +142,48 @@ public class HttpResponse implements Response {
     }
 
     @Override
+    public Set<Cookie> cookiesRaw() {
+        return this.cookies;
+    }
+
+    @Override
     public void download(@NonNull String fileName, @NonNull File file) throws Exception {
         if (!file.exists() || !file.isFile()) {
             throw new NotFoundException("Not found file: " + file.getPath());
         }
+        String contentType = StringKit.mimeType(file.getName());
+        headers.set("Content-Disposition", "attachment; filename=" + new String(fileName.getBytes("UTF-8"), "ISO8859_1"));
+        headers.set(HttpConst.CONTENT_LENGTH, file.length());
+        headers.set(HttpConst.CONTENT_TYPE_STRING, contentType);
 
-        RandomAccessFile raf        = new RandomAccessFile(file, "r");
-        Long             fileLength = raf.length();
-        this.contentType = StringKit.mimeType(file.getName());
-
-        io.netty.handler.codec.http.HttpResponse httpResponse = new DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
-        HttpHeaders                              httpHeaders  = httpResponse.headers().add(getDefaultHeader());
-
-        boolean keepAlive = WebContext.request().keepAlive();
-        if (keepAlive) {
-            httpResponse.headers().set(HttpConst.CONNECTION, KEEP_ALIVE);
-        }
-        httpHeaders.set(HttpConst.CONTENT_TYPE, this.contentType);
-        httpHeaders.set("Content-Disposition", "attachment; filename=" + new String(fileName.getBytes("UTF-8"), "ISO8859_1"));
-        httpHeaders.setInt(HttpConst.CONTENT_LENGTH, fileLength.intValue());
-
-        // Write the initial line and the header.
-        ctx.write(httpResponse);
-
-        ChannelFuture sendFileFuture = ctx.write(new DefaultFileRegion(raf.getChannel(), 0, fileLength), ctx.newProgressivePromise());
-        // Write the end marker.
-        ChannelFuture lastContentFuture = ctx.writeAndFlush(LastHttpContent.EMPTY_LAST_CONTENT);
-
-        sendFileFuture.addListener(ProgressiveFutureListener.build(raf));
-        // Decide whether to close the connection or not.
-        if (!keepAlive) {
-            lastContentFuture.addListener(ChannelFutureListener.CLOSE);
-        }
-        isCommit = true;
+        this.body = new StreamBody(new FileInputStream(file));
     }
 
     @Override
     public OutputStreamWrapper outputStream() throws IOException {
         File         file         = Files.createTempFile("blade", ".temp").toFile();
         OutputStream outputStream = new FileOutputStream(file);
-        return new OutputStreamWrapper(outputStream, file, ctx);
+        return new OutputStreamWrapper(outputStream, file);
     }
 
     @Override
     public void render(@NonNull ModelAndView modelAndView) {
-        this.modelAndView = modelAndView;
+        this.body = new ViewBody(modelAndView);
     }
 
     @Override
     public void redirect(@NonNull String newUri) {
         headers.set(HttpConst.LOCATION, newUri);
-        FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.FOUND);
-        this.send(response);
-    }
-
-    @Override
-    public boolean isCommit() {
-        return isCommit;
-    }
-
-    @Override
-    public void send(@NonNull FullHttpResponse response) {
-        isCommit = true;
-        response.headers().set(getDefaultHeader());
-        boolean keepAlive = WebContext.request().keepAlive();
-        if (!response.headers().contains(HttpConst.CONTENT_LENGTH)) {
-            // Add 'Content-Length' header only for a keep-alive connection.
-            response.headers().set(HttpConst.CONTENT_LENGTH, String.valueOf(response.content().readableBytes()));
-        }
-
-        if (ctx.channel().isWritable() && ctx.channel().isOpen()) {
-            if (!keepAlive) {
-                ctx.write(response).addListener(ChannelFutureListener.CLOSE);
-            } else {
-                response.headers().set(HttpConst.CONNECTION, KEEP_ALIVE);
-                ctx.write(response, ctx.voidPromise());
-            }
-        }
+        this.status(302);
+        this.body = EmptyBody.empty();
     }
 
     @Override
     public ModelAndView modelAndView() {
-        return this.modelAndView;
-    }
-
-    private HttpHeaders getDefaultHeader() {
-        headers.add(HttpConst.DATE, dateString);
-        headers.add(HttpConst.CONTENT_TYPE, HttpConst.getContentType(this.contentType));
-        headers.add(HttpConst.X_POWER_BY, HttpConst.VERSION);
-        if (!headers.contains(HttpConst.SERVER)) {
-            headers.add(HttpConst.SERVER, HttpConst.VERSION);
+        if (this.body instanceof ViewBody) {
+            return ((ViewBody) this.body).modelAndView();
         }
-        if (this.cookies.size() > 0) {
-            this.cookies.forEach(cookie -> headers.add(HttpConst.SET_COOKIE, io.netty.handler.codec.http.cookie.ServerCookieEncoder.LAX.encode(cookie)));
-        }
-        return headers;
+        throw new BladeException(500, "No view available");
     }
 
     public HttpResponse(Response response) {
@@ -257,14 +197,21 @@ public class HttpResponse implements Response {
         }
     }
 
+    public HttpResponse(int code, String content) {
+        this.statusCode = code;
+        this.body(content);
+    }
+
     public HttpResponse() {
     }
 
-    public static HttpResponse build(ChannelHandlerContext ctx, CharSequence dateString) {
-        HttpResponse httpResponse = new HttpResponse();
-        httpResponse.ctx = ctx;
-        httpResponse.dateString = dateString;
-        return httpResponse;
+    @Override
+    public Body body() {
+        return this.body;
     }
 
+    @Override
+    public void body(Body body) {
+        this.body = body;
+    }
 }

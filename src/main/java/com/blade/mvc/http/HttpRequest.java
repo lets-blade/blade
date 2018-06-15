@@ -321,10 +321,9 @@ public class HttpRequest implements Request {
         this.protocol = request.protocol();
     }
 
-    public static HttpRequest build(ChannelHandlerContext ctx, FullHttpRequest fullHttpRequest) {
+    public static HttpRequest build(FullHttpRequest fullHttpRequest, String remoteAddress) {
         HttpRequest httpRequest = new HttpRequest();
         httpRequest.keepAlive = HttpUtil.isKeepAlive(fullHttpRequest);
-        String remoteAddress = ctx.channel().remoteAddress().toString();
         httpRequest.remoteAddress = remoteAddress;
         httpRequest.url = fullHttpRequest.uri();
         int pathEndPos = httpRequest.url.indexOf('?');

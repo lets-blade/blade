@@ -44,7 +44,7 @@ public class HttpServerInitializer extends ChannelInitializer<SocketChannel> {
     }
 
     @Override
-    protected void initChannel(SocketChannel ch) throws Exception {
+    protected void initChannel(SocketChannel ch) {
         ChannelPipeline p = ch.pipeline();
         if (sslCtx != null) {
             p.addLast(sslCtx.newHandler(ch.alloc()));
@@ -65,6 +65,6 @@ public class HttpServerInitializer extends ChannelInitializer<SocketChannel> {
             p.addLast(new WebSocketHandler(blade));
         }
         service.scheduleWithFixedDelay(() -> date = new AsciiString(DateKit.gmtDate(LocalDateTime.now())), 1000, 1000, TimeUnit.MILLISECONDS);
-        p.addLast(new HttpServerHandler());
+        p.addLast(new HttpHandler());
     }
 }
