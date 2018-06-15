@@ -76,15 +76,14 @@ public class HttpHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
 
         String remoteAddress = ctx.channel().remoteAddress().toString();
 
+        boolean isStatic  = false;
+        boolean keepAlive = isKeepAlive(req);
+
         Instant start = Instant.now();
 
         Request  request  = HttpRequest.build(req, remoteAddress);
         Response response = new HttpResponse();
 
-        boolean keepAlive = isKeepAlive(req);
-
-        // route signature
-        Signature signature = Signature.builder().request(request).response(response).build();
         // request uri
         String uri      = request.uri();
         String cleanUri = uri;
@@ -100,58 +99,78 @@ public class HttpHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
         try {
             if (isStaticFile(cleanUri)) {
                 staticFileHandler.handle(ctx, request, response);
+                isStatic = true;
                 return;
             }
 
-            Route route = routeMatcher.lookupRoute(request.method(), cleanUri);
-            if (null == route) {
-                log404(log, method, uri);
-                throw new NotFoundException(uri);
-            }
-
-            request.initPathParams(route);
-
-            // get method parameters
-            signature.setRoute(route);
-
-            // middleware
-            if (hasMiddleware && !invokeMiddleware(routeMatcher.getMiddleware(), signature)) {
-                response.body(EmptyBody.empty());
-                handleResponse(response, ctx, keepAlive);
+            // route signature
+            Signature signature = Signature.builder().request(request).response(response).build();
+            if (execution(ctx, keepAlive, signature, cleanUri)) {
                 return;
-            }
-
-            // web hook before
-            if (hasBeforeHook && !invokeHook(routeMatcher.getBefore(cleanUri), signature)) {
-                response.body(EmptyBody.empty());
-                handleResponse(response, ctx, keepAlive);
-                return;
-            }
-
-            // execute
-            this.routeHandle(signature);
-
-            // webHook
-            if (hasAfterHook) {
-                this.invokeHook(routeMatcher.getAfter(cleanUri), signature);
             }
 
             long cost = log200(log, start, method, uri);
             request.attribute(REQUEST_COST_TIME, cost);
         } catch (Exception e) {
-            if (e instanceof BladeException) {
-            } else {
-                log500(log, method, uri);
-            }
-            if (null != exceptionHandler) {
-                exceptionHandler.handle(e);
-            } else {
-                log.error("Request execution error", e);
-            }
+            this.exceptionCaught(uri, method, e);
         } finally {
-            this.handleResponse(response, ctx, keepAlive);
+            if (!isStatic) {
+                this.handleResponse(response, ctx, keepAlive);
+            }
             WebContext.remove();
         }
+    }
+
+    private void exceptionCaught(String uri, String method, Exception e) {
+        if (e instanceof BladeException) {
+        } else {
+            log500(log, method, uri);
+        }
+        if (null != exceptionHandler) {
+            exceptionHandler.handle(e);
+        } else {
+            log.error("Request execution error", e);
+        }
+    }
+
+    private boolean execution(ChannelHandlerContext ctx, boolean keepAlive, Signature signature, String cleanUri) throws Exception {
+        Request request = signature.request();
+
+        Route route = routeMatcher.lookupRoute(request.method(), cleanUri);
+        if (null == route) {
+            log404(log, request.method(), request.uri());
+            throw new NotFoundException(request.uri());
+        }
+
+        Response response = signature.response();
+
+        request.initPathParams(route);
+
+        // get method parameters
+        signature.setRoute(route);
+
+        // middleware
+        if (hasMiddleware && !invokeMiddleware(routeMatcher.getMiddleware(), signature)) {
+            signature.response().body(EmptyBody.empty());
+            handleResponse(response, ctx, keepAlive);
+            return true;
+        }
+
+        // web hook before
+        if (hasBeforeHook && !invokeHook(routeMatcher.getBefore(cleanUri), signature)) {
+            response.body(EmptyBody.empty());
+            handleResponse(response, ctx, keepAlive);
+            return true;
+        }
+
+        // execute
+        this.routeHandle(signature);
+
+        // webHook
+        if (hasAfterHook) {
+            this.invokeHook(routeMatcher.getAfter(cleanUri), signature);
+        }
+        return false;
     }
 
     @Override
@@ -368,9 +387,11 @@ public class HttpHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
         Object returnParam;
         if (len > 0) {
             if (len == 1) {
-                returnParam = ReflectKit.invokeMethod(target, hookMethod, routeSignature);
+                MethodAccess methodAccess = BladeCache.getMethodAccess(target.getClass());
+                returnParam = methodAccess.invoke(target, hookMethod.getName(), new Object[]{routeSignature});
             } else if (len == 2) {
-                returnParam = ReflectKit.invokeMethod(target, hookMethod, routeSignature.request(), routeSignature.response());
+                MethodAccess methodAccess = BladeCache.getMethodAccess(target.getClass());
+                returnParam = methodAccess.invoke(target, hookMethod.getName(), new Object[]{routeSignature.request(), routeSignature.response()});
             } else {
                 throw new InternalErrorException("Bad web hook structure");
             }

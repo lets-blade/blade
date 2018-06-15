@@ -35,6 +35,9 @@ public class Hello {
                         e.printStackTrace();
                     }
                 })
+                .before("/*", (request, response) -> {
+                    System.out.println("Before...");
+                })
                 .get("/rand", ((request, response) -> {
                     try {
                         TimeUnit.MILLISECONDS.sleep(new Random().nextInt(1000));
