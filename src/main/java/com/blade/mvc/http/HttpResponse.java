@@ -218,13 +218,14 @@ public class HttpResponse implements Response {
             response.headers().set(HttpConst.CONTENT_LENGTH, String.valueOf(response.content().readableBytes()));
         }
 
-        if (!keepAlive) {
-            ctx.write(response).addListener(ChannelFutureListener.CLOSE);
-        } else {
-            response.headers().set(HttpConst.CONNECTION, KEEP_ALIVE);
-            ctx.write(response, ctx.voidPromise());
+        if (ctx.channel().isWritable() && ctx.channel().isOpen()) {
+            if (!keepAlive) {
+                ctx.write(response).addListener(ChannelFutureListener.CLOSE);
+            } else {
+                response.headers().set(HttpConst.CONNECTION, KEEP_ALIVE);
+                ctx.write(response, ctx.voidPromise());
+            }
         }
-
     }
 
     @Override

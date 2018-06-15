@@ -62,7 +62,7 @@ public class HttpRequest implements Request {
     private void init(FullHttpRequest fullHttpRequest) {
         // headers
         HttpHeaders httpHeaders = fullHttpRequest.headers();
-        if (httpHeaders.isEmpty()) {
+        if (!httpHeaders.isEmpty()) {
             this.headers = new HashMap<>(httpHeaders.size());
             Iterator<Map.Entry<String, String>> entryIterator = httpHeaders.iteratorAsString();
             while (entryIterator.hasNext()) {
