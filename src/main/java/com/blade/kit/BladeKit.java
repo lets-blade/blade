@@ -25,6 +25,7 @@ import com.blade.ioc.bean.ClassDefine;
 import com.blade.ioc.bean.FieldInjector;
 import com.blade.ioc.bean.ValueInjector;
 import com.blade.mvc.Const;
+import com.blade.mvc.WebContext;
 import com.blade.mvc.http.HttpMethod;
 import com.blade.mvc.route.Route;
 import com.blade.task.TaskStruct;
@@ -32,6 +33,8 @@ import com.blade.task.annotation.Schedule;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.slf4j.Logger;
+import org.slf4j.impl.Ansi;
+import org.slf4j.impl.Constant;
 
 import java.io.File;
 import java.io.Serializable;
@@ -52,6 +55,8 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import static org.slf4j.impl.Constant.*;
+
 /**
  * Blade kit
  *
@@ -62,6 +67,7 @@ import java.util.stream.Collectors;
 public final class BladeKit {
 
     private static boolean isWindows;
+    private static Boolean showLog;
 
     static {
         isWindows = System.getProperties().getProperty("os.name").toLowerCase().contains("win");
@@ -248,30 +254,62 @@ public final class BladeKit {
     }
 
     public static void log500(Logger log, String method, String uri) {
-        String pad = StringKit.padLeft("", 6);
-        log.error("{} {}  {} {}", ColorKit.redAndWhite("500"), pad, method, uri);
+        String pad    = StringKit.padLeft("", 6);
+        String msg500 = Ansi.BgRed.and(Ansi.Black).format(" 500 ");
+        log.error("{} {}  {} {}", msg500, pad, method, uri);
     }
 
     public static void log304(Logger log, String method, String uri) {
-        String pad = StringKit.padLeft("", 6);
-        log.warn("{} {}  {} {}", ColorKit.greenAndWhite("304"), pad, method, uri);
+        if (!showLog()) {
+            return;
+        }
+        String pad    = StringKit.padLeft("", 6);
+        String msg304 = Ansi.BgGreen.and(Ansi.Black).format(" 304 ");
+        log.warn("{} {}  {} {}", msg304, pad, method, uri);
+    }
+
+    public static boolean showLog() {
+        if (null == showLog) {
+            showLog = true;
+            String levelStr = WebContext.blade().environment().get(Constant.ROOT_LEVEL_KEY, "INFO").toLowerCase();
+            if (WARN.equalsIgnoreCase(levelStr)) {
+                showLog = false;
+            } else if (ERROR.equalsIgnoreCase(levelStr)) {
+                showLog = false;
+            } else if (OFF.equalsIgnoreCase(levelStr)) {
+                showLog = false;
+            }
+        }
+        return showLog;
     }
 
     public static long log200(Logger log, Instant start, String method, String uri) {
-        long   cost = getCostMS(start);
-        String pad  = StringKit.padLeft(String.valueOf(cost) + "ms", 6);
-        log.info("{} {}  {} {}", ColorKit.greenAndWhite("200"), pad, method, uri);
+        long cost = getCostMS(start);
+        if (!showLog()) {
+            return cost;
+        }
+        String pad    = StringKit.padLeft(String.valueOf(cost) + "ms", 6);
+        String msg200 = Ansi.BgGreen.and(Ansi.Black).format(" 200 ");
+        log.info("{} {}  {} {}", msg200, pad, method, uri);
         return cost;
     }
 
     public static void log403(Logger log, String method, String uri) {
-        String pad = StringKit.padLeft("", 6);
-        log.warn("{} {}  {} {}", ColorKit.yellowAndWhite("403"), pad, method, uri);
+        if (!showLog()) {
+            return;
+        }
+        String pad    = StringKit.padLeft("", 6);
+        String msg403 = Ansi.BgYellow.and(Ansi.Black).format(" 403 ");
+        log.warn("{} {}  {} {}", msg403, pad, method, uri);
     }
 
     public static void log404(Logger log, String method, String uri) {
-        String pad = StringKit.padLeft("", 6);
-        log.warn("{} {}  {} {}", ColorKit.yellowAndWhite("404"), pad, method, uri);
+        if (!showLog()) {
+            return;
+        }
+        String pad    = StringKit.padLeft("", 6);
+        String msg404 = Ansi.BgRed.and(Ansi.Black).format(" 404 ");
+        log.warn("{} {}  {} {}", msg404, pad, method, uri);
     }
 
     public static boolean isWindows() {
@@ -290,28 +328,28 @@ public final class BladeKit {
         String method = StringKit.padRight(route.getHttpMethod().name(), 6);
         switch (route.getHttpMethod()) {
             case ALL:
-                method = ColorKit.blankAndWhite(method);
+                method = Ansi.BgBlack.and(Ansi.White).format(" %s ", method);
                 break;
             case GET:
-                method = ColorKit.greenAndWhite(method);
+                method = Ansi.BgGreen.and(Ansi.Black).format(" %s ", method);
                 break;
             case POST:
-                method = ColorKit.blueAndWhite(method);
+                method = Ansi.BgBlue.and(Ansi.Black).format(" %s ", method);
                 break;
             case DELETE:
-                method = ColorKit.redAndWhite(method);
+                method = Ansi.BgRed.and(Ansi.Black).format(" %s ", method);
                 break;
             case PUT:
-                method = ColorKit.yellowAndWhite(method);
+                method = Ansi.BgYellow.and(Ansi.Black).format(" %s ", method);
                 break;
             case OPTIONS:
-                method = ColorKit.cyanAndWhite(method);
+                method = Ansi.BgCyan.and(Ansi.Black).format(" %s ", method);
                 break;
             case BEFORE:
-                method = ColorKit.purpleAndWhite(method);
+                method = Ansi.BgMagenta.and(Ansi.Black).format(" %s ", method);
                 break;
             case AFTER:
-                method = ColorKit.whiteAndBlank(method);
+                method = Ansi.BgWhite.and(Ansi.Black).format(" %s ", method);
                 break;
         }
         String msg = (route.getHttpMethod().equals(HttpMethod.BEFORE) || route.getHttpMethod().equals(HttpMethod.AFTER)) ? " hook" : "route";

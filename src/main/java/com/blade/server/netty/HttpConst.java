@@ -18,6 +18,7 @@ public interface HttpConst {
     String CONTENT_TYPE_STRING = "Content-Type";
     String COOKIE_STRING       = "Cookie";
     String METHOD_GET          = "GET";
+    String METHOD_POST         = "POST";
     String IE_UA               = "MSIE";
     String DEFAULT_SESSION_KEY = "SESSION";
     String SLASH               = "/";

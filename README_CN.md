@@ -37,6 +37,8 @@
 * [x] 模板引擎支持，视图开发更灵活
 * [x] 高性能，100并发下qps 14w/s
 * [x] 运行 `JAR` 包即可开启 web 服务
+* [x] 支持 `CSRF` 和 `XSS` 防御
+* [x] 支持 `BasicAuth` 和权限管理
 * [x] 流式API风格
 * [x] 支持插件扩展
 * [x] 支持 webjars 资源
@@ -61,7 +63,7 @@
 <dependency>
 	<groupId>com.bladejava</groupId>
 	<artifactId>blade-mvc</artifactId>
-	<version>2.0.8-R3</version>
+	<version>2.0.8.RELEASE</version>
 </dependency>
 ```
 
@@ -70,7 +72,7 @@
 或者  `Gradle`:
 
 ```sh
-compile 'com.bladejava:blade-mvc:2.0.8-R3'
+compile 'com.bladejava:blade-mvc:2.0.8.RELEASE'
 ```
 
 编写 `main` 函数写一个 `Hello World`：

@@ -30,7 +30,7 @@ import com.blade.kit.*;
 import com.blade.mvc.Const;
 import com.blade.mvc.WebContext;
 import com.blade.mvc.annotation.Path;
-import com.blade.mvc.annotation.UrlPattern;
+import com.blade.mvc.annotation.URLPattern;
 import com.blade.mvc.handler.DefaultExceptionHandler;
 import com.blade.mvc.handler.ExceptionHandler;
 import com.blade.mvc.hook.WebHook;
@@ -48,6 +48,7 @@ import com.blade.task.cron.CronExpression;
 import com.blade.task.cron.CronThreadPoolExecutor;
 import com.blade.watcher.EnvironmentWatcher;
 import io.netty.bootstrap.ServerBootstrap;
+import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
@@ -60,6 +61,7 @@ import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.util.ResourceLeakDetector;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.impl.Ansi;
 
 import java.io.File;
 import java.lang.reflect.Method;
@@ -137,7 +139,6 @@ public class NettyServer implements Server {
                 .forEach(this::parseCls);
 
         routeMatcher.register();
-//        routeBuilder.register();
 
         this.processors.stream().sorted(new OrderComparator<>()).forEach(b -> b.preHandle(blade));
 
@@ -178,7 +179,7 @@ public class NettyServer implements Server {
         }
 
         // Configure the server.
-        int backlog = environment.getInt(ENV_KEY_NETTY_SO_BACKLOG, 8192);
+        int backlog = environment.getInt(ENV_KEY_NETTY_SO_BACKLOG, 1024);
 
         ServerBootstrap b = new ServerBootstrap();
         b.option(ChannelOption.SO_BACKLOG, backlog);
@@ -215,7 +216,8 @@ public class NettyServer implements Server {
         String appName = environment.get(ENV_KEY_APP_NAME, "Blade");
 
         log.info("{}{} initialize successfully, Time elapsed: {} ms", getStartedSymbol(), appName, (System.currentTimeMillis() - startTime));
-        log.info("{}Blade start with {}", getStartedSymbol(), ColorKit.redAndWhite(address + ":" + port));
+        String url = Ansi.BgRed.and(Ansi.Black).format(" %s:%d ", address, port);
+        log.info("{}Blade start with {}", getStartedSymbol(), url);
         log.info("{}Open browser access http://{}:{} ⚡\r\n", getStartedSymbol(), address.replace(DEFAULT_SERVER_ADDRESS, LOCAL_IP_ADDRESS), port);
 
         blade.eventManager().fireEvent(EventType.SERVER_STARTED, blade);
@@ -231,36 +233,39 @@ public class NettyServer implements Server {
             }
 
             AtomicInteger jobCount = new AtomicInteger();
-
             for (TaskStruct taskStruct : taskStruts) {
-                try {
-                    Schedule schedule = taskStruct.getSchedule();
-                    String   jobName  = StringKit.isBlank(schedule.name()) ? "task-" + jobCount.getAndIncrement() : schedule.name();
-                    Task     task     = new Task(jobName, new CronExpression(schedule.cron()), schedule.delay());
-
-                    TaskContext taskContext = new TaskContext(task);
-
-                    task.setTask(() -> {
-                        Object target = blade.ioc().getBean(taskStruct.getType());
-                        Method method = taskStruct.getMethod();
-                        try {
-                            if (method.getParameterCount() == 1 && method.getParameterTypes()[0].equals(TaskContext.class)) {
-                                taskStruct.getMethod().invoke(target, taskContext);
-                            } else {
-                                taskStruct.getMethod().invoke(target);
-                            }
-                        } catch (Exception e) {
-                            log.error("Task method error", e);
-                        }
-                    });
-
-                    ScheduledFuture<?> future = executorService.submit(task);
-                    task.setFuture(future);
-                    TaskManager.addTask(task);
-                } catch (Exception e) {
-                    log.warn("{}Add task fail: {}", getPrefixSymbol(), e.getMessage());
-                }
+                addTask(executorService, jobCount, taskStruct);
             }
+        }
+    }
+
+    private void addTask(CronExecutorService executorService, AtomicInteger jobCount, TaskStruct taskStruct) {
+        try {
+            Schedule schedule = taskStruct.getSchedule();
+            String   jobName  = StringKit.isBlank(schedule.name()) ? "task-" + jobCount.getAndIncrement() : schedule.name();
+            Task     task     = new Task(jobName, new CronExpression(schedule.cron()), schedule.delay());
+
+            TaskContext taskContext = new TaskContext(task);
+
+            task.setTask(() -> {
+                Object target = blade.ioc().getBean(taskStruct.getType());
+                Method method = taskStruct.getMethod();
+                try {
+                    if (method.getParameterCount() == 1 && method.getParameterTypes()[0].equals(TaskContext.class)) {
+                        taskStruct.getMethod().invoke(target, taskContext);
+                    } else {
+                        taskStruct.getMethod().invoke(target);
+                    }
+                } catch (Exception e) {
+                    log.error("Task method error", e);
+                }
+            });
+
+            ScheduledFuture<?> future = executorService.submit(task);
+            task.setFuture(future);
+            TaskManager.addTask(task);
+        } catch (Exception e) {
+            log.warn("{}Add task fail: {}", getPrefixSymbol(), e.getMessage());
         }
     }
 
@@ -277,11 +282,11 @@ public class NettyServer implements Server {
         }
         if (ReflectKit.hasInterface(clazz, WebHook.class) && null != clazz.getAnnotation(Bean.class)) {
             Object     hook       = blade.ioc().getBean(clazz);
-            UrlPattern urlPattern = clazz.getAnnotation(UrlPattern.class);
-            if (null == urlPattern) {
+            URLPattern URLPattern = clazz.getAnnotation(URLPattern.class);
+            if (null == URLPattern) {
                 routeBuilder.addWebHook(clazz, "/.*", hook);
             } else {
-                Stream.of(urlPattern.values())
+                Stream.of(URLPattern.values())
                         .forEach(pattern -> routeBuilder.addWebHook(clazz, pattern, hook));
             }
         }
@@ -397,7 +402,7 @@ public class NettyServer implements Server {
         } else {
             String text = Const.BANNER_TEXT + NEW_LINE +
                     StringKit.padLeft(" :: Blade :: (v", Const.BANNER_PADDING - 9) + Const.VERSION + ") " + NEW_LINE;
-            System.out.println(ColorKit.magenta(text));
+            System.out.println(Ansi.Magenta.format(text));
         }
     }
 

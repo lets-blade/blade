@@ -15,6 +15,7 @@ import lombok.NonNull;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import static com.blade.kit.WebKit.UNKNOWN_MAGIC;
 
@@ -112,7 +113,7 @@ public interface Request {
      */
     default Integer pathInt(@NonNull String name) {
         String val = pathString(name);
-        return StringKit.isNotBlank(val) ? Integer.parseInt(val) : null;
+        return StringKit.isNotEmpty(val) ? Integer.parseInt(val) : null;
     }
 
     /**
@@ -123,7 +124,7 @@ public interface Request {
      */
     default Long pathLong(@NonNull String name) {
         String val = pathString(name);
-        return StringKit.isNotBlank(val) ? Long.parseLong(val) : null;
+        return StringKit.isNotEmpty(val) ? Long.parseLong(val) : null;
     }
 
     /**
@@ -139,6 +140,23 @@ public interface Request {
      * @return Return request query Map
      */
     Map<String, List<String>> parameters();
+
+    /**
+     * Get current request query parameter names
+     *
+     * @return Return request query names
+     * @since 2.0.8-RELEASE
+     */
+    Set<String> parameterNames();
+
+    /**
+     * Get current request query parameter values
+     *
+     * @param paramName param name
+     * @return Return request query values
+     * @since 2.0.8-RELEASE
+     */
+    List<String> parameterValues(String paramName);
 
     /**
      * Get a request parameter
@@ -162,9 +180,7 @@ public interface Request {
      */
     default String query(@NonNull String name, @NonNull String defaultValue) {
         Optional<String> value = query(name);
-        if (value.isPresent())
-            return value.get();
-        return defaultValue;
+        return value.orElse(defaultValue);
     }
 
     /**
@@ -175,9 +191,7 @@ public interface Request {
      */
     default Optional<Integer> queryInt(@NonNull String name) {
         Optional<String> value = query(name);
-        if (value.isPresent())
-            return Optional.of(Integer.parseInt(value.get()));
-        return Optional.empty();
+        return value.map(Integer::parseInt);
     }
 
     /**
@@ -189,9 +203,7 @@ public interface Request {
      */
     default int queryInt(@NonNull String name, int defaultValue) {
         Optional<String> value = query(name);
-        if (value.isPresent())
-            return Integer.parseInt(value.get());
-        return defaultValue;
+        return value.map(Integer::parseInt).orElse(defaultValue);
     }
 
     /**
@@ -202,9 +214,7 @@ public interface Request {
      */
     default Optional<Long> queryLong(@NonNull String name) {
         Optional<String> value = query(name);
-        if (value.isPresent())
-            return Optional.of(Long.parseLong(value.get()));
-        return Optional.empty();
+        return value.map(Long::parseLong);
     }
 
     /**
@@ -216,9 +226,7 @@ public interface Request {
      */
     default long queryLong(@NonNull String name, long defaultValue) {
         Optional<String> value = query(name);
-        if (value.isPresent())
-            return Long.parseLong(value.get());
-        return defaultValue;
+        return value.map(Long::parseLong).orElse(defaultValue);
     }
 
     /**
@@ -229,9 +237,7 @@ public interface Request {
      */
     default Optional<Double> queryDouble(@NonNull String name) {
         Optional<String> value = query(name);
-        if (value.isPresent())
-            return Optional.of(Double.parseDouble(value.get()));
-        return Optional.empty();
+        return value.map(Double::parseDouble);
     }
 
     /**
@@ -243,9 +249,7 @@ public interface Request {
      */
     default double queryDouble(@NonNull String name, double defaultValue) {
         Optional<String> value = query(name);
-        if (value.isPresent())
-            return Double.parseDouble(value.get());
-        return defaultValue;
+        return value.map(Double::parseDouble).orElse(defaultValue);
     }
 
     /**
@@ -362,7 +366,7 @@ public interface Request {
     /**
      * Add a cookie to the request
      *
-     * @param cookie
+     * @param cookie cookie raw
      * @return return Request instance
      */
     Request cookie(Cookie cookie);
@@ -381,8 +385,13 @@ public interface Request {
      * @return Return header information
      */
     default String header(@NonNull String name) {
-        String header = headers().getOrDefault(name, "");
-        return StringKit.isBlank(header) ? headers().getOrDefault(name.toLowerCase(), "") : header;
+        String header = "";
+        if (headers().containsKey(name)) {
+            header = headers().get(name);
+        } else if (headers().containsKey(name.toLowerCase())) {
+            header = headers().get(name.toLowerCase());
+        }
+        return header;
     }
 
     /**
@@ -407,7 +416,7 @@ public interface Request {
     /**
      * Bind form parameter to model
      *
-     * @param modelClass
+     * @param modelClass model class type
      * @param <T>
      */
     default <T> T bindWithForm(Class<T> modelClass) {
@@ -417,12 +426,12 @@ public interface Request {
     /**
      * Bind body parameter to model
      *
-     * @param modelClass
+     * @param modelClass model class type
      * @param <T>
      */
     default <T> T bindWithBody(Class<T> modelClass) {
         String json = this.bodyToString();
-        return StringKit.isNotBlank(json) ? JsonKit.formJson(json, modelClass) : null;
+        return StringKit.isNotEmpty(json) ? JsonKit.formJson(json, modelClass) : null;
     }
 
     /**

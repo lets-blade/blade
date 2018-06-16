@@ -40,13 +40,16 @@ public final class EncryptKit {
 
     private static final char[] HEX_DIGITS = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
 
+    // Define the BCrypt workload to use when generating password hashes. 10-31 is a valid value.
+    private static final int workload = 12;
+
     /**
      * 3DES转变
      * <p>法算法名称/加密模式/填充方式</p>
      * <p>加密模式有：电子密码本模式ECB、加密块链模式CBC、加密反馈模式CFB、输出反馈模式OFB</p>
      * <p>填充方式有：NoPadding、ZerosPadding、PKCS5Padding</p>
      */
-    private static final  String TripleDES_Transformation = "DESede/ECB/NoPadding";
+    private static final String TripleDES_Transformation = "DESede/ECB/NoPadding";
     private static final String TripleDES_Algorithm      = "DESede";
 
     /**
@@ -55,7 +58,7 @@ public final class EncryptKit {
      * <p>加密模式有：电子密码本模式ECB、加密块链模式CBC、加密反馈模式CFB、输出反馈模式OFB</p>
      * <p>填充方式有：NoPadding、ZerosPadding、PKCS5Padding</p>
      */
-    private static        String AES_Transformation = "AES/ECB/NoPadding";
+    private static       String AES_Transformation = "AES/ECB/NoPadding";
     private static final String AES_Algorithm      = "AES";
 
     /**

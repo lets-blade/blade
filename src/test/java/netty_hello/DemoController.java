@@ -5,6 +5,7 @@ import com.blade.mvc.http.Request;
 import com.blade.mvc.http.Response;
 import com.blade.mvc.multipart.FileItem;
 import com.blade.mvc.ui.RestResponse;
+import com.blade.validator.Validators;
 
 import java.util.Arrays;
 import java.util.List;
@@ -46,6 +47,18 @@ public class DemoController {
     @GetRoute("csrf")
     public void getCsrfToken(Request request, Response response) {
         response.text("token: " + request.attribute("_csrf_token"));
+    }
+
+    @GetRoute("exp")
+    public String validatorException() {
+        return "exp.html";
+    }
+
+    @PostRoute("exp")
+    public void validatorException(Request request, Response response) {
+        String name = request.query("name", "");
+        Validators.notEmpty().test(name).throwIfInvalid("名称");
+        System.out.println("继续执行");
     }
 
     @PostRoute("upload")

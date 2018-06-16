@@ -39,6 +39,8 @@ If you think this item is good can [star](https://github.com/biezhi/blade/starga
 * [x] High performance, 100 concurrent qps 14w/s
 * [x] Run the `JAR` package to open the web service
 * [x] Streaming API style
+* [x] `CSRF` and `XSS` defense
+* [x] `Basic Auth` and `Authorization`
 * [x] Supports plug-in extensions
 * [x] Support webjars resources
 * [x] Based on `cron` expression of tasks
@@ -62,7 +64,7 @@ Create a basic `Maven` project
 <dependency>
     <groupId>com.bladejava</groupId>
     <artifactId>blade-mvc</artifactId>
-    <version>2.0.8-R3</version>
+    <version>2.0.8.RELEASE</version>
 </dependency>
 ```
 
@@ -71,7 +73,7 @@ Create a basic `Maven` project
 or `Gradle`:
 
 ```sh
-compile 'com.bladejava:blade-mvc:2.0.8-R3'
+compile 'com.bladejava:blade-mvc:2.0.8.RELEASE'
 ```
 
 Write `main` method, try `Hello World`：
