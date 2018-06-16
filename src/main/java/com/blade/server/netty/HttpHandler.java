@@ -121,18 +121,6 @@ public class HttpHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
         }
     }
 
-    private void exceptionCaught(String uri, String method, Exception e) {
-        if (e instanceof BladeException) {
-        } else {
-            log500(log, method, uri);
-        }
-        if (null != exceptionHandler) {
-            exceptionHandler.handle(e);
-        } else {
-            log.error("Request execution error", e);
-        }
-    }
-
     private boolean execution(ChannelHandlerContext ctx, boolean keepAlive, Signature signature, String cleanUri) throws Exception {
         Request request = signature.request();
 
@@ -191,7 +179,7 @@ public class HttpHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
 
     private static final Timer timer = new HashedWheelTimer();
 
-    public static <T> CompletableFuture<T> afterTimeout(T value, long millis) {
+    private static <T> CompletableFuture<T> afterTimeout(T value, long millis) {
         CompletableFuture<T> future = new CompletableFuture<>();
         timer.newTimeout(t -> future.complete(value), millis, TimeUnit.MILLISECONDS);
         return future;
@@ -265,9 +253,8 @@ public class HttpHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
     private void handleStreamResponse(int status, Map<String, String> headers, InputStream body,
                                       ChannelHandlerContext context, boolean keepAlive) {
         DefaultHttpResponse response = new DefaultHttpResponse(HTTP_1_1, HttpResponseStatus.valueOf(status));
-        response.headers().set(TRANSFER_ENCODING, HttpHeaders.Values.CHUNKED);
-        headers.entrySet().stream().forEach(header ->
-                response.headers().set(header.getKey(), header.getValue()));
+        response.headers().set(TRANSFER_ENCODING, HttpHeaderValues.CHUNKED);
+        headers.forEach((key, value) -> response.headers().set(key, value));
         context.write(response);
 
         context.write(new ChunkedStream(body));
@@ -300,7 +287,7 @@ public class HttpHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
      *
      * @param signature signature
      */
-    public void routeHandle(Signature signature) throws Exception {
+    private void routeHandle(Signature signature) {
         Object target = signature.getRoute().getTarget();
         if (null == target) {
             Class<?> clazz = signature.getAction().getDeclaringClass();
@@ -311,20 +298,7 @@ public class HttpHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
             RouteHandler routeHandler = (RouteHandler) target;
             routeHandler.handle(signature.request(), signature.response());
         } else {
-            this.handle(signature);
-        }
-    }
-
-    /**
-     * handle route signature
-     *
-     * @param signature route request signature
-     * @throws Exception throw like parse param exception
-     */
-    public void handle(Signature signature) throws Exception {
-        try {
             Method   actionMethod = signature.getAction();
-            Object   target       = signature.getRoute().getTarget();
             Class<?> returnType   = actionMethod.getReturnType();
 
             Response response = signature.response();
@@ -335,31 +309,33 @@ public class HttpHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
             boolean isRestful = (null != JSON) || (null != path && path.restful());
 
             // if request is restful and not InternetExplorer userAgent
-            if (isRestful && !signature.request().userAgent().contains(HttpConst.IE_UA)) {
-                signature.response().contentType(Const.CONTENT_TYPE_JSON);
+            if (isRestful) {
+                if (!signature.request().isIE()) {
+                    signature.response().contentType(Const.CONTENT_TYPE_JSON);
+                } else {
+                    signature.response().contentType(Const.CONTENT_TYPE_HTML);
+                }
             }
 
             int len = actionMethod.getParameterTypes().length;
 
             MethodAccess methodAccess = BladeCache.getMethodAccess(target.getClass());
             Object       returnParam  = methodAccess.invoke(target, actionMethod.getName(), len > 0 ? signature.getParameters() : null);
-
-            if (null == returnParam) return;
+            if (null == returnParam) {
+                return;
+            }
 
             if (isRestful) {
                 response.json(returnParam);
                 return;
             }
             if (returnType == String.class) {
-                response.render(returnParam.toString());
+                response.body(new ViewBody(new ModelAndView(returnParam.toString())));
                 return;
             }
             if (returnType == ModelAndView.class) {
-                ModelAndView modelAndView = (ModelAndView) returnParam;
-                response.render(modelAndView);
+                response.body(new ViewBody((ModelAndView) returnParam));
             }
-        } catch (Exception e) {
-            throw e;
         }
     }
 
@@ -371,7 +347,7 @@ public class HttpHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
      * @return Return true then next handler, and else interrupt request
      * @throws Exception throw like parse param exception
      */
-    public boolean invokeHook(Signature routeSignature, Route hookRoute) throws Exception {
+    private boolean invokeHook(Signature routeSignature, Route hookRoute) throws Exception {
         Method hookMethod = hookRoute.getAction();
         Object target     = hookRoute.getTarget();
         if (null == target) {
@@ -388,10 +364,10 @@ public class HttpHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
         if (len > 0) {
             if (len == 1) {
                 MethodAccess methodAccess = BladeCache.getMethodAccess(target.getClass());
-                returnParam = methodAccess.invoke(target, hookMethod.getName(), new Object[]{routeSignature});
+                returnParam = methodAccess.invoke(target, hookMethod.getName(), routeSignature);
             } else if (len == 2) {
                 MethodAccess methodAccess = BladeCache.getMethodAccess(target.getClass());
-                returnParam = methodAccess.invoke(target, hookMethod.getName(), new Object[]{routeSignature.request(), routeSignature.response()});
+                returnParam = methodAccess.invoke(target, hookMethod.getName(), routeSignature.request(), routeSignature.response());
             } else {
                 throw new InternalErrorException("Bad web hook structure");
             }
@@ -408,7 +384,7 @@ public class HttpHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
         return true;
     }
 
-    public boolean invokeMiddleware(List<Route> middleware, Signature signature) throws BladeException {
+    private boolean invokeMiddleware(List<Route> middleware, Signature signature) throws BladeException {
         if (BladeKit.isEmpty(middleware)) {
             return true;
         }
@@ -427,7 +403,7 @@ public class HttpHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
      * @param signature http request
      * @return return invoke hook is abort
      */
-    public boolean invokeHook(List<Route> hooks, Signature signature) throws Exception {
+    private boolean invokeHook(List<Route> hooks, Signature signature) throws Exception {
         for (Route hook : hooks) {
             if (hook.getTargetType() == RouteHandler.class) {
                 RouteHandler routeHandler = (RouteHandler) hook.getTarget();
@@ -443,6 +419,18 @@ public class HttpHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
     private boolean isStaticFile(String uri) {
         Optional<String> result = statics.stream().filter(s -> s.equals(uri) || uri.startsWith(s)).findFirst();
         return result.isPresent();
+    }
+
+    private void exceptionCaught(String uri, String method, Exception e) {
+        if (e instanceof BladeException) {
+        } else {
+            log500(log, method, uri);
+        }
+        if (null != exceptionHandler) {
+            exceptionHandler.handle(e);
+        } else {
+            log.error("Request Exception", e);
+        }
     }
 
 }

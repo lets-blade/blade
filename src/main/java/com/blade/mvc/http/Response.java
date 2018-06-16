@@ -93,7 +93,7 @@ public interface Response {
      * @param value Header Value
      * @return Return Response
      */
-    Response header(CharSequence name, CharSequence value);
+    Response header(String name, String value);
 
     /**
      * Get current response cookies

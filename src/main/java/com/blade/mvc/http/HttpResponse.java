@@ -26,11 +26,12 @@ import java.util.*;
 @Slf4j
 public class HttpResponse implements Response {
 
-    private HttpHeaders headers     = new DefaultHttpHeaders(false);
-    private Set<Cookie> cookies     = new HashSet<>(4);
-    private int         statusCode  = 200;
-    private String      contentType = null;
-    private Body        body;
+    private Map<String, String> headers = new HashMap<>(8);
+    private Set<Cookie>         cookies = new HashSet<>(4);
+
+    private int    statusCode  = 200;
+    private String contentType = HttpConst.CONTENT_TYPE_HTML;
+    private Body   body;
 
     @Override
     public int statusCode() {
@@ -56,17 +57,13 @@ public class HttpResponse implements Response {
 
     @Override
     public Map<String, String> headers() {
-        Map<String, String> map = new HashMap<>(this.headers.size());
-        this.headers.forEach(header -> map.put(header.getKey(), header.getValue()));
-        if (StringKit.isNotEmpty(this.contentType)) {
-            map.put(HttpConst.CONTENT_TYPE_STRING, this.contentType);
-        }
-        return map;
+        this.headers.put(HttpConst.CONTENT_TYPE_STRING, this.contentType);
+        return this.headers;
     }
 
     @Override
-    public Response header(CharSequence name, CharSequence value) {
-        this.headers.set(name, value);
+    public Response header(String name, String value) {
+        this.headers.put(name, value);
         return this;
     }
 
@@ -152,10 +149,9 @@ public class HttpResponse implements Response {
             throw new NotFoundException("Not found file: " + file.getPath());
         }
         String contentType = StringKit.mimeType(file.getName());
-        headers.set("Content-Disposition", "attachment; filename=" + new String(fileName.getBytes("UTF-8"), "ISO8859_1"));
-        headers.set(HttpConst.CONTENT_LENGTH, file.length());
-        headers.set(HttpConst.CONTENT_TYPE_STRING, contentType);
-
+        headers.put("Content-Disposition", "attachment; filename=" + new String(fileName.getBytes("UTF-8"), "ISO8859_1"));
+        headers.put(HttpConst.CONTENT_LENGTH.toString(), String.valueOf(file.length()));
+        headers.put(HttpConst.CONTENT_TYPE_STRING, contentType);
         this.body = new StreamBody(new FileInputStream(file));
     }
 
@@ -173,7 +169,7 @@ public class HttpResponse implements Response {
 
     @Override
     public void redirect(@NonNull String newUri) {
-        headers.set(HttpConst.LOCATION, newUri);
+        headers.put(HttpConst.LOCATION.toString(), newUri);
         this.status(302);
         this.body = EmptyBody.empty();
     }
@@ -190,7 +186,7 @@ public class HttpResponse implements Response {
         this.contentType = response.contentType();
         this.statusCode = response.statusCode();
         if (null != response.headers()) {
-            response.headers().forEach(this.headers::add);
+            response.headers().forEach(this.headers::put);
         }
         if (null != response.cookies()) {
             response.cookies().forEach((k, v) -> this.cookies.add(new DefaultCookie(k, v)));
