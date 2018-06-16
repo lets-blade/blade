@@ -83,7 +83,7 @@ public class HttpRequest implements Request {
             this.parameters.putAll(parameters);
         }
 
-        if (HttpConst.METHOD_POST.equals(this.method) && !isJsonRequest()) {
+        if (HttpConst.METHOD_POST.equals(this.method) && isFormRequest()) {
             HttpPostRequestDecoder decoder = new HttpPostRequestDecoder(HTTP_DATA_FACTORY, fullHttpRequest);
             decoder.getBodyHttpDatas().forEach(this::parseData);
         }
