@@ -316,6 +316,28 @@ public interface Request {
     }
 
     /**
+     * Determine if this request is a FORM form request
+     * <p>
+     * According to header content-type contains "form"
+     *
+     * @return is form request
+     */
+    default boolean isFormRequest() {
+        return this.header(HttpConst.CONTENT_TYPE_STRING).toLowerCase().contains("form");
+    }
+
+    /**
+     * Determine if this request is a json request
+     * <p>
+     * According to header content-type contains "json"
+     *
+     * @return is json request
+     */
+    default boolean isJsonRequest() {
+        return this.header(HttpConst.CONTENT_TYPE_STRING).toLowerCase().contains("json");
+    }
+
+    /**
      * Gets the current request is the head of the IE browser
      *
      * @return return current request is IE browser

@@ -9,7 +9,6 @@ import com.blade.server.netty.SessionHandler;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufUtil;
 import io.netty.buffer.Unpooled;
-import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpUtil;
@@ -36,6 +35,7 @@ public class HttpRequest implements Request {
 
     private static final HttpDataFactory HTTP_DATA_FACTORY = new DefaultHttpDataFactory(DefaultHttpDataFactory.MINSIZE);
     private static final SessionHandler  SESSION_HANDLER   = WebContext.sessionManager() != null ? new SessionHandler(WebContext.blade()) : null;
+    private static final ByteBuf         EMPTY_BUF         = Unpooled.copiedBuffer("", CharsetUtil.UTF_8);
 
     static {
         DiskFileUpload.deleteOnExitTemporaryFile = true;
@@ -44,7 +44,7 @@ public class HttpRequest implements Request {
         DiskAttribute.baseDirectory = null;
     }
 
-    private ByteBuf body = Unpooled.copiedBuffer("", CharsetUtil.UTF_8);
+    private ByteBuf body = EMPTY_BUF;
     private String  remoteAddress;
     private String  uri;
     private String  url;
@@ -83,7 +83,7 @@ public class HttpRequest implements Request {
             this.parameters.putAll(parameters);
         }
 
-        if (HttpConst.METHOD_POST.equals(this.method)) {
+        if (HttpConst.METHOD_POST.equals(this.method) && !isJsonRequest()) {
             HttpPostRequestDecoder decoder = new HttpPostRequestDecoder(HTTP_DATA_FACTORY, fullHttpRequest);
             decoder.getBodyHttpDatas().forEach(this::parseData);
         }
