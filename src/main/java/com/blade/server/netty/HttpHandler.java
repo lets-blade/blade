@@ -45,8 +45,6 @@ import static com.blade.mvc.Const.REQUEST_COST_TIME;
 import static com.blade.server.netty.HttpConst.CONTENT_LENGTH;
 import static com.blade.server.netty.HttpConst.KEEP_ALIVE;
 import static io.netty.handler.codec.http.HttpHeaderNames.TRANSFER_ENCODING;
-import static io.netty.handler.codec.http.HttpResponseStatus.CONTINUE;
-import static io.netty.handler.codec.http.HttpUtil.is100ContinueExpected;
 import static io.netty.handler.codec.http.HttpUtil.isKeepAlive;
 import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
@@ -70,10 +68,6 @@ public class HttpHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest req) {
-        if (is100ContinueExpected(req)) {
-            ctx.write(new DefaultFullHttpResponse(HTTP_1_1, CONTINUE));
-        }
-
         String remoteAddress = ctx.channel().remoteAddress().toString();
 
         boolean isStatic  = false;
@@ -234,13 +228,15 @@ public class HttpHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
     }
 
     private void handleFullResponse(FullHttpResponse response, ChannelHandlerContext context, boolean keepAlive) {
-        if (!keepAlive) {
-            context.write(response).addListener(ChannelFutureListener.CLOSE);
-        } else {
-            response.headers().set(HttpConst.CONNECTION, KEEP_ALIVE);
-            context.write(response, context.voidPromise());
+        if (context.channel().isActive()) {
+            if (!keepAlive) {
+                context.write(response).addListener(ChannelFutureListener.CLOSE);
+            } else {
+                response.headers().set(HttpConst.CONNECTION, KEEP_ALIVE);
+                context.write(response, context.voidPromise());
+            }
+            context.flush();
         }
-        context.flush();
     }
 
     private Map<String, String> getDefaultHeader() {
@@ -277,7 +273,7 @@ public class HttpHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
                 body.isEmpty() ? Unpooled.buffer(0) : Unpooled.wrappedBuffer(body.getBytes(Charset.forName("UTF-8")))); // TODO charset
 
         response.headers().set(CONTENT_LENGTH, response.content().readableBytes());
-        headers.entrySet().stream().forEach(header ->
+        headers.entrySet().forEach(header ->
                 response.headers().set(header.getKey(), header.getValue()));
         return response;
     }

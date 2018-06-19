@@ -28,6 +28,7 @@ import com.blade.kit.StringKit;
 import com.blade.kit.reload.FileChangeDetector;
 import com.blade.mvc.Const;
 import com.blade.mvc.SessionManager;
+import com.blade.mvc.annotation.DeleteRoute;
 import com.blade.mvc.handler.DefaultExceptionHandler;
 import com.blade.mvc.handler.ExceptionHandler;
 import com.blade.mvc.handler.RouteHandler;
@@ -191,8 +192,19 @@ public class Blade {
      * Give your blade instance, from then on will get the energy
      *
      * @return return blade instance
+     * @see {Blade.of}
      */
+    @Deprecated
     public static Blade me() {
+        return Blade.of();
+    }
+
+    /**
+     * Give your blade instance, from then on will get the energy
+     *
+     * @return return blade instance
+     */
+    public static Blade of() {
         return new Blade();
     }
 

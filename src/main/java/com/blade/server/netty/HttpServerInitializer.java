@@ -53,9 +53,9 @@ public class HttpServerInitializer extends ChannelInitializer<SocketChannel> {
             p.addLast(new HttpContentCompressor());
         }
         p.addLast(new HttpServerCodec(36192 * 2, 36192 * 8, 36192 * 16, false));
-        p.addLast(new HttpServerExpectContinueHandler());
         p.addLast(new HttpObjectAggregator(Integer.MAX_VALUE));
         p.addLast(new ChunkedWriteHandler());
+        p.addLast(new HttpServerExpectContinueHandler());
         if (enableCors) {
             CorsConfig corsConfig = CorsConfigBuilder.forAnyOrigin().allowNullOrigin().allowCredentials().build();
             p.addLast(new CorsHandler(corsConfig));
