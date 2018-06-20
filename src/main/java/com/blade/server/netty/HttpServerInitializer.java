@@ -49,13 +49,14 @@ public class HttpServerInitializer extends ChannelInitializer<SocketChannel> {
         if (sslCtx != null) {
             p.addLast(sslCtx.newHandler(ch.alloc()));
         }
-        if (enableGzip) {
-            p.addLast(new HttpContentCompressor());
-        }
+
         p.addLast(new HttpServerCodec(36192 * 2, 36192 * 8, 36192 * 16, false));
         p.addLast(new HttpObjectAggregator(Integer.MAX_VALUE));
         p.addLast(new ChunkedWriteHandler());
         p.addLast(new HttpServerExpectContinueHandler());
+        if (enableGzip) {
+            p.addLast(new HttpContentCompressor());
+        }
         if (enableCors) {
             CorsConfig corsConfig = CorsConfigBuilder.forAnyOrigin().allowNullOrigin().allowCredentials().build();
             p.addLast(new CorsHandler(corsConfig));

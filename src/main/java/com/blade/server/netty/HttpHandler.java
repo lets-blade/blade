@@ -27,8 +27,6 @@ import io.netty.channel.*;
 import io.netty.handler.codec.http.*;
 import io.netty.handler.codec.http.cookie.Cookie;
 import io.netty.handler.stream.ChunkedStream;
-import io.netty.util.HashedWheelTimer;
-import io.netty.util.Timer;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.InputStream;
@@ -37,8 +35,6 @@ import java.lang.reflect.Method;
 import java.nio.charset.Charset;
 import java.time.Instant;
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
 
 import static com.blade.kit.BladeKit.*;
 import static com.blade.mvc.Const.REQUEST_COST_TIME;
@@ -167,24 +163,12 @@ public class HttpHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
         ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
     }
 
-    private CompletableFuture<Response> timeoutResponseFuture() {
-        return afterTimeout(new HttpResponse(500, "request processing timed out"), 30_000);
-    }
-
-    private static final Timer timer = new HashedWheelTimer();
-
-    private static <T> CompletableFuture<T> afterTimeout(T value, long millis) {
-        CompletableFuture<T> future = new CompletableFuture<>();
-        timer.newTimeout(t -> future.complete(value), millis, TimeUnit.MILLISECONDS);
-        return future;
-    }
-
     private void handleResponse(Response response, ChannelHandlerContext context, boolean keepAlive) {
         response.body().write(new BodyWriter<Void>() {
             @Override
             public Void onText(StringBody body) {
                 handleFullResponse(
-                        createFullResponse(response.statusCode(), response.headers(), response.cookiesRaw(), body.content()),
+                        createFullResponse(response.statusCode(), keepAlive, response.headers(), response.cookiesRaw(), body.content()),
                         context, keepAlive);
                 return null;
             }
@@ -203,7 +187,7 @@ public class HttpHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
                     response.contentType(Const.CONTENT_TYPE_HTML);
 
                     handleFullResponse(
-                            createFullResponse(response.statusCode(), response.headers(), response.cookiesRaw(), sw.toString()),
+                            createFullResponse(response.statusCode(), keepAlive, response.headers(), response.cookiesRaw(), sw.toString()),
                             context, keepAlive);
                 } catch (Exception e) {
                     log.error("Render view error", e);
@@ -214,7 +198,7 @@ public class HttpHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
             @Override
             public Void onEmpty(EmptyBody emptyBody) {
                 handleFullResponse(
-                        createFullResponse(response.statusCode(), response.headers(), response.cookiesRaw(), ""),
+                        createFullResponse(response.statusCode(), keepAlive, response.headers(), response.cookiesRaw(), ""),
                         context, keepAlive);
                 return null;
             }
@@ -239,10 +223,13 @@ public class HttpHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
         }
     }
 
-    private Map<String, String> getDefaultHeader() {
+    private Map<String, String> getDefaultHeader(boolean keepAlive) {
         Map<String, String> map = new HashMap<>();
         map.put(HttpConst.DATE.toString(), HttpServerInitializer.date.toString());
         map.put(HttpConst.X_POWER_BY.toString(), HttpConst.VERSION.toString());
+        if (keepAlive) {
+            map.put(HttpConst.CONNECTION.toString(), "keep-alive");
+        }
         return map;
     }
 
@@ -260,9 +247,8 @@ public class HttpHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
         }
     }
 
-    private FullHttpResponse createFullResponse(int status, Map<String, String> headers, Set<Cookie> cookies, String body) {
-
-        headers.putAll(getDefaultHeader());
+    private FullHttpResponse createFullResponse(int status, boolean keepAlive, Map<String, String> headers, Set<Cookie> cookies, String body) {
+        headers.putAll(getDefaultHeader(keepAlive));
 
         if (cookies.size() > 0) {
             cookies.forEach(cookie -> headers.put(HttpConst.SET_COOKIE.toString(), io.netty.handler.codec.http.cookie.ServerCookieEncoder.LAX.encode(cookie)));
@@ -273,8 +259,7 @@ public class HttpHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
                 body.isEmpty() ? Unpooled.buffer(0) : Unpooled.wrappedBuffer(body.getBytes(Charset.forName("UTF-8")))); // TODO charset
 
         response.headers().set(CONTENT_LENGTH, response.content().readableBytes());
-        headers.entrySet().forEach(header ->
-                response.headers().set(header.getKey(), header.getValue()));
+        headers.forEach((key, value) -> response.headers().set(key, value));
         return response;
     }
 
