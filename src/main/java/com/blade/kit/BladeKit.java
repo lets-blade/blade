@@ -25,7 +25,6 @@ import com.blade.ioc.bean.ClassDefine;
 import com.blade.ioc.bean.FieldInjector;
 import com.blade.ioc.bean.ValueInjector;
 import com.blade.mvc.Const;
-import com.blade.mvc.WebContext;
 import com.blade.mvc.http.HttpMethod;
 import com.blade.mvc.route.Route;
 import com.blade.task.TaskStruct;
@@ -34,7 +33,6 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.impl.Ansi;
-import org.slf4j.impl.Constant;
 
 import java.io.File;
 import java.io.Serializable;
@@ -54,8 +52,6 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-
-import static org.slf4j.impl.Constant.*;
 
 /**
  * Blade kit
@@ -260,7 +256,7 @@ public final class BladeKit {
     }
 
     public static void log304(Logger log, String method, String uri) {
-        if (!showLog()) {
+        if (!log.isWarnEnabled()) {
             return;
         }
         String pad    = StringKit.padLeft("", 6);
@@ -268,34 +264,20 @@ public final class BladeKit {
         log.warn("{} {}  {} {}", msg304, pad, method, uri);
     }
 
-    public static boolean showLog() {
-        if (null == showLog) {
-            showLog = true;
-            String levelStr = WebContext.blade().environment().get(Constant.ROOT_LEVEL_KEY, "INFO").toLowerCase();
-            if (WARN.equalsIgnoreCase(levelStr)) {
-                showLog = false;
-            } else if (ERROR.equalsIgnoreCase(levelStr)) {
-                showLog = false;
-            } else if (OFF.equalsIgnoreCase(levelStr)) {
-                showLog = false;
-            }
-        }
-        return showLog;
-    }
-
     public static long log200(Logger log, Instant start, String method, String uri) {
         long cost = getCostMS(start);
-        if (!showLog()) {
+        if (!log.isInfoEnabled()) {
             return cost;
         }
         String pad    = StringKit.padLeft(String.valueOf(cost) + "ms", 6);
         String msg200 = Ansi.BgGreen.and(Ansi.Black).format(" 200 ");
         log.info("{} {}  {} {}", msg200, pad, method, uri);
+
         return cost;
     }
 
     public static void log403(Logger log, String method, String uri) {
-        if (!showLog()) {
+        if (!log.isWarnEnabled()) {
             return;
         }
         String pad    = StringKit.padLeft("", 6);
@@ -304,7 +286,7 @@ public final class BladeKit {
     }
 
     public static void log404(Logger log, String method, String uri) {
-        if (!showLog()) {
+        if (!log.isWarnEnabled()) {
             return;
         }
         String pad    = StringKit.padLeft("", 6);
