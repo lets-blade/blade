@@ -158,9 +158,11 @@ public class HttpHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-        log.error(cause.getMessage(), cause);
-        FullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1, HttpResponseStatus.valueOf(500));
-        ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
+        if (!ExceptionHandler.isResetByPeer(cause)) {
+            log.error(cause.getMessage(), cause);
+            FullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1, HttpResponseStatus.valueOf(500));
+            ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
+        }
     }
 
     private void handleResponse(Response response, ChannelHandlerContext context, boolean keepAlive) {

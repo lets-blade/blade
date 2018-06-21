@@ -1,5 +1,7 @@
 package com.blade.mvc.handler;
 
+import java.io.IOException;
+
 /**
  * Exception Handler interface
  *
@@ -17,5 +19,12 @@ public interface ExceptionHandler {
      * @param e current request exception
      */
     void handle(Exception e);
+
+    static boolean isResetByPeer(Throwable e) {
+        if ("Connection reset by peer".equals(e.getMessage())) {
+            return true;
+        }
+        return false;
+    }
 
 }

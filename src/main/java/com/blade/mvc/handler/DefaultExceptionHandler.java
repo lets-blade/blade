@@ -20,7 +20,6 @@ import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpVersion;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Optional;
@@ -38,7 +37,7 @@ public class DefaultExceptionHandler implements ExceptionHandler {
 
     @Override
     public void handle(Exception e) {
-        if (!isResetByPeer(e)) {
+        if (!ExceptionHandler.isResetByPeer(e)) {
             Response response = WebContext.response();
             Request  request  = WebContext.request();
 
@@ -150,10 +149,4 @@ public class DefaultExceptionHandler implements ExceptionHandler {
         return errors.toString();
     }
 
-    private boolean isResetByPeer(Exception e) {
-        if (IOException.class.isInstance(e) && "Connection reset by peer".equals(e.getMessage())) {
-            return true;
-        }
-        return false;
-    }
 }
