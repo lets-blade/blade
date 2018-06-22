@@ -735,8 +735,20 @@ public class Blade {
      * @param processor bean processor
      * @return return blade instance
      */
+    @Deprecated
     public Blade onStarted(@NonNull BeanProcessor processor) {
         processors.add(processor);
+        return this;
+    }
+
+    /**
+     * Add blade loader
+     *
+     * @param loader
+     * @return
+     */
+    public Blade addLoader(@NonNull BladeLoader loader) {
+        loaders.add(loader);
         return this;
     }
 
