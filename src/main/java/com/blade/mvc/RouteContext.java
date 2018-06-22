@@ -1,6 +1,6 @@
 package com.blade.mvc;
 
-import com.blade.mvc.handler.MethodArgument;
+import com.blade.mvc.handler.RouteActionArguments;
 import com.blade.mvc.http.Body;
 import com.blade.mvc.http.Request;
 import com.blade.mvc.http.Response;
@@ -210,7 +210,7 @@ public class RouteContext {
         Method action = route.getAction();
         if (null != action &&
                 !action.getDeclaringClass().getName().contains(LAMBDA)) {
-            this.routeActionParameters = MethodArgument.getArgs(this);
+            this.routeActionParameters = RouteActionArguments.getRouteActionParameters(this);
         }
     }
 

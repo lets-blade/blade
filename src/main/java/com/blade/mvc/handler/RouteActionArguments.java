@@ -28,9 +28,9 @@ import java.util.stream.Collectors;
  * @author biezhi
  * 2017/9/20
  */
-public final class MethodArgument {
+public final class RouteActionArguments {
 
-    public static Object[] getArgs(RouteContext context) throws Exception {
+    public static Object[] getRouteActionParameters(RouteContext context) {
         Method  actionMethod = context.routeAction();
         Request request      = context.request();
         actionMethod.setAccessible(true);
@@ -41,7 +41,7 @@ public final class MethodArgument {
 
         for (int i = 0, len = parameters.length; i < len; i++) {
             Parameter parameter = parameters[i];
-            String    paramName = parameterNames[i];
+            String    paramName = Objects.requireNonNull(parameterNames)[i];
             Type      argType   = parameter.getParameterizedType();
             if (containsAnnotation(parameter)) {
                 args[i] = getAnnotationParam(parameter, paramName, request);
@@ -109,25 +109,29 @@ public final class MethodArgument {
     private static Object getAnnotationParam(Parameter parameter, String paramName, Request request) {
         Type  argType = parameter.getParameterizedType();
         Param param   = parameter.getAnnotation(Param.class);
+
+        ParamStruct.ParamStructBuilder structBuilder = ParamStruct.builder().argType(argType).request(request);
+
         if (null != param) {
-            return getQueryParam(ParamStruct.builder().argType(argType).param(param).paramName(paramName).request(request).build());
+            ParamStruct paramStruct = structBuilder.param(param).paramName(paramName).build();
+            return getQueryParam(paramStruct);
         }
         BodyParam bodyParam = parameter.getAnnotation(BodyParam.class);
         if (null != bodyParam) {
-            return getBodyParam(ParamStruct.builder().argType(argType).request(request).build());
+            return getBodyParam(structBuilder.build());
         }
         PathParam pathParam = parameter.getAnnotation(PathParam.class);
         if (null != pathParam) {
-            return getPathParam(ParamStruct.builder().argType(argType).pathParam(pathParam).paramName(paramName).request(request).build());
+            return getPathParam(structBuilder.pathParam(pathParam).paramName(paramName).build());
         }
         HeaderParam headerParam = parameter.getAnnotation(HeaderParam.class);
         if (null != headerParam) {
-            return getHeader(ParamStruct.builder().argType(argType).headerParam(headerParam).paramName(paramName).request(request).build());
+            return getHeader(structBuilder.headerParam(headerParam).paramName(paramName).build());
         }
         // cookie param
         CookieParam cookieParam = parameter.getAnnotation(CookieParam.class);
         if (null != cookieParam) {
-            return getCookie(ParamStruct.builder().argType(argType).cookieParam(cookieParam).paramName(paramName).request(request).build());
+            return getCookie(structBuilder.cookieParam(cookieParam).paramName(paramName).build());
         }
         // form multipart
         MultipartParam multipartParam = parameter.getAnnotation(MultipartParam.class);
@@ -146,7 +150,7 @@ public final class MethodArgument {
             return ReflectKit.convert(argType, request.bodyToString());
         } else {
             String json = request.bodyToString();
-            return StringKit.isNotBlank(json) ? JsonKit.formJson(json, argType) : null;
+            return StringKit.isNotEmpty(json) ? JsonKit.formJson(json, argType) : null;
         }
     }
 
@@ -155,20 +159,22 @@ public final class MethodArgument {
         String  paramName = paramStruct.paramName;
         Type    argType   = paramStruct.argType;
         Request request   = paramStruct.request;
-        String  name;
         if (null == param) {
             return null;
         }
-        name = StringKit.isBlank(param.name()) ? paramName : param.name();
 
-        if (ReflectKit.isBasicType(argType) || argType.equals(Date.class) || argType.equals(BigDecimal.class)
-                || argType.equals(LocalDate.class) || argType.equals(LocalDateTime.class)) {
+        String name = StringKit.isBlank(param.name()) ? paramName : param.name();
+
+        if (ReflectKit.isBasicType(argType) || argType.equals(Date.class)
+                || argType.equals(BigDecimal.class) || argType.equals(LocalDate.class)
+                || argType.equals(LocalDateTime.class)) {
 
             String value = request.query(name).orElseGet(() -> getDefaultValue(param.defaultValue(), argType));
 
             return ReflectKit.convert(argType, value);
         } else {
             if (ParameterizedType.class.isInstance(argType)) {
+
                 List<String> values = request.parameters().get(param.name());
                 return getParameterizedTypeValues(values, argType);
             }
@@ -184,12 +190,14 @@ public final class MethodArgument {
             return null;
         }
         if ("".equals(defaultValue) && ReflectKit.isBasicType(argType)) {
-            if (argType.equals(int.class) || argType.equals(long.class) || argType.equals(double.class) ||
-                    argType.equals(float.class) || argType.equals(short.class) ||
-                    argType.equals(byte.class)
-                    ) {
+
+            if (argType.equals(int.class) || argType.equals(long.class)
+                    || argType.equals(double.class) || argType.equals(float.class)
+                    || argType.equals(short.class) || argType.equals(byte.class)) {
+
                 return "0";
             }
+
             if (argType.equals(boolean.class)) {
                 return "false";
             }
@@ -204,7 +212,7 @@ public final class MethodArgument {
         String      paramName   = paramStruct.paramName;
         Request     request     = paramStruct.request;
 
-        String cookieName = StringKit.isBlank(cookieParam.value()) ? paramName : cookieParam.value();
+        String cookieName = StringKit.isEmpty(cookieParam.value()) ? paramName : cookieParam.value();
         String val        = request.cookie(cookieName);
         if (null == val) {
             val = cookieParam.defaultValue();
@@ -218,7 +226,7 @@ public final class MethodArgument {
         String      paramName   = paramStruct.paramName;
         Request     request     = paramStruct.request;
 
-        String key = StringKit.isBlank(headerParam.value()) ? paramName : headerParam.value();
+        String key = StringKit.isEmpty(headerParam.value()) ? paramName : headerParam.value();
         String val = request.header(key);
         if (StringKit.isBlank(val)) {
             val = headerParam.defaultValue();
@@ -232,7 +240,7 @@ public final class MethodArgument {
         String    paramName = paramStruct.paramName;
         Request   request   = paramStruct.request;
 
-        String name = StringKit.isBlank(pathParam.name()) ? paramName : pathParam.name();
+        String name = StringKit.isEmpty(pathParam.name()) ? paramName : pathParam.name();
         String val  = request.pathString(name);
         if (StringKit.isBlank(val)) {
             val = pathParam.defaultValue();

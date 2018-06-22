@@ -60,7 +60,7 @@ public final class AsmKit {
      * @param m method
      * @return return method param names
      */
-    public static String[] getMethodParamNames(final Method m) throws IOException {
+    public static String[] getMethodParamNames(final Method m) {
         if (METHOD_NAMES_POOL.containsKey(m)) return METHOD_NAMES_POOL.get(m);
 
         final String[] paramNames = new String[m.getParameterTypes().length];

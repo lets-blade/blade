@@ -4,7 +4,7 @@ import com.blade.kit.JsonKit;
 import com.blade.kit.StringKit;
 import com.blade.kit.WebKit;
 import com.blade.mvc.WebContext;
-import com.blade.mvc.handler.MethodArgument;
+import com.blade.mvc.handler.RouteActionArguments;
 import com.blade.mvc.multipart.FileItem;
 import com.blade.mvc.route.Route;
 import com.blade.server.netty.HttpConst;
@@ -442,7 +442,7 @@ public interface Request {
      * @param <T>
      */
     default <T> T bindWithForm(Class<T> modelClass) {
-        return MethodArgument.parseModel(modelClass, this, null);
+        return RouteActionArguments.parseModel(modelClass, this, null);
     }
 
     /**

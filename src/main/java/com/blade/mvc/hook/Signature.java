@@ -1,7 +1,6 @@
 package com.blade.mvc.hook;
 
 import com.blade.mvc.RouteContext;
-import com.blade.mvc.handler.MethodArgument;
 import com.blade.mvc.http.Request;
 import com.blade.mvc.http.Response;
 import com.blade.mvc.route.Route;
