@@ -46,6 +46,9 @@ public interface Const {
     List<String> PLUGIN_PACKAGE_NAME        = new ArrayList<>(Collections.singletonList("com.blade.plugin"));
     List<String> DEFAULT_STATICS            = new ArrayList<>(Arrays.asList("/favicon.ico", "/robots.txt", "/static/", "/upload/", "/webjars/"));
 
+    String PROP_NAME0 = "classpath:app.properties";
+    String PROP_NAME  = "classpath:application.properties";
+
     // Env key
     String ENV_KEY_DEV_MODE                  = "app.devMode";
     String ENV_KEY_APP_NAME                  = "app.name";
@@ -83,6 +86,11 @@ public interface Const {
     String TERMINAL_SERVER_ADDRESS = "--server.address=";
     String TERMINAL_SERVER_PORT    = "--server.port=";
     String TERMINAL_BLADE_ENV      = "--blade.env=";
+
+    // netty default config
+    int DEFAULT_SO_BACKLOG = 1024;
+    int DEFAULT_ACCEPT_THREAD_COUNT = 1;
+    int DEFAULT_IO_THREAD_COUNT = 0;
 
     /**
      * A request processing ends the elapsed time, in milliseconds.

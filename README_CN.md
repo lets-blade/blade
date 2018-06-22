@@ -365,7 +365,7 @@ Blade 内置了一些静态资源目录，只要将资源文件保存在 `classp
 Blade.of().addStatics("/mydir");
 ```
 
-当然你也可以在配置文件中指定 `app.properties` (位于classpath之下)
+当然你也可以在配置文件中指定 `application.properties` (位于classpath之下)
 
 ```bash
 mvc.statics=/mydir
@@ -600,7 +600,7 @@ public static void main(String[] args) {
 }
 ```
 
-在 `app.properties` 配置文件中指定用户名和密码。
+在 `application.properties` 配置文件中指定用户名和密码。
 
 ```bash
 http.auth.username=admin
@@ -617,7 +617,7 @@ http.auth.password=123456
 Blade.of().listen(9001).start();
 ```
 
-**配置文件 `app.properties`**
+**配置文件 `application.properties`**
 
 ```bash
 server.port=9001
@@ -631,7 +631,7 @@ java -jar blade-app.jar --server.port=9001
 
 ## 配置SSL
 
-**配置文件 `app.properties`**
+**配置文件 `application.properties`**
 
 ```bash
 server.ssl.enable=true

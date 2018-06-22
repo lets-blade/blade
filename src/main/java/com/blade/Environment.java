@@ -45,6 +45,8 @@ import static java.util.Optional.ofNullable;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Environment {
 
+    private static final Environment EMPTY_ENV = new Environment();
+
     /**
      * Classpath prefix
      */
@@ -71,7 +73,7 @@ public class Environment {
      * @return return Environment instance
      */
     public static Environment empty() {
-        return new Environment();
+        return EMPTY_ENV;
     }
 
     /**
@@ -167,7 +169,7 @@ public class Environment {
         }
         InputStream is = getDefault().getResourceAsStream(path);
         if (null == is) {
-            return new Environment();
+            return EMPTY_ENV;
         }
         return of(is);
     }
@@ -388,6 +390,10 @@ public class Environment {
 
     public int size() {
         return props.size();
+    }
+
+    public boolean isEmpty() {
+        return props.isEmpty();
     }
 
 }

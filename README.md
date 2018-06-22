@@ -365,7 +365,7 @@ If you want to customize the static resource URL.
 Blade.of().addStatics("/mydir");
 ```
 
-Of course you can also specify in the configuration file. `app.properties` (location in classpath)
+Of course you can also specify in the configuration file. `application.properties` (location in classpath)
 
 ```bash
 mvc.statics=/mydir
@@ -600,7 +600,7 @@ public static void main(String[] args) {
 }
 ```
 
-Specify the user name and password in the `app.properties` configuration file.
+Specify the user name and password in the `application.properties` configuration file.
 
 ```bash
 http.auth.username=admin
@@ -617,7 +617,7 @@ There are three ways to modify the port, hard coding, configuration files, start
 Blade.of().listen(9001).start();
 ```
 
-**Configuration For `app.properties`**
+**Configuration For `application.properties`**
 
 ```bash
 server.port=9001
@@ -631,7 +631,7 @@ java -jar blade-app.jar --server.port=9001
 
 ## Configuration SSL
 
-**Configuration For `app.properties`**
+**Configuration For `application.properties`**
 
 ```bash
 server.ssl.enable=true

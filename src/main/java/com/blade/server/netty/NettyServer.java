@@ -26,7 +26,10 @@ import com.blade.ioc.annotation.Value;
 import com.blade.ioc.bean.BeanDefine;
 import com.blade.ioc.bean.ClassInfo;
 import com.blade.ioc.bean.OrderComparator;
-import com.blade.kit.*;
+import com.blade.kit.BladeKit;
+import com.blade.kit.NamedThreadFactory;
+import com.blade.kit.ReflectKit;
+import com.blade.kit.StringKit;
 import com.blade.mvc.Const;
 import com.blade.mvc.WebContext;
 import com.blade.mvc.annotation.Path;
@@ -48,7 +51,6 @@ import com.blade.task.cron.CronExpression;
 import com.blade.task.cron.CronThreadPoolExecutor;
 import com.blade.watcher.EnvironmentWatcher;
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
@@ -179,15 +181,15 @@ public class NettyServer implements Server {
         }
 
         // Configure the server.
-        int backlog = environment.getInt(ENV_KEY_NETTY_SO_BACKLOG, 1024);
+        int backlog = environment.getInt(ENV_KEY_NETTY_SO_BACKLOG, DEFAULT_SO_BACKLOG);
 
         ServerBootstrap b = new ServerBootstrap();
         b.option(ChannelOption.SO_BACKLOG, backlog);
         b.option(ChannelOption.SO_REUSEADDR, true);
         b.childOption(ChannelOption.SO_REUSEADDR, true);
 
-        int acceptThreadCount = environment.getInt(ENC_KEY_NETTY_ACCEPT_THREAD_COUNT, 1);
-        int ioThreadCount     = environment.getInt(ENV_KEY_NETTY_IO_THREAD_COUNT, 0);
+        int acceptThreadCount = environment.getInt(ENC_KEY_NETTY_ACCEPT_THREAD_COUNT, DEFAULT_ACCEPT_THREAD_COUNT);
+        int ioThreadCount     = environment.getInt(ENV_KEY_NETTY_IO_THREAD_COUNT, DEFAULT_IO_THREAD_COUNT);
 
         // enable epoll
         if (BladeKit.epollIsAvailable()) {

@@ -899,20 +899,28 @@ public class Blade {
         return webSocketHandler;
     }
 
+    /**
+     * Load application environment configuration
+     *
+     * @param args command line parameters
+     */
     private void loadConfig(String[] args) {
 
-        String bootConf = environment().get(ENV_KEY_BOOT_CONF, "classpath:app.properties");
+        String bootConf = environment().get(ENV_KEY_BOOT_CONF, PROP_NAME);
 
         Environment bootEnv = Environment.of(bootConf);
+        if (null == bootEnv || bootEnv.isEmpty()) {
+            bootEnv = Environment.of(PROP_NAME0);
+        }
 
-        if (bootEnv != null) {
+        if (!Objects.requireNonNull(bootEnv).isEmpty()) {
             bootEnv.props().forEach((key, value) -> environment.set(key.toString(), value));
         }
 
         if (null != args) {
             Optional<String> envArg = Stream.of(args).filter(s -> s.startsWith(Const.TERMINAL_BLADE_ENV)).findFirst();
             envArg.ifPresent(arg -> {
-                String envName = "app-" + arg.split("=")[1] + ".properties";
+                String envName = "application-" + arg.split("=")[1] + ".properties";
                 log.info("current environment file is: {}", envName);
                 Environment customEnv = Environment.of(envName);
                 if (customEnv != null) {
@@ -921,20 +929,21 @@ public class Blade {
             });
         }
 
-        register(environment);
+        this.register(environment);
 
         // load terminal param
-        if (!BladeKit.isEmpty(args)) {
-            for (String arg : args) {
-                if (arg.startsWith(TERMINAL_SERVER_ADDRESS)) {
-                    int    pos     = arg.indexOf(TERMINAL_SERVER_ADDRESS) + TERMINAL_SERVER_ADDRESS.length();
-                    String address = arg.substring(pos);
-                    environment.set(ENV_KEY_SERVER_ADDRESS, address);
-                } else if (arg.startsWith(TERMINAL_SERVER_PORT)) {
-                    int    pos  = arg.indexOf(TERMINAL_SERVER_PORT) + TERMINAL_SERVER_PORT.length();
-                    String port = arg.substring(pos);
-                    environment.set(ENV_KEY_SERVER_PORT, port);
-                }
+        if (BladeKit.isEmpty(args)) {
+            return;
+        }
+        for (String arg : args) {
+            if (arg.startsWith(TERMINAL_SERVER_ADDRESS)) {
+                int    pos     = arg.indexOf(TERMINAL_SERVER_ADDRESS) + TERMINAL_SERVER_ADDRESS.length();
+                String address = arg.substring(pos);
+                environment.set(ENV_KEY_SERVER_ADDRESS, address);
+            } else if (arg.startsWith(TERMINAL_SERVER_PORT)) {
+                int    pos  = arg.indexOf(TERMINAL_SERVER_PORT) + TERMINAL_SERVER_PORT.length();
+                String port = arg.substring(pos);
+                environment.set(ENV_KEY_SERVER_PORT, port);
             }
         }
     }
