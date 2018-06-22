@@ -1,5 +1,6 @@
 package com.blade.mvc.hook;
 
+import com.blade.mvc.RouteContext;
 import com.blade.mvc.handler.MethodArgument;
 import com.blade.mvc.http.Request;
 import com.blade.mvc.http.Response;
@@ -29,6 +30,8 @@ public class Signature {
     private Response response;
     private Object[] parameters;
 
+    private RouteContext routeContext;
+
     public Request request() {
         return request;
     }
@@ -37,6 +40,11 @@ public class Signature {
         return response;
     }
 
+    public RouteContext routeContext() {
+        return new RouteContext(request, response);
+    }
+
+    @Deprecated
     public boolean next() {
         return true;
     }

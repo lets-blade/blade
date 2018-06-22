@@ -25,8 +25,8 @@ public class RouteMatcherTest {
 
     @Test
     public void testRouteMatcher() throws Exception {
-        routeMatcher.addRoute("/", (req, res) -> res.text("Ok"), HttpMethod.GET);
-        routeMatcher.addRoute("/*", (req, res) -> res.text("Ok"), HttpMethod.BEFORE);
+        routeMatcher.addRoute("/", ctx -> ctx.text("Ok"), HttpMethod.GET);
+        routeMatcher.addRoute("/*", ctx -> ctx.text("Ok"), HttpMethod.BEFORE);
 
         routeMatcher.register();
 
@@ -38,12 +38,13 @@ public class RouteMatcherTest {
 
 
     }
+
     @Test
     public void testPathRegex() {
         Pattern PATH_VARIABLE_PATTERN = Pattern.compile("/([^:/]*):([^/]+)");
 //        Matcher matcher = PATH_REGEX_PATTERN.matcher("/$:api[1-3]/");
-        Matcher matcher= PATH_VARIABLE_PATTERN.matcher("/user/api:api[1-2]/:name/:path");
-        boolean find = false;
+        Matcher matcher = PATH_VARIABLE_PATTERN.matcher("/user/api:api[1-2]/:name/:path");
+        boolean find    = false;
         while (matcher != null && matcher.find()) {
             if (!find) find = true;
             System.out.println(matcher.group(1).length());
@@ -51,12 +52,11 @@ public class RouteMatcherTest {
         String s = matcher.replaceAll("{sss}");
         System.out.println(s);
     }
+
     @Test
     public void testAddRoute() throws Exception {
         routeMatcher.addRoute(Route.builder().httpMethod(HttpMethod.POST).targetType(RouteHandler.class)
-                .target((RouteHandler) (request, response) -> {
-                    response.text("post request");
-                })
+                .target((RouteHandler) (ctx) -> ctx.text("post request"))
                 .path("/save")
                 .build());
 

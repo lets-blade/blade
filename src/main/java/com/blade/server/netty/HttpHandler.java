@@ -8,6 +8,7 @@ import com.blade.kit.BladeKit;
 import com.blade.kit.PathKit;
 import com.blade.kit.ReflectKit;
 import com.blade.mvc.Const;
+import com.blade.mvc.RouteContext;
 import com.blade.mvc.WebContext;
 import com.blade.mvc.annotation.JSON;
 import com.blade.mvc.annotation.Path;
@@ -279,7 +280,7 @@ public class HttpHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
         }
         if (signature.getRoute().getTargetType() == RouteHandler.class) {
             RouteHandler routeHandler = (RouteHandler) target;
-            routeHandler.handle(signature.request(), signature.response());
+            routeHandler.handle(signature.routeContext());
         } else {
             Method   actionMethod = signature.getAction();
             Class<?> returnType   = actionMethod.getReturnType();
@@ -373,7 +374,7 @@ public class HttpHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
         }
         for (Route route : middleware) {
             WebHook webHook = (WebHook) route.getTarget();
-            boolean flag    = webHook.before(signature);
+            boolean flag    = webHook.before(signature.routeContext());
             if (!flag) return false;
         }
         return true;
@@ -390,7 +391,7 @@ public class HttpHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
         for (Route hook : hooks) {
             if (hook.getTargetType() == RouteHandler.class) {
                 RouteHandler routeHandler = (RouteHandler) hook.getTarget();
-                routeHandler.handle(signature.request(), signature.response());
+                routeHandler.handle(signature.routeContext());
             } else {
                 boolean flag = this.invokeHook(signature, hook);
                 if (!flag) return false;

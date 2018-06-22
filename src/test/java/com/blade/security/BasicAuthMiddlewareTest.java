@@ -2,6 +2,7 @@ package com.blade.security;
 
 import com.blade.BaseTestCase;
 import com.blade.Blade;
+import com.blade.mvc.RouteContext;
 import com.blade.mvc.WebContext;
 import com.blade.mvc.handler.RouteHandler;
 import com.blade.mvc.hook.Signature;
@@ -30,9 +31,10 @@ public class BasicAuthMiddlewareTest extends BaseTestCase {
 
     class AuthHandler implements RouteHandler {
         @Override
-        public void handle(Request request, Response response) {
-            response.text("登录成功");
+        public void handle(RouteContext context) {
+            context.text("登录成功");
         }
+
     }
 
     @Test
@@ -62,7 +64,7 @@ public class BasicAuthMiddlewareTest extends BaseTestCase {
         WebContext.set(new WebContext(request, response));
 
         BasicAuthMiddleware basicAuthMiddleware = new BasicAuthMiddleware();
-        boolean             flag                = basicAuthMiddleware.before(signature);
+        boolean             flag                = basicAuthMiddleware.before(signature.routeContext());
         assertEquals(false, flag);
     }
 
@@ -92,7 +94,7 @@ public class BasicAuthMiddlewareTest extends BaseTestCase {
         WebContext.set(new WebContext(request, response));
 
         BasicAuthMiddleware basicAuthMiddleware = new BasicAuthMiddleware();
-        boolean             flag                = basicAuthMiddleware.before(signature);
+        boolean             flag                = basicAuthMiddleware.before(signature.routeContext());
         assertEquals(false, flag);
     }
 

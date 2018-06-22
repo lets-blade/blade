@@ -28,11 +28,7 @@ import com.blade.kit.StringKit;
 import com.blade.kit.reload.FileChangeDetector;
 import com.blade.mvc.Const;
 import com.blade.mvc.SessionManager;
-import com.blade.mvc.annotation.DeleteRoute;
-import com.blade.mvc.handler.DefaultExceptionHandler;
-import com.blade.mvc.handler.ExceptionHandler;
-import com.blade.mvc.handler.RouteHandler;
-import com.blade.mvc.handler.WebSocketHandler;
+import com.blade.mvc.handler.*;
 import com.blade.mvc.hook.WebHook;
 import com.blade.mvc.http.HttpMethod;
 import com.blade.mvc.http.HttpSession;
@@ -192,7 +188,7 @@ public class Blade {
      * Give your blade instance, from then on will get the energy
      *
      * @return return blade instance
-     * @see {Blade.of}
+     * {@link #of }
      */
     @Deprecated
     public static Blade me() {
@@ -448,7 +444,7 @@ public class Blade {
      * @return blade
      */
     public Blade enableCors(boolean enableCors) {
-        this.environment(ENV_KEY_CORS_ENABLE, enableCors);
+        this.environment.set(ENV_KEY_CORS_ENABLE, enableCors);
         return this;
     }
 
@@ -492,40 +488,70 @@ public class Blade {
      * @return blade
      */
     public Blade bootConf(@NonNull String bootConf) {
-        this.environment(ENV_KEY_BOOT_CONF, bootConf);
+        this.env(ENV_KEY_BOOT_CONF, bootConf);
         return this;
     }
 
     /**
      * Set the environment variable for global use here
+     * <p>
+     * {@link #env(String, String)}
      *
      * @param key   environment key
      * @param value environment value
      * @return blade
      */
+    @Deprecated
     public Blade environment(@NonNull String key, @NonNull Object value) {
         environment.set(key, value);
         return this;
     }
 
+    /**
+     * Return the application's environment configuration information.
+     *
+     * @return Environment
+     */
     public Environment environment() {
         return environment;
     }
 
+    @Deprecated
     public Blade environment(Environment environment) {
         this.environment = environment;
         return this;
     }
 
     /**
+     * Get application environment information.
+     *
+     * @param key environment key
+     * @return environment optional value
+     */
+    public Optional<String> env(String key) {
+        return this.environment.get(key);
+    }
+
+    /**
+     * Get application environment information.
+     *
+     * @param key          environment key
+     * @param defaultValue default value, if value is null
+     * @return environment optional value
+     */
+    public String env(String key, String defaultValue) {
+        return this.environment.get(key, defaultValue);
+    }
+
+    /**
      * Set to start the web server to monitor port, the default is 9000
      *
-     * @param port web server port
+     * @param port web server port, default is 9000
      * @return blade
      */
     public Blade listen(int port) {
         Assert.greaterThan(port, 0, "server port not is negative number.");
-        this.environment(ENV_KEY_SERVER_PORT, port);
+        this.environment.set(ENV_KEY_SERVER_PORT, port);
         return this;
     }
 
@@ -539,8 +565,8 @@ public class Blade {
      */
     public Blade listen(@NonNull String address, int port) {
         Assert.greaterThan(port, 0, "server port not is negative number.");
-        this.environment(ENV_KEY_SERVER_ADDRESS, address);
-        this.environment(ENV_KEY_SERVER_PORT, port);
+        this.environment.set(ENV_KEY_SERVER_ADDRESS, address);
+        this.environment.set(ENV_KEY_SERVER_PORT, port);
         return this;
     }
 

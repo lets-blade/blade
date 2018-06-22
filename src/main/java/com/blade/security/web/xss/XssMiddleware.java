@@ -1,13 +1,12 @@
 package com.blade.security.web.xss;
 
 import com.blade.kit.StringKit;
-import com.blade.mvc.hook.Signature;
+import com.blade.mvc.RouteContext;
 import com.blade.mvc.hook.WebHook;
-import com.blade.mvc.http.Request;
+import com.blade.mvc.http.StringBody;
 import com.blade.security.web.filter.HTMLFilter;
 import lombok.NoArgsConstructor;
 
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -28,20 +27,19 @@ public class XssMiddleware implements WebHook {
     }
 
     @Override
-    public boolean before(Signature signature) {
-        Request request = signature.request();
-        if (xssOption.isExclusion(request.uri())) {
+    public boolean before(RouteContext context) {
+        if (xssOption.isExclusion(context.uri())) {
             return true;
         }
 
-        this.filterHeaders(request.headers());
-        this.filterParameters(request.parameters());
+        this.filterHeaders(context.headers());
+        this.filterParameters(context.parameters());
 
-        if (request.contentType().toLowerCase().contains("json")) {
-            String body = request.bodyToString();
+        if (context.contentType().toLowerCase().contains("json")) {
+            String body = context.bodyToString();
             if (StringKit.isNotEmpty(body)) {
                 String filterBody = stripXSS(body);
-                request.body().clear().writeBytes(filterBody.getBytes(StandardCharsets.UTF_8));
+                context.body(new StringBody(filterBody));
             }
         }
         return true;

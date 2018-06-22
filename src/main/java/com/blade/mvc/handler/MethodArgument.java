@@ -5,6 +5,7 @@ import com.blade.kit.AsmKit;
 import com.blade.kit.JsonKit;
 import com.blade.kit.ReflectKit;
 import com.blade.kit.StringKit;
+import com.blade.mvc.RouteContext;
 import com.blade.mvc.annotation.*;
 import com.blade.mvc.hook.Signature;
 import com.blade.mvc.http.HttpSession;
@@ -68,6 +69,8 @@ public final class MethodArgument {
         Type argType = parameter.getParameterizedType();
         if (argType == Signature.class) {
             return signature;
+        } else if (argType == RouteContext.class) {
+            return signature.routeContext();
         } else if (argType == Request.class) {
             return signature.request();
         } else if (argType == Response.class) {

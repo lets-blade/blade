@@ -63,7 +63,7 @@
 <dependency>
 	<groupId>com.bladejava</groupId>
 	<artifactId>blade-mvc</artifactId>
-	<version>2.0.8.RELEASE</version>
+	<version>2.0.9.ALPHA1</version>
 </dependency>
 ```
 
@@ -72,16 +72,14 @@
 或者  `Gradle`:
 
 ```sh
-compile 'com.bladejava:blade-mvc:2.0.8.RELEASE'
+compile 'com.bladejava:blade-mvc:2.0.9.ALPHA1'
 ```
 
 编写 `main` 函数写一个 `Hello World`：
 
 ```java
 public static void main(String[] args) {
-    Blade.me().get("/", (req, res) -> {
-        res.text("Hello Blade");
-    }).start();
+    Blade.of().get("/", ctx -> ctx.text("Hello Blade")).start();
 }
 ```
 
@@ -127,7 +125,7 @@ public static void main(String[] args) {
 ```java
 public static void main(String[] args) {
     // Create Blade，using GET、POST、PUT、DELETE
-    Blade.me()
+    Blade.of()
         .get("/user/21", getting)
         .post("/save", posting)
         .delete("/remove", deleting)
@@ -149,7 +147,7 @@ public class IndexController {
     
     @PostRoute("signin")
     @JSON
-    public RestResponse doSignin(Request request){
+    public RestResponse doSignin(RouteContext ctx){
         // do something
         return RestResponse.ok();
     }
@@ -163,14 +161,14 @@ public class IndexController {
 
 下面是个例子:
 
-**使用Request获取**
+**使用 RouteContext 获取**
 
 ```java
 public static void main(String[] args) {
-    Blade.me().get("/user", ((request, response) -> {
-         Optional<Integer> ageOptional = request.queryInt("age");
-         ageOptional.ifPresent(age -> System.out.println("age is:" + age));
-     })).start();
+    Blade.of().get("/user", ctx -> {
+        Integer age = ctx.queryInt("age");
+        System.out.println("age is:" + age);
+    }).start();
 }
 ```
 
@@ -193,27 +191,27 @@ curl -X GET http://127.0.0.1:9000/user?age=25
 curl -X POST http://127.0.0.1:9000/save -F username=jack -F age=16
 ```
 
-### Restful参数
+### Restful 参数
 
-**使用Request获取**
+**使用 RouteContext 获取**
 
 ```java
 public static void main(String[] args) {
-    Blade blade = Blade.me();
+    Blade blade = Blade.of();
     // Create a route: /user/:uid
-    blade.get("/user/:uid", (request, response) -> {
-		Integer uid = request.pathInt("uid");
-		response.text("uid : " + uid);
-	});
-	
+    blade.get("/user/:uid", ctx -> {
+        Integer uid = ctx.pathInt("uid");
+        ctx.text("uid : " + uid);
+    });
+
     // Create two parameters route
-    blade.get("/users/:uid/post/:pid", (request, response) -> {
-		Integer uid = request.pathInt("uid");
-		Integer pid = request.pathInt("pid");
-		String msg = "uid = " + uid + ", pid = " + pid;
-		response.text(msg);
-	});
-	
+    blade.get("/users/:uid/post/:pid", ctx -> {
+        Integer uid = ctx.pathInt("uid");
+        Integer pid = ctx.pathInt("pid");
+        String msg = "uid = " + uid + ", pid = " + pid;
+        ctx.text(msg);
+    });
+    
     // Start blade
     blade.start();
 }
@@ -234,12 +232,12 @@ public void userTopics(@PathParam String username, @PathParam Integer page){
 curl -X GET http://127.0.0.1:9000/users/biezhi/2
 ```
 
-### Body参数
+### Body 参数
 
 ```java
 public static void main(String[] args) {
-    Blade.me().post("/body", ((request, response) -> {
-      System.out.println("body string is:" + request.bodyToString())
+    Blade.of().post("/body", ctx -> {
+        System.out.println("body string is:" + ctx.bodyToString())
     }).start();
 }
 ```
@@ -292,7 +290,7 @@ public void saveUser(@Param(name="u") User user){
 curl -X POST http://127.0.0.1:9000/users -F u[username]=jack -F u[age]=16
 ```
 
-**Body参数转对象**
+**Body 参数转对象**
 
 ```java
 public void getUser(@BodyParam User user){
@@ -313,18 +311,18 @@ Environment environment = WebContext.blade().environment();
 String version = environment.get("app.version", "0.0.1");;
 ```
 
-## 获取Header
+## 获取 Header
 
-**使用Request获取**
+**使用 RouteContext 获取**
 
 ```java
 @GetRoute("header")
-public void getHeader(Request request){
-  System.out.println("Host => " + request.header("Host"));
-  // get useragent
-  System.out.println("UserAgent => " + request.userAgent());
-  // get client ip
-  System.out.println("Client Address => " + request.address());
+public void getHeader(RouteContext ctx){
+    System.out.println("Host => " + ctx.header("Host"));
+    // get useragent
+    System.out.println("UserAgent => " + ctx.userAgent());
+    // get client ip
+    System.out.println("Client Address => " + ctx.address());
 }
 ```
 
@@ -337,15 +335,14 @@ public void getHeader(@HeaderParam String Host){
 }
 ```
 
-## 获取Cookie
+## 获取 Cookie
 
-**使用Request获取**
+**使用 RouteContext 获取**
 
 ```java
 @GetRoute("cookie")
-public void getCookie(Request request){
-  System.out.println("UID => " + request.cookie("UID").get());
-  request.cookie("UID").ifPresent(System.out::println);
+public void getCookie(RouteContext ctx){
+    System.out.println("UID => " + ctx.cookie("UID"));
 }
 ```
 
@@ -365,7 +362,7 @@ Blade 内置了一些静态资源目录，只要将资源文件保存在 `classp
 如果要自定义静态资源URL，可以使用下面的代码
 
 ```java
-Blade.me().addStatics("/mydir");
+Blade.of().addStatics("/mydir");
 ```
 
 当然你也可以在配置文件中指定 `app.properties` (位于classpath之下)
@@ -413,13 +410,13 @@ public void login(Session session){
 
 ### 渲染JSON
 
-**使用Request获取**
+**使用 RouteContext 渲染**
 
 ```java
 @GetRoute("users/json")
-public void printJSON(Response response){
-  User user = new User("biezhi", 18);
-  response.json(user);
+public void printJSON(RouteContext ctx){
+    User user = new User("biezhi", 18);
+    ctx.json(user);
 }
 ```
 
@@ -439,8 +436,8 @@ public User printJSON(){
 
 ```java
 @GetRoute("text")
-public void printText(Response response){
-  response.text("I Love Blade!");
+public void printText(RouteContext ctx){
+    ctx.text("I Love Blade!");
 }
 ```
 
@@ -448,8 +445,8 @@ public void printText(Response response){
 
 ```java
 @GetRoute("html")
-public void printHtml(Response response){
-  response.html("<center><h1>I Love Blade!</h1></center>");
+public void printHtml(RouteContext ctx){
+    ctx.html("<center><h1>I Love Blade!</h1></center>");
 }
 ```
 
@@ -463,11 +460,10 @@ public void printHtml(Response response){
 
 ```java
 public static void main(String[] args) {
-    Blade.me().get("/hello", ((request, response) -> {
-                request.attribute("name", "biezhi");
-                response.render("hello.html");
-            }))
-            .start(Hello.class, args);
+    Blade.of().get("/hello", ctx -> {
+        ctx.attribute("name", "biezhi");
+        ctx.render("hello.html");
+    }).start(Hello.class, args);
 }
 ```
 
@@ -492,14 +488,14 @@ public static void main(String[] args) {
 
 **配置 Jetbrick 模板引擎**
 
-创建一个 `BeanProcessor` 配置文件
+实现一个 `BladeLoader` 加载初始化的操作
 
 ```java
 @Bean
-public class TemplateConfig implements BeanProcessor {
+public class TemplateConfig implements BladeLoader {
     
     @Override
-    public void processor(Blade blade) {
+    public void load(Blade blade) {
         blade.templateEngine(new JetbrickTemplateEngine());
     }
     
@@ -510,12 +506,11 @@ public class TemplateConfig implements BeanProcessor {
 
 ```java
 public static void main(String[] args) {
-    Blade.me().get("/hello", ((request, response) -> {
-                User user = new User("biezhi", 50);
-                request.attribute("user", user);
-                response.render("hello.html");
-            }))
-            .start(Hello.class, args);
+    Blade.of().get("/hello", ctx -> {
+        User user = new User("biezhi", 50);
+        ctx.attribute("user", user);
+        ctx.render("hello.html");
+    }).start(Hello.class, args);
 }
 ```
 
@@ -548,10 +543,8 @@ public static void main(String[] args) {
 
 ```java
 @GetRoute("redirect")
-public void redirectToGithub(Response response){
-  
-  response.redirect("https://github.com/biezhi");
-  
+public void redirectToGithub(RouteContext ctx){
+    ctx.redirect("https://github.com/biezhi");
 }
 ```
 
@@ -561,11 +554,9 @@ public void redirectToGithub(Response response){
 
 ```java
 @GetRoute("write-cookie")
-public void writeCookie(Response response){
-  
-  response.cookie("hello", "world");
-  response.cookie("UID", "22", 3600);
-  
+public void writeCookie(RouteContext ctx){
+    ctx.cookie("hello", "world");
+    ctx.cookie("UID", "22", 3600);
 }
 ```
 
@@ -578,7 +569,7 @@ public void writeCookie(Response response){
 ```java
 public static void main(String[] args) {
     // All requests are exported before execution before
-    Blade.me().before("/*", (request, response) -> {
+    Blade.of().before("/*", ctx -> {
         System.out.println("before...");
     }).start();
 }
@@ -605,7 +596,7 @@ Blade 内置了几个中间件，当你需要Basic认证时可以使用如下代
 
 ```java
 public static void main(String[] args) {
-  Blade.me().use(new BasicAuthMiddleware()).start();
+  Blade.of().use(new BasicAuthMiddleware()).start();
 }
 ```
 
@@ -623,7 +614,7 @@ http.auth.password=123456
 **硬编码**
 
 ```java
-Blade.me().listen(9001).start();
+Blade.of().listen(9001).start();
 ```
 
 **配置文件 `app.properties`**
@@ -659,10 +650,10 @@ public class GolbalExceptionHandler extends DefaultExceptionHandler {
     
     @Override
     public void handle(Exception e) {
-        if (e instanceof ValidateException) {
-            ValidateException validateException = (ValidateException) e;
-            String msg = validateException.getErrMsg();
-            WebContext.response().json(RestResponse.fail(msg));
+        if (e instanceof CustomException) {
+            CustomException customException = (CustomException) e;
+            String code = customException.getCode();
+            // do something
         } else {
             super.handle(e);
         }
@@ -679,10 +670,9 @@ public class GolbalExceptionHandler extends DefaultExceptionHandler {
 
 ## 联系我们
 
-- Findor:[https://findor.me/biezhi](https://findor.me/biezhi)
 - Twitter: [biezhi](https://twitter.com/biezhii)
 - Mail: biezhi.me#gmail.com
-- Blade交流群: [1013565](http://shang.qq.com/wpa/qunwpa?idkey=932642920a5c0ef5f1ae902723c4f168c58ea63f3cef1139e30d68145d3b5b2f)
+- Blade 交流群: [1013565](http://shang.qq.com/wpa/qunwpa?idkey=932642920a5c0ef5f1ae902723c4f168c58ea63f3cef1139e30d68145d3b5b2f)
 
 ## 贡献者们
 
@@ -690,7 +680,7 @@ public class GolbalExceptionHandler extends DefaultExceptionHandler {
 
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
 <!-- prettier-ignore -->
-| [<img src="https://avatars2.githubusercontent.com/u/3849072?s=460&v=4" width="100px;"/><br /><sub><b>王爵nice</b></sub>](https://findor.me/biezhi) | [<img src="https://avatars2.githubusercontent.com/u/9401233?s=460&v=4" width="100px;"/><br /><sub><b>ccqy66</b></sub>](https://github.com/ccqy66) | [<img src="https://avatars0.githubusercontent.com/u/9024855?s=460&v=4" width="100px;"/><br /><sub><b>王晓辉(Eddie)</b></sub>](https://github.com/eddie-wang) | [<img src="https://avatars2.githubusercontent.com/u/2503423?s=460&v=4" width="100px;"/><br /><sub><b>代码家</b></sub>](https://github.com/daimajia) | [<img src="https://avatars2.githubusercontent.com/u/9032795?s=460&v=4" width="100px;"/><br /><sub><b>David Dong</b></sub>](https://github.com/dongm2ez) | [<img src="https://avatars1.githubusercontent.com/u/10883521?s=460&v=4" width="100px;"/><br /><sub><b>José Vieira Neto</b></sub>](https://github.com/NetoDevel) | [<img src="https://avatars0.githubusercontent.com/u/59744?s=460&v=4" width="100px;"/><br /><sub><b>Schneeman</b></sub>](https://github.com/schneems) |
+| [<img src="https://avatars2.githubusercontent.com/u/3849072?s=460&v=4" width="100px;"/><br /><sub><b>王爵nice</b></sub>](https://twitter.com/biezhii) | [<img src="https://avatars2.githubusercontent.com/u/9401233?s=460&v=4" width="100px;"/><br /><sub><b>ccqy66</b></sub>](https://github.com/ccqy66) | [<img src="https://avatars0.githubusercontent.com/u/9024855?s=460&v=4" width="100px;"/><br /><sub><b>王晓辉(Eddie)</b></sub>](https://github.com/eddie-wang) | [<img src="https://avatars2.githubusercontent.com/u/2503423?s=460&v=4" width="100px;"/><br /><sub><b>代码家</b></sub>](https://github.com/daimajia) | [<img src="https://avatars2.githubusercontent.com/u/9032795?s=460&v=4" width="100px;"/><br /><sub><b>David Dong</b></sub>](https://github.com/dongm2ez) | [<img src="https://avatars1.githubusercontent.com/u/10883521?s=460&v=4" width="100px;"/><br /><sub><b>José Vieira Neto</b></sub>](https://github.com/NetoDevel) | [<img src="https://avatars0.githubusercontent.com/u/59744?s=460&v=4" width="100px;"/><br /><sub><b>Schneeman</b></sub>](https://github.com/schneems) |
 | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | [<img src="https://avatars1.githubusercontent.com/u/497803?s=460&v=4" width="100px;"/><br /><sub><b>Mohd Farid</b></sub>](https://github.com/mfarid) | [<img src="https://avatars3.githubusercontent.com/u/1326893?s=460&v=4" width="100px;"/><br /><sub><b>sumory</b></sub>](https://github.com/sumory) | [<img src="https://avatars3.githubusercontent.com/u/463602?s=460&v=4" width="100px;"/><br /><sub><b>Uday K</b></sub>](https://github.com/udaykadaboina) | [<img src="https://avatars0.githubusercontent.com/u/11169857?s=460&v=4" width="100px;"/><br /><sub><b>Antony Kwok</b></sub>](https://github.com/Awakens) | &nbsp; | &nbsp; | &nbsp; |
 <!-- ALL-CONTRIBUTORS-LIST:END -->

@@ -24,7 +24,9 @@ import com.blade.Blade;
  *
  * @author biezhi
  * @date 2017/9/18
+ * @see com.blade.loader.BladeLoader
  */
+@Deprecated
 @FunctionalInterface
 public interface BeanProcessor {
 
