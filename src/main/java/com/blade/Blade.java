@@ -223,9 +223,37 @@ public class Blade {
      * @param path    your route path
      * @param handler route implement
      * @return return blade instance
+     * @see #get(String, RouteHandler)
+     */
+    @Deprecated
+    public Blade get(@NonNull String path, @NonNull RouteHandler0 handler) {
+        routeMatcher.addRoute(path, handler, HttpMethod.GET);
+        return this;
+    }
+
+    /**
+     * Add a get route to routes
+     *
+     * @param path    your route path
+     * @param handler route implement
+     * @return return blade instance
      */
     public Blade get(@NonNull String path, @NonNull RouteHandler handler) {
         routeMatcher.addRoute(path, handler, HttpMethod.GET);
+        return this;
+    }
+
+    /**
+     * Add a post route to routes
+     *
+     * @param path    your route path
+     * @param handler route implement
+     * @return return blade instance
+     * @see #post(String, RouteHandler)
+     */
+    @Deprecated
+    public Blade post(@NonNull String path, @NonNull RouteHandler0 handler) {
+        routeMatcher.addRoute(path, handler, HttpMethod.POST);
         return this;
     }
 
@@ -247,9 +275,37 @@ public class Blade {
      * @param path    your route path
      * @param handler route implement
      * @return return blade instance
+     * @see #put(String, RouteHandler)
+     */
+    @Deprecated
+    public Blade put(@NonNull String path, @NonNull RouteHandler0 handler) {
+        routeMatcher.addRoute(path, handler, HttpMethod.PUT);
+        return this;
+    }
+
+    /**
+     * Add a put route to routes
+     *
+     * @param path    your route path
+     * @param handler route implement
+     * @return return blade instance
      */
     public Blade put(@NonNull String path, @NonNull RouteHandler handler) {
         routeMatcher.addRoute(path, handler, HttpMethod.PUT);
+        return this;
+    }
+
+    /**
+     * Add a delete route to routes
+     *
+     * @param path    your route path
+     * @param handler route implement
+     * @return return blade instance
+     * @see #delete(String, RouteHandler)
+     */
+    @Deprecated
+    public Blade delete(@NonNull String path, @NonNull RouteHandler0 handler) {
+        routeMatcher.addRoute(path, handler, HttpMethod.DELETE);
         return this;
     }
 
@@ -271,9 +327,37 @@ public class Blade {
      * @param path    your route path
      * @param handler route implement
      * @return return blade instance
+     * @see #before(String, RouteHandler)
+     */
+    @Deprecated
+    public Blade before(@NonNull String path, @NonNull RouteHandler0 handler) {
+        routeMatcher.addRoute(path, handler, HttpMethod.BEFORE);
+        return this;
+    }
+
+    /**
+     * Add a before route to routes, the before route will be executed before matching route
+     *
+     * @param path    your route path
+     * @param handler route implement
+     * @return return blade instance
      */
     public Blade before(@NonNull String path, @NonNull RouteHandler handler) {
         routeMatcher.addRoute(path, handler, HttpMethod.BEFORE);
+        return this;
+    }
+
+    /**
+     * Add a after route to routes, the before route will be executed after matching route
+     *
+     * @param path    your route path
+     * @param handler route implement
+     * @return return blade instance
+     * @see #after(String, RouteHandler)
+     */
+    @Deprecated
+    public Blade after(@NonNull String path, @NonNull RouteHandler0 handler) {
+        routeMatcher.addRoute(path, handler, HttpMethod.AFTER);
         return this;
     }
 

@@ -14,6 +14,7 @@ import com.blade.mvc.annotation.JSON;
 import com.blade.mvc.annotation.Path;
 import com.blade.mvc.handler.ExceptionHandler;
 import com.blade.mvc.handler.RouteHandler;
+import com.blade.mvc.handler.RouteHandler0;
 import com.blade.mvc.hook.WebHook;
 import com.blade.mvc.http.*;
 import com.blade.mvc.http.HttpRequest;
@@ -33,6 +34,7 @@ import java.io.InputStream;
 import java.io.StringWriter;
 import java.lang.reflect.Method;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.*;
 
@@ -253,7 +255,7 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
 
         FullHttpResponse response = new DefaultFullHttpResponse(
                 HTTP_1_1, HttpResponseStatus.valueOf(status),
-                body.isEmpty() ? Unpooled.buffer(0) : Unpooled.wrappedBuffer(body.getBytes(Charset.forName("UTF-8")))); // TODO charset
+                body.isEmpty() ? Unpooled.buffer(0) : Unpooled.wrappedBuffer(body.getBytes(StandardCharsets.UTF_8)));
 
         response.headers().set(CONTENT_LENGTH, response.content().readableBytes());
         headers.forEach((key, value) -> response.headers().set(key, value));
@@ -272,9 +274,12 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
             target = WebContext.blade().getBean(clazz);
             context.route().setTarget(target);
         }
-        if (context.route().getTargetType() == RouteHandler.class) {
+        if (context.targetType() == RouteHandler.class) {
             RouteHandler routeHandler = (RouteHandler) target;
             routeHandler.handle(context);
+        } else if (context.targetType() == RouteHandler0.class) {
+            RouteHandler0 routeHandler = (RouteHandler0) target;
+            routeHandler.handle(context.request(), context.response());
         } else {
             Method   actionMethod = context.routeAction();
             Class<?> returnType   = actionMethod.getReturnType();
@@ -384,6 +389,9 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
             if (hook.getTargetType() == RouteHandler.class) {
                 RouteHandler routeHandler = (RouteHandler) hook.getTarget();
                 routeHandler.handle(context);
+            } else if (hook.getTargetType() == RouteHandler0.class) {
+                RouteHandler0 routeHandler = (RouteHandler0) hook.getTarget();
+                routeHandler.handle(context.request(), context.response());
             } else {
                 boolean flag = this.invokeHook(context, hook);
                 if (!flag) return false;

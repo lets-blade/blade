@@ -1,10 +1,12 @@
 package com.blade.mvc;
 
 import com.blade.mvc.handler.MethodArgument;
-import com.blade.mvc.http.*;
+import com.blade.mvc.http.Body;
+import com.blade.mvc.http.Request;
+import com.blade.mvc.http.Response;
+import com.blade.mvc.http.Session;
 import com.blade.mvc.route.Route;
 import com.blade.mvc.ui.ModelAndView;
-import lombok.Data;
 
 import java.lang.reflect.Method;
 import java.util.List;
@@ -46,6 +48,10 @@ public class RouteContext {
 
     public Session session() {
         return this.request.session();
+    }
+
+    public boolean isIE() {
+        return this.request.isIE();
     }
 
     public String header(String headerName) {
@@ -198,6 +204,16 @@ public class RouteContext {
         this.response.redirect(url);
     }
 
+    public void initRoute(Route route) throws Exception {
+        this.request.initPathParams(route);
+        this.route = route;
+        Method action = route.getAction();
+        if (null != action &&
+                !action.getDeclaringClass().getName().contains(LAMBDA)) {
+            this.routeActionParameters = MethodArgument.getArgs(this);
+        }
+    }
+
     public boolean next() {
         return true;
     }
@@ -214,6 +230,10 @@ public class RouteContext {
         return this.route;
     }
 
+    public Class<?> targetType() {
+        return this.route.getTargetType();
+    }
+
     public Object routeTarget() {
         return this.route.getTarget();
     }
@@ -222,21 +242,8 @@ public class RouteContext {
         return this.route.getAction();
     }
 
-    public boolean isIE() {
-        return this.request.isIE();
+    public Object[] routeParameters() {
+        return this.routeActionParameters;
     }
 
-    public Class[] routeParameters() {
-        return null;
-    }
-
-    public void initRoute(Route route) throws Exception {
-        this.request.initPathParams(route);
-        this.route = route;
-        Method action = route.getAction();
-        if (null != action &&
-                !action.getDeclaringClass().getName().contains(LAMBDA)) {
-            this.routeActionParameters = MethodArgument.getArgs(this);
-        }
-    }
 }
