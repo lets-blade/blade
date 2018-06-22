@@ -218,7 +218,7 @@ public interface Response {
      *
      * @param body
      */
-    void body(Body body);
+    Response body(Body body);
 
     /**
      * download some file to client

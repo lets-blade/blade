@@ -20,6 +20,7 @@ import java.lang.reflect.Method;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
+@Deprecated
 public class Signature {
 
     private static final String LAMBDA = "$$Lambda$";
@@ -44,7 +45,6 @@ public class Signature {
         return new RouteContext(request, response);
     }
 
-    @Deprecated
     public boolean next() {
         return true;
     }
@@ -54,7 +54,7 @@ public class Signature {
         this.action = route.getAction();
         if (null != this.action &&
                 !this.action.getDeclaringClass().getName().contains(LAMBDA)) {
-            this.parameters = MethodArgument.getArgs(this);
+//            this.parameters = MethodArgument.getArgs(this);
         }
     }
 

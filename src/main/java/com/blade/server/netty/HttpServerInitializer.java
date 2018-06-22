@@ -29,7 +29,7 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class HttpServerInitializer extends ChannelInitializer<SocketChannel> {
 
-    private final static HttpHandler HTTP_HANDLER = new HttpHandler();
+    private final HttpServerHandler HTTP_SERVER_HANDLER = new HttpServerHandler();
 
     private final SslContext sslCtx;
     private final Blade      blade;
@@ -76,7 +76,7 @@ public class HttpServerInitializer extends ChannelInitializer<SocketChannel> {
                 p.addLast(new WebSocketServerProtocolHandler(blade.webSocketPath(), null, true));
                 p.addLast(WEB_SOCKET_HANDLER);
             }
-            p.addLast(HTTP_HANDLER);
+            p.addLast(HTTP_SERVER_HANDLER);
         } catch (Exception e) {
             log.error("Add channel pipeline error", e);
         }

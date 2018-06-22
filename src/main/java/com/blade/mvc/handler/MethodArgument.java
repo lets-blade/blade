@@ -30,9 +30,9 @@ import java.util.stream.Collectors;
  */
 public final class MethodArgument {
 
-    public static Object[] getArgs(Signature signature) throws Exception {
-        Method  actionMethod = signature.getAction();
-        Request request      = signature.request();
+    public static Object[] getArgs(RouteContext context) throws Exception {
+        Method  actionMethod = context.routeAction();
+        Request request      = context.request();
         actionMethod.setAccessible(true);
 
         Parameter[] parameters     = actionMethod.getParameters();
@@ -51,7 +51,7 @@ public final class MethodArgument {
                 args[i] = request.query(paramName);
                 continue;
             }
-            args[i] = getCustomType(parameter, paramName, signature);
+            args[i] = getCustomType(parameter, paramName, context);
         }
         return args;
     }
@@ -65,35 +65,33 @@ public final class MethodArgument {
                 parameter.getAnnotation(MultipartParam.class) != null;
     }
 
-    private static Object getCustomType(Parameter parameter, String paramName, Signature signature) {
+    private static Object getCustomType(Parameter parameter, String paramName, RouteContext context) {
         Type argType = parameter.getParameterizedType();
-        if (argType == Signature.class) {
-            return signature;
-        } else if (argType == RouteContext.class) {
-            return signature.routeContext();
+        if (argType == RouteContext.class) {
+            return context;
         } else if (argType == Request.class) {
-            return signature.request();
+            return context.request();
         } else if (argType == Response.class) {
-            return signature.response();
+            return context.response();
         } else if (argType == Session.class || argType == HttpSession.class) {
-            return signature.request().session();
+            return context.request().session();
         } else if (argType == FileItem.class) {
-            return new ArrayList<>(signature.request().fileItems().values()).get(0);
+            return new ArrayList<>(context.request().fileItems().values()).get(0);
         } else if (argType == ModelAndView.class) {
             return new ModelAndView();
         } else if (argType == Map.class) {
-            return signature.request().parameters();
+            return context.request().parameters();
         } else if (argType == Optional.class) {
             ParameterizedType firstParam           = (ParameterizedType) parameter.getParameterizedType();
             Type              paramsOfFirstGeneric = firstParam.getActualTypeArguments()[0];
             Class<?>          modelType            = ReflectKit.form(paramsOfFirstGeneric.getTypeName());
-            return Optional.ofNullable(parseModel(modelType, signature.request(), null));
+            return Optional.ofNullable(parseModel(modelType, context.request(), null));
         } else if (ParameterizedType.class.isInstance(argType)) {
             String       name   = parameter.getName();
-            List<String> values = signature.request().parameters().get(name);
+            List<String> values = context.request().parameters().get(name);
             return getParameterizedTypeValues(values, argType);
         } else if (ReflectKit.isArray(argType)) {
-            List<String> values = signature.request().parameters().get(paramName);
+            List<String> values = context.request().parameters().get(paramName);
             if (null == values) {
                 return null;
             }
@@ -104,7 +102,7 @@ public final class MethodArgument {
             }
             return aObject;
         } else {
-            return parseModel(ReflectKit.typeToClass(argType), signature.request(), null);
+            return parseModel(ReflectKit.typeToClass(argType), context.request(), null);
         }
     }
 

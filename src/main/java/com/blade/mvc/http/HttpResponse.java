@@ -6,8 +6,6 @@ import com.blade.kit.StringKit;
 import com.blade.mvc.ui.ModelAndView;
 import com.blade.mvc.wrapper.OutputStreamWrapper;
 import com.blade.server.netty.HttpConst;
-import io.netty.handler.codec.http.DefaultHttpHeaders;
-import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.cookie.Cookie;
 import io.netty.handler.codec.http.cookie.DefaultCookie;
 import lombok.NonNull;
@@ -31,7 +29,7 @@ public class HttpResponse implements Response {
 
     private int    statusCode  = 200;
     private String contentType = HttpConst.CONTENT_TYPE_HTML;
-    private Body   body;
+    private Body   body        = new EmptyBody();
 
     @Override
     public int statusCode() {
@@ -171,7 +169,6 @@ public class HttpResponse implements Response {
     public void redirect(@NonNull String newUri) {
         headers.put(HttpConst.LOCATION.toString(), newUri);
         this.status(302);
-        this.body = EmptyBody.empty();
     }
 
     @Override
@@ -193,11 +190,6 @@ public class HttpResponse implements Response {
         }
     }
 
-    public HttpResponse(int code, String content) {
-        this.statusCode = code;
-        this.body(content);
-    }
-
     public HttpResponse() {
     }
 
@@ -207,7 +199,9 @@ public class HttpResponse implements Response {
     }
 
     @Override
-    public void body(Body body) {
+    public Response body(Body body) {
         this.body = body;
+        return this;
     }
+
 }

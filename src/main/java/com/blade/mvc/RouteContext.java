@@ -1,9 +1,12 @@
 package com.blade.mvc;
 
+import com.blade.mvc.handler.MethodArgument;
 import com.blade.mvc.http.*;
+import com.blade.mvc.route.Route;
 import com.blade.mvc.ui.ModelAndView;
 import lombok.Data;
 
+import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 
@@ -16,11 +19,17 @@ import java.util.Map;
  * @see Response
  * @since 2.0.9.ALPHA1
  */
-@Data
 public class RouteContext {
 
+    private Route    route;
     private Request  request;
     private Response response;
+    private Object[] routeActionParameters;
+
+    private static final String LAMBDA = "$$Lambda$";
+
+    public RouteContext() {
+    }
 
     public RouteContext(Request request, Response response) {
         this.request = request;
@@ -201,4 +210,33 @@ public class RouteContext {
         return this.request;
     }
 
+    public Route route() {
+        return this.route;
+    }
+
+    public Object routeTarget() {
+        return this.route.getTarget();
+    }
+
+    public Method routeAction() {
+        return this.route.getAction();
+    }
+
+    public boolean isIE() {
+        return this.request.isIE();
+    }
+
+    public Class[] routeParameters() {
+        return null;
+    }
+
+    public void initRoute(Route route) throws Exception {
+        this.request.initPathParams(route);
+        this.route = route;
+        Method action = route.getAction();
+        if (null != action &&
+                !action.getDeclaringClass().getName().contains(LAMBDA)) {
+            this.routeActionParameters = MethodArgument.getArgs(this);
+        }
+    }
 }
