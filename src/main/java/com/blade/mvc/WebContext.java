@@ -1,9 +1,12 @@
 package com.blade.mvc;
 
 import com.blade.Blade;
+import com.blade.Environment;
 import com.blade.mvc.http.Request;
 import com.blade.mvc.http.Response;
 import io.netty.util.concurrent.FastThreadLocal;
+
+import java.util.Optional;
 
 /**
  * Blade Web Context
@@ -126,6 +129,31 @@ public class WebContext {
     public static void clean() {
         fastThreadLocal.remove();
         blade = null;
+    }
+
+    public Environment environment() {
+        return blade().environment();
+    }
+
+    /**
+     * Get application environment information.
+     *
+     * @param key environment key
+     * @return environment optional value
+     */
+    public Optional<String> env(String key) {
+        return blade().env(key);
+    }
+
+    /**
+     * Get application environment information.
+     *
+     * @param key          environment key
+     * @param defaultValue default value, if value is null
+     * @return environment optional value
+     */
+    public String env(String key, String defaultValue) {
+        return blade().env(key, defaultValue);
     }
 
 }

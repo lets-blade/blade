@@ -257,6 +257,17 @@ public class Environment {
         return this;
     }
 
+    /**
+     * Properties to Environment
+     *
+     * @param environment environment instance
+     * @return return Environment instance
+     */
+    public Environment load(@NonNull Environment environment) {
+        this.props.putAll(environment.toMap());
+        return this;
+    }
+
     public Optional<String> get(String key) {
         if (null == key) return Optional.empty();
         return ofNullable(props.getProperty(key));

@@ -52,7 +52,8 @@ public class Route {
      */
     private Method action;
 
-    private int sort;
+    @Builder.Default
+    private int sort = Integer.MAX_VALUE;
 
     /**
      * Url path params

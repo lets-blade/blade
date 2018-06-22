@@ -39,7 +39,7 @@ public class BasicAuthMiddlewareTest extends BaseTestCase {
 
     @Test
     public void testAuthSuccess() throws Exception {
-        Signature signature   = new Signature();
+
         Request   mockRequest = mockHttpRequest("GET");
 
         WebContext.init(Blade.me(), "/");
@@ -54,26 +54,24 @@ public class BasicAuthMiddlewareTest extends BaseTestCase {
         Request  request  = new HttpRequest(mockRequest);
         Response response = mockHttpResponse(200);
 
-        signature.setResponse(response);
-        signature.setRequest(request);
-        signature.setRoute(Route.builder()
-                .action(AuthHandler.class.getMethod("handle", Request.class, Response.class))
+        RouteContext context = new RouteContext(request, response);
+        context.initRoute(Route.builder()
+                .action(AuthHandler.class.getMethod("handle", RouteContext.class))
                 .targetType(AuthHandler.class)
                 .target(new AuthHandler()).build());
 
         WebContext.set(new WebContext(request, response));
 
         BasicAuthMiddleware basicAuthMiddleware = new BasicAuthMiddleware();
-        boolean             flag                = basicAuthMiddleware.before(signature.routeContext());
+        boolean             flag                = basicAuthMiddleware.before(context);
         assertEquals(false, flag);
     }
 
     @Test
     public void testAuthFail() throws Exception {
-        Signature signature   = new Signature();
         Request   mockRequest = mockHttpRequest("GET");
 
-        WebContext.init(Blade.me(), "/");
+        WebContext.init(Blade.of(), "/");
 
         Map<String, String> headers = new HashMap<>();
         headers.put("Authorization", "Basic YmxhZGU6YmxhZGUyMg==");
@@ -84,17 +82,17 @@ public class BasicAuthMiddlewareTest extends BaseTestCase {
         Request  request  = new HttpRequest(mockRequest);
         Response response = mockHttpResponse(200);
 
-        signature.setResponse(response);
-        signature.setRequest(request);
-        signature.setRoute(Route.builder()
-                .action(AuthHandler.class.getMethod("handle", Request.class, Response.class))
+        RouteContext context = new RouteContext(request, response);
+
+        context.initRoute(Route.builder()
+                .action(AuthHandler.class.getMethod("handle", RouteContext.class))
                 .targetType(AuthHandler.class)
                 .target(new AuthHandler()).build());
 
         WebContext.set(new WebContext(request, response));
 
         BasicAuthMiddleware basicAuthMiddleware = new BasicAuthMiddleware();
-        boolean             flag                = basicAuthMiddleware.before(signature.routeContext());
+        boolean             flag                = basicAuthMiddleware.before(context);
         assertEquals(false, flag);
     }
 

@@ -187,7 +187,9 @@ public class EnvironmentTest {
 
         Assert.assertEquals(1, environment.size());
 
-        environment.addAll(Collections.singletonMap("aa", "bb"));
+        Map<String, String> map = Collections.singletonMap("aa", "bb");
+
+        environment.addAll(map);
         Assert.assertEquals(2, environment.size());
     }
 

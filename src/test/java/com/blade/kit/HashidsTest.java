@@ -8,6 +8,15 @@ import java.util.Arrays;
 public class HashidsTest {
 
     @Test
+    public void test_cons() {
+        Hashids hashids = new Hashids();
+        Assert.assertEquals("1.0.0", hashids.getVersion());
+
+        String salt = hashids.getSalt();
+        Assert.assertEquals("", salt);
+    }
+
+    @Test
     public void test_large_number() {
         final long    num_to_hash = 9007199254740992L;
         final Hashids a           = new Hashids("this is my salt");

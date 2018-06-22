@@ -2,6 +2,7 @@ package com.blade.mvc.route;
 
 import com.blade.ioc.annotation.Order;
 import com.blade.kit.*;
+import com.blade.mvc.RouteContext;
 import com.blade.mvc.handler.RouteHandler;
 import com.blade.mvc.handler.RouteHandler0;
 import com.blade.mvc.hook.Signature;
@@ -60,10 +61,9 @@ public class RouteMatcher {
 
     private Route addRoute(HttpMethod httpMethod, String path, RouteHandler handler, String methodName) throws NoSuchMethodException {
         Class<?> handleType = handler.getClass();
-        Method   method     = handleType.getMethod(methodName, Request.class, Response.class);
+        Method   method     = handleType.getMethod(methodName, RouteContext.class);
         return addRoute(httpMethod, path, handler, RouteHandler.class, method);
     }
-
 
     Route addRoute(Route route) {
         String     path           = route.getPath();

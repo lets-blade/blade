@@ -443,7 +443,7 @@ public class Blade {
      * @return blade
      */
     public Blade showFileList(boolean fileList) {
-        this.environment(ENV_KEY_STATIC_LIST, fileList);
+        this.environment.set(ENV_KEY_STATIC_LIST, fileList);
         return this;
     }
 
@@ -454,7 +454,7 @@ public class Blade {
      * @return blade
      */
     public Blade gzip(boolean gzipEnable) {
-        this.environment(ENV_KEY_GZIP_ENABLE, gzipEnable);
+        this.environment.set(ENV_KEY_GZIP_ENABLE, gzipEnable);
         return this;
     }
 
@@ -505,7 +505,7 @@ public class Blade {
      * @return blade
      */
     public Blade devMode(boolean devMode) {
-        this.environment(ENV_KEY_DEV_MODE, devMode);
+        this.environment.set(ENV_KEY_DEV_MODE, devMode);
         return this;
     }
 
@@ -566,13 +566,13 @@ public class Blade {
      * Set to start blade configuration file by default
      * Boot config properties file in classpath directory.
      * <p>
-     * Without setting will read the classpath -> app.properties
+     * Without setting will read the classpath -> application.properties
      *
      * @param bootConf boot config file name
      * @return blade
      */
     public Blade bootConf(@NonNull String bootConf) {
-        this.env(ENV_KEY_BOOT_CONF, bootConf);
+        this.environment.set(ENV_KEY_BOOT_CONF, bootConf);
         return this;
     }
 
@@ -877,7 +877,7 @@ public class Blade {
         try {
             latch.await();
         } catch (Exception e) {
-            log.error("await error", e);
+            log.error("Blade start await error", e);
             Thread.currentThread().interrupt();
         }
         return this;

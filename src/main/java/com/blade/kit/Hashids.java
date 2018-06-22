@@ -383,4 +383,8 @@ public class Hashids {
     public String getVersion() {
         return "1.0.0";
     }
+
+    public String getSalt() {
+        return salt;
+    }
 }
