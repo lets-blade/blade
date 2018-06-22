@@ -8,8 +8,12 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * Integration of Request and Response operations
+ *
  * @author biezhi
  * @date 2018/6/21
+ * @see Request
+ * @see Response
  * @since 2.0.9.ALPHA1
  */
 @Data
