@@ -1,6 +1,5 @@
 package com.blade.mvc;
 
-import com.blade.mvc.handler.RouteActionArguments;
 import com.blade.mvc.http.Body;
 import com.blade.mvc.http.Request;
 import com.blade.mvc.http.Response;
@@ -11,6 +10,8 @@ import com.blade.mvc.ui.ModelAndView;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
+
+import static com.blade.mvc.handler.RouteActionArguments.getRouteActionParameters;
 
 /**
  * Integration of Request and Response operations
@@ -28,7 +29,7 @@ public class RouteContext {
     private Response response;
     private Object[] routeActionParameters;
 
-    private static final String LAMBDA = "$$Lambda$";
+    private static final String LAMBDA_IDENTIFY = "$$Lambda$";
 
     public RouteContext() {
     }
@@ -204,13 +205,12 @@ public class RouteContext {
         this.response.redirect(url);
     }
 
-    public void initRoute(Route route) throws Exception {
+    public void initRoute(Route route) {
         this.request.initPathParams(route);
         this.route = route;
         Method action = route.getAction();
-        if (null != action &&
-                !action.getDeclaringClass().getName().contains(LAMBDA)) {
-            this.routeActionParameters = RouteActionArguments.getRouteActionParameters(this);
+        if (null != action && !action.getDeclaringClass().getName().contains(LAMBDA_IDENTIFY)) {
+            this.routeActionParameters = getRouteActionParameters(this);
         }
     }
 
