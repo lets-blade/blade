@@ -26,6 +26,7 @@ import com.blade.kit.Assert;
 import com.blade.kit.BladeKit;
 import com.blade.kit.StringKit;
 import com.blade.kit.reload.FileChangeDetector;
+import com.blade.loader.BladeLoader;
 import com.blade.mvc.Const;
 import com.blade.mvc.SessionManager;
 import com.blade.mvc.handler.*;
@@ -81,6 +82,11 @@ public class Blade {
      * BeanProcessor list, which stores all the actions that were performed before the project was started
      */
     private List<BeanProcessor> processors = new ArrayList<>();
+
+    /**
+     * Blade loader list, which stores all the actions that were performed before the project was started
+     */
+    private List<BladeLoader> loaders = new ArrayList<>();
 
     /**
      * All need to be scanned by the package, when you do not set the time will scan com.blade.plugin package
@@ -739,8 +745,13 @@ public class Blade {
      *
      * @return return processors
      */
+    @Deprecated
     public List<BeanProcessor> processors() {
         return processors;
+    }
+
+    public List<BladeLoader> loaders() {
+        return this.loaders;
     }
 
     /**

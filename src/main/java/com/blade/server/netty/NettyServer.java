@@ -30,6 +30,7 @@ import com.blade.kit.BladeKit;
 import com.blade.kit.NamedThreadFactory;
 import com.blade.kit.ReflectKit;
 import com.blade.kit.StringKit;
+import com.blade.loader.BladeLoader;
 import com.blade.mvc.Const;
 import com.blade.mvc.WebContext;
 import com.blade.mvc.annotation.Path;
@@ -93,6 +94,7 @@ public class NettyServer implements Server {
     private Channel             channel;
     private RouteBuilder        routeBuilder;
     private List<BeanProcessor> processors;
+    private List<BladeLoader>   loaders;
     private List<TaskStruct>    taskStruts = new ArrayList<>();
     private int                 padSize    = 26;
 
@@ -103,6 +105,7 @@ public class NettyServer implements Server {
         this.blade = blade;
         this.environment = blade.environment();
         this.processors = blade.processors();
+        this.loaders = blade.loaders();
 
         long initStart = System.currentTimeMillis();
         log.info("{} {}{}", StringKit.padRight("environment.jdk.version", padSize), getPrefixSymbol(), System.getProperty("java.version"));
@@ -142,6 +145,7 @@ public class NettyServer implements Server {
 
         routeMatcher.register();
 
+        this.loaders.stream().sorted(new OrderComparator<>()).forEach(b -> b.preLoad(blade));
         this.processors.stream().sorted(new OrderComparator<>()).forEach(b -> b.preHandle(blade));
 
         Ioc ioc = blade.ioc();
@@ -160,6 +164,7 @@ public class NettyServer implements Server {
                 }
             });
         }
+        this.loaders.stream().sorted(new OrderComparator<>()).forEach(b -> b.load(blade));
         this.processors.stream().sorted(new OrderComparator<>()).forEach(b -> b.processor(blade));
     }
 
@@ -291,6 +296,10 @@ public class NettyServer implements Server {
                 Stream.of(URLPattern.values())
                         .forEach(pattern -> routeBuilder.addWebHook(clazz, pattern, hook));
             }
+        }
+
+        if (ReflectKit.hasInterface(clazz, BladeLoader.class) && null != clazz.getAnnotation(Bean.class)) {
+            this.loaders.add((BladeLoader) blade.ioc().getBean(clazz));
         }
         if (ReflectKit.hasInterface(clazz, BeanProcessor.class) && null != clazz.getAnnotation(Bean.class)) {
             this.processors.add((BeanProcessor) blade.ioc().getBean(clazz));
