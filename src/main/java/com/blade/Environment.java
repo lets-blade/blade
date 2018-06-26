@@ -22,6 +22,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import lombok.var;
 
 import java.io.*;
 import java.net.MalformedURLException;
@@ -83,7 +84,7 @@ public class Environment {
      * @return return Environment instance
      */
     public static Environment of(@NonNull Properties props) {
-        Environment environment = new Environment();
+        var environment = new Environment();
         environment.props = props;
         return environment;
     }
