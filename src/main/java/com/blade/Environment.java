@@ -96,7 +96,7 @@ public class Environment {
      * @return return Environment instance
      */
     public static Environment of(@NonNull Map<String, String> map) {
-        Environment environment = new Environment();
+        var environment = new Environment();
         map.forEach((key, value) -> environment.props.setProperty(key, value));
         return environment;
     }
@@ -164,7 +164,7 @@ public class Environment {
      * @return return Environment instance
      */
     private static Environment loadClasspath(@NonNull String classpath) {
-        String path = classpath;
+        var path = classpath;
         if (classpath.startsWith(HttpConst.SLASH)) {
             path = classpath.substring(1);
         }
@@ -183,7 +183,7 @@ public class Environment {
      */
     private static Environment of(@NonNull InputStream is) {
         try {
-            Environment environment = new Environment();
+            var environment = new Environment();
             environment.props.load(new InputStreamReader(is, "UTF-8"));
             return environment;
         } catch (IOException e) {
@@ -226,8 +226,7 @@ public class Environment {
      * @return return Environment instance
      */
     public Environment set(@NonNull String key, @NonNull Object value) {
-        String val = value.toString();
-        props.put(key, val);
+        props.put(key, value.toString());
         return this;
     }
 
@@ -294,7 +293,7 @@ public class Environment {
     }
 
     public Integer getIntOrNull(String key) {
-        Optional<Integer> intVal = getInt(key);
+        var intVal = getInt(key);
         return intVal.orElse(null);
     }
 
@@ -313,7 +312,7 @@ public class Environment {
     }
 
     public Long getLongOrNull(String key) {
-        Optional<Long> longVal = getLong(key);
+        var longVal = getLong(key);
         return longVal.orElse(null);
     }
 
@@ -329,7 +328,7 @@ public class Environment {
     }
 
     public Boolean getBooleanOrNull(String key) {
-        Optional<Boolean> boolVal = getBoolean(key);
+        var boolVal = getBoolean(key);
         return boolVal.orElse(null);
     }
 
@@ -345,7 +344,7 @@ public class Environment {
     }
 
     public Double getDoubleOrNull(String key) {
-        Optional<Double> doubleVal = getDouble(key);
+        var doubleVal = getDouble(key);
         return doubleVal.orElse(null);
     }
 
@@ -355,20 +354,20 @@ public class Environment {
 
     public Optional<Date> getDate(String key) {
         if (null != key && getObject(key).isPresent()) {
-            String value = getObject(key).get().toString();
-            Date   date  = (Date) ReflectKit.convert(Date.class, value);
+            var value = getObject(key).get().toString();
+            var date = (Date) ReflectKit.convert(Date.class, value);
             return Optional.ofNullable(date);
         }
         return Optional.empty();
     }
 
     public Date getDateOrNull(String key) {
-        Optional<Date> dateVal = getDate(key);
+        var dateVal = getDate(key);
         return dateVal.orElse(null);
     }
 
     public Map<String, Object> getPrefix(String key) {
-        Map<String, Object> map = new HashMap<>();
+        var map = new HashMap<>();
         if (null != key) {
             props.forEach((key_, value) -> {
                 if (key_.toString().startsWith(key)) {
@@ -380,7 +379,7 @@ public class Environment {
     }
 
     public Map<String, String> toMap() {
-        Map<String, String> map = new HashMap<>(props.size());
+        var map = new HashMap<>(props.size());
         props.forEach((k, v) -> map.put(k.toString(), v.toString()));
         return map;
     }
