@@ -88,16 +88,17 @@ import static com.blade.mvc.Const.*;
 @Slf4j
 public class NettyServer implements Server {
 
-    private Blade blade;
-    private Environment environment;
-    private EventLoopGroup bossGroup;
-    private EventLoopGroup workerGroup;
-    private Channel channel;
-    private RouteBuilder routeBuilder;
+    private Blade               blade;
+    private Environment         environment;
+    private EventLoopGroup      bossGroup;
+    private EventLoopGroup      workerGroup;
+    private Channel             channel;
+    private RouteBuilder        routeBuilder;
     private List<BeanProcessor> processors;
-    private List<BladeLoader> loaders;
-    private List<TaskStruct> taskStruts = new ArrayList<>();
-    private int padSize = 26;
+    private List<BladeLoader>   loaders;
+    private List<TaskStruct>    taskStruts = new ArrayList<>();
+
+    private final int padSize = 26;
 
     private volatile boolean isStop;
 
@@ -178,9 +179,9 @@ public class NettyServer implements Server {
         // Configure SSL.
         SslContext sslCtx = null;
         if (SSL) {
-            String certFilePath = environment.get(ENV_KEY_SSL_CERT, null);
-            String privateKeyPath = environment.get(ENE_KEY_SSL_PRIVATE_KEY, null);
-            String privateKeyPassword = environment.get(ENE_KEY_SSL_PRIVATE_KEY_PASS, null);
+            var certFilePath       = environment.get(ENV_KEY_SSL_CERT, null);
+            var privateKeyPath     = environment.get(ENE_KEY_SSL_PRIVATE_KEY, null);
+            var privateKeyPassword = environment.get(ENE_KEY_SSL_PRIVATE_KEY_PASS, null);
 
             log.info("{}SSL CertChainFile  Path: {}", getStartedSymbol(), certFilePath);
             log.info("{}SSL PrivateKeyFile Path: {}", getStartedSymbol(), privateKeyPath);
@@ -196,7 +197,7 @@ public class NettyServer implements Server {
         bootstrap.childOption(ChannelOption.SO_REUSEADDR, true);
 
         int acceptThreadCount = environment.getInt(ENC_KEY_NETTY_ACCEPT_THREAD_COUNT, DEFAULT_ACCEPT_THREAD_COUNT);
-        int ioThreadCount = environment.getInt(ENV_KEY_NETTY_IO_THREAD_COUNT, DEFAULT_IO_THREAD_COUNT);
+        int ioThreadCount     = environment.getInt(ENV_KEY_NETTY_IO_THREAD_COUNT, DEFAULT_IO_THREAD_COUNT);
 
         // enable epoll
         if (BladeKit.epollIsAvailable()) {
@@ -219,13 +220,14 @@ public class NettyServer implements Server {
                 .childHandler(new HttpServerInitializer(sslCtx, blade, bossGroup.next()));
 
         var address = environment.get(ENV_KEY_SERVER_ADDRESS, DEFAULT_SERVER_ADDRESS);
-        var port = environment.getInt(ENV_KEY_SERVER_PORT, DEFAULT_SERVER_PORT);
+        var port    = environment.getInt(ENV_KEY_SERVER_PORT, DEFAULT_SERVER_PORT);
 
         channel = bootstrap.bind(address, port).sync().channel();
-        String appName = environment.get(ENV_KEY_APP_NAME, "Blade");
+
+        var appName = environment.get(ENV_KEY_APP_NAME, "Blade");
+        var url     = Ansi.BgRed.and(Ansi.Black).format(" %s:%d ", address, port);
 
         log.info("{}{} initialize successfully, Time elapsed: {} ms", getStartedSymbol(), appName, (System.currentTimeMillis() - startMs));
-        String url = Ansi.BgRed.and(Ansi.Black).format(" %s:%d ", address, port);
         log.info("{}Blade start with {}", getStartedSymbol(), url);
         log.info("{}Open browser access http://{}:{} ⚡\r\n", getStartedSymbol(), address.replace(DEFAULT_SERVER_ADDRESS, LOCAL_IP_ADDRESS), port);
 
@@ -234,15 +236,15 @@ public class NettyServer implements Server {
 
     private void startTask() {
         if (taskStruts.size() > 0) {
-            int corePoolSize = environment.getInt(ENV_KEY_TASK_THREAD_COUNT, Runtime.getRuntime().availableProcessors() + 1);
+            int                 corePoolSize    = environment.getInt(ENV_KEY_TASK_THREAD_COUNT, Runtime.getRuntime().availableProcessors() + 1);
             CronExecutorService executorService = TaskManager.getExecutorService();
             if (null == executorService) {
                 executorService = new CronThreadPoolExecutor(corePoolSize, new NamedThreadFactory("task@"));
                 TaskManager.init(executorService);
             }
 
-            AtomicInteger jobCount = new AtomicInteger();
-            for (TaskStruct taskStruct: taskStruts) {
+            var jobCount = new AtomicInteger();
+            for (var taskStruct: taskStruts) {
                 addTask(executorService, jobCount, taskStruct);
             }
         }
@@ -251,8 +253,8 @@ public class NettyServer implements Server {
     private void addTask(CronExecutorService executorService, AtomicInteger jobCount, TaskStruct taskStruct) {
         try {
             var schedule = taskStruct.getSchedule();
-            var jobName = StringKit.isBlank(schedule.name()) ? "task-" + jobCount.getAndIncrement() : schedule.name();
-            var task = new Task(jobName, new CronExpression(schedule.cron()), schedule.delay());
+            var jobName  = StringKit.isBlank(schedule.name()) ? "task-" + jobCount.getAndIncrement() : schedule.name();
+            var task     = new Task(jobName, new CronExpression(schedule.cron()), schedule.delay());
 
             var taskContext = new TaskContext(task);
 
@@ -290,7 +292,7 @@ public class NettyServer implements Server {
             routeBuilder.addRouter(clazz, controller);
         }
         if (ReflectKit.hasInterface(clazz, WebHook.class) && null != clazz.getAnnotation(Bean.class)) {
-            var hook = blade.ioc().getBean(clazz);
+            var        hook       = blade.ioc().getBean(clazz);
             URLPattern URLPattern = clazz.getAnnotation(URLPattern.class);
             if (null == URLPattern) {
                 routeBuilder.addWebHook(clazz, "/.*", hook);
@@ -353,7 +355,7 @@ public class NettyServer implements Server {
     }
 
     private void shutdownHook() {
-        var shutdownThread = new Thread(() -> stop());
+        var shutdownThread = new Thread(this::stop);
         shutdownThread.setName("shutdown@thread");
         Runtime.getRuntime().addShutdownHook(shutdownThread);
     }

@@ -46,22 +46,10 @@ import static java.util.Optional.ofNullable;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Environment {
 
-    private static final Environment EMPTY_ENV = new Environment();
-
-    /**
-     * Classpath prefix
-     */
-    private static final String PREFIX_CLASSPATH = "classpath:";
-
-    /**
-     * File prefix
-     */
-    private static final String PREFIX_FILE = "file:";
-
-    /**
-     * Url prefix
-     */
-    private static final String PREFIX_URL = "url:";
+    private static final String      PREFIX_CLASSPATH = "classpath:";
+    private static final String      PREFIX_FILE      = "file:";
+    private static final String      PREFIX_URL       = "url:";
+    private static final Environment EMPTY_ENV        = new Environment();
 
     /**
      * Save the internal configuration
@@ -355,7 +343,7 @@ public class Environment {
     public Optional<Date> getDate(String key) {
         if (null != key && getObject(key).isPresent()) {
             var value = getObject(key).get().toString();
-            var date = (Date) ReflectKit.convert(Date.class, value);
+            var date  = (Date) ReflectKit.convert(Date.class, value);
             return Optional.ofNullable(date);
         }
         return Optional.empty();

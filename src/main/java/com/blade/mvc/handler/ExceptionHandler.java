@@ -1,7 +1,5 @@
 package com.blade.mvc.handler;
 
-import java.io.IOException;
-
 /**
  * Exception Handler interface
  *

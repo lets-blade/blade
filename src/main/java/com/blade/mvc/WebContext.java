@@ -20,6 +20,7 @@ import com.blade.Environment;
 import com.blade.mvc.http.Request;
 import com.blade.mvc.http.Response;
 import io.netty.util.concurrent.FastThreadLocal;
+import lombok.var;
 
 import java.util.Optional;
 
@@ -94,7 +95,7 @@ public class WebContext {
      * @return Request instance
      */
     public static Request request() {
-        WebContext webContext = get();
+        var webContext = get();
         return null != webContext ? webContext.request : null;
     }
 
@@ -104,7 +105,7 @@ public class WebContext {
      * @return Response instance
      */
     public static Response response() {
-        WebContext webContext = get();
+        var webContext = get();
         return null != webContext ? webContext.response : null;
     }
 

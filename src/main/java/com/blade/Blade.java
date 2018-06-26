@@ -1018,7 +1018,7 @@ public class Blade {
     private void loadConfig(String[] args) {
 
         var bootConf = environment().get(ENV_KEY_BOOT_CONF, PROP_NAME);
-        var bootEnv = Environment.of(bootConf);
+        var bootEnv  = Environment.of(bootConf);
 
         if (null == bootEnv || bootEnv.isEmpty()) {
             bootEnv = Environment.of(PROP_NAME0);
@@ -1049,11 +1049,11 @@ public class Blade {
 
         for (var arg: args) {
             if (arg.startsWith(TERMINAL_SERVER_ADDRESS)) {
-                var pos = arg.indexOf(TERMINAL_SERVER_ADDRESS) + TERMINAL_SERVER_ADDRESS.length();
+                var pos     = arg.indexOf(TERMINAL_SERVER_ADDRESS) + TERMINAL_SERVER_ADDRESS.length();
                 var address = arg.substring(pos);
                 this.environment.set(ENV_KEY_SERVER_ADDRESS, address);
             } else if (arg.startsWith(TERMINAL_SERVER_PORT)) {
-                var pos = arg.indexOf(TERMINAL_SERVER_PORT) + TERMINAL_SERVER_PORT.length();
+                var pos  = arg.indexOf(TERMINAL_SERVER_PORT) + TERMINAL_SERVER_PORT.length();
                 var port = arg.substring(pos);
                 this.environment.set(ENV_KEY_SERVER_PORT, port);
             }

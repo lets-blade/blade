@@ -18,6 +18,7 @@ import io.netty.handler.codec.http.multipart.*;
 import io.netty.util.CharsetUtil;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import lombok.var;
 
 import java.io.IOException;
 import java.net.URLConnection;
@@ -61,35 +62,35 @@ public class HttpRequest implements Request {
 
     private void init(FullHttpRequest fullHttpRequest) {
         // headers
-        HttpHeaders httpHeaders = fullHttpRequest.headers();
-        if (!httpHeaders.isEmpty()) {
+        var httpHeaders = fullHttpRequest.headers();
+        if (httpHeaders.isEmpty()) {
+            this.headers = new HashMap<>();
+        } else {
             this.headers = new HashMap<>(httpHeaders.size());
-            Iterator<Map.Entry<String, String>> entryIterator = httpHeaders.iteratorAsString();
+            var entryIterator = httpHeaders.iteratorAsString();
             while (entryIterator.hasNext()) {
-                Map.Entry<String, String> entry = entryIterator.next();
+                var entry = entryIterator.next();
                 headers.put(entry.getKey(), entry.getValue());
             }
-        } else {
-            this.headers = new HashMap<>();
         }
 
         // body content
         this.body = fullHttpRequest.content().copy();
 
         // request query parameters
-        Map<String, List<String>> parameters = new QueryStringDecoder(fullHttpRequest.uri(), CharsetUtil.UTF_8).parameters();
+        var parameters = new QueryStringDecoder(fullHttpRequest.uri(), CharsetUtil.UTF_8).parameters();
         if (null != parameters) {
             this.parameters = new HashMap<>();
             this.parameters.putAll(parameters);
         }
 
         if (HttpConst.METHOD_POST.equals(this.method) && isFormRequest()) {
-            HttpPostRequestDecoder decoder = new HttpPostRequestDecoder(HTTP_DATA_FACTORY, fullHttpRequest);
+            var decoder = new HttpPostRequestDecoder(HTTP_DATA_FACTORY, fullHttpRequest);
             decoder.getBodyHttpDatas().forEach(this::parseData);
         }
 
         // cookies
-        String cookie = header(HttpConst.COOKIE_STRING);
+        var cookie = header(HttpConst.COOKIE_STRING);
         cookie = cookie.length() > 0 ? cookie : header(HttpConst.COOKIE_STRING.toLowerCase());
         if (StringKit.isNotEmpty(cookie)) {
             ServerCookieDecoder.LAX.decode(cookie).forEach(this::parseCookie);
@@ -100,9 +101,9 @@ public class HttpRequest implements Request {
         try {
             switch (data.getHttpDataType()) {
                 case Attribute:
-                    Attribute attribute = (Attribute) data;
-                    String name = attribute.getName();
-                    String value = attribute.getValue();
+                    var attribute = (Attribute) data;
+                    var name = attribute.getName();
+                    var value = attribute.getValue();
 
                     List<String> values;
                     if (this.parameters.containsKey(name)) {
@@ -116,7 +117,7 @@ public class HttpRequest implements Request {
 
                     break;
                 case FileUpload:
-                    FileUpload fileUpload = (FileUpload) data;
+                    var fileUpload = (FileUpload) data;
                     parseFileUpload(fileUpload);
                     break;
                 default:
@@ -139,11 +140,11 @@ public class HttpRequest implements Request {
                 FileItem fileItem = new FileItem(fileUpload.getName(), fileUpload.getFilename(),
                         contentType, fileUpload.length());
 
-                ByteBuf byteBuf = fileUpload.getByteBuf();
+                var byteBuf = fileUpload.getByteBuf();
                 fileItem.setData(ByteBufUtil.getBytes(byteBuf));
                 fileItems.put(fileItem.getName(), fileItem);
             } else {
-                FileItem fileItem = new FileItem(fileUpload.getName(), fileUpload.getFilename(),
+                var fileItem = new FileItem(fileUpload.getName(), fileUpload.getFilename(),
                         contentType, fileUpload.length());
                 byte[] bytes = Files.readAllBytes(fileUpload.getFile().toPath());
                 fileItem.setData(bytes);
@@ -158,7 +159,7 @@ public class HttpRequest implements Request {
      * @param nettyCookie netty raw cookie instance
      */
     private void parseCookie(io.netty.handler.codec.http.cookie.Cookie nettyCookie) {
-        Cookie cookie = new Cookie();
+        var cookie = new Cookie();
         cookie.name(nettyCookie.name());
         cookie.value(nettyCookie.value());
         cookie.httpOnly(nettyCookie.isHttpOnly());
@@ -313,7 +314,7 @@ public class HttpRequest implements Request {
         this.url = request.url();
 
         if (null != this.url && this.url.length() > 0) {
-            int pathEndPos = this.url.indexOf('?');
+            var pathEndPos = this.url.indexOf('?');
             this.uri = pathEndPos < 0 ? this.url : this.url.substring(0, pathEndPos);
         }
 
@@ -322,7 +323,7 @@ public class HttpRequest implements Request {
     }
 
     public static HttpRequest build(FullHttpRequest fullHttpRequest, String remoteAddress) {
-        HttpRequest httpRequest = new HttpRequest();
+        var httpRequest = new HttpRequest();
         httpRequest.keepAlive = HttpUtil.isKeepAlive(fullHttpRequest);
         httpRequest.remoteAddress = remoteAddress;
         httpRequest.url = fullHttpRequest.uri();

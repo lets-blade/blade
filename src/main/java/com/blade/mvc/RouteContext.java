@@ -21,6 +21,7 @@ import com.blade.mvc.http.Response;
 import com.blade.mvc.http.Session;
 import com.blade.mvc.route.Route;
 import com.blade.mvc.ui.ModelAndView;
+import lombok.var;
 
 import java.lang.reflect.Method;
 import java.util.List;
@@ -223,7 +224,7 @@ public class RouteContext {
     public void initRoute(Route route) {
         this.request.initPathParams(route);
         this.route = route;
-        Method action = route.getAction();
+        var action = route.getAction();
         if (null != action && !action.getDeclaringClass().getName().contains(LAMBDA_IDENTIFY)) {
             this.routeActionParameters = getRouteActionParameters(this);
         }

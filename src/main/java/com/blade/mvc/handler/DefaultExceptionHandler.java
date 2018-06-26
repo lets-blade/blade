@@ -19,6 +19,7 @@ import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpVersion;
 import lombok.extern.slf4j.Slf4j;
+import lombok.var;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -38,8 +39,8 @@ public class DefaultExceptionHandler implements ExceptionHandler {
     @Override
     public void handle(Exception e) {
         if (!ExceptionHandler.isResetByPeer(e)) {
-            Response response = WebContext.response();
-            Request  request  = WebContext.request();
+            var response = WebContext.response();
+            var request  = WebContext.request();
 
             if (e instanceof BladeException) {
                 this.handleBladeException((BladeException) e, request, response);
@@ -52,7 +53,7 @@ public class DefaultExceptionHandler implements ExceptionHandler {
     }
 
     protected void handleValidators(ValidatorException validatorException, Request request, Response response) {
-        Integer code = Optional.ofNullable(validatorException.getCode()).orElse(500);
+        var code = Optional.ofNullable(validatorException.getCode()).orElse(500);
         if (request.isAjax() || request.contentType().toLowerCase().contains("json")) {
             response.json(RestResponse.fail(code, validatorException.getMessage()));
         } else {
@@ -73,10 +74,10 @@ public class DefaultExceptionHandler implements ExceptionHandler {
     }
 
     protected void handleBladeException(BladeException e, Request request, Response response) {
-        Blade blade = WebContext.blade();
+        var blade = WebContext.blade();
         response.status(e.getStatus());
 
-        ModelAndView modelAndView = new ModelAndView();
+        var modelAndView = new ModelAndView();
         modelAndView.add("title", e.getStatus() + " " + e.getName());
         modelAndView.add("message", e.getMessage());
 
@@ -90,7 +91,7 @@ public class DefaultExceptionHandler implements ExceptionHandler {
         }
 
         if (e.getStatus() == NotFoundException.STATUS) {
-            Optional<String> page404 = Optional.ofNullable(blade.environment().get(ENV_KEY_PAGE_404, null));
+            var page404 = Optional.ofNullable(blade.environment().get(ENV_KEY_PAGE_404, null));
             if (page404.isPresent()) {
                 modelAndView.setView(page404.get());
                 renderPage(response, modelAndView);
@@ -105,14 +106,14 @@ public class DefaultExceptionHandler implements ExceptionHandler {
     }
 
     protected void render500(Request request, Response response) {
-        Blade            blade   = WebContext.blade();
-        Optional<String> page500 = Optional.ofNullable(blade.environment().get(ENV_KEY_PAGE_500, null));
+        var blade   = WebContext.blade();
+        var page500 = Optional.ofNullable(blade.environment().get(ENV_KEY_PAGE_500, null));
 
         if (page500.isPresent()) {
-            renderPage(response, new ModelAndView(page500.get()));
+            this.renderPage(response, new ModelAndView(page500.get()));
         } else {
             if (blade.devMode()) {
-                HtmlCreator htmlCreator = new HtmlCreator();
+                var htmlCreator = new HtmlCreator();
                 htmlCreator.center("<h1>" + request.attribute("title") + "</h1>");
                 htmlCreator.startP("message-header");
                 htmlCreator.add("Request URI: " + request.uri());
@@ -132,7 +133,7 @@ public class DefaultExceptionHandler implements ExceptionHandler {
     }
 
     protected void renderPage(Response response, ModelAndView modelAndView) {
-        StringWriter sw = new StringWriter();
+        var sw = new StringWriter();
         try {
             WebContext.blade().templateEngine().render(modelAndView, sw);
             ByteBuf          buffer           = Unpooled.wrappedBuffer(sw.toString().getBytes("utf-8"));
@@ -144,7 +145,7 @@ public class DefaultExceptionHandler implements ExceptionHandler {
     }
 
     protected String getStackTrace(Throwable exception) {
-        StringWriter errors = new StringWriter();
+        var errors = new StringWriter();
         exception.printStackTrace(new PrintWriter(errors));
         return errors.toString();
     }
