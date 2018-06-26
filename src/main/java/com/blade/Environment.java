@@ -367,7 +367,7 @@ public class Environment {
     }
 
     public Map<String, Object> getPrefix(String key) {
-        var map = new HashMap<>();
+        var map = new HashMap<String, Object>();
         if (null != key) {
             props.forEach((key_, value) -> {
                 if (key_.toString().startsWith(key)) {
@@ -379,7 +379,7 @@ public class Environment {
     }
 
     public Map<String, String> toMap() {
-        var map = new HashMap<>(props.size());
+        var map = new HashMap<String, String>(props.size());
         props.forEach((k, v) -> map.put(k.toString(), v.toString()));
         return map;
     }
