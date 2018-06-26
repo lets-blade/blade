@@ -10,6 +10,8 @@ import java.util.Map;
 import static com.blade.kit.BladeKit.methodToFieldName;
 
 /**
+ * Blade Cache
+ *
  * @author biezhi
  * @date 2018/4/22
  */
@@ -28,7 +30,7 @@ public class BladeCache {
         PADDING_METHOD_STR.put("HEAD", StringKit.padRight("HEAD", 6));
     }
 
-    public static String getPaddingMethod(String method){
+    public static String getPaddingMethod(String method) {
         return PADDING_METHOD_STR.get(method);
     }
 

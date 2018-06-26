@@ -2,6 +2,7 @@ package com.blade.mvc.route;
 
 import com.blade.kit.BladeKit;
 import com.blade.kit.ReflectKit;
+import com.blade.mvc.RouteContext;
 import com.blade.mvc.annotation.*;
 import com.blade.mvc.hook.Signature;
 import com.blade.mvc.http.HttpMethod;
@@ -25,8 +26,8 @@ public class RouteBuilder {
     }
 
     public void addWebHook(final Class<?> webHook, String pattern, Object hook) {
-        Method before = ReflectKit.getMethod(webHook, HttpMethod.BEFORE.name().toLowerCase(), Signature.class);
-        Method after  = ReflectKit.getMethod(webHook, HttpMethod.AFTER.name().toLowerCase(), Signature.class);
+        Method before = ReflectKit.getMethod(webHook, HttpMethod.BEFORE.name().toLowerCase(), RouteContext.class);
+        Method after  = ReflectKit.getMethod(webHook, HttpMethod.AFTER.name().toLowerCase(), RouteContext.class);
 
         routeMatcher.addRoute(com.blade.mvc.route.Route.builder()
                 .target(hook)

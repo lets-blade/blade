@@ -176,7 +176,7 @@ public class HttpResponse implements Response {
         if (this.body instanceof ViewBody) {
             return ((ViewBody) this.body).modelAndView();
         }
-        throw new BladeException(500, "No view available");
+        return null;
     }
 
     public HttpResponse(Response response) {
