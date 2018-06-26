@@ -19,6 +19,7 @@ import com.blade.task.cron.CronExecutorService;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lombok.var;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -69,7 +70,7 @@ public final class TaskManager {
     }
 
     public static boolean stopTask(String name) {
-        Task task = TASK_MAP.get(name);
+        var task = TASK_MAP.get(name);
         return task.stop();
     }
 

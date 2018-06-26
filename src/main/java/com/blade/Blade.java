@@ -43,6 +43,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import lombok.var;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -220,7 +221,7 @@ public class Blade {
      * @return return ioc container
      */
     public Ioc ioc() {
-        return ioc;
+        return this.ioc;
     }
 
     /**
@@ -233,7 +234,7 @@ public class Blade {
      */
     @Deprecated
     public Blade get(@NonNull String path, @NonNull RouteHandler0 handler) {
-        routeMatcher.addRoute(path, handler, HttpMethod.GET);
+        this.routeMatcher.addRoute(path, handler, HttpMethod.GET);
         return this;
     }
 
@@ -245,7 +246,7 @@ public class Blade {
      * @return return blade instance
      */
     public Blade get(@NonNull String path, @NonNull RouteHandler handler) {
-        routeMatcher.addRoute(path, handler, HttpMethod.GET);
+        this.routeMatcher.addRoute(path, handler, HttpMethod.GET);
         return this;
     }
 
@@ -259,7 +260,7 @@ public class Blade {
      */
     @Deprecated
     public Blade post(@NonNull String path, @NonNull RouteHandler0 handler) {
-        routeMatcher.addRoute(path, handler, HttpMethod.POST);
+        this.routeMatcher.addRoute(path, handler, HttpMethod.POST);
         return this;
     }
 
@@ -271,7 +272,7 @@ public class Blade {
      * @return return blade instance
      */
     public Blade post(@NonNull String path, @NonNull RouteHandler handler) {
-        routeMatcher.addRoute(path, handler, HttpMethod.POST);
+        this.routeMatcher.addRoute(path, handler, HttpMethod.POST);
         return this;
     }
 
@@ -285,7 +286,7 @@ public class Blade {
      */
     @Deprecated
     public Blade put(@NonNull String path, @NonNull RouteHandler0 handler) {
-        routeMatcher.addRoute(path, handler, HttpMethod.PUT);
+        this.routeMatcher.addRoute(path, handler, HttpMethod.PUT);
         return this;
     }
 
@@ -297,7 +298,7 @@ public class Blade {
      * @return return blade instance
      */
     public Blade put(@NonNull String path, @NonNull RouteHandler handler) {
-        routeMatcher.addRoute(path, handler, HttpMethod.PUT);
+        this.routeMatcher.addRoute(path, handler, HttpMethod.PUT);
         return this;
     }
 
@@ -311,7 +312,7 @@ public class Blade {
      */
     @Deprecated
     public Blade delete(@NonNull String path, @NonNull RouteHandler0 handler) {
-        routeMatcher.addRoute(path, handler, HttpMethod.DELETE);
+        this.routeMatcher.addRoute(path, handler, HttpMethod.DELETE);
         return this;
     }
 
@@ -323,7 +324,7 @@ public class Blade {
      * @return return blade instance
      */
     public Blade delete(@NonNull String path, @NonNull RouteHandler handler) {
-        routeMatcher.addRoute(path, handler, HttpMethod.DELETE);
+        this.routeMatcher.addRoute(path, handler, HttpMethod.DELETE);
         return this;
     }
 
@@ -337,7 +338,7 @@ public class Blade {
      */
     @Deprecated
     public Blade before(@NonNull String path, @NonNull RouteHandler0 handler) {
-        routeMatcher.addRoute(path, handler, HttpMethod.BEFORE);
+        this.routeMatcher.addRoute(path, handler, HttpMethod.BEFORE);
         return this;
     }
 
@@ -349,7 +350,7 @@ public class Blade {
      * @return return blade instance
      */
     public Blade before(@NonNull String path, @NonNull RouteHandler handler) {
-        routeMatcher.addRoute(path, handler, HttpMethod.BEFORE);
+        this.routeMatcher.addRoute(path, handler, HttpMethod.BEFORE);
         return this;
     }
 
@@ -363,7 +364,7 @@ public class Blade {
      */
     @Deprecated
     public Blade after(@NonNull String path, @NonNull RouteHandler0 handler) {
-        routeMatcher.addRoute(path, handler, HttpMethod.AFTER);
+        this.routeMatcher.addRoute(path, handler, HttpMethod.AFTER);
         return this;
     }
 
@@ -375,7 +376,7 @@ public class Blade {
      * @return return blade instance
      */
     public Blade after(@NonNull String path, @NonNull RouteHandler handler) {
-        routeMatcher.addRoute(path, handler, HttpMethod.AFTER);
+        this.routeMatcher.addRoute(path, handler, HttpMethod.AFTER);
         return this;
     }
 
@@ -396,7 +397,7 @@ public class Blade {
      * @return return TemplateEngine
      */
     public TemplateEngine templateEngine() {
-        return templateEngine;
+        return this.templateEngine;
     }
 
     /**
@@ -405,7 +406,7 @@ public class Blade {
      * @return return RouteMatcher
      */
     public RouteMatcher routeMatcher() {
-        return routeMatcher;
+        return this.routeMatcher;
     }
 
     /**
@@ -415,7 +416,7 @@ public class Blade {
      * @return blade
      */
     public Blade register(@NonNull Object bean) {
-        ioc.addBean(bean);
+        this.ioc.addBean(bean);
         return this;
     }
 
@@ -426,7 +427,7 @@ public class Blade {
      * @return blade
      */
     public Blade register(@NonNull Class<?> cls) {
-        ioc.addBean(cls);
+        this.ioc.addBean(cls);
         return this;
     }
 
@@ -438,7 +439,7 @@ public class Blade {
      * @return blade
      */
     public Blade addStatics(@NonNull String... folders) {
-        statics.addAll(Arrays.asList(folders));
+        this.statics.addAll(Arrays.asList(folders));
         return this;
     }
 
@@ -471,7 +472,7 @@ public class Blade {
      * @return return bean instance
      */
     public <T> T getBean(@NonNull Class<T> cls) {
-        return ioc.getBean(cls);
+        return this.ioc.getBean(cls);
     }
 
     /**
@@ -480,7 +481,7 @@ public class Blade {
      * @return return ExceptionHandler
      */
     public ExceptionHandler exceptionHandler() {
-        return exceptionHandler;
+        return this.exceptionHandler;
     }
 
     /**
@@ -500,7 +501,7 @@ public class Blade {
      * @return return true is developer mode, else not.
      */
     public boolean devMode() {
-        return environment.getBoolean(ENV_KEY_DEV_MODE, true);
+        return this.environment.getBoolean(ENV_KEY_DEV_MODE, true);
     }
 
     /**
@@ -516,11 +517,11 @@ public class Blade {
     }
 
     public boolean isAutoRefreshDir() {
-        return environment.get(ENV_KEY_AUTO_REFRESH_DIR).isPresent();
+        return this.environment.get(ENV_KEY_AUTO_REFRESH_DIR).isPresent();
     }
 
     public void setAutoRefreshDir(String dir) {
-        environment.set(ENV_KEY_AUTO_REFRESH_DIR, dir);
+        this.environment.set(ENV_KEY_AUTO_REFRESH_DIR, dir);
     }
 
     public Class<?> bootClass() {
@@ -545,7 +546,7 @@ public class Blade {
      * @return return statics
      */
     public Set<String> getStatics() {
-        return statics;
+        return this.statics;
     }
 
     /**
@@ -593,7 +594,7 @@ public class Blade {
      */
     @Deprecated
     public Blade environment(@NonNull String key, @NonNull Object value) {
-        environment.set(key, value);
+        this.environment.set(key, value);
         return this;
     }
 
@@ -603,7 +604,7 @@ public class Blade {
      * @return Environment
      */
     public Environment environment() {
-        return environment;
+        return this.environment;
     }
 
     @Deprecated
@@ -667,11 +668,12 @@ public class Blade {
      * @return blade
      */
     public Blade use(@NonNull WebHook... middleware) {
-        if (!BladeKit.isEmpty(middleware)) {
-            this.middleware.addAll(Arrays.asList(middleware));
-            for (WebHook webHook : middleware) {
-                this.register(webHook);
-            }
+        if (BladeKit.isEmpty(middleware)) {
+            return this;
+        }
+        this.middleware.addAll(Arrays.asList(middleware));
+        for (var webHook: middleware) {
+            this.register(webHook);
         }
         return this;
     }
@@ -692,7 +694,7 @@ public class Blade {
      * @return blade
      */
     public Blade appName(@NonNull String appName) {
-        this.environment(ENV_KEY_APP_NAME, appName);
+        this.environment.set(ENV_KEY_APP_NAME, appName);
         return this;
     }
 
@@ -705,7 +707,7 @@ public class Blade {
      * @return blade
      */
     public <T> Blade event(@NonNull EventType eventType, @NonNull EventListener<T> eventListener) {
-        eventManager.addEventListener(eventType, eventListener);
+        this.eventManager.addEventListener(eventType, eventListener);
         return this;
     }
 
@@ -737,7 +739,7 @@ public class Blade {
      */
     @Deprecated
     public Blade onStarted(@NonNull BeanProcessor processor) {
-        processors.add(processor);
+        this.processors.add(processor);
         return this;
     }
 
@@ -748,7 +750,7 @@ public class Blade {
      * @return
      */
     public Blade addLoader(@NonNull BladeLoader loader) {
-        loaders.add(loader);
+        this.loaders.add(loader);
         return this;
     }
 
@@ -759,7 +761,7 @@ public class Blade {
      */
     @Deprecated
     public List<BeanProcessor> processors() {
-        return processors;
+        return this.processors;
     }
 
     public List<BladeLoader> loaders() {
@@ -772,7 +774,7 @@ public class Blade {
      * @return return EventManager
      */
     public EventManager eventManager() {
-        return eventManager;
+        return this.eventManager;
     }
 
     /**
@@ -781,7 +783,7 @@ public class Blade {
      * @return return SessionManager
      */
     public SessionManager sessionManager() {
-        return sessionManager;
+        return this.sessionManager;
     }
 
     /**
@@ -833,8 +835,9 @@ public class Blade {
      */
     public Blade start(Class<?> bootClass, @NonNull String address, int port, String... args) {
         try {
-            loadConfig(args);
-            environment.set(ENV_KEY_SERVER_ADDRESS, address);
+            this.loadConfig(args);
+            this.environment.set(ENV_KEY_SERVER_ADDRESS, address);
+
             Assert.greaterThan(port, 0, "server port not is negative number.");
             this.bootClass = bootClass;
             eventManager.fireEvent(EventType.SERVER_STARTING, this);
@@ -854,10 +857,10 @@ public class Blade {
 
             thread.setName(threadName);
             thread.start();
-            started = true;
+
+            this.started = true;
 
             Thread resourceFilesRefreshThread = new Thread(() -> {
-
                 try {
                     FileChangeDetector fileChangeDetector = new FileChangeDetector(environment.get(ENV_KEY_AUTO_REFRESH_DIR).get());
                     fileChangeDetector.processEvent((event, filePath) -> {
@@ -875,7 +878,6 @@ public class Blade {
                 } catch (IOException e) {
                     startupExceptionHandler.accept(e);
                 }
-
             });
 
             if (devMode() && isAutoRefreshDir()) {
@@ -894,11 +896,11 @@ public class Blade {
      * @return return blade instance
      */
     public Blade await() {
-        if (!started) {
+        if (!this.started) {
             throw new IllegalStateException("Server hasn't been started. Call start() before calling this method.");
         }
         try {
-            latch.await();
+            this.latch.await();
         } catch (Exception e) {
             log.error("Blade start await error", e);
             Thread.currentThread().interrupt();
@@ -912,9 +914,9 @@ public class Blade {
      * Will stop synchronization waiting netty service
      */
     public void stop() {
-        eventManager.fireEvent(EventType.SERVER_STOPPING, this);
-        server.stopAndWait();
-        eventManager.fireEvent(EventType.SERVER_STOPPED, this);
+        this.eventManager.fireEvent(EventType.SERVER_STOPPING, this);
+        this.server.stopAndWait();
+        this.eventManager.fireEvent(EventType.SERVER_STOPPED, this);
     }
 
     /**
@@ -930,7 +932,7 @@ public class Blade {
         }
         this.webSocketPath = path;
         this.webSocketHandler = handler;
-        routeMatcher.addWebSocket(path);
+        this.routeMatcher.addWebSocket(path);
         return this;
     }
 
@@ -940,7 +942,7 @@ public class Blade {
      * @return return websocket path
      */
     public String webSocketPath() {
-        return webSocketPath;
+        return this.webSocketPath;
     }
 
     /**
@@ -961,17 +963,19 @@ public class Blade {
      */
     public String bannerText() {
         if (null != bannerText) return bannerText;
-        String bannerPath = environment.get(ENV_KEY_BANNER_PATH, null);
-        if (StringKit.isNotBlank(bannerPath) && Files.exists(Paths.get(bannerPath))) {
-            try {
-                BufferedReader bufferedReader = Files.newBufferedReader(Paths.get(bannerPath));
-                bannerText = bufferedReader.lines().collect(Collectors.joining("\r\n"));
-            } catch (Exception e) {
-                log.error("Load Start Banner file error", e);
-            }
-            return bannerText;
+        var bannerPath = environment.get(ENV_KEY_BANNER_PATH, null);
+
+        if (StringKit.isEmpty(bannerPath) || Files.notExists(Paths.get(bannerPath))) {
+            return null;
         }
-        return null;
+
+        try {
+            var bufferedReader = Files.newBufferedReader(Paths.get(bannerPath));
+            bannerText = bufferedReader.lines().collect(Collectors.joining("\r\n"));
+        } catch (Exception e) {
+            log.error("Load Start Banner file error", e);
+        }
+        return bannerText;
     }
 
     /**
@@ -993,7 +997,7 @@ public class Blade {
      * @since 2.0.8-RELEASE
      */
     public Blade contextPath(String contextPath) {
-        environment.set(ENV_KEY_CONTEXT_PATH, contextPath);
+        this.environment.set(ENV_KEY_CONTEXT_PATH, contextPath);
         return this;
     }
 
@@ -1003,7 +1007,7 @@ public class Blade {
      * @return return websocket handler
      */
     public WebSocketHandler webSocketHandler() {
-        return webSocketHandler;
+        return this.webSocketHandler;
     }
 
     /**
@@ -1013,9 +1017,9 @@ public class Blade {
      */
     private void loadConfig(String[] args) {
 
-        String bootConf = environment().get(ENV_KEY_BOOT_CONF, PROP_NAME);
+        var bootConf = environment().get(ENV_KEY_BOOT_CONF, PROP_NAME);
+        var bootEnv = Environment.of(bootConf);
 
-        Environment bootEnv = Environment.of(bootConf);
         if (null == bootEnv || bootEnv.isEmpty()) {
             bootEnv = Environment.of(PROP_NAME0);
         }
@@ -1031,26 +1035,27 @@ public class Blade {
                 log.info("current environment file is: {}", envName);
                 Environment customEnv = Environment.of(envName);
                 if (customEnv != null) {
-                    customEnv.props().forEach((key, value) -> environment.set(key.toString(), value));
+                    customEnv.props().forEach((key, value) -> this.environment.set(key.toString(), value));
                 }
             });
         }
 
-        this.register(environment);
+        this.register(this.environment);
 
         // load terminal param
         if (BladeKit.isEmpty(args)) {
             return;
         }
-        for (String arg : args) {
+
+        for (var arg: args) {
             if (arg.startsWith(TERMINAL_SERVER_ADDRESS)) {
-                int    pos     = arg.indexOf(TERMINAL_SERVER_ADDRESS) + TERMINAL_SERVER_ADDRESS.length();
-                String address = arg.substring(pos);
-                environment.set(ENV_KEY_SERVER_ADDRESS, address);
+                var pos = arg.indexOf(TERMINAL_SERVER_ADDRESS) + TERMINAL_SERVER_ADDRESS.length();
+                var address = arg.substring(pos);
+                this.environment.set(ENV_KEY_SERVER_ADDRESS, address);
             } else if (arg.startsWith(TERMINAL_SERVER_PORT)) {
-                int    pos  = arg.indexOf(TERMINAL_SERVER_PORT) + TERMINAL_SERVER_PORT.length();
-                String port = arg.substring(pos);
-                environment.set(ENV_KEY_SERVER_PORT, port);
+                var pos = arg.indexOf(TERMINAL_SERVER_PORT) + TERMINAL_SERVER_PORT.length();
+                var port = arg.substring(pos);
+                this.environment.set(ENV_KEY_SERVER_PORT, port);
             }
         }
     }

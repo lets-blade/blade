@@ -19,14 +19,15 @@ import com.blade.exception.ValidatorException;
 import com.blade.kit.BladeKit;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.var;
 
 @Data
 @AllArgsConstructor
 public class ValidationResult {
 
     private boolean valid;
-    private String  message;
-    private String  code;
+    private String message;
+    private String code;
 
     public static ValidationResult ok() {
         return new ValidationResult(true, null, null);
@@ -53,7 +54,7 @@ public class ValidationResult {
     }
 
     public <T, R> void throwIfInvalid(TypeFunction<T, R> function) {
-        String fieldName = BladeKit.getLambdaFieldName(function);
+        var fieldName = BladeKit.getLambdaFieldName(function);
         throwIfInvalid(fieldName);
     }
 
