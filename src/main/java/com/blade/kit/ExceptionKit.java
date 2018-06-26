@@ -15,16 +15,15 @@
  */
 package com.blade.kit;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.experimental.UtilityClass;
 
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ExceptionKit {
+@UtilityClass
+public class ExceptionKit {
 
     @FunctionalInterface
     public interface ConsumerWithExceptions<T, E extends Exception> {

@@ -16,8 +16,7 @@
 package com.blade.kit;
 
 import com.blade.mvc.Const;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.experimental.UtilityClass;
 
 import java.time.*;
 import java.time.format.DateTimeFormatter;
@@ -32,8 +31,8 @@ import java.util.Map;
  * @author biezhi
  * 2017/6/2
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DateKit {
+@UtilityClass
+public class DateKit {
 
     /**
      * GMT Format

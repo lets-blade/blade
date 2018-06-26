@@ -18,8 +18,7 @@ package com.blade.kit;
 import com.blade.kit.json.Ason;
 import com.blade.kit.json.DefaultJsonSupport;
 import com.blade.kit.json.JsonSupport;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.experimental.UtilityClass;
 
 import java.lang.reflect.Type;
 
@@ -29,8 +28,8 @@ import java.lang.reflect.Type;
  * @author biezhi
  * 2017/6/2
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class JsonKit {
+@UtilityClass
+public class JsonKit {
 
     private static final DefaultJsonSupport defaultJsonSupport = new DefaultJsonSupport();
 

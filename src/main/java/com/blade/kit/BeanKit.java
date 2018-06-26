@@ -16,8 +16,7 @@
 package com.blade.kit;
 
 import com.blade.exception.BeanCopyException;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.experimental.UtilityClass;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -29,8 +28,8 @@ import java.util.List;
  * @author biezhi
  * @date 2018/4/9
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class BeanKit {
+@UtilityClass
+public class BeanKit {
 
     public static <T> T copy(Object origin, Class<T> destCls) {
         T dest = ReflectKit.newInstance(destCls);

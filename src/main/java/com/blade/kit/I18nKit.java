@@ -1,7 +1,6 @@
 package com.blade.kit;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.experimental.UtilityClass;
 
 import java.text.MessageFormat;
 import java.util.Locale;
@@ -30,8 +29,8 @@ import java.util.regex.Pattern;
  * @author <a href="mailto:chenchen_839@126.com" target="_blank">ccqy66</a>
  * @Date: 2018/1/8
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class I18nKit {
+@UtilityClass
+public class I18nKit {
 
     private static Map<String,ResourceHolder> CACHE = new ConcurrentHashMap<>();
     private static Pattern pattern = Pattern.compile("_");

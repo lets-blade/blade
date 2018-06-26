@@ -1,7 +1,7 @@
 package com.blade.kit;
 
 import com.blade.mvc.multipart.MimeType;
-import lombok.NoArgsConstructor;
+import lombok.experimental.UtilityClass;
 
 import java.util.Random;
 import java.util.function.Consumer;
@@ -13,8 +13,8 @@ import java.util.stream.Stream;
  * @author biezhi
  * 2017/6/1
  */
-@NoArgsConstructor
-public final class StringKit {
+@UtilityClass
+public class StringKit {
 
     private static final Random RANDOM = new Random();
 

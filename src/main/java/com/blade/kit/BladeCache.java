@@ -1,6 +1,7 @@
 package com.blade.kit;
 
 import com.blade.reflectasm.MethodAccess;
+import lombok.experimental.UtilityClass;
 
 import java.lang.invoke.SerializedLambda;
 import java.lang.reflect.Field;
@@ -15,6 +16,7 @@ import static com.blade.kit.BladeKit.methodToFieldName;
  * @author biezhi
  * @date 2018/4/22
  */
+@UtilityClass
 public class BladeCache {
 
     private static final Map<SerializedLambda, String> CACHE_LAMBDA_NAME       = new HashMap<>(8);

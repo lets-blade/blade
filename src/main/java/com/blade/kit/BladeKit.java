@@ -29,8 +29,7 @@ import com.blade.mvc.http.HttpMethod;
 import com.blade.mvc.route.Route;
 import com.blade.task.TaskStruct;
 import com.blade.task.annotation.Schedule;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.experimental.UtilityClass;
 import org.slf4j.Logger;
 import org.slf4j.impl.Ansi;
 
@@ -59,11 +58,10 @@ import java.util.stream.Collectors;
  * @author biezhi
  * 2017/5/31
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class BladeKit {
+@UtilityClass
+public class BladeKit {
 
     private static boolean isWindows;
-    private static Boolean showLog;
 
     static {
         isWindows = System.getProperties().getProperty("os.name").toLowerCase().contains("win");
