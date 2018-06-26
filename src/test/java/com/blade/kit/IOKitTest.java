@@ -18,7 +18,7 @@ public class IOKitTest {
 
     @Test
     public void testCloseQuietly() throws FileNotFoundException {
-        InputStream ins = IOKitTest.class.getResourceAsStream("/app.properties");
+        InputStream ins = IOKitTest.class.getResourceAsStream("/application.properties");
         IOKit.closeQuietly(ins);
 
         IOKit.closeQuietly(null);
