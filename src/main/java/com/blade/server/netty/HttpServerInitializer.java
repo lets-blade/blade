@@ -29,7 +29,7 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class HttpServerInitializer extends ChannelInitializer<SocketChannel> {
 
-    private final HttpServerHandler HTTP_SERVER_HANDLER = new HttpServerHandler();
+    private final HttpServerDispatcher HTTP_SERVER_HANDLER = new HttpServerDispatcher();
 
     private final SslContext sslCtx;
     private final Blade      blade;

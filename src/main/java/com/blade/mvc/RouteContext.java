@@ -63,6 +63,10 @@ public class RouteContext {
         return this.request.uri();
     }
 
+    public boolean keepAlive() {
+        return request.keepAlive();
+    }
+
     public Session session() {
         return this.request.session();
     }

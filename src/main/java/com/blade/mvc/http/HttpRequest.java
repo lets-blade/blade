@@ -1,5 +1,6 @@
 package com.blade.mvc.http;
 
+import com.blade.kit.PathKit;
 import com.blade.kit.StringKit;
 import com.blade.mvc.WebContext;
 import com.blade.mvc.multipart.FileItem;
@@ -327,11 +328,20 @@ public class HttpRequest implements Request {
         httpRequest.keepAlive = HttpUtil.isKeepAlive(fullHttpRequest);
         httpRequest.remoteAddress = remoteAddress;
         httpRequest.url = fullHttpRequest.uri();
+
         int pathEndPos = httpRequest.url.indexOf('?');
         httpRequest.uri = pathEndPos < 0 ? httpRequest.url : httpRequest.url.substring(0, pathEndPos);
         httpRequest.protocol = fullHttpRequest.protocolVersion().text();
         httpRequest.method = fullHttpRequest.method().name();
+
         httpRequest.init(fullHttpRequest);
+
+        String cleanUri = httpRequest.uri;
+        if (!"/".equals(httpRequest.contextPath())) {
+            cleanUri = PathKit.cleanPath(cleanUri.replaceFirst(httpRequest.contextPath(), "/"));
+            httpRequest.uri = cleanUri;
+        }
+
         return httpRequest;
     }
 
