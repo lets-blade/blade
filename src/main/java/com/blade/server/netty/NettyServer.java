@@ -227,9 +227,11 @@ public class NettyServer implements Server {
         var appName = environment.get(ENV_KEY_APP_NAME, "Blade");
         var url     = Ansi.BgRed.and(Ansi.Black).format(" %s:%d ", address, port);
 
+        var protocol = SSL ? "https" : "http";
+
         log.info("{}{} initialize successfully, Time elapsed: {} ms", getStartedSymbol(), appName, (System.currentTimeMillis() - startMs));
         log.info("{}Blade start with {}", getStartedSymbol(), url);
-        log.info("{}Open browser access http://{}:{} ⚡\r\n", getStartedSymbol(), address.replace(DEFAULT_SERVER_ADDRESS, LOCAL_IP_ADDRESS), port);
+        log.info("{}Open browser access {}://{}:{} ⚡\r\n", getStartedSymbol(), protocol, address.replace(DEFAULT_SERVER_ADDRESS, LOCAL_IP_ADDRESS), port);
 
         blade.eventManager().fireEvent(EventType.SERVER_STARTED, blade);
     }
