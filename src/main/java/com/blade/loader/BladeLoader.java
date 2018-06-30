@@ -13,36 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.blade.event;
+package com.blade.loader;
 
 import com.blade.Blade;
 
 /**
- * Bean processor
- * <p>
- * When the Blade program execution at startup time
+ * Blade Loader
  *
  * @author biezhi
- * @date 2017/9/18
- * @see com.blade.loader.BladeLoader
+ * @date 2018/6/22
  */
-@Deprecated
-@FunctionalInterface
-public interface BeanProcessor {
+public interface BladeLoader {
 
-    /**
-     * Initialize the ioc container after execution
-     *
-     * @param blade Blade instance
-     */
-    void processor(Blade blade);
+    default void preLoad(Blade blade) {
 
-    /**
-     * Initialize the ioc container before execution
-     *
-     * @param blade Blade instance
-     */
-    default void preHandle(Blade blade) {
     }
+
+    void load(Blade blade);
 
 }

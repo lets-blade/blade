@@ -15,13 +15,12 @@
  */
 package com.blade.kit;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.experimental.UtilityClass;
 
 import java.io.*;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ConvertKit {
+@UtilityClass
+public class ConvertKit {
 
     /**
      * Hex Digits

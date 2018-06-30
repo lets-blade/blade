@@ -61,28 +61,28 @@ public class EnvironmentTest {
 
     @Test
     public void testEnvByUrl() {
-        URL         url         = EnvironmentTest.class.getResource("/app.properties");
+        URL         url         = EnvironmentTest.class.getResource("/application.properties");
         Environment environment = Environment.of(url);
         Assert.assertEquals("0.0.2", environment.get("app.version").get());
     }
 
     @Test
     public void testEnvByFile() {
-        File        file        = new File(EnvironmentTest.class.getResource("/").getPath() + "app.properties");
+        File        file        = new File(EnvironmentTest.class.getResource("/").getPath() + "application.properties");
         Environment environment = Environment.of(file);
         Assert.assertEquals("0.0.2", environment.get("app.version").get());
     }
 
     @Test
     public void testOf() {
-        Environment      environment = Environment.of("app.properties");
+        Environment      environment = Environment.of("application.properties");
         Optional<String> version     = environment.get("app.version");
         String           lang        = environment.get("app.lang", "cn");
 
         assertEquals("0.0.2", version.get());
         assertEquals("cn", lang);
 
-        environment = Environment.of("classpath:app.properties");
+        environment = Environment.of("classpath:application.properties");
         version = environment.get("app.version");
         lang = environment.get("app.lang", "cn");
 
@@ -92,7 +92,7 @@ public class EnvironmentTest {
 
     @Test
     public void testGetValue() {
-        Environment environment = Environment.of("app.properties");
+        Environment environment = Environment.of("application.properties");
 
         Optional<String> url = environment.get("jdbc.url");
         assertEquals("jdbc:mysql://127.0.0.1:3306/test", url.get());
@@ -118,7 +118,7 @@ public class EnvironmentTest {
 
     @Test
     public void testGetValueOrNull() {
-        Environment environment = Environment.of("app.properties");
+        Environment environment = Environment.of("application.properties");
 
         String abcd = environment.getOrNull("app.abcd");
         Assert.assertNull(abcd);
@@ -141,7 +141,7 @@ public class EnvironmentTest {
 
     @Test
     public void testGetPrefix() {
-        Environment         environment = Environment.of("app.properties");
+        Environment         environment = Environment.of("application.properties");
         Map<String, Object> map         = environment.getPrefix("app");
         assertEquals(6, map.size());
         assertEquals("0.0.2", map.get("version"));
@@ -149,7 +149,7 @@ public class EnvironmentTest {
 
     @Test
     public void testHasKey() {
-        Environment environment = Environment.of("classpath:/app.properties");
+        Environment environment = Environment.of("classpath:/application.properties");
         assertEquals(Boolean.FALSE, environment.hasKey("hello"));
         assertEquals(Boolean.TRUE, environment.hasKey("app.version"));
         assertEquals(Boolean.FALSE, environment.hasKey(null));
@@ -173,7 +173,7 @@ public class EnvironmentTest {
 
     @Test
     public void testNoEnvByFileString() {
-        String path = Const.CLASSPATH + "/app.properties";
+        String path = Const.CLASSPATH + "/application.properties";
         Environment.of("file:" + path);
     }
 
@@ -187,7 +187,9 @@ public class EnvironmentTest {
 
         Assert.assertEquals(1, environment.size());
 
-        environment.addAll(Collections.singletonMap("aa", "bb"));
+        Map<String, String> map = Collections.singletonMap("aa", "bb");
+
+        environment.addAll(map);
         Assert.assertEquals(2, environment.size());
     }
 

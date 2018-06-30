@@ -1,8 +1,7 @@
 package com.blade.types;
 
+import com.blade.mvc.RouteContext;
 import com.blade.mvc.handler.RouteHandler;
-import com.blade.mvc.http.Request;
-import com.blade.mvc.http.Response;
 
 /**
  * @author biezhi
@@ -11,7 +10,8 @@ import com.blade.mvc.http.Response;
 public class BladeWebHookType implements RouteHandler {
 
     @Override
-    public void handle(Request request, Response response) {
+    public void handle(RouteContext context) {
         System.out.println("before...");
     }
+
 }

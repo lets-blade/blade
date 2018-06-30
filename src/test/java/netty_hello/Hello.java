@@ -20,32 +20,32 @@ public class Hello {
         Blade.me()
 //                .devMode(false)
 //                .environment(Const.ENV_KEY_NETTY_WORKERS, Runtime.getRuntime().availableProcessors())
-                .get("/hello", ((request, response) -> response.text("Hello World.")))
-                .get("/error", ((request, response) -> {
-                    int a = 1/0;
-                    response.text("Hello World.");
-                }))
-                .post("/hello", ((request, response) -> response.text("Hello World.")))
-                .put("/hello", ((request, response) -> response.text("Hello World.")))
-                .delete("/hello", ((request, response) -> response.text("Hello World.")))
-                .get("/download", (request, response) -> {
+                .get("/hello", ctx -> ctx.text("Hello World."))
+                .get("/error", ctx -> {
+                    int a = 1 / 0;
+                    ctx.text("Hello World.");
+                })
+                .post("/hello", ctx -> ctx.text("Hello World."))
+                .put("/hello", ctx -> ctx.text("Hello World."))
+                .delete("/hello", ctx -> ctx.text("Hello World."))
+                .get("/download", ctx -> {
                     try {
-                        response.download("hello.txt", new File("/Users/biezhi/workspace/projects/java/blade/src/test/resources/static/a.txt"));
+                        ctx.response().download("hello.txt", new File("/Users/biezhi/workspace/projects/java/blade/src/test/resources/static/a.txt"));
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                 })
-                .before("/*", (request, response) -> {
+                .before("/*", ctx -> {
                     System.out.println("Before...");
                 })
-                .get("/rand", ((request, response) -> {
+                .get("/rand", ctx -> {
                     try {
                         TimeUnit.MILLISECONDS.sleep(new Random().nextInt(1000));
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-                    response.body(EmptyBody.empty());
-                }))
+                    ctx.body(EmptyBody.empty());
+                })
 //                .use(new CsrfMiddleware())
                 .event(EventType.ENVIRONMENT_CHANGED, new ConfigChanged())
                 .start(Hello.class, args);

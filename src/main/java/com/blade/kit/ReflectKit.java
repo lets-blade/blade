@@ -1,8 +1,7 @@
 package com.blade.kit;
 
 import com.blade.exception.BladeException;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.*;
@@ -22,8 +21,8 @@ import java.util.stream.Stream;
  * 2017/5/31
  */
 @Slf4j
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ReflectKit {
+@UtilityClass
+public class ReflectKit {
 
     private static final String TYPE_NAME_PREFIX = "class ";
 

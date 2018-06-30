@@ -22,11 +22,11 @@ public class MiddlewareTest extends BaseTestCase {
         WebHook middleware = mock(WebHook.class);
         Signature signature = mock(Signature.class);
 
-        middleware.before(signature);
-        middleware.after(signature);
+        middleware.before(signature.routeContext());
+        middleware.after(signature.routeContext());
 
-        verify(middleware).before(signature);
-        verify(middleware).after(signature);
+        verify(middleware).before(signature.routeContext());
+        verify(middleware).after(signature.routeContext());
     }
 
     @Test
@@ -36,10 +36,10 @@ public class MiddlewareTest extends BaseTestCase {
 
         Signature signature = mock(Signature.class);
 
-        basicAuthMiddleware.before(signature);
-        basicAuthMiddleware.after(signature);
+        basicAuthMiddleware.before(signature.routeContext());
+        basicAuthMiddleware.after(signature.routeContext());
 
-        verify(basicAuthMiddleware).before(signature);
-        verify(basicAuthMiddleware).after(signature);
+        verify(basicAuthMiddleware).before(signature.routeContext());
+        verify(basicAuthMiddleware).after(signature.routeContext());
     }
 }

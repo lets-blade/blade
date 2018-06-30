@@ -1,7 +1,11 @@
 package com.blade.mvc.hook;
 
+import com.blade.mvc.RouteContext;
+
 /**
  * Request WebHook
+ * <p>
+ * Intercept before and after each request logic processing.
  *
  * @author biezhi
  * 2017/6/2
@@ -12,18 +16,18 @@ public interface WebHook {
     /**
      * In the route calls before execution
      *
-     * @param signature the current route signature
+     * @param context the current route context
      * @return return true then execute next route, else interrupt the current request
      */
-    boolean before(Signature signature);
+    boolean before(RouteContext context);
 
     /**
      * In the route calls after execution
      *
-     * @param signature the current route signature
+     * @param context the current route context
      * @return return true then execute next route, else interrupt the current request. default is true
      */
-    default boolean after(Signature signature) {
+    default boolean after(RouteContext context) {
         return true;
     }
 

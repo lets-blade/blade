@@ -1,6 +1,7 @@
 package com.blade.security.web.csrf;
 
 import com.blade.kit.StringKit;
+import com.blade.mvc.RouteContext;
 import com.blade.mvc.http.Request;
 import com.blade.mvc.http.Response;
 import lombok.*;
@@ -24,7 +25,7 @@ public class CsrfOption {
 
     static final Set<String> DEFAULT_IGNORE_METHODS = new HashSet<>(Arrays.asList("GET", "HEAD", "OPTIONS", "PUT", "DELETE"));
 
-    static final Consumer<Response> DEFAULT_ERROR_HANDLER = response -> response.badRequest().text("CSRF token mismatch.");
+    static final Consumer<RouteContext> DEFAULT_ERROR_HANDLER = context -> context.badRequest().text("CSRF token mismatch.");
 
     static final Function<Request, String> DEFAULT_TOKEN_GETTER = request -> request.query("_token").orElseGet(() -> {
         if (StringKit.isNotBlank(request.header("X-CSRF-TOKEN"))) {
@@ -43,7 +44,7 @@ public class CsrfOption {
     @Builder.Default
     private Set<String>               ignoreMethods      = DEFAULT_IGNORE_METHODS;
     @Builder.Default
-    private Consumer<Response>        errorHandler       = DEFAULT_ERROR_HANDLER;
+    private Consumer<RouteContext>    errorHandler       = DEFAULT_ERROR_HANDLER;
     @Builder.Default
     private Function<Request, String> tokenGetter        = DEFAULT_TOKEN_GETTER;
 

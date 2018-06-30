@@ -15,8 +15,7 @@
  */
 package com.blade.kit;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.experimental.UtilityClass;
 
 /**
  * 加解密类
@@ -24,8 +23,8 @@ import lombok.NoArgsConstructor;
  * @author <a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since 1.0
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class PasswordKit {
+@UtilityClass
+public class PasswordKit {
 
     // Define the BCrypt workload to use when generating password hashes. 10-31 is a valid value.
     private static final int workload = 12;

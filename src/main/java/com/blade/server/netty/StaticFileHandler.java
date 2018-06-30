@@ -8,6 +8,7 @@ import com.blade.kit.DateKit;
 import com.blade.kit.PathKit;
 import com.blade.kit.StringKit;
 import com.blade.mvc.Const;
+import com.blade.mvc.handler.RequestHandler;
 import com.blade.mvc.http.Request;
 import com.blade.mvc.http.Response;
 import io.netty.buffer.ByteBuf;
@@ -45,7 +46,7 @@ import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
  * 2017/5/31
  */
 @Slf4j
-public class StaticFileHandler implements RequestHandler<Boolean> {
+public class StaticFileHandler implements RequestHandler<ChannelHandlerContext> {
 
     private boolean showFileList;
 
@@ -68,10 +69,10 @@ public class StaticFileHandler implements RequestHandler<Boolean> {
      * @throws Exception
      */
     @Override
-    public Boolean handle(ChannelHandlerContext ctx, Request request, Response response) throws Exception {
+    public void handle(ChannelHandlerContext ctx, Request request, Response response) throws Exception {
         if (!HttpConst.METHOD_GET.equals(request.method())) {
             sendError(ctx, METHOD_NOT_ALLOWED);
-            return false;
+            return;
         }
 
         Instant start = Instant.now();
@@ -88,9 +89,8 @@ public class StaticFileHandler implements RequestHandler<Boolean> {
             }
             if (writeJarResource(ctx, request, cleanUri, input)) {
                 log200(log, start, method, uri);
-                return false;
             }
-            return false;
+            return;
         }
         if (BladeKit.isInJar()) {
             InputStream input = StaticFileHandler.class.getResourceAsStream(cleanUri);
@@ -100,9 +100,8 @@ public class StaticFileHandler implements RequestHandler<Boolean> {
             }
             if (writeJarResource(ctx, request, cleanUri, input)) {
                 log200(log, start, method, uri);
-                return false;
             }
-            return false;
+            return;
         }
 
         final String path = sanitizeUri(cleanUri);
@@ -133,18 +132,18 @@ public class StaticFileHandler implements RequestHandler<Boolean> {
             } else {
                 response.redirect(uri + HttpConst.SLASH);
             }
-            return false;
+            return;
         }
 
         if (!file.isFile()) {
             sendError(ctx, FORBIDDEN);
-            return false;
+            return;
         }
 
         // Cache Validation
         if (isHttp304(ctx, request, file.length(), file.lastModified())) {
             log304(log, method, uri);
-            return false;
+            return;
         }
 
         RandomAccessFile raf;
@@ -152,7 +151,7 @@ public class StaticFileHandler implements RequestHandler<Boolean> {
             raf = new RandomAccessFile(file, "r");
         } catch (FileNotFoundException ignore) {
             sendError(ctx, NOT_FOUND);
-            return false;
+            return;
         }
 
         long fileLength = raf.length();
@@ -192,7 +191,6 @@ public class StaticFileHandler implements RequestHandler<Boolean> {
             lastContentFuture.addListener(ChannelFutureListener.CLOSE);
         }
         log200(log, start, method, uri);
-        return false;
     }
 
     private boolean writeJarResource(ChannelHandlerContext ctx, Request request, String uri, InputStream input) throws IOException {

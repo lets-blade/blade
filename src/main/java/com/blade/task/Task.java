@@ -18,6 +18,7 @@ package com.blade.task;
 import com.blade.task.cron.CronExpression;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import lombok.var;
 
 import java.util.concurrent.ScheduledFuture;
 
@@ -56,7 +57,7 @@ public class Task {
             return true;
         }
         isRunning = false;
-        boolean flag = future.cancel(true);
+        var flag = future.cancel(true);
         log.info("{}Task [{}] stoped", getStartedSymbol(), name);
         return flag;
     }

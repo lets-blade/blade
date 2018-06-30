@@ -1,6 +1,7 @@
 package com.blade.kit;
 
 import com.blade.reflectasm.MethodAccess;
+import lombok.experimental.UtilityClass;
 
 import java.lang.invoke.SerializedLambda;
 import java.lang.reflect.Field;
@@ -10,9 +11,12 @@ import java.util.Map;
 import static com.blade.kit.BladeKit.methodToFieldName;
 
 /**
+ * Blade Cache
+ *
  * @author biezhi
  * @date 2018/4/22
  */
+@UtilityClass
 public class BladeCache {
 
     private static final Map<SerializedLambda, String> CACHE_LAMBDA_NAME       = new HashMap<>(8);
@@ -28,7 +32,7 @@ public class BladeCache {
         PADDING_METHOD_STR.put("HEAD", StringKit.padRight("HEAD", 6));
     }
 
-    public static String getPaddingMethod(String method){
+    public static String getPaddingMethod(String method) {
         return PADDING_METHOD_STR.get(method);
     }
 

@@ -3,6 +3,7 @@ package com.blade.security.web.csrf;
 import com.blade.kit.PasswordKit;
 import com.blade.kit.StringKit;
 import com.blade.kit.UUID;
+import com.blade.mvc.RouteContext;
 import com.blade.mvc.hook.Signature;
 import com.blade.mvc.hook.WebHook;
 import com.blade.mvc.http.Request;
@@ -34,51 +35,48 @@ public class CsrfMiddleware implements WebHook {
     }
 
     @Override
-    public boolean before(Signature signature) {
-        Request request = signature.request();
-        Session session = request.session();
-
-        if (csrfOption.isIgnoreMethod(request.method())) {
-            if (csrfOption.isStartExclusion(request.uri())) {
+    public boolean before(RouteContext context) {
+        if (csrfOption.isIgnoreMethod(context.method())) {
+            if (csrfOption.isStartExclusion(context.uri())) {
                 return true;
             }
-            this.genToken(request);
+            this.genToken(context);
             return true;
         }
 
-        if (csrfOption.isExclusion(request.uri())) {
+        if (csrfOption.isExclusion(context.uri())) {
             return true;
         }
 
-        String tokenUUID = session.attribute(sessionToken);
+        String tokenUUID = context.session().attribute(sessionToken);
         if (StringKit.isEmpty(tokenUUID)) {
-            csrfOption.getErrorHandler().accept(signature.response());
+            csrfOption.getErrorHandler().accept(context);
             return false;
         }
 
-        String token = csrfOption.getTokenGetter().apply(request);
+        String token = csrfOption.getTokenGetter().apply(context.request());
         if (StringKit.isEmpty(token)) {
-            csrfOption.getErrorHandler().accept(signature.response());
+            csrfOption.getErrorHandler().accept(context);
             return false;
         }
         String hash = new String(Base64.getDecoder().decode(token));
         if (!PasswordKit.checkPassword(tokenUUID, hash)) {
-            csrfOption.getErrorHandler().accept(signature.response());
+            csrfOption.getErrorHandler().accept(context);
             return false;
         }
 
         return true;
     }
 
-    public String genToken(Request request) {
-        String tokenUUID = request.session().attribute(sessionToken);
+    public String genToken(RouteContext context) {
+        String tokenUUID = context.session().attribute(sessionToken);
         if (StringKit.isEmpty(tokenUUID)) {
             tokenUUID = UUID.UU64();
-            request.session().attribute(sessionToken, tokenUUID);
+            context.session().attribute(sessionToken, tokenUUID);
         }
         String token = Base64.getEncoder().encodeToString(PasswordKit.hashPassword(tokenUUID).getBytes());
-        request.attribute("_csrf_token", token);
-        request.attribute("_csrf_token_input", "<input type='hidden' name='_token' value='" + token + "'/>");
+        context.attribute("_csrf_token", token);
+        context.attribute("_csrf_token_input", "<input type='hidden' name='_token' value='" + token + "'/>");
         return token;
     }
 

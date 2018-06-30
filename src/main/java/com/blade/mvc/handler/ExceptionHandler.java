@@ -18,4 +18,11 @@ public interface ExceptionHandler {
      */
     void handle(Exception e);
 
+    static boolean isResetByPeer(Throwable e) {
+        if ("Connection reset by peer".equals(e.getMessage())) {
+            return true;
+        }
+        return false;
+    }
+
 }

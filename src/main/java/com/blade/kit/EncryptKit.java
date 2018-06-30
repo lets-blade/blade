@@ -15,8 +15,7 @@
  */
 package com.blade.kit;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.experimental.UtilityClass;
 
 import javax.crypto.Cipher;
 import javax.crypto.Mac;
@@ -35,8 +34,8 @@ import static com.blade.kit.ConvertKit.hex2Dec;
  * @author <a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since 1.0
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class EncryptKit {
+@UtilityClass
+public class EncryptKit {
 
     private static final char[] HEX_DIGITS = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
 

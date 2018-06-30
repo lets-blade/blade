@@ -2,7 +2,9 @@ package com.blade.mvc.route;
 
 import com.blade.ioc.annotation.Order;
 import com.blade.kit.*;
+import com.blade.mvc.RouteContext;
 import com.blade.mvc.handler.RouteHandler;
+import com.blade.mvc.handler.RouteHandler0;
 import com.blade.mvc.hook.Signature;
 import com.blade.mvc.hook.WebHook;
 import com.blade.mvc.http.HttpMethod;
@@ -50,9 +52,16 @@ public class RouteMatcher {
 
     private List<String> webSockets = new ArrayList<>(4);
 
-    private Route addRoute(HttpMethod httpMethod, String path, RouteHandler handler, String methodName) throws NoSuchMethodException {
+    @Deprecated
+    private Route addRoute(HttpMethod httpMethod, String path, RouteHandler0 handler, String methodName) throws NoSuchMethodException {
         Class<?> handleType = handler.getClass();
         Method   method     = handleType.getMethod(methodName, Request.class, Response.class);
+        return addRoute(httpMethod, path, handler, RouteHandler0.class, method);
+    }
+
+    private Route addRoute(HttpMethod httpMethod, String path, RouteHandler handler, String methodName) throws NoSuchMethodException {
+        Class<?> handleType = handler.getClass();
+        Method   method     = handleType.getMethod(methodName, RouteContext.class);
         return addRoute(httpMethod, path, handler, RouteHandler.class, method);
     }
 
@@ -95,6 +104,16 @@ public class RouteMatcher {
             this.routes.put(key, route);
         }
         return route;
+    }
+
+    @Deprecated
+    public Route addRoute(String path, RouteHandler0 handler, HttpMethod httpMethod) {
+        try {
+            return addRoute(httpMethod, path, handler, METHOD_NAME);
+        } catch (Exception e) {
+            log.error("", e);
+        }
+        return null;
     }
 
     public Route addRoute(String path, RouteHandler handler, HttpMethod httpMethod) {

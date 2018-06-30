@@ -15,8 +15,7 @@
  */
 package com.blade.kit;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.experimental.UtilityClass;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -28,8 +27,8 @@ import java.util.concurrent.ConcurrentMap;
  * @author biezhi
  * @date 2017/12/15
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class CollectionKit {
+@UtilityClass
+public class CollectionKit {
 
     /**
      * Determines whether an array is empty

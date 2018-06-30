@@ -15,8 +15,7 @@
  */
 package com.blade.kit;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.*;
@@ -33,8 +32,8 @@ import java.util.stream.Collectors;
  * 2017/6/2
  */
 @Slf4j
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class IOKit {
+@UtilityClass
+public class IOKit {
 
     public static void closeQuietly(Closeable closeable) {
         try {

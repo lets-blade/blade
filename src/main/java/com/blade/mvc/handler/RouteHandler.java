@@ -1,10 +1,9 @@
 package com.blade.mvc.handler;
 
-import com.blade.mvc.http.Request;
-import com.blade.mvc.http.Response;
+import com.blade.mvc.RouteContext;
 
 /**
- * route middleware
+ * Route logic handler
  *
  * @author biezhi
  * 2017/5/31
@@ -15,9 +14,8 @@ public interface RouteHandler {
     /**
      * Route handler
      *
-     * @param request  current thread Request instance
-     * @param response current thread Response instance
+     * @param context the current request context instance
      */
-    void handle(Request request, Response response);
+    void handle(RouteContext context);
 
 }

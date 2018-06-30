@@ -15,8 +15,7 @@
  */
 package com.blade.kit;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.experimental.UtilityClass;
 import org.objectweb.asm.*;
 
 import java.io.IOException;
@@ -31,8 +30,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author <a href="mailto:biezhi.me@gmail.com" target="_blank">biezhi</a>
  * @since 1.6.6
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class AsmKit {
+@UtilityClass
+public class AsmKit {
 
     /**
      * Cached method names
@@ -60,7 +59,7 @@ public final class AsmKit {
      * @param m method
      * @return return method param names
      */
-    public static String[] getMethodParamNames(final Method m) throws IOException {
+    public static String[] getMethodParamNames(final Method m) {
         if (METHOD_NAMES_POOL.containsKey(m)) return METHOD_NAMES_POOL.get(m);
 
         final String[] paramNames = new String[m.getParameterTypes().length];

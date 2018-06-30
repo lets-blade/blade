@@ -1,6 +1,7 @@
 package com.blade.security.web.auth;
 
 import com.blade.kit.StringKit;
+import com.blade.mvc.RouteContext;
 import com.blade.mvc.hook.Signature;
 import com.blade.mvc.hook.WebHook;
 import com.blade.mvc.http.Request;
@@ -55,22 +56,18 @@ public class BasicAuthMiddleware implements WebHook {
     }
 
     @Override
-    public boolean before(Signature signature) {
-        Request  request  = signature.request();
-        Response response = signature.response();
-
-        if (null != request.session().attribute(authUserKey)) {
+    public boolean before(RouteContext context) {
+        if (null != context.session().attribute(authUserKey)) {
             return true;
         }
 
-        String authorization = request.header("Authorization");
+        String authorization = context.header("Authorization");
         String user          = this.searchCredential(authorization);
         if (null == user) {
-            response.header("WWW-Authenticate", this.realm);
-            response.status(401);
+            context.header("WWW-Authenticate", this.realm).status(401);
             return false;
         }
-        request.session().attribute(authUserKey, user);
+        context.session().attribute(authUserKey, user);
         return true;
     }
 
