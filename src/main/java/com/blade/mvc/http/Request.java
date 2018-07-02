@@ -466,8 +466,8 @@ public interface Request {
     /**
      * Setting Request Attribute
      *
-     * @param name  Parameter name
-     * @param value Parameter Value
+     * @param name  attribute name
+     * @param value attribute Value
      * @return set attribute value and return current request instance
      */
     default Request attribute(@NonNull String name, Object value) {
