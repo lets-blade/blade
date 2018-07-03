@@ -2,6 +2,7 @@ package com.blade.mvc.handler;
 
 import com.blade.Blade;
 import com.blade.kit.ReflectKit;
+import com.blade.kit.StringKit;
 import com.blade.kit.UUID;
 import com.blade.mvc.http.Request;
 import com.blade.mvc.http.Session;
@@ -35,20 +36,17 @@ public class SessionHandler {
 
     public Session createSession(Request request) {
         Session session = getSession(request);
+
+        long now = Instant.now().getEpochSecond();
         if (null == session) {
-            long now     = Instant.now().getEpochSecond();
             long expired = now + timeout;
-
-            String sessionId = UUID.UU32();
-
             session = ReflectKit.newInstance(blade.sessionType());
-            session.id(sessionId);
+            session.id(UUID.UU32());
             session.created(now);
             session.expired(expired);
             sessionManager.addSession(session);
             return session;
         } else {
-            long now = Instant.now().getEpochSecond();
             if (session.expired() < now) {
                 sessionManager.remove(session);
             } else {
@@ -62,7 +60,7 @@ public class SessionHandler {
 
     private Session getSession(Request request) {
         String cookieHeader = request.cookie(sessionKey);
-        if (null == cookieHeader) {
+        if (StringKit.isEmpty(cookieHeader)) {
             return null;
         }
         return sessionManager.getSession(cookieHeader);
