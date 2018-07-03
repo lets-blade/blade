@@ -314,7 +314,6 @@ public class RouteMethodHandler implements RequestHandler<ChannelHandlerContext>
 
         // execution middleware
         if (hasMiddleware && !invokeMiddleware(routeMatcher.getMiddleware(), context)) {
-            context.body(EmptyBody.empty());
             handleResponse(context.response(), ctx, keepAlive);
             return;
         }
@@ -322,7 +321,6 @@ public class RouteMethodHandler implements RequestHandler<ChannelHandlerContext>
 
         // web hook before
         if (hasBeforeHook && !invokeHook(routeMatcher.getBefore(uri), context)) {
-            context.body(EmptyBody.empty());
             handleResponse(context.response(), ctx, keepAlive);
             return;
         }
