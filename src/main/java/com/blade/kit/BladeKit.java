@@ -31,7 +31,6 @@ import com.blade.task.TaskStruct;
 import com.blade.task.annotation.Schedule;
 import lombok.experimental.UtilityClass;
 import org.slf4j.Logger;
-import org.slf4j.impl.Ansi;
 
 import java.io.File;
 import java.io.Serializable;
