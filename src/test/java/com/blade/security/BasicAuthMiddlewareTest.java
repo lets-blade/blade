@@ -5,7 +5,6 @@ import com.blade.Blade;
 import com.blade.mvc.RouteContext;
 import com.blade.mvc.WebContext;
 import com.blade.mvc.handler.RouteHandler;
-import com.blade.mvc.hook.Signature;
 import com.blade.mvc.http.HttpRequest;
 import com.blade.mvc.http.Request;
 import com.blade.mvc.http.Response;
@@ -42,7 +41,7 @@ public class BasicAuthMiddlewareTest extends BaseTestCase {
 
         Request   mockRequest = mockHttpRequest("GET");
 
-        WebContext.init(Blade.me(), "/");
+        WebContext.init(Blade.of(), "/");
 
 
         Map<String, String> headers = new HashMap<>();

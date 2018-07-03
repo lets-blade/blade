@@ -19,7 +19,7 @@ tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
 }
 
-def bladeAsmVersion = '0.0.2'
+def bladeAsmVersion = '0.0.3'
 def bladeLogVersion = '0.1.5'
 def junitVersion = '4.12'
 def slf4jApiVersion = '1.7.21'

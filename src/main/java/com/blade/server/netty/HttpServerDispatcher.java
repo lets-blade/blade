@@ -4,10 +4,7 @@ import com.blade.exception.BladeException;
 import com.blade.kit.BladeCache;
 import com.blade.mvc.WebContext;
 import com.blade.mvc.handler.ExceptionHandler;
-import com.blade.mvc.http.HttpRequest;
-import com.blade.mvc.http.HttpResponse;
-import com.blade.mvc.http.Request;
-import com.blade.mvc.http.Response;
+import com.blade.mvc.http.*;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
@@ -24,6 +21,7 @@ import java.util.Set;
 
 import static com.blade.kit.BladeKit.log200;
 import static com.blade.kit.BladeKit.log500;
+import static com.blade.mvc.Const.ENV_KEY_SESSION_KEY;
 import static com.blade.mvc.Const.REQUEST_COST_TIME;
 import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
@@ -41,6 +39,7 @@ public class HttpServerDispatcher extends SimpleChannelInboundHandler<FullHttpRe
     private final ExceptionHandler   exceptionHandler   = WebContext.blade().exceptionHandler();
     private final StaticFileHandler  staticFileHandler  = new StaticFileHandler(WebContext.blade());
     private final RouteMethodHandler routeMethodHandler = new RouteMethodHandler();
+    private final String             sessionKey         = WebContext.blade().environment().get(ENV_KEY_SESSION_KEY, HttpConst.DEFAULT_SESSION_KEY);
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest req) {
@@ -74,6 +73,15 @@ public class HttpServerDispatcher extends SimpleChannelInboundHandler<FullHttpRe
         } finally {
             if (!isStatic) {
                 boolean keepAlive = request.keepAlive();
+                Session session   = request.session();
+                if (null != session) {
+                    Cookie cookie = new Cookie();
+                    cookie.name(sessionKey);
+                    cookie.value(session.id());
+                    cookie.httpOnly(true);
+                    cookie.secure(request.isSecure());
+                    response.cookie(cookie);
+                }
                 routeMethodHandler.handleResponse(response, ctx, keepAlive);
             }
             WebContext.remove();

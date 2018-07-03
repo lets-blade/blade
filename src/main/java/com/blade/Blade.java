@@ -15,10 +15,8 @@
  */
 package com.blade;
 
-import com.blade.event.BeanProcessor;
+import com.blade.event.*;
 import com.blade.event.EventListener;
-import com.blade.event.EventManager;
-import com.blade.event.EventType;
 import com.blade.exception.BladeException;
 import com.blade.ioc.Ioc;
 import com.blade.ioc.SimpleIoc;
@@ -28,12 +26,12 @@ import com.blade.kit.StringKit;
 import com.blade.kit.reload.FileChangeDetector;
 import com.blade.loader.BladeLoader;
 import com.blade.mvc.Const;
-import com.blade.mvc.SessionManager;
 import com.blade.mvc.handler.*;
 import com.blade.mvc.hook.WebHook;
 import com.blade.mvc.http.HttpMethod;
 import com.blade.mvc.http.HttpSession;
 import com.blade.mvc.http.Session;
+import com.blade.mvc.http.session.SessionManager;
 import com.blade.mvc.route.RouteMatcher;
 import com.blade.mvc.ui.template.DefaultEngine;
 import com.blade.mvc.ui.template.TemplateEngine;
@@ -45,7 +43,6 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import lombok.var;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.*;
 import java.util.*;
@@ -119,7 +116,7 @@ public class Blade {
     /**
      * Session manager, which manages session when you enable session
      */
-    private SessionManager sessionManager = new SessionManager();
+    private SessionManager sessionManager = new SessionManager(eventManager);
 
     /**
      * Used to wait for the start to complete the lock
@@ -706,7 +703,20 @@ public class Blade {
      * @param eventListener event watcher
      * @return blade
      */
-    public <T> Blade event(@NonNull EventType eventType, @NonNull EventListener<T> eventListener) {
+    public Blade event(@NonNull EventType eventType, @NonNull EventListener eventListener) {
+        this.eventManager.addEventListener(eventType, eventListener);
+        return this;
+    }
+
+    /**
+     * Add a event watcher
+     * When the trigger event is executed eventListener
+     *
+     * @param eventType     event type
+     * @param eventListener event watcher
+     * @return blade
+     */
+    public Blade on(@NonNull EventType eventType, @NonNull EventListener eventListener) {
         this.eventManager.addEventListener(eventType, eventListener);
         return this;
     }
@@ -840,7 +850,8 @@ public class Blade {
 
             Assert.greaterThan(port, 0, "server port not is negative number.");
             this.bootClass = bootClass;
-            eventManager.fireEvent(EventType.SERVER_STARTING, this);
+
+            eventManager.fireEvent(EventType.SERVER_STARTING, new Event().attribute("blade", this));
             Thread thread = new Thread(() -> {
                 try {
                     server.start(Blade.this, args);
@@ -914,9 +925,9 @@ public class Blade {
      * Will stop synchronization waiting netty service
      */
     public void stop() {
-        this.eventManager.fireEvent(EventType.SERVER_STOPPING, this);
+        this.eventManager.fireEvent(EventType.SERVER_STOPPING, new Event().attribute("blade", this));
         this.server.stopAndWait();
-        this.eventManager.fireEvent(EventType.SERVER_STOPPED, this);
+        this.eventManager.fireEvent(EventType.SERVER_STOPPED, new Event().attribute("blade", this));
     }
 
     /**

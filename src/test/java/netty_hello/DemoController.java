@@ -8,6 +8,7 @@ import com.blade.mvc.ui.RestResponse;
 import com.blade.validator.Validators;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -42,6 +43,12 @@ public class DemoController {
         System.out.println("hello:" + hello);
         System.out.println("aa:" + aa);
         System.out.println("bb:" + bb);
+    }
+
+    @JSON
+    @PostRoute("api_test/:size")
+    public RestResponse<Integer> api_portal(@PathParam Integer size){
+        return RestResponse.ok(size);
     }
 
     @GetRoute("csrf")

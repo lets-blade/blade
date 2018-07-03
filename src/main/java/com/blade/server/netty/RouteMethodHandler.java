@@ -318,6 +318,7 @@ public class RouteMethodHandler implements RequestHandler<ChannelHandlerContext>
             handleResponse(context.response(), ctx, keepAlive);
             return;
         }
+        context.injectParameters();
 
         // web hook before
         if (hasBeforeHook && !invokeHook(routeMatcher.getBefore(uri), context)) {

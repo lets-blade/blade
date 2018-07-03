@@ -31,21 +31,21 @@ import java.util.stream.Stream;
  */
 public class EventManager {
 
-    private Map<EventType, List<EventListener>> listenerMap = null;
-    private OrderComparator<EventListener>      comparator  = new OrderComparator<>();
+    private Map<EventType, List<EventListener>> listenerMap;
+    private OrderComparator<EventListener>      comparator = new OrderComparator<>();
 
     public EventManager() {
         this.listenerMap = Stream.of(EventType.values()).collect(Collectors.toMap(v -> v, v -> new LinkedList<>()));
     }
 
-    public <T> void addEventListener(EventType type, EventListener<T> listener) {
+    public <T> void addEventListener(EventType type, EventListener listener) {
         listenerMap.get(type).add(listener);
     }
 
-    public <T> void fireEvent(EventType type, T data) {
+    public <T> void fireEvent(EventType type, Event event) {
         listenerMap.get(type).stream()
                 .sorted(comparator)
-                .forEach(listener -> listener.trigger(new Event<>(type, data)));
+                .forEach(listener -> listener.trigger(event));
     }
 
 }

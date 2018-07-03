@@ -3,10 +3,8 @@ package netty_hello;
 import com.blade.Blade;
 import com.blade.event.EventType;
 import com.blade.mvc.http.EmptyBody;
-import com.blade.security.web.csrf.CsrfMiddleware;
 
 import java.io.File;
-import java.time.LocalDateTime;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
@@ -17,7 +15,7 @@ import java.util.concurrent.TimeUnit;
 public class Hello {
 
     public static void main(String[] args) {
-        Blade.me()
+        Blade.of()
 //                .devMode(false)
 //                .environment(Const.ENV_KEY_NETTY_WORKERS, Runtime.getRuntime().availableProcessors())
                 .get("/hello", ctx -> ctx.text("Hello World."))
@@ -46,8 +44,13 @@ public class Hello {
                     }
                     ctx.body(EmptyBody.empty());
                 })
+//                .use(new XssMiddleware())
 //                .use(new CsrfMiddleware())
                 .event(EventType.ENVIRONMENT_CHANGED, new ConfigChanged())
+                .event(EventType.SESSION_DESTROY, e -> {
+                    System.out.println("session 失效了");
+                })
                 .start(Hello.class, args);
     }
+
 }

@@ -18,18 +18,14 @@ package com.blade.server.netty;
 import com.blade.Blade;
 import com.blade.Environment;
 import com.blade.event.BeanProcessor;
+import com.blade.event.Event;
 import com.blade.event.EventType;
 import com.blade.ioc.DynamicContext;
-import com.blade.ioc.Ioc;
 import com.blade.ioc.annotation.Bean;
 import com.blade.ioc.annotation.Value;
-import com.blade.ioc.bean.BeanDefine;
 import com.blade.ioc.bean.ClassInfo;
 import com.blade.ioc.bean.OrderComparator;
-import com.blade.kit.BladeKit;
-import com.blade.kit.NamedThreadFactory;
-import com.blade.kit.ReflectKit;
-import com.blade.kit.StringKit;
+import com.blade.kit.*;
 import com.blade.loader.BladeLoader;
 import com.blade.mvc.Const;
 import com.blade.mvc.WebContext;
@@ -38,15 +34,14 @@ import com.blade.mvc.annotation.URLPattern;
 import com.blade.mvc.handler.DefaultExceptionHandler;
 import com.blade.mvc.handler.ExceptionHandler;
 import com.blade.mvc.hook.WebHook;
+import com.blade.mvc.http.session.SessionCleaner;
 import com.blade.mvc.route.RouteBuilder;
-import com.blade.mvc.route.RouteMatcher;
 import com.blade.mvc.ui.template.DefaultEngine;
 import com.blade.server.Server;
 import com.blade.task.Task;
 import com.blade.task.TaskContext;
 import com.blade.task.TaskManager;
 import com.blade.task.TaskStruct;
-import com.blade.task.annotation.Schedule;
 import com.blade.task.cron.CronExecutorService;
 import com.blade.task.cron.CronExpression;
 import com.blade.task.cron.CronThreadPoolExecutor;
@@ -65,13 +60,10 @@ import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.util.ResourceLeakDetector;
 import lombok.extern.slf4j.Slf4j;
 import lombok.var;
-import org.slf4j.impl.Ansi;
 
 import java.io.File;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
@@ -123,14 +115,19 @@ public class NettyServer implements Server {
         WebContext.init(blade, contextPath);
 
         this.initIoc();
-
         this.watchEnv();
-
         this.startServer(startMs);
-
+        this.sessionCleaner();
         this.startTask();
-
         this.shutdownHook();
+    }
+
+    private void sessionCleaner() {
+        if (null != blade.sessionManager()) {
+            Thread sessionCleanerThread = new Thread(new SessionCleaner(blade.sessionManager()));
+            sessionCleanerThread.setName("session-cleaner");
+            sessionCleanerThread.start();
+        }
     }
 
     private void initIoc() {
@@ -233,7 +230,7 @@ public class NettyServer implements Server {
         log.info("{}Blade start with {}", getStartedSymbol(), url);
         log.info("{}Open browser access {}://{}:{} ⚡\r\n", getStartedSymbol(), protocol, address.replace(DEFAULT_SERVER_ADDRESS, LOCAL_IP_ADDRESS), port);
 
-        blade.eventManager().fireEvent(EventType.SERVER_STARTED, blade);
+        blade.eventManager().fireEvent(EventType.SERVER_STARTED, new Event().attribute("blade", blade));
     }
 
     private void startTask() {

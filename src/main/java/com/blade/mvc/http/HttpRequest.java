@@ -6,12 +6,11 @@ import com.blade.mvc.WebContext;
 import com.blade.mvc.multipart.FileItem;
 import com.blade.mvc.route.Route;
 import com.blade.server.netty.HttpConst;
-import com.blade.server.netty.SessionHandler;
+import com.blade.mvc.handler.SessionHandler;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufUtil;
 import io.netty.buffer.Unpooled;
 import io.netty.handler.codec.http.FullHttpRequest;
-import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpUtil;
 import io.netty.handler.codec.http.QueryStringDecoder;
 import io.netty.handler.codec.http.cookie.ServerCookieDecoder;
@@ -53,6 +52,7 @@ public class HttpRequest implements Request {
     private String  protocol;
     private String  method;
     private boolean keepAlive;
+    private Session session;
 
     private Map<String, String>       headers    = null;
     private Map<String, Object>       attributes = null;
@@ -242,7 +242,7 @@ public class HttpRequest implements Request {
 
     @Override
     public Session session() {
-        return SESSION_HANDLER.createSession(this);
+        return this.session;
     }
 
     @Override
@@ -342,6 +342,7 @@ public class HttpRequest implements Request {
             httpRequest.uri = cleanUri;
         }
 
+        httpRequest.session = SESSION_HANDLER.createSession(httpRequest);
         return httpRequest;
     }
 

@@ -13,8 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.blade.mvc;
+package com.blade.mvc.http.session;
 
+import com.blade.event.Event;
+import com.blade.event.EventManager;
+import com.blade.event.EventType;
+import com.blade.mvc.WebContext;
 import com.blade.mvc.http.Session;
 
 import java.util.Map;
@@ -30,6 +34,8 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class SessionManager {
 
+    private EventManager eventManager;
+
     /**
      * Store all Session instances
      */
@@ -38,8 +44,9 @@ public class SessionManager {
     /**
      * Create SessionManager
      */
-    public SessionManager() {
+    public SessionManager(EventManager eventManager) {
         this.sessionMap = new ConcurrentHashMap<>();
+        this.eventManager = eventManager;
     }
 
     /**
@@ -59,6 +66,10 @@ public class SessionManager {
      */
     public void addSession(Session session) {
         sessionMap.put(session.id(), session);
+        Event event = new Event();
+        event.attribute("session", session);
+
+        eventManager.fireEvent(EventType.SESSION_CREATED, event);
     }
 
     /**
@@ -74,6 +85,17 @@ public class SessionManager {
      * @param session session instance
      */
     public void remove(Session session) {
+        session.attributes().clear();
         sessionMap.remove(session.id());
+
+        Event event = new Event();
+        event.attribute("session", session);
+
+        eventManager.fireEvent(EventType.SESSION_DESTROY, event);
     }
+
+    public Map<String, Session> sessionMap() {
+        return sessionMap;
+    }
+
 }

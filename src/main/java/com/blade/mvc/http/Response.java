@@ -113,7 +113,7 @@ public interface Response {
     Response cookie(Cookie cookie);
 
     /**
-     * add Cookie
+     * Add Cookie
      *
      * @param name  Cookie Name
      * @param value Cookie Value
@@ -209,6 +209,11 @@ public interface Response {
         this.json(JsonKit.toString(bean));
     }
 
+    /**
+     * Send a string response to the client
+     *
+     * @param body string content
+     */
     default void body(String body) {
         this.body(new StringBody(body));
     }
@@ -216,7 +221,7 @@ public interface Response {
     /**
      * Send body to client
      *
-     * @param body
+     * @param body {@link Body}
      */
     Response body(Body body);
 
