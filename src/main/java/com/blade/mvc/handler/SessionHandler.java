@@ -1,16 +1,15 @@
-package com.blade.server.netty;
+package com.blade.mvc.handler;
 
 import com.blade.Blade;
-import com.blade.event.EventManager;
-import com.blade.event.EventType;
 import com.blade.kit.ReflectKit;
 import com.blade.kit.UUID;
-import com.blade.mvc.SessionManager;
 import com.blade.mvc.WebContext;
 import com.blade.mvc.http.Cookie;
 import com.blade.mvc.http.Request;
 import com.blade.mvc.http.Response;
 import com.blade.mvc.http.Session;
+import com.blade.mvc.http.session.SessionManager;
+import com.blade.server.netty.HttpConst;
 
 import java.time.Instant;
 import java.util.Objects;
@@ -28,14 +27,12 @@ public class SessionHandler {
 
     private final Blade          blade;
     private final SessionManager sessionManager;
-    private final EventManager   eventManager;
     private final String         sessionKey;
     private final int            timeout;
 
     public SessionHandler(Blade blade) {
         this.blade = blade;
         this.sessionManager = blade.sessionManager();
-        this.eventManager = blade.eventManager();
         this.sessionKey = blade.environment().get(ENV_KEY_SESSION_KEY, HttpConst.DEFAULT_SESSION_KEY);
         this.timeout = blade.environment().getInt(ENV_KEY_SESSION_TIMEOUT, 1800);
     }
@@ -48,7 +45,7 @@ public class SessionHandler {
         } else {
             long now = Instant.now().getEpochSecond();
             if (session.expired() < now) {
-                removeSession(session);
+                sessionManager.remove(session);
             } else {
                 // renewal
                 long expired = now + timeout;
@@ -59,7 +56,6 @@ public class SessionHandler {
     }
 
     private Session createSession(Request request, Response response) {
-
         long now     = Instant.now().getEpochSecond();
         long expired = now + timeout;
 
@@ -78,16 +74,7 @@ public class SessionHandler {
 
         request.cookie(cookie);
         response.cookie(cookie);
-
-        eventManager.fireEvent(EventType.SESSION_CREATED, blade);
-
         return session;
-    }
-
-    private void removeSession(Session session) {
-        session.attributes().clear();
-        sessionManager.remove(session);
-        eventManager.fireEvent(EventType.SESSION_DESTROY, blade);
     }
 
     private Session getSession(Request request) {

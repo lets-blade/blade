@@ -19,6 +19,7 @@ import com.blade.Blade;
 import com.blade.Environment;
 import com.blade.mvc.http.Request;
 import com.blade.mvc.http.Response;
+import com.blade.mvc.http.session.SessionManager;
 import io.netty.util.concurrent.FastThreadLocal;
 import lombok.var;
 

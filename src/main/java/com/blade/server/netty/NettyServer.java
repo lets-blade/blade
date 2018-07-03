@@ -38,6 +38,7 @@ import com.blade.mvc.annotation.URLPattern;
 import com.blade.mvc.handler.DefaultExceptionHandler;
 import com.blade.mvc.handler.ExceptionHandler;
 import com.blade.mvc.hook.WebHook;
+import com.blade.mvc.http.session.SessionCleaner;
 import com.blade.mvc.route.RouteBuilder;
 import com.blade.mvc.route.RouteMatcher;
 import com.blade.mvc.ui.template.DefaultEngine;
@@ -123,14 +124,19 @@ public class NettyServer implements Server {
         WebContext.init(blade, contextPath);
 
         this.initIoc();
-
         this.watchEnv();
-
         this.startServer(startMs);
-
+        this.sessionCleaner();
         this.startTask();
-
         this.shutdownHook();
+    }
+
+    private void sessionCleaner() {
+        if (null != blade.sessionManager()) {
+            Thread sessionCleanerThread = new Thread(new SessionCleaner(blade.sessionManager()));
+            sessionCleanerThread.setName("session-cleaner");
+            sessionCleanerThread.start();
+        }
     }
 
     private void initIoc() {

@@ -28,7 +28,7 @@ import com.blade.kit.StringKit;
 import com.blade.kit.reload.FileChangeDetector;
 import com.blade.loader.BladeLoader;
 import com.blade.mvc.Const;
-import com.blade.mvc.SessionManager;
+import com.blade.mvc.http.session.SessionManager;
 import com.blade.mvc.handler.*;
 import com.blade.mvc.hook.WebHook;
 import com.blade.mvc.http.HttpMethod;
@@ -45,7 +45,6 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import lombok.var;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.*;
 import java.util.*;
@@ -119,7 +118,7 @@ public class Blade {
     /**
      * Session manager, which manages session when you enable session
      */
-    private SessionManager sessionManager = new SessionManager();
+    private SessionManager sessionManager = new SessionManager(eventManager);
 
     /**
      * Used to wait for the start to complete the lock
