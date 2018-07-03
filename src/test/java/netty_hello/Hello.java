@@ -4,6 +4,7 @@ import com.blade.Blade;
 import com.blade.event.EventType;
 import com.blade.mvc.http.EmptyBody;
 import com.blade.security.web.csrf.CsrfMiddleware;
+import com.blade.security.web.xss.XssMiddleware;
 
 import java.io.File;
 import java.time.LocalDateTime;
@@ -46,6 +47,7 @@ public class Hello {
                     }
                     ctx.body(EmptyBody.empty());
                 })
+//                .use(new XssMiddleware())
 //                .use(new CsrfMiddleware())
                 .event(EventType.ENVIRONMENT_CHANGED, new ConfigChanged())
                 .event(EventType.SESSION_DESTROY, e->{

@@ -522,10 +522,12 @@ public class RouteContext {
     public void initRoute(Route route) {
         this.request.initPathParams(route);
         this.route = route;
-        var action = route.getAction();
+    }
+
+    public void injectParameters() {
+        var action = routeAction();
         if (null != action && !action.getDeclaringClass().getName().contains(LAMBDA_IDENTIFY)) {
             this.routeActionParameters = getRouteActionParameters(this);
         }
     }
-
 }

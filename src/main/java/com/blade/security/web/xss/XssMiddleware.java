@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -50,10 +51,13 @@ public class XssMiddleware implements WebHook {
     }
 
     protected void filterParameters(Map<String, List<String>> parameters) {
-        parameters.forEach((key, values) -> {
-            List<String> snzValues = values.stream().map(this::stripXSS).collect(Collectors.toList());
-            parameters.put(key, snzValues);
-        });
+        Set<Map.Entry<String, List<String>>> entries = parameters.entrySet();
+
+        for (Map.Entry<String, List<String>> entry: entries) {
+            List<String> snzValues = entry.getValue().stream().map(this::stripXSS).collect(Collectors.toList());
+            parameters.remove(entry.getKey());
+            parameters.put(entry.getKey(), snzValues);
+        }
     }
 
     /**
