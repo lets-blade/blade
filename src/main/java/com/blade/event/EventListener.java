@@ -22,13 +22,13 @@ package com.blade.event;
  * @date 2017/9/18
  */
 @FunctionalInterface
-public interface EventListener<T> {
+public interface EventListener {
 
     /**
      * Start event
      *
      * @param e Event instance
      */
-    void trigger(Event<T> e);
+    void trigger(Event e);
 
 }

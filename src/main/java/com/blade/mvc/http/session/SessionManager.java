@@ -15,6 +15,7 @@
  */
 package com.blade.mvc.http.session;
 
+import com.blade.event.Event;
 import com.blade.event.EventManager;
 import com.blade.event.EventType;
 import com.blade.mvc.WebContext;
@@ -65,7 +66,10 @@ public class SessionManager {
      */
     public void addSession(Session session) {
         sessionMap.put(session.id(), session);
-        eventManager.fireEvent(EventType.SESSION_CREATED, WebContext.blade());
+        Event event = new Event();
+        event.attribute("session", session);
+
+        eventManager.fireEvent(EventType.SESSION_CREATED, event);
     }
 
     /**
@@ -83,7 +87,11 @@ public class SessionManager {
     public void remove(Session session) {
         session.attributes().clear();
         sessionMap.remove(session.id());
-        eventManager.fireEvent(EventType.SESSION_DESTROY, WebContext.blade());
+
+        Event event = new Event();
+        event.attribute("session", session);
+
+        eventManager.fireEvent(EventType.SESSION_DESTROY, event);
     }
 
     public Map<String, Session> sessionMap() {

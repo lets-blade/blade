@@ -15,8 +15,8 @@
  */
 package com.blade.event;
 
-import com.blade.Blade;
-import com.blade.mvc.WebContext;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Event
@@ -24,21 +24,21 @@ import com.blade.mvc.WebContext;
  * @author biezhi
  * @date 2017/9/18
  */
-public class Event<T> {
+public class Event {
 
-    public EventType eventType;
-    private T data;
+    private Map<String, Object> attribute = new HashMap<>(4);
 
-    public Event(EventType eventType, T data) {
-        this.eventType = eventType;
-        this.data = data;
+    public Map<String, Object> attribute() {
+        return attribute;
     }
 
-    public Blade blade(){
-        return WebContext.blade();
+    public Object attribute(String key) {
+        return attribute.get(key);
     }
 
-    public T data(){
-        return this.data;
+    public Event attribute(String key, Object value) {
+        attribute.put(key, value);
+        return this;
     }
+
 }

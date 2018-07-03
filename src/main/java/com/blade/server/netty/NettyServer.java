@@ -18,6 +18,7 @@ package com.blade.server.netty;
 import com.blade.Blade;
 import com.blade.Environment;
 import com.blade.event.BeanProcessor;
+import com.blade.event.Event;
 import com.blade.event.EventType;
 import com.blade.ioc.DynamicContext;
 import com.blade.ioc.annotation.Bean;
@@ -229,7 +230,7 @@ public class NettyServer implements Server {
         log.info("{}Blade start with {}", getStartedSymbol(), url);
         log.info("{}Open browser access {}://{}:{} ⚡\r\n", getStartedSymbol(), protocol, address.replace(DEFAULT_SERVER_ADDRESS, LOCAL_IP_ADDRESS), port);
 
-        blade.eventManager().fireEvent(EventType.SERVER_STARTED, blade);
+        blade.eventManager().fireEvent(EventType.SERVER_STARTED, new Event().attribute("blade", blade));
     }
 
     private void startTask() {
