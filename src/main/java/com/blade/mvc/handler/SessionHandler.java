@@ -3,16 +3,12 @@ package com.blade.mvc.handler;
 import com.blade.Blade;
 import com.blade.kit.ReflectKit;
 import com.blade.kit.UUID;
-import com.blade.mvc.WebContext;
-import com.blade.mvc.http.Cookie;
 import com.blade.mvc.http.Request;
-import com.blade.mvc.http.Response;
 import com.blade.mvc.http.Session;
 import com.blade.mvc.http.session.SessionManager;
 import com.blade.server.netty.HttpConst;
 
 import java.time.Instant;
-import java.util.Objects;
 
 import static com.blade.mvc.Const.ENV_KEY_SESSION_KEY;
 import static com.blade.mvc.Const.ENV_KEY_SESSION_TIMEOUT;
@@ -38,10 +34,19 @@ public class SessionHandler {
     }
 
     public Session createSession(Request request) {
-        Session  session  = getSession(request);
-        Response response = WebContext.response();
+        Session session = getSession(request);
         if (null == session) {
-            return createSession(request, Objects.requireNonNull(response));
+            long now     = Instant.now().getEpochSecond();
+            long expired = now + timeout;
+
+            String sessionId = UUID.UU32();
+
+            session = ReflectKit.newInstance(blade.sessionType());
+            session.id(sessionId);
+            session.created(now);
+            session.expired(expired);
+            sessionManager.addSession(session);
+            return session;
         } else {
             long now = Instant.now().getEpochSecond();
             if (session.expired() < now) {
@@ -52,28 +57,6 @@ public class SessionHandler {
                 session.expired(expired);
             }
         }
-        return session;
-    }
-
-    private Session createSession(Request request, Response response) {
-        long now     = Instant.now().getEpochSecond();
-        long expired = now + timeout;
-
-        String sessionId = UUID.UU32();
-        Cookie cookie    = new Cookie();
-        cookie.name(sessionKey);
-        cookie.value(sessionId);
-        cookie.httpOnly(true);
-        cookie.secure(request.isSecure());
-
-        Session session = ReflectKit.newInstance(blade.sessionType());
-        session.id(sessionId);
-        session.created(now);
-        session.expired(expired);
-        sessionManager.addSession(session);
-
-        request.cookie(cookie);
-        response.cookie(cookie);
         return session;
     }
 

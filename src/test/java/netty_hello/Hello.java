@@ -48,7 +48,6 @@ public class Hello {
                 })
 //                .use(new CsrfMiddleware())
                 .event(EventType.ENVIRONMENT_CHANGED, new ConfigChanged())
-
                 .event(EventType.SESSION_DESTROY, e->{
                     System.out.println("session 失效了");
                 })

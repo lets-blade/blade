@@ -52,6 +52,7 @@ public class HttpRequest implements Request {
     private String  protocol;
     private String  method;
     private boolean keepAlive;
+    private Session session;
 
     private Map<String, String>       headers    = null;
     private Map<String, Object>       attributes = null;
@@ -241,7 +242,7 @@ public class HttpRequest implements Request {
 
     @Override
     public Session session() {
-        return SESSION_HANDLER.createSession(this);
+        return this.session;
     }
 
     @Override
@@ -341,6 +342,7 @@ public class HttpRequest implements Request {
             httpRequest.uri = cleanUri;
         }
 
+        httpRequest.session = SESSION_HANDLER.createSession(httpRequest);
         return httpRequest;
     }
 
