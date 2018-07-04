@@ -44,11 +44,11 @@ public class SessionHandler {
             session.id(UUID.UU32());
             session.created(now);
             session.expired(expired);
-            sessionManager.addSession(session);
+            sessionManager.createSession(session);
             return session;
         } else {
             if (session.expired() < now) {
-                sessionManager.remove(session);
+                sessionManager.destorySession(session);
             } else {
                 // renewal
                 long expired = now + timeout;

@@ -14,14 +14,18 @@ import java.util.Map;
 public class HttpSession implements Session {
 
     private Map<String, Object> attributes = new HashMap<>();
+
     @Setter
-    private String              id         = null;
+    private String id = null;
+
     @Setter
-    private String              ip         = null;
+    private String ip = null;
+
     @Setter
-    private long                created    = -1;
+    private long created = -1;
+
     @Setter
-    private long                expired    = -1;
+    private long expired = -1;
 
     @Override
     public String id() {

@@ -1,6 +1,5 @@
 package com.blade.mvc.http.session;
 
-import com.blade.event.EventManager;
 import com.blade.mvc.http.Session;
 import lombok.extern.slf4j.Slf4j;
 
@@ -28,12 +27,17 @@ public class SessionCleaner implements Runnable {
         while (true) {
             try {
                 Collection<Session> sessions = sessionManager.sessionMap().values();
-                sessions.parallelStream().filter(this::expires).forEach(session -> sessionManager.remove(session));
-
-                TimeUnit.MILLISECONDS.sleep(500);
-            } catch (InterruptedException e) {
-                log.error("", e);
+                sessions.parallelStream().filter(this::expires).forEach(sessionManager::destorySession);
+            } catch (Exception e) {
+                log.error("Session clean error", e);
+            } finally {
+                try {
+                    TimeUnit.MILLISECONDS.sleep(500);
+                } catch (InterruptedException e) {
+                    log.error("Session cleaner interrupted", e);
+                }
             }
+
         }
     }
 

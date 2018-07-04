@@ -64,7 +64,7 @@ public class SessionManager {
      *
      * @param session session instance
      */
-    public void addSession(Session session) {
+    public void createSession(Session session) {
         sessionMap.put(session.id(), session);
         Event event = new Event();
         event.attribute("session", session);
@@ -84,7 +84,7 @@ public class SessionManager {
      *
      * @param session session instance
      */
-    public void remove(Session session) {
+    public void destorySession(Session session) {
         session.attributes().clear();
         sessionMap.remove(session.id());
 
