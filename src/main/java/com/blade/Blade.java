@@ -25,7 +25,6 @@ import com.blade.kit.BladeKit;
 import com.blade.kit.StringKit;
 import com.blade.kit.reload.FileChangeDetector;
 import com.blade.loader.BladeLoader;
-import com.blade.mvc.Const;
 import com.blade.mvc.handler.*;
 import com.blade.mvc.hook.WebHook;
 import com.blade.mvc.http.HttpMethod;
@@ -49,7 +48,6 @@ import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static com.blade.mvc.Const.*;
 
@@ -1038,18 +1036,24 @@ public class Blade {
         if (!Objects.requireNonNull(bootEnv).isEmpty()) {
             bootEnv.props().forEach((key, value) -> environment.set(key.toString(), value));
         }
-
-        if (null != args) {
-            Optional<String> envArg = Stream.of(args).filter(s -> s.startsWith(Const.TERMINAL_BLADE_ENV)).findFirst();
-            envArg.ifPresent(arg -> {
-                String envName = "application-" + arg.split("=")[1] + ".properties";
-                log.info("current environment file is: {}", envName);
-                Environment customEnv = Environment.of(envName);
-                if (customEnv != null) {
+        String envName = "default";
+        if (StringKit.isNotEmpty(System.getProperty(ENV_KEY_APP_ENV))) {
+            envName = System.getProperty(ENV_KEY_APP_ENV);
+            String      evnFileName = "application-" + envName + ".properties";
+            Environment customEnv   = Environment.of(evnFileName);
+            if (customEnv != null && !customEnv.isEmpty()) {
+                customEnv.props().forEach((key, value) -> this.environment.set(key.toString(), value));
+            } else {
+                // compatible with older versions
+                evnFileName = "app-" + envName + ".properties";
+                customEnv = Environment.of(evnFileName);
+                if (customEnv != null && !customEnv.isEmpty()) {
                     customEnv.props().forEach((key, value) -> this.environment.set(key.toString(), value));
                 }
-            });
+            }
         }
+
+        log.info("current environment is: {}", envName);
 
         this.register(this.environment);
 
@@ -1058,16 +1062,12 @@ public class Blade {
             return;
         }
 
-        for (var arg: args) {
-            if (arg.startsWith(TERMINAL_SERVER_ADDRESS)) {
-                var pos     = arg.indexOf(TERMINAL_SERVER_ADDRESS) + TERMINAL_SERVER_ADDRESS.length();
-                var address = arg.substring(pos);
-                this.environment.set(ENV_KEY_SERVER_ADDRESS, address);
-            } else if (arg.startsWith(TERMINAL_SERVER_PORT)) {
-                var pos  = arg.indexOf(TERMINAL_SERVER_PORT) + TERMINAL_SERVER_PORT.length();
-                var port = arg.substring(pos);
-                this.environment.set(ENV_KEY_SERVER_PORT, port);
-            }
+        if (StringKit.isNotEmpty(System.getProperty(ENV_KEY_SERVER_ADDRESS))) {
+            this.environment.set(ENV_KEY_SERVER_ADDRESS, System.getProperty(ENV_KEY_SERVER_ADDRESS));
         }
+        if (StringKit.isNotEmpty(System.getProperty(ENV_KEY_SERVER_PORT))) {
+            this.environment.set(ENV_KEY_SERVER_PORT, System.getProperty(ENV_KEY_SERVER_PORT));
+        }
+
     }
 }
