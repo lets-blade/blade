@@ -34,7 +34,7 @@ public interface Const {
     int          DEFAULT_SERVER_PORT        = 9000;
     String       DEFAULT_SERVER_ADDRESS     = "0.0.0.0";
     String       LOCAL_IP_ADDRESS           = "127.0.0.1";
-    String       VERSION                    = "2.0.9.BETA1";
+    String       VERSION                    = "2.0.9-SNAPSHOT";
     String       WEB_JARS                   = "/webjars/";
     String       CLASSPATH                  = BladeKit.getCurrentClassPath();
     String       CONTENT_TYPE_HTML          = "text/html; charset=UTF-8";
@@ -44,7 +44,7 @@ public interface Const {
     String       INTERNAL_SERVER_ERROR_HTML = "<center><h1>500 Internal Server Error</h1><hr/></center>";
     String       DEFAULT_THREAD_NAME        = "_(:3」∠)_";
     List<String> PLUGIN_PACKAGE_NAME        = new ArrayList<>(Collections.singletonList("com.blade.plugin"));
-    List<String> DEFAULT_STATICS            = new ArrayList<>(Arrays.asList("/favicon.ico", "/robots.txt", "/static/", "/upload/", "/webjars/"));
+    List<String> DEFAULT_STATICS            = new ArrayList<>(Arrays.asList("/favicon.ico", "/robots.txt", "/static", "/upload", "/webjars/"));
 
     String PROP_NAME0 = "classpath:app.properties";
     String PROP_NAME  = "classpath:application.properties";

@@ -3,10 +3,7 @@ package com.blade.server.netty;
 import com.blade.Blade;
 import com.blade.exception.ForbiddenException;
 import com.blade.exception.NotFoundException;
-import com.blade.kit.BladeKit;
-import com.blade.kit.DateKit;
-import com.blade.kit.PathKit;
-import com.blade.kit.StringKit;
+import com.blade.kit.*;
 import com.blade.mvc.Const;
 import com.blade.mvc.handler.RequestHandler;
 import com.blade.mvc.http.Request;
@@ -47,6 +44,8 @@ import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
  */
 @Slf4j
 public class StaticFileHandler implements RequestHandler<ChannelHandlerContext> {
+
+    private static final String STYLE = "body{background:#fff;margin:0;padding:30px;-webkit-font-smoothing:antialiased;font-family:Menlo,Consolas,monospace}main{max-width:920px}header{display:flex;justify-content:space-between}#toggle{display:none;cursor:pointer}#toggle:before{display:inline-block;content:url(\"data:image/svg+xml; utf8, <svg height='24px' version='1.1' viewBox='0 0 24 24' width='24px' xmlns='http://www.w3.org/2000/svg'><g fill='none' fill-rule='evenodd' stroke='none' stroke-width='1'><g transform='translate(-431.000000, -479.000000)'><g transform='translate(215.000000, 119.000000)'/><path d='M432,480 L432,486 L438,486 L438,480 L432,480 Z M440,480 L440,486 L446,486 L446,480 L440,480 Z M448,480 L448,486 L454,486 L454,480 L448,480 Z M449,481 L449,485 L453,485 L453,481 L449,481 Z M441,481 L441,485 L445,485 L445,481 L441,481 Z M433,481 L433,485 L437,485 L437,481 L433,481 Z M432,488 L432,494 L438,494 L438,488 L432,488 Z M440,488 L440,494 L446,494 L446,488 L440,488 Z M448,488 L448,494 L454,494 L454,488 L448,488 Z M449,489 L449,493 L453,493 L453,489 L449,489 Z M441,489 L441,493 L445,493 L445,489 L441,489 Z M433,489 L433,493 L437,493 L437,489 L433,489 Z M432,496 L432,502 L438,502 L438,496 L432,496 Z M440,496 L440,502 L446,502 L446,496 L440,496 Z M448,496 L448,502 L454,502 L454,496 L448,496 Z M449,497 L449,501 L453,501 L453,497 L449,497 Z M441,497 L441,501 L445,501 L445,497 L441,497 Z M433,497 L433,501 L437,501 L437,497 L433,497 Z' fill='#000000'/></g></g></svg>\")}#toggle.single-column:before{content:url(\"data:image/svg+xml; utf8, <svg height='24px' viewBox='0 0 24 24' width='24px' xmlns='http://www.w3.org/2000/svg'><g fill='none' fill-rule='evenodd' id='miu' stroke='none' stroke-width='1'><g transform='translate(-359.000000, -479.000000)'><g transform='translate(215.000000, 119.000000)'/><path d='M360.577138,485 C360.258394,485 360,485.221932 360,485.5 C360,485.776142 360.262396,486 360.577138,486 L381.422862,486 C381.741606,486 382,485.778068 382,485.5 C382,485.223858 381.737604,485 381.422862,485 L360.577138,485 L360.577138,485 Z M360.577138,490 C360.258394,490 360,490.221932 360,490.5 C360,490.776142 360.262396,491 360.577138,491 L381.422862,491 C381.741606,491 382,490.778068 382,490.5 C382,490.223858 381.737604,490 381.422862,490 L360.577138,490 L360.577138,490 Z M360.577138,495 C360.258394,495 360,495.221932 360,495.5 C360,495.776142 360.262396,496 360.577138,496 L381.422862,496 C381.741606,496 382,495.778068 382,495.5 C382,495.223858 381.737604,495 381.422862,495 L360.577138,495 L360.577138,495 Z' fill='#000000'/></g></g></svg>\")}a{color:#1A00F2;text-decoration:none}h1{font-size:18px;font-weight:500;margin-top:0;color:#000;font-family:-apple-system,Helvetica;display:flex}h1 a{color:inherit;font-weight:700;border-bottom:1px dashed transparent}h1 a::after{content:'/'}h1 a:hover{color:#7d7d7d}h1 i{font-style:normal}ul{margin:0;padding:20px 0 0 0}ul.single-column{flex-direction:column}ul li{list-style:none;padding:10px 0;font-size:14px;display:flex;justify-content:space-between}ul li i{color:#9B9B9B;font-size:11px;display:block;font-style:normal;white-space:nowrap;padding-left:15px}ul a{color:#1A00F2;white-space:nowrap;overflow:hidden;display:block;text-overflow:ellipsis}ul a::before{content:url(\"data:image/svg+xml; utf8, <svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 64 64'><g fill='transparent' stroke='currentColor' stroke-miterlimit='10'><path stroke-width='4' d='M50.46 56H13.54V8h22.31a4.38 4.38 0 0 1 3.1 1.28l10.23 10.24a4.38 4.38 0 0 1 1.28 3.1z'/><path stroke-width='2' d='M35.29 8.31v14.72h14.06'/></g></svg>\");display:inline-block;vertical-align:middle;margin-right:10px}ul a:hover{color:#000}ul a[class=''] + i{display:none}ul a[class='']::before{content:url(\"data:image/svg+xml; utf8, <svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 64 64'><path fill='transparent' stroke='currentColor' stroke-width='4' stroke-miterlimit='10' d='M56 53.71H8.17L8 21.06a2.13 2.13 0 0 1 2.13-2.13h2.33l2.13-4.28A4.78 4.78 0 0 1 18.87 12h9.65a4.78 4.78 0 0 1 4.28 2.65l2.13 4.28h17.36a3.55 3.55 0 0 1 3.55 3.55z'/></svg>\")}ul a[class='gif']::before,ul a[class='jpg']::before,ul a[class='png']::before,ul a[class='svg']::before{content:url(\"data:image/svg+xml; utf8, <svg width='16' height='16' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='currentColor' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'><rect x='6' y='6' width='68' height='68' rx='5' ry='5'/><circle cx='24' cy='24' r='8'/><path d='M73 49L59 34 37 52M53 72L27 42 7 58'/></svg>\");width:16px}@media (min-width:768px){#toggle{display:inline-block}ul{display:flex;flex-wrap:wrap}ul li{width:230px;padding-right:20px}ul.single-column li{width:auto}}@media (min-width:992px){body{padding:45px}h1{font-size:15px}ul li{font-size:13px;box-sizing:border-box;justify-content:flex-start}ul li:hover i{opacity:1}ul li i{font-size:10px;opacity:0;margin-left:10px;margin-top:3px;padding-left:0}}";
 
     private boolean showFileList;
 
@@ -127,11 +126,7 @@ public class StaticFileHandler implements RequestHandler<ChannelHandlerContext> 
         }
 
         if (file.isDirectory() && showFileList) {
-            if (cleanUri.endsWith(HttpConst.SLASH)) {
-                sendListing(ctx, file, cleanUri);
-            } else {
-                response.redirect(uri + HttpConst.SLASH);
-            }
+            sendListing(ctx, uri, file, cleanUri);
             return;
         }
 
@@ -279,22 +274,41 @@ public class StaticFileHandler implements RequestHandler<ChannelHandlerContext> 
 
     private static final Pattern ALLOWED_FILE_NAME = Pattern.compile("[^-._]?[^<>&\"]*");
 
-    private static void sendListing(ChannelHandlerContext ctx, File dir, String dirPath) {
+    private static void sendListing(ChannelHandlerContext ctx, String uri, File dir, String dirPath) {
         FullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1, OK);
         response.headers().set(HttpConst.CONTENT_TYPE, "text/html; charset=UTF-8");
         StringBuilder buf = new StringBuilder()
                 .append("<!DOCTYPE html>\r\n")
-                .append("<html><head><meta charset='utf-8' /><title>")
-                .append("File list: ")
+                .append("<html><head>")
+                .append("<meta charset='utf-8' />")
+                .append("<meta name='viewport' content='width=device-width, initial-scale=1'>")
+                .append("<title>")
+                .append("Files within: ")
                 .append(dirPath)
-                .append("</title></head><body>\r\n")
-                .append("<h3>File list: ")
-                .append(dirPath)
-                .append("</h3>\r\n")
-                .append("<ul>")
-                .append("<li><a href=\"../\">..</a></li>\r\n");
+                .append("</title><style>" + STYLE + "</style></head><body>")
+                .append("<main><header><h1><i>Index of&nbsp;</i>");
 
-        for (File f : Objects.requireNonNull(dir.listFiles())) {
+        String[] dirs = uri.split("/");
+
+        for (String s: dirs) {
+            if (StringKit.isEmpty(s)) {
+                continue;
+            }
+            String path = uri.substring(0, uri.indexOf(s) + s.length());
+            buf.append("<a href='" + path + "'>" + s + "</a>");
+        }
+
+        buf.append("</h1>");
+        buf.append("<a id='toggle' title='click to toggle the view'></a>");
+        buf.append("</header>");
+        buf.append("<ul id='files' class='single-column'>");
+
+        if (dirs.length > 2) {
+            String parent = uri.substring(0, uri.lastIndexOf("/"));
+            buf.append("<li><a href='"+ parent +"' title='' class=''>..<i></i></li>");
+        }
+
+        for (File f: Objects.requireNonNull(dir.listFiles())) {
             if (f.isHidden() || !f.canRead()) {
                 continue;
             }
@@ -302,14 +316,30 @@ public class StaticFileHandler implements RequestHandler<ChannelHandlerContext> 
             if (!ALLOWED_FILE_NAME.matcher(name).matches()) {
                 continue;
             }
-            buf.append("<li><a href=\"")
-                    .append(name)
-                    .append("\">")
-                    .append(name)
-                    .append("</a></li>\r\n");
+            String subPath = (uri + "/" + name).replace("//", "/");
+            buf.append("<li><a href='").append(subPath).append("' title='").append(name).append("'");
+            if (f.isDirectory()) {
+                buf.append(" class=''>");
+                buf.append(name).append("<i></i></li>");
+            } else {
+                buf.append(" class='css'>");
+                String size = ConvertKit.byte2FitMemoryString(f.length());
+                buf.append(name).append("</a><i>");
+                buf.append(size).append("</i></li>");
+            }
         }
+        buf.append("</ul>");
+        buf.append("</main>");
+        buf.append("<script type='text/javascript'>");
+        buf.append("(function() {");
+        buf.append("toggle.addEventListener('click', function() {");
+        buf.append("files.classList.toggle('single-column');");
+        buf.append("toggle.classList.toggle('single-column');");
+        buf.append("});");
+        buf.append("})();");
+        buf.append("</script>");
+        buf.append("</body></html>");
 
-        buf.append("</ul></body></html>\r\n");
         ByteBuf buffer = Unpooled.copiedBuffer(buf, CharsetUtil.UTF_8);
         response.content().writeBytes(buffer);
         buffer.release();
@@ -343,7 +373,8 @@ public class StaticFileHandler implements RequestHandler<ChannelHandlerContext> 
             return null;
         }
         // Maven resources path
-        return Const.CLASSPATH + File.separator + uri.substring(1);
+        String path = Const.CLASSPATH + File.separator + uri.substring(1);
+        return path.replace("//", "/");
     }
 
     /**

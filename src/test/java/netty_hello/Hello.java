@@ -2,6 +2,7 @@ package netty_hello;
 
 import com.blade.Blade;
 import com.blade.event.EventType;
+import com.blade.mvc.WebContext;
 import com.blade.mvc.http.EmptyBody;
 
 import java.io.File;
@@ -33,9 +34,9 @@ public class Hello {
                         e.printStackTrace();
                     }
                 })
-                .before("/*", ctx -> {
-                    System.out.println("Before...");
-                })
+//                .before("/*", ctx -> {
+//                    System.out.println("Before...");
+//                })
                 .get("/rand", ctx -> {
                     try {
                         TimeUnit.MILLISECONDS.sleep(new Random().nextInt(1000));
@@ -50,7 +51,8 @@ public class Hello {
                 .event(EventType.SESSION_DESTROY, e -> {
                     System.out.println("session 失效了");
                 })
-                .start(Hello.class, args);
+                .showFileList(true)
+                .start();
     }
 
 }

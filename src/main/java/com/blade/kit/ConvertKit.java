@@ -177,6 +177,27 @@ public class ConvertKit {
     }
 
     /**
+     * 字节数转合适内存大小
+     * <p>保留3位小数</p>
+     *
+     * @param byteNum 字节数
+     * @return 合适内存大小
+     */
+    public static String byte2FitMemoryString(final long byteNum) {
+        if (byteNum < 0) {
+            return "shouldn't be less than zero!";
+        } else if (byteNum < MemoryConst.KB) {
+            return String.format("%d B", byteNum);
+        } else if (byteNum < MemoryConst.MB) {
+            return String.format("%d KB", byteNum / MemoryConst.KB);
+        } else if (byteNum < MemoryConst.GB) {
+            return String.format("%d MB", byteNum / MemoryConst.MB);
+        } else {
+            return String.format("%d GB", byteNum / MemoryConst.GB);
+        }
+    }
+
+    /**
      * bytes转bits
      *
      * @param bytes 字节数组
