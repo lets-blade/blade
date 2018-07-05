@@ -34,7 +34,7 @@ public interface Const {
     int          DEFAULT_SERVER_PORT        = 9000;
     String       DEFAULT_SERVER_ADDRESS     = "0.0.0.0";
     String       LOCAL_IP_ADDRESS           = "127.0.0.1";
-    String       VERSION                    = "2.0.9-SNAPSHOT";
+    String       VERSION                    = "2.0.9.BETA1";
     String       WEB_JARS                   = "/webjars/";
     String       CLASSPATH                  = BladeKit.getCurrentClassPath();
     String       CONTENT_TYPE_HTML          = "text/html; charset=UTF-8";
@@ -52,6 +52,7 @@ public interface Const {
     // Env key
     String ENV_KEY_DEV_MODE                  = "app.devMode";
     String ENV_KEY_APP_NAME                  = "app.name";
+    String ENV_KEY_APP_ENV                   = "app.env";
     String ENV_KEY_APP_THREAD_NAME           = "app.thread-name";
     String ENV_KEY_APP_WATCH_ENV             = "app.watch-env";
     String ENV_KEY_BANNER_PATH               = "app.banner-path";
@@ -82,15 +83,10 @@ public interface Const {
     String ENV_KEY_BOOT_CONF        = "boot_conf";
     String ENV_KEY_AUTO_REFRESH_DIR = "app.auto.refresh.dir";
 
-    // terminal
-    String TERMINAL_SERVER_ADDRESS = "--server.address=";
-    String TERMINAL_SERVER_PORT    = "--server.port=";
-    String TERMINAL_BLADE_ENV      = "--blade.env=";
-
     // netty default config
-    int DEFAULT_SO_BACKLOG = 1024;
+    int DEFAULT_SO_BACKLOG          = 1024;
     int DEFAULT_ACCEPT_THREAD_COUNT = 1;
-    int DEFAULT_IO_THREAD_COUNT = 0;
+    int DEFAULT_IO_THREAD_COUNT     = 0;
 
     /**
      * A request processing ends the elapsed time, in milliseconds.

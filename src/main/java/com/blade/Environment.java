@@ -214,6 +214,7 @@ public class Environment {
      * @return return Environment instance
      */
     public Environment set(@NonNull String key, @NonNull Object value) {
+        props.remove(key);
         props.put(key, value.toString());
         return this;
     }
