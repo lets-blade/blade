@@ -342,7 +342,9 @@ public class HttpRequest implements Request {
             httpRequest.uri = cleanUri;
         }
 
-        httpRequest.session = SESSION_HANDLER.createSession(httpRequest);
+        if (null != SESSION_HANDLER) {
+            httpRequest.session = SESSION_HANDLER.createSession(httpRequest);
+        }
         return httpRequest;
     }
 
