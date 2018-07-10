@@ -42,6 +42,7 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import lombok.var;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.*;
 import java.util.*;
@@ -972,14 +973,14 @@ public class Blade {
      */
     public String bannerText() {
         if (null != bannerText) return bannerText;
-        var bannerPath = environment.get(ENV_KEY_BANNER_PATH, null);
+        String bannerPath = environment.get(ENV_KEY_BANNER_PATH, null);
 
         if (StringKit.isEmpty(bannerPath) || Files.notExists(Paths.get(bannerPath))) {
             return null;
         }
 
         try {
-            var bufferedReader = Files.newBufferedReader(Paths.get(bannerPath));
+            BufferedReader bufferedReader = Files.newBufferedReader(Paths.get(bannerPath));
             bannerText = bufferedReader.lines().collect(Collectors.joining("\r\n"));
         } catch (Exception e) {
             log.error("Load Start Banner file error", e);
@@ -1025,9 +1026,8 @@ public class Blade {
      * @param args command line parameters
      */
     private void loadConfig(String[] args) {
-
-        var bootConf = environment().get(ENV_KEY_BOOT_CONF, PROP_NAME);
-        var bootEnv  = Environment.of(bootConf);
+        String      bootConf = environment().get(ENV_KEY_BOOT_CONF, PROP_NAME);
+        Environment bootEnv  = Environment.of(bootConf);
 
         if (null == bootEnv || bootEnv.isEmpty()) {
             bootEnv = Environment.of(PROP_NAME0);

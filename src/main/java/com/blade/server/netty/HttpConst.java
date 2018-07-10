@@ -3,9 +3,6 @@ package com.blade.server.netty;
 import com.blade.mvc.Const;
 import io.netty.util.AsciiString;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 /**
  * Http headers const
  *
@@ -41,18 +38,5 @@ public interface HttpConst {
     String CONTENT_TYPE_HTML = "text/html; charset=UTF-8";
 
     CharSequence VERSION = AsciiString.cached("blade-" + Const.VERSION);
-
-    Map<CharSequence, CharSequence> contentTypes = new ConcurrentHashMap<>(8);
-
-    static CharSequence getContentType(CharSequence contentType) {
-        if (null == contentType) {
-            contentType = CONTENT_TYPE_HTML;
-        }
-        if (contentTypes.containsKey(contentType)) {
-            return contentTypes.get(contentType);
-        }
-        contentTypes.put(contentType, AsciiString.cached(String.valueOf(contentType)));
-        return contentTypes.get(contentType);
-    }
 
 }
