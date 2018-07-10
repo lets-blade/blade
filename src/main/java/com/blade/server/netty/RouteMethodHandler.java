@@ -25,9 +25,9 @@ import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.*;
-import io.netty.handler.codec.http.cookie.Cookie;
 import io.netty.handler.stream.ChunkedStream;
 import lombok.extern.slf4j.Slf4j;
+import lombok.var;
 
 import java.io.InputStream;
 import java.io.StringWriter;
@@ -36,7 +36,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import static com.blade.kit.BladeKit.log404;
 import static com.blade.server.netty.HttpConst.CONTENT_LENGTH;
@@ -62,28 +61,24 @@ public class RouteMethodHandler implements RequestHandler<ChannelHandlerContext>
         response.body().write(new BodyWriter<Void>() {
             @Override
             public Void onText(StringBody body) {
-                handleFullResponse(
-                        createFullResponse(response.statusCode(), keepAlive, response.headers(), response.cookiesRaw(), body.content()),
-                        context, keepAlive);
-                return null;
+                return handleFullResponse(createFullResponse(response, body.content()), context, keepAlive);
             }
 
             @Override
             public Void onStream(StreamBody body) {
-                handleStreamResponse(response.statusCode(), response.headers(), body.content(), context, keepAlive);
-                return null;
+                return handleStreamResponse(response, body.content(), context, keepAlive);
             }
 
             @Override
             public Void onView(ViewBody body) {
-                StringWriter sw = new StringWriter();
                 try {
+                    var sw = new StringWriter();
+
                     WebContext.blade().templateEngine().render(body.modelAndView(), sw);
+
                     response.contentType(Const.CONTENT_TYPE_HTML);
 
-                    handleFullResponse(
-                            createFullResponse(response.statusCode(), keepAlive, response.headers(), response.cookiesRaw(), sw.toString()),
-                            context, keepAlive);
+                    return handleFullResponse(createFullResponse(response, sw.toString()), context, keepAlive);
                 } catch (Exception e) {
                     log.error("Render view error", e);
                 }
@@ -92,21 +87,17 @@ public class RouteMethodHandler implements RequestHandler<ChannelHandlerContext>
 
             @Override
             public Void onEmpty(EmptyBody emptyBody) {
-                handleFullResponse(
-                        createFullResponse(response.statusCode(), keepAlive, response.headers(), response.cookiesRaw(), ""),
-                        context, keepAlive);
-                return null;
+                return handleFullResponse(createFullResponse(response, ""), context, keepAlive);
             }
 
             @Override
             public Void onRawBody(RawBody body) {
-                handleFullResponse(body.httpResponse(), context, keepAlive);
-                return null;
+                return handleFullResponse(body.httpResponse(), context, keepAlive);
             }
         });
     }
 
-    public void handleFullResponse(FullHttpResponse response, ChannelHandlerContext context, boolean keepAlive) {
+    public Void handleFullResponse(FullHttpResponse response, ChannelHandlerContext context, boolean keepAlive) {
         if (context.channel().isActive()) {
             if (!keepAlive) {
                 context.write(response).addListener(ChannelFutureListener.CLOSE);
@@ -116,23 +107,24 @@ public class RouteMethodHandler implements RequestHandler<ChannelHandlerContext>
             }
             context.flush();
         }
+        return null;
     }
 
-    public Map<String, String> getDefaultHeader(boolean keepAlive) {
-        Map<String, String> map = new HashMap<>();
+    public Map<String, String> getDefaultHeader() {
+        var map = new HashMap<String, String>();
         map.put(HttpConst.DATE.toString(), HttpServerInitializer.date.toString());
         map.put(HttpConst.X_POWER_BY.toString(), HttpConst.VERSION.toString());
-        if (keepAlive) {
-            map.put(HttpConst.CONNECTION.toString(), "keep-alive");
-        }
         return map;
     }
 
-    public void handleStreamResponse(int status, Map<String, String> headers, InputStream body,
+    public Void handleStreamResponse(Response response, InputStream body,
                                      ChannelHandlerContext context, boolean keepAlive) {
-        DefaultHttpResponse response = new DefaultHttpResponse(HTTP_1_1, HttpResponseStatus.valueOf(status));
-        response.headers().set(TRANSFER_ENCODING, HttpHeaderValues.CHUNKED);
-        headers.forEach((key, value) -> response.headers().set(key, value));
+
+        var httpResponse = new DefaultHttpResponse(HTTP_1_1, HttpResponseStatus.valueOf(response.statusCode()));
+
+        httpResponse.headers().set(TRANSFER_ENCODING, HttpHeaderValues.CHUNKED);
+
+        response.headers().forEach((key, value) -> httpResponse.headers().set(key, value));
         context.write(response);
 
         context.write(new ChunkedStream(body));
@@ -140,22 +132,23 @@ public class RouteMethodHandler implements RequestHandler<ChannelHandlerContext>
         if (!keepAlive) {
             lastContentFuture.addListener(ChannelFutureListener.CLOSE);
         }
+        return null;
     }
 
-    public FullHttpResponse createFullResponse(int status, boolean keepAlive, Map<String, String> headers, Set<Cookie> cookies, String body) {
-        headers.putAll(getDefaultHeader(keepAlive));
+    public FullHttpResponse createFullResponse(Response response, String body) {
+        Map<String, String> headers = response.headers();
+        headers.putAll(getDefaultHeader());
 
-        if (cookies.size() > 0) {
-            cookies.forEach(cookie -> headers.put(HttpConst.SET_COOKIE.toString(), io.netty.handler.codec.http.cookie.ServerCookieEncoder.LAX.encode(cookie)));
+        if (response.cookiesRaw().size() > 0) {
+            response.cookiesRaw().forEach(cookie -> headers.put(HttpConst.SET_COOKIE.toString(), io.netty.handler.codec.http.cookie.ServerCookieEncoder.LAX.encode(cookie)));
         }
 
-        FullHttpResponse response = new DefaultFullHttpResponse(
-                HTTP_1_1, HttpResponseStatus.valueOf(status),
+        var httpResponse = new DefaultFullHttpResponse(HTTP_1_1, HttpResponseStatus.valueOf(response.statusCode()),
                 body.isEmpty() ? Unpooled.buffer(0) : Unpooled.wrappedBuffer(body.getBytes(StandardCharsets.UTF_8)));
 
-        response.headers().set(CONTENT_LENGTH, response.content().readableBytes());
-        headers.forEach((key, value) -> response.headers().set(key, value));
-        return response;
+        httpResponse.headers().set(CONTENT_LENGTH, httpResponse.content().readableBytes());
+        headers.forEach((key, value) -> httpResponse.headers().set(key, value));
+        return httpResponse;
     }
 
     /**

@@ -19,6 +19,7 @@ import io.netty.handler.ssl.SslHandler;
 import io.netty.handler.stream.ChunkedFile;
 import io.netty.util.CharsetUtil;
 import lombok.extern.slf4j.Slf4j;
+import lombok.var;
 
 import java.io.*;
 import java.net.URLConnection;
@@ -74,11 +75,10 @@ public class StaticFileHandler implements RequestHandler<ChannelHandlerContext> 
             return;
         }
 
-        Instant start = Instant.now();
-
-        String uri      = URLDecoder.decode(request.uri(), "UTF-8");
-        String cleanUri = PathKit.cleanPath(uri.replaceFirst(request.contextPath(), "/"));
-        String method   = StringKit.padRight(request.method(), 6);
+        String  uri      = URLDecoder.decode(request.uri(), "UTF-8");
+        Instant start    = Instant.now();
+        String  cleanUri = PathKit.cleanPath(uri.replaceFirst(request.contextPath(), "/"));
+        String  method   = StringKit.padRight(request.method(), 6);
 
         if (cleanUri.startsWith(Const.WEB_JARS)) {
             InputStream input = StaticFileHandler.class.getResourceAsStream("/META-INF/resources" + uri);
@@ -190,7 +190,7 @@ public class StaticFileHandler implements RequestHandler<ChannelHandlerContext> 
 
     private boolean writeJarResource(ChannelHandlerContext ctx, Request request, String uri, InputStream input) throws IOException {
 
-        StaticInputStream staticInputStream = new StaticInputStream(input);
+        var staticInputStream = new StaticInputStream(input);
 
         int size = staticInputStream.size();
 
@@ -275,7 +275,7 @@ public class StaticFileHandler implements RequestHandler<ChannelHandlerContext> 
     private static final Pattern ALLOWED_FILE_NAME = Pattern.compile("[^-._]?[^<>&\"]*");
 
     private static void sendListing(ChannelHandlerContext ctx, String uri, File dir, String dirPath) {
-        FullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1, OK);
+        var response = new DefaultFullHttpResponse(HTTP_1_1, OK);
         response.headers().set(HttpConst.CONTENT_TYPE, "text/html; charset=UTF-8");
         StringBuilder buf = new StringBuilder()
                 .append("<!DOCTYPE html>\r\n")
@@ -305,7 +305,7 @@ public class StaticFileHandler implements RequestHandler<ChannelHandlerContext> 
 
         if (dirs.length > 2) {
             String parent = uri.substring(0, uri.lastIndexOf("/"));
-            buf.append("<li><a href='"+ parent +"' title='' class=''>..<i></i></li>");
+            buf.append("<li><a href='" + parent + "' title='' class=''>..<i></i></li>");
         }
 
         for (File f: Objects.requireNonNull(dir.listFiles())) {
@@ -349,8 +349,9 @@ public class StaticFileHandler implements RequestHandler<ChannelHandlerContext> 
     }
 
     private static void sendError(ChannelHandlerContext ctx, HttpResponseStatus status) {
-        FullHttpResponse response = new DefaultFullHttpResponse(
-                HTTP_1_1, status, Unpooled.copiedBuffer("Failure: " + status + "\r\n", CharsetUtil.UTF_8));
+        var response = new DefaultFullHttpResponse(HTTP_1_1, status,
+                Unpooled.copiedBuffer("Failure: " + status + "\r\n", CharsetUtil.UTF_8));
+
         response.headers().set(HttpConst.CONTENT_TYPE, Const.CONTENT_TYPE_TEXT);
         // Close the connection as soon as the error message is sent.
         ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
