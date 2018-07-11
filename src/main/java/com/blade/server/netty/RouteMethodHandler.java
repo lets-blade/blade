@@ -3,9 +3,7 @@ package com.blade.server.netty;
 import com.blade.exception.BladeException;
 import com.blade.exception.InternalErrorException;
 import com.blade.exception.NotFoundException;
-import com.blade.kit.BladeCache;
-import com.blade.kit.BladeKit;
-import com.blade.kit.ReflectKit;
+import com.blade.kit.*;
 import com.blade.mvc.Const;
 import com.blade.mvc.RouteContext;
 import com.blade.mvc.WebContext;
@@ -29,6 +27,7 @@ import io.netty.handler.stream.ChunkedStream;
 import lombok.extern.slf4j.Slf4j;
 import lombok.var;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.lang.reflect.Method;
@@ -56,29 +55,34 @@ public class RouteMethodHandler implements RequestHandler<ChannelHandlerContext>
     private final boolean      hasMiddleware = routeMatcher.getMiddleware().size() > 0;
     private final boolean      hasBeforeHook = routeMatcher.hasBeforeHook();
     private final boolean      hasAfterHook  = routeMatcher.hasAfterHook();
+    private final boolean      useGzip       = WebContext.blade().environment().getBoolean(Const.ENV_KEY_GZIP_ENABLE, false);
 
-    public void handleResponse(Response response, ChannelHandlerContext context, boolean keepAlive) {
+    public void handleResponse(Request request, Response response, ChannelHandlerContext context) {
         response.body().write(new BodyWriter<Void>() {
             @Override
             public Void onText(StringBody body) {
-                return handleFullResponse(createFullResponse(response, body.content()), context, keepAlive);
+                return handleFullResponse(
+                        createTextResponse(request, response, body.content()),
+                        context,
+                        request.keepAlive());
             }
 
             @Override
             public Void onStream(StreamBody body) {
-                return handleStreamResponse(response, body.content(), context, keepAlive);
+                return handleStreamResponse(response, body.content(), context, request.keepAlive());
             }
 
             @Override
             public Void onView(ViewBody body) {
                 try {
                     var sw = new StringWriter();
-
                     WebContext.blade().templateEngine().render(body.modelAndView(), sw);
-
                     response.contentType(Const.CONTENT_TYPE_HTML);
 
-                    return handleFullResponse(createFullResponse(response, sw.toString()), context, keepAlive);
+                    return handleFullResponse(
+                            createTextResponse(request, response, sw.toString()),
+                            context,
+                            request.keepAlive());
                 } catch (Exception e) {
                     log.error("Render view error", e);
                 }
@@ -87,12 +91,15 @@ public class RouteMethodHandler implements RequestHandler<ChannelHandlerContext>
 
             @Override
             public Void onEmpty(EmptyBody emptyBody) {
-                return handleFullResponse(createFullResponse(response, ""), context, keepAlive);
+                return handleFullResponse(
+                        createTextResponse(request, response, ""),
+                        context,
+                        request.keepAlive());
             }
 
             @Override
             public Void onRawBody(RawBody body) {
-                return handleFullResponse(body.httpResponse(), context, keepAlive);
+                return handleFullResponse(body.httpResponse(), context, request.keepAlive());
             }
         });
     }
@@ -135,7 +142,7 @@ public class RouteMethodHandler implements RequestHandler<ChannelHandlerContext>
         return null;
     }
 
-    public FullHttpResponse createFullResponse(Response response, String body) {
+    public FullHttpResponse createTextResponse(Request request, Response response, String body) {
         Map<String, String> headers = response.headers();
         headers.putAll(getDefaultHeader());
 
@@ -143,10 +150,23 @@ public class RouteMethodHandler implements RequestHandler<ChannelHandlerContext>
             response.cookiesRaw().forEach(cookie -> headers.put(HttpConst.SET_COOKIE.toString(), io.netty.handler.codec.http.cookie.ServerCookieEncoder.LAX.encode(cookie)));
         }
 
+        if (request.useGZIP() && !body.isEmpty()) {
+            // compress and add ContentEncoding header
+            try {
+                body = new String(IOKit.compressGZIPAsString(body, StandardCharsets.UTF_8));
+            } catch (IOException e) {
+                log.error("Compress content error", e);
+            }
+        }
+
         var httpResponse = new DefaultFullHttpResponse(HTTP_1_1, HttpResponseStatus.valueOf(response.statusCode()),
                 body.isEmpty() ? Unpooled.buffer(0) : Unpooled.wrappedBuffer(body.getBytes(StandardCharsets.UTF_8)));
 
         httpResponse.headers().set(CONTENT_LENGTH, httpResponse.content().readableBytes());
+        if (request.useGZIP()) {
+            httpResponse.headers().add(HttpConst.CONTENT_ENCODING, "gzip");
+        }
+
         headers.forEach((key, value) -> httpResponse.headers().set(key, value));
         return httpResponse;
     }
@@ -293,8 +313,7 @@ public class RouteMethodHandler implements RequestHandler<ChannelHandlerContext>
     public void handle(ChannelHandlerContext ctx, Request request, Response response) throws Exception {
         RouteContext context = new RouteContext(request, response);
         // if execution returns false then execution is interrupted
-        String  uri       = context.uri();
-        boolean keepAlive = context.keepAlive();
+        String uri = context.uri();
 
         Route route = routeMatcher.lookupRoute(context.method(), uri);
         if (null == route) {
@@ -307,14 +326,14 @@ public class RouteMethodHandler implements RequestHandler<ChannelHandlerContext>
 
         // execution middleware
         if (hasMiddleware && !invokeMiddleware(routeMatcher.getMiddleware(), context)) {
-            handleResponse(context.response(), ctx, keepAlive);
+            handleResponse(request, context.response(), ctx);
             return;
         }
         context.injectParameters();
 
         // web hook before
         if (hasBeforeHook && !invokeHook(routeMatcher.getBefore(uri), context)) {
-            handleResponse(context.response(), ctx, keepAlive);
+            handleResponse(request, context.response(), ctx);
             return;
         }
 
@@ -325,6 +344,17 @@ public class RouteMethodHandler implements RequestHandler<ChannelHandlerContext>
         if (hasAfterHook) {
             this.invokeHook(routeMatcher.getAfter(uri), context);
         }
+    }
+
+    private boolean isOpenGzip(Request request) {
+        if (!useGzip) {
+            return false;
+        }
+        String acceptEncoding = request.header(HttpConst.ACCEPT_ENCODING);
+        if (StringKit.isEmpty(acceptEncoding)) {
+            return false;
+        }
+        return acceptEncoding.contains("gzip");
     }
 
 }

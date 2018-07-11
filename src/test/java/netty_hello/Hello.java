@@ -53,7 +53,8 @@ public class Hello {
                 .event(EventType.SESSION_DESTROY, e -> {
                     System.out.println("session 失效了");
                 })
-                .showFileList(true)
+//                .showFileList(true)
+                .gzip(true)
                 .start();
     }
 

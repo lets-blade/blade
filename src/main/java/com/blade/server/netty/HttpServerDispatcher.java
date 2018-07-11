@@ -72,20 +72,23 @@ public class HttpServerDispatcher extends SimpleChannelInboundHandler<FullHttpRe
             this.exceptionCaught(uri, method, e);
         } finally {
             if (!isStatic) {
-                boolean keepAlive = request.keepAlive();
-                Session session   = request.session();
-                if (null != session) {
-                    Cookie cookie = new Cookie();
-                    cookie.name(sessionKey);
-                    cookie.value(session.id());
-                    cookie.httpOnly(true);
-                    cookie.secure(request.isSecure());
-                    response.cookie(cookie);
-                }
-                routeMethodHandler.handleResponse(response, ctx, keepAlive);
+                finishWrite(ctx, request, response);
             }
             WebContext.remove();
         }
+    }
+
+    private void finishWrite(ChannelHandlerContext ctx, Request request, Response response) {
+        Session session   = request.session();
+        if (null != session) {
+            Cookie cookie = new Cookie();
+            cookie.name(sessionKey);
+            cookie.value(session.id());
+            cookie.httpOnly(true);
+            cookie.secure(request.isSecure());
+            response.cookie(cookie);
+        }
+        routeMethodHandler.handleResponse(request, response, ctx);
     }
 
     @Override
@@ -101,6 +104,7 @@ public class HttpServerDispatcher extends SimpleChannelInboundHandler<FullHttpRe
             ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
         }
     }
+
 
     private boolean isStaticFile(String uri) {
         Optional<String> result = statics.stream().filter(s -> s.equals(uri) || uri.startsWith(s)).findFirst();
