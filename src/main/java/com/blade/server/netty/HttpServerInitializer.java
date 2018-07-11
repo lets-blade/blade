@@ -66,15 +66,15 @@ public class HttpServerInitializer extends ChannelInitializer<SocketChannel> {
             p.addLast(new HttpObjectAggregator(Integer.MAX_VALUE));
             p.addLast(new ChunkedWriteHandler());
             p.addLast(new HttpServerExpectContinueHandler());
-            if (enableGzip) {
-                p.addLast(new HttpContentCompressor());
-            }
             if (enableCors) {
                 p.addLast(new CorsHandler(CorsConfigBuilder.forAnyOrigin().allowNullOrigin().allowCredentials().build()));
             }
             if (isWebSocket) {
                 p.addLast(new WebSocketServerProtocolHandler(blade.webSocketPath(), null, true));
                 p.addLast(WEB_SOCKET_HANDLER);
+            }
+            if (enableGzip) {
+                p.addLast(new HttpContentCompressor());
             }
             p.addLast(HTTP_SERVER_HANDLER);
         } catch (Exception e) {
