@@ -1034,8 +1034,11 @@ public class Blade {
         }
 
         if (!Objects.requireNonNull(bootEnv).isEmpty()) {
-            bootEnv.props().forEach((key, value) -> environment.set(key.toString(), value));
+            Map<String, String> bootEnvMap = bootEnv.toMap();
+            Set<Map.Entry<String, String>> entrySet = bootEnvMap.entrySet();
+            entrySet.forEach(entry -> environment.set(entry.getKey(), entry.getValue()));
         }
+
         String envName = "default";
         if (StringKit.isNotEmpty(System.getProperty(ENV_KEY_APP_ENV))) {
             envName = System.getProperty(ENV_KEY_APP_ENV);
