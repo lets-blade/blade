@@ -2,9 +2,7 @@ package netty_hello;
 
 import com.blade.Blade;
 import com.blade.event.EventType;
-import com.blade.mvc.WebContext;
 import com.blade.mvc.http.EmptyBody;
-import com.mashape.unirest.http.Unirest;
 
 import java.io.File;
 import java.util.Random;
@@ -55,6 +53,7 @@ public class Hello {
                 })
 //                .showFileList(true)
                 .gzip(true)
+                .enableCors(true)
                 .start();
     }
 

@@ -34,6 +34,7 @@ import com.blade.mvc.http.session.SessionManager;
 import com.blade.mvc.route.RouteMatcher;
 import com.blade.mvc.ui.template.DefaultEngine;
 import com.blade.mvc.ui.template.TemplateEngine;
+import com.blade.security.web.cors.CorsMiddleware;
 import com.blade.server.Server;
 import com.blade.server.netty.NettyServer;
 import lombok.AccessLevel;
@@ -532,6 +533,9 @@ public class Blade {
      */
     public Blade enableCors(boolean enableCors) {
         this.environment.set(ENV_KEY_CORS_ENABLE, enableCors);
+        if(enableCors){
+            this.use(new CorsMiddleware());
+        }
         return this;
     }
 

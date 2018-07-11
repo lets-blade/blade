@@ -3,7 +3,9 @@ package com.blade.server.netty;
 import com.blade.exception.BladeException;
 import com.blade.exception.InternalErrorException;
 import com.blade.exception.NotFoundException;
-import com.blade.kit.*;
+import com.blade.kit.BladeCache;
+import com.blade.kit.BladeKit;
+import com.blade.kit.ReflectKit;
 import com.blade.mvc.Const;
 import com.blade.mvc.RouteContext;
 import com.blade.mvc.WebContext;
@@ -18,6 +20,7 @@ import com.blade.mvc.route.Route;
 import com.blade.mvc.route.RouteMatcher;
 import com.blade.mvc.ui.ModelAndView;
 import com.blade.reflectasm.MethodAccess;
+import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
@@ -27,7 +30,6 @@ import io.netty.handler.stream.ChunkedStream;
 import lombok.extern.slf4j.Slf4j;
 import lombok.var;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.lang.reflect.Method;
@@ -55,7 +57,6 @@ public class RouteMethodHandler implements RequestHandler<ChannelHandlerContext>
     private final boolean      hasMiddleware = routeMatcher.getMiddleware().size() > 0;
     private final boolean      hasBeforeHook = routeMatcher.hasBeforeHook();
     private final boolean      hasAfterHook  = routeMatcher.hasAfterHook();
-    private final boolean      useGzip       = WebContext.blade().environment().getBoolean(Const.ENV_KEY_GZIP_ENABLE, false);
 
     public void handleResponse(Request request, Response response, ChannelHandlerContext context) {
         response.body().write(new BodyWriter<Void>() {
@@ -150,22 +151,12 @@ public class RouteMethodHandler implements RequestHandler<ChannelHandlerContext>
             response.cookiesRaw().forEach(cookie -> headers.put(HttpConst.SET_COOKIE.toString(), io.netty.handler.codec.http.cookie.ServerCookieEncoder.LAX.encode(cookie)));
         }
 
-        if (request.useGZIP() && !body.isEmpty()) {
-            // compress and add ContentEncoding header
-            try {
-                body = new String(IOKit.compressGZIPAsString(body, StandardCharsets.UTF_8));
-            } catch (IOException e) {
-                log.error("Compress content error", e);
-            }
-        }
+        ByteBuf bodyBuf = Unpooled.wrappedBuffer(body.getBytes(StandardCharsets.UTF_8));
 
         var httpResponse = new DefaultFullHttpResponse(HTTP_1_1, HttpResponseStatus.valueOf(response.statusCode()),
-                body.isEmpty() ? Unpooled.buffer(0) : Unpooled.wrappedBuffer(body.getBytes(StandardCharsets.UTF_8)));
+                null == bodyBuf ? Unpooled.buffer(0) : bodyBuf);
 
         httpResponse.headers().set(CONTENT_LENGTH, httpResponse.content().readableBytes());
-        if (request.useGZIP()) {
-            httpResponse.headers().add(HttpConst.CONTENT_ENCODING, "gzip");
-        }
 
         headers.forEach((key, value) -> httpResponse.headers().set(key, value));
         return httpResponse;
@@ -344,17 +335,6 @@ public class RouteMethodHandler implements RequestHandler<ChannelHandlerContext>
         if (hasAfterHook) {
             this.invokeHook(routeMatcher.getAfter(uri), context);
         }
-    }
-
-    private boolean isOpenGzip(Request request) {
-        if (!useGzip) {
-            return false;
-        }
-        String acceptEncoding = request.header(HttpConst.ACCEPT_ENCODING);
-        if (StringKit.isEmpty(acceptEncoding)) {
-            return false;
-        }
-        return acceptEncoding.contains("gzip");
     }
 
 }
