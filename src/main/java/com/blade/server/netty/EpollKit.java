@@ -3,6 +3,7 @@ package com.blade.server.netty;
 import com.blade.kit.NamedThreadFactory;
 import io.netty.channel.epoll.EpollEventLoopGroup;
 import io.netty.channel.epoll.EpollServerSocketChannel;
+import lombok.var;
 
 /**
  * Epoll kit
@@ -15,8 +16,8 @@ import io.netty.channel.epoll.EpollServerSocketChannel;
 class EpollKit {
 
     static NettyServerGroup group(int threadCount, int workers) {
-        EpollEventLoopGroup bossGroup   = new EpollEventLoopGroup(threadCount, new NamedThreadFactory("epoll-boss@"));
-        EpollEventLoopGroup workerGroup = new EpollEventLoopGroup(workers, new NamedThreadFactory("epoll-worker@"));
+        var bossGroup   = new EpollEventLoopGroup(threadCount, new NamedThreadFactory("epoll-boss@"));
+        var workerGroup = new EpollEventLoopGroup(workers, new NamedThreadFactory("epoll-worker@"));
         return NettyServerGroup.builder().boosGroup(bossGroup).workerGroup(workerGroup).socketChannel(EpollServerSocketChannel.class).build();
     }
 

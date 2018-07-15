@@ -15,9 +15,14 @@ import java.util.concurrent.TimeUnit;
 public class Hello {
 
     public static void main(String[] args) {
+
         Blade.of()
 //                .devMode(false)
 //                .environment(Const.ENV_KEY_NETTY_WORKERS, Runtime.getRuntime().availableProcessors())
+                .get("/", ctx -> {
+                    String[] chars = new String[]{"Here a special char \" that not escaped", "And Another \\ char"};
+                    ctx.json(chars);
+                })
                 .get("/hello", ctx -> ctx.text("Hello World."))
                 .get("/error", ctx -> {
                     int a = 1 / 0;
@@ -33,9 +38,9 @@ public class Hello {
                         e.printStackTrace();
                     }
                 })
-                .before("/*", ctx -> {
-                    System.out.println("Before...");
-                })
+//                .before("/*", ctx -> {
+//                    System.out.println("Before...");
+//                })
                 .get("/rand", ctx -> {
                     try {
                         TimeUnit.MILLISECONDS.sleep(new Random().nextInt(1000));
@@ -50,7 +55,10 @@ public class Hello {
                 .event(EventType.SESSION_DESTROY, e -> {
                     System.out.println("session 失效了");
                 })
-                .start(Hello.class, args);
+//                .showFileList(true)
+                .gzip(true)
+                .enableCors(true)
+                .start();
     }
 
 }

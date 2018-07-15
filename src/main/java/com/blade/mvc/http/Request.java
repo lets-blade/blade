@@ -267,6 +267,12 @@ public interface Request {
     HttpMethod httpMethod();
 
     /**
+     * @return whether the current request is a compressed request of GZIP
+     * @since 2.0.9.BETA1
+     */
+    boolean useGZIP();
+
+    /**
      * Get client ip address
      *
      * @return Return server remote address

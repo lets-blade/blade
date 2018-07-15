@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Getter;
 
 /**
+ * NettyServerGroup
+ *
  * @author biezhi
  * @date 2017/9/22
  */
@@ -14,6 +16,6 @@ import lombok.Getter;
 public class NettyServerGroup {
 
     private Class<? extends ServerSocketChannel> socketChannel;
-    private MultithreadEventLoopGroup boosGroup;
-    private MultithreadEventLoopGroup workerGroup;
+    private MultithreadEventLoopGroup            boosGroup;
+    private MultithreadEventLoopGroup            workerGroup;
 }

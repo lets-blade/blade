@@ -343,8 +343,8 @@ public class Environment {
 
     public Optional<Date> getDate(String key) {
         if (null != key && getObject(key).isPresent()) {
-            var value = getObject(key).get().toString();
-            var date  = (Date) ReflectKit.convert(Date.class, value);
+            String value = getObject(key).get().toString();
+            Date   date  = (Date) ReflectKit.convert(Date.class, value);
             return Optional.ofNullable(date);
         }
         return Optional.empty();

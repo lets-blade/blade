@@ -3,9 +3,6 @@ package com.blade.server.netty;
 import com.blade.mvc.Const;
 import io.netty.util.AsciiString;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 /**
  * Http headers const
  *
@@ -16,6 +13,7 @@ public interface HttpConst {
     String IF_MODIFIED_SINCE   = "If-Modified-Since";
     String USER_AGENT          = "User-Agent";
     String CONTENT_TYPE_STRING = "Content-Type";
+    String ACCEPT_ENCODING     = "Accept-Encoding";
     String COOKIE_STRING       = "Cookie";
     String METHOD_GET          = "GET";
     String METHOD_POST         = "POST";
@@ -25,34 +23,22 @@ public interface HttpConst {
     char   CHAR_SLASH          = '/';
     char   CHAR_POINT          = '.';
 
-    CharSequence CONNECTION     = AsciiString.cached("Connection");
-    CharSequence CONTENT_LENGTH = AsciiString.cached("Content-Length");
-    CharSequence CONTENT_TYPE   = AsciiString.cached("Content-Type");
-    CharSequence DATE           = AsciiString.cached("Date");
-    CharSequence LOCATION       = AsciiString.cached("Location");
-    CharSequence X_POWER_BY     = AsciiString.cached("X-Powered-By");
-    CharSequence EXPIRES        = AsciiString.cached("Expires");
-    CharSequence CACHE_CONTROL  = AsciiString.cached("Cache-Control");
-    CharSequence LAST_MODIFIED  = AsciiString.cached("Last-Modified");
-    CharSequence SERVER         = AsciiString.cached("Server");
-    CharSequence SET_COOKIE     = AsciiString.cached("Set-Cookie");
-    CharSequence KEEP_ALIVE     = AsciiString.cached("keep-alive");
+    CharSequence CONNECTION       = AsciiString.cached("Connection");
+    CharSequence CONTENT_LENGTH   = AsciiString.cached("Content-Length");
+    CharSequence CONTENT_TYPE     = AsciiString.cached("Content-Type");
+    CharSequence CONTENT_ENCODING = AsciiString.cached("Content-Encoding");
+    CharSequence DATE             = AsciiString.cached("Date");
+    CharSequence LOCATION         = AsciiString.cached("Location");
+    CharSequence X_POWER_BY       = AsciiString.cached("X-Powered-By");
+    CharSequence EXPIRES          = AsciiString.cached("Expires");
+    CharSequence CACHE_CONTROL    = AsciiString.cached("Cache-Control");
+    CharSequence LAST_MODIFIED    = AsciiString.cached("Last-Modified");
+    CharSequence SERVER           = AsciiString.cached("Server");
+    CharSequence SET_COOKIE       = AsciiString.cached("Set-Cookie");
+    CharSequence KEEP_ALIVE       = AsciiString.cached("keep-alive");
 
     String CONTENT_TYPE_HTML = "text/html; charset=UTF-8";
 
     CharSequence VERSION = AsciiString.cached("blade-" + Const.VERSION);
-
-    Map<CharSequence, CharSequence> contentTypes = new ConcurrentHashMap<>(8);
-
-    static CharSequence getContentType(CharSequence contentType) {
-        if (null == contentType) {
-            contentType = CONTENT_TYPE_HTML;
-        }
-        if (contentTypes.containsKey(contentType)) {
-            return contentTypes.get(contentType);
-        }
-        contentTypes.put(contentType, AsciiString.cached(String.valueOf(contentType)));
-        return contentTypes.get(contentType);
-    }
 
 }

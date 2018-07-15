@@ -15,6 +15,9 @@
  */
 package com.blade.event;
 
+import com.blade.Environment;
+import com.blade.mvc.WebContext;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -39,6 +42,10 @@ public class Event {
     public Event attribute(String key, Object value) {
         attribute.put(key, value);
         return this;
+    }
+
+    public Environment environment() {
+        return WebContext.blade().environment();
     }
 
 }

@@ -2,6 +2,7 @@ package com.blade.mvc.http;
 
 import com.blade.kit.PathKit;
 import com.blade.kit.StringKit;
+import com.blade.mvc.Const;
 import com.blade.mvc.WebContext;
 import com.blade.mvc.multipart.FileItem;
 import com.blade.mvc.route.Route;
@@ -238,6 +239,19 @@ public class HttpRequest implements Request {
     @Override
     public HttpMethod httpMethod() {
         return HttpMethod.valueOf(method());
+    }
+
+    @Override
+    public boolean useGZIP() {
+        boolean useGZIP = WebContext.blade().environment().getBoolean(Const.ENV_KEY_GZIP_ENABLE, false);
+        if (!useGZIP) {
+            return false;
+        }
+        String acceptEncoding = this.header(HttpConst.ACCEPT_ENCODING);
+        if (StringKit.isEmpty(acceptEncoding)) {
+            return false;
+        }
+        return acceptEncoding.contains("gzip");
     }
 
     @Override

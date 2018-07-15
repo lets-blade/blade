@@ -34,6 +34,7 @@ import com.blade.mvc.http.session.SessionManager;
 import com.blade.mvc.route.RouteMatcher;
 import com.blade.mvc.ui.template.DefaultEngine;
 import com.blade.mvc.ui.template.TemplateEngine;
+import com.blade.security.web.cors.CorsMiddleware;
 import com.blade.server.Server;
 import com.blade.server.netty.NettyServer;
 import lombok.AccessLevel;
@@ -42,6 +43,7 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import lombok.var;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.*;
 import java.util.*;
@@ -531,6 +533,9 @@ public class Blade {
      */
     public Blade enableCors(boolean enableCors) {
         this.environment.set(ENV_KEY_CORS_ENABLE, enableCors);
+        if(enableCors){
+            this.use(new CorsMiddleware());
+        }
         return this;
     }
 
@@ -972,14 +977,14 @@ public class Blade {
      */
     public String bannerText() {
         if (null != bannerText) return bannerText;
-        var bannerPath = environment.get(ENV_KEY_BANNER_PATH, null);
+        String bannerPath = environment.get(ENV_KEY_BANNER_PATH, null);
 
         if (StringKit.isEmpty(bannerPath) || Files.notExists(Paths.get(bannerPath))) {
             return null;
         }
 
         try {
-            var bufferedReader = Files.newBufferedReader(Paths.get(bannerPath));
+            BufferedReader bufferedReader = Files.newBufferedReader(Paths.get(bannerPath));
             bannerText = bufferedReader.lines().collect(Collectors.joining("\r\n"));
         } catch (Exception e) {
             log.error("Load Start Banner file error", e);
@@ -1025,17 +1030,19 @@ public class Blade {
      * @param args command line parameters
      */
     private void loadConfig(String[] args) {
-
-        var bootConf = environment().get(ENV_KEY_BOOT_CONF, PROP_NAME);
-        var bootEnv  = Environment.of(bootConf);
+        String      bootConf = environment().get(ENV_KEY_BOOT_CONF, PROP_NAME);
+        Environment bootEnv  = Environment.of(bootConf);
 
         if (null == bootEnv || bootEnv.isEmpty()) {
             bootEnv = Environment.of(PROP_NAME0);
         }
 
         if (!Objects.requireNonNull(bootEnv).isEmpty()) {
-            bootEnv.props().forEach((key, value) -> environment.set(key.toString(), value));
+            Map<String, String> bootEnvMap = bootEnv.toMap();
+            Set<Map.Entry<String, String>> entrySet = bootEnvMap.entrySet();
+            entrySet.forEach(entry -> environment.set(entry.getKey(), entry.getValue()));
         }
+
         String envName = "default";
         if (StringKit.isNotEmpty(System.getProperty(ENV_KEY_APP_ENV))) {
             envName = System.getProperty(ENV_KEY_APP_ENV);

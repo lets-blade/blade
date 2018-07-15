@@ -21,8 +21,10 @@ import com.blade.event.BeanProcessor;
 import com.blade.event.Event;
 import com.blade.event.EventType;
 import com.blade.ioc.DynamicContext;
+import com.blade.ioc.Ioc;
 import com.blade.ioc.annotation.Bean;
 import com.blade.ioc.annotation.Value;
+import com.blade.ioc.bean.BeanDefine;
 import com.blade.ioc.bean.ClassInfo;
 import com.blade.ioc.bean.OrderComparator;
 import com.blade.kit.*;
@@ -36,12 +38,14 @@ import com.blade.mvc.handler.ExceptionHandler;
 import com.blade.mvc.hook.WebHook;
 import com.blade.mvc.http.session.SessionCleaner;
 import com.blade.mvc.route.RouteBuilder;
+import com.blade.mvc.route.RouteMatcher;
 import com.blade.mvc.ui.template.DefaultEngine;
 import com.blade.server.Server;
 import com.blade.task.Task;
 import com.blade.task.TaskContext;
 import com.blade.task.TaskManager;
 import com.blade.task.TaskStruct;
+import com.blade.task.annotation.Schedule;
 import com.blade.task.cron.CronExecutorService;
 import com.blade.task.cron.CronExpression;
 import com.blade.task.cron.CronThreadPoolExecutor;
@@ -62,8 +66,10 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.var;
 
 import java.io.File;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
@@ -101,7 +107,7 @@ public class NettyServer implements Server {
         this.processors = blade.processors();
         this.loaders = blade.loaders();
 
-        var startMs = System.currentTimeMillis();
+        long startMs = System.currentTimeMillis();
         log.info("{} {}{}", StringKit.padRight("environment.jdk.version", padSize), getPrefixSymbol(), System.getProperty("java.version"));
         log.info("{} {}{}", StringKit.padRight("environment.user.dir", padSize), getPrefixSymbol(), System.getProperty("user.dir"));
         log.info("{} {}{}", StringKit.padRight("environment.java.io.tmpdir", padSize), getPrefixSymbol(), System.getProperty("java.io.tmpdir"));
@@ -111,7 +117,7 @@ public class NettyServer implements Server {
 
         this.initConfig();
 
-        var contextPath = environment.get(ENV_KEY_CONTEXT_PATH, "/");
+        String contextPath = environment.get(ENV_KEY_CONTEXT_PATH, "/");
         WebContext.init(blade, contextPath);
 
         this.initIoc();
@@ -131,7 +137,7 @@ public class NettyServer implements Server {
     }
 
     private void initIoc() {
-        var routeMatcher = blade.routeMatcher();
+        RouteMatcher routeMatcher = blade.routeMatcher();
         routeMatcher.initMiddleware(blade.middleware());
 
         routeBuilder = new RouteBuilder(routeMatcher);
@@ -147,18 +153,18 @@ public class NettyServer implements Server {
         this.loaders.stream().sorted(new OrderComparator<>()).forEach(b -> b.preLoad(blade));
         this.processors.stream().sorted(new OrderComparator<>()).forEach(b -> b.preHandle(blade));
 
-        var ioc = blade.ioc();
+        Ioc ioc = blade.ioc();
         if (BladeKit.isNotEmpty(ioc.getBeans())) {
             log.info("{}Register bean: {}", getStartedSymbol(), ioc.getBeans());
         }
 
-        var beanDefines = ioc.getBeanDefines();
+        List<BeanDefine> beanDefines = ioc.getBeanDefines();
 
         if (BladeKit.isNotEmpty(beanDefines)) {
             beanDefines.forEach(b -> {
                 BladeKit.injection(ioc, b);
                 BladeKit.injectionValue(environment, b);
-                var cronExpressions = BladeKit.getTasks(b.getType());
+                List<TaskStruct> cronExpressions = BladeKit.getTasks(b.getType());
                 if (null != cronExpressions) {
                     taskStruts.addAll(cronExpressions);
                 }
@@ -172,13 +178,13 @@ public class NettyServer implements Server {
 
         ResourceLeakDetector.setLevel(ResourceLeakDetector.Level.DISABLED);
 
-        var SSL = environment.getBoolean(ENV_KEY_SSL, false);
+        boolean SSL = environment.getBoolean(ENV_KEY_SSL, false);
         // Configure SSL.
         SslContext sslCtx = null;
         if (SSL) {
-            var certFilePath       = environment.get(ENV_KEY_SSL_CERT, null);
-            var privateKeyPath     = environment.get(ENE_KEY_SSL_PRIVATE_KEY, null);
-            var privateKeyPassword = environment.get(ENE_KEY_SSL_PRIVATE_KEY_PASS, null);
+            String certFilePath       = environment.get(ENV_KEY_SSL_CERT, null);
+            String privateKeyPath     = environment.get(ENE_KEY_SSL_PRIVATE_KEY, null);
+            String privateKeyPassword = environment.get(ENE_KEY_SSL_PRIVATE_KEY_PASS, null);
 
             log.info("{}SSL CertChainFile  Path: {}", getStartedSymbol(), certFilePath);
             log.info("{}SSL PrivateKeyFile Path: {}", getStartedSymbol(), privateKeyPath);
@@ -186,7 +192,7 @@ public class NettyServer implements Server {
         }
 
         // Configure the server.
-        var backlog = environment.getInt(ENV_KEY_NETTY_SO_BACKLOG, DEFAULT_SO_BACKLOG);
+        int backlog = environment.getInt(ENV_KEY_NETTY_SO_BACKLOG, DEFAULT_SO_BACKLOG);
 
         var bootstrap = new ServerBootstrap();
         bootstrap.option(ChannelOption.SO_BACKLOG, backlog);
@@ -201,7 +207,7 @@ public class NettyServer implements Server {
             log.info("{}Use EpollEventLoopGroup", getStartedSymbol());
             bootstrap.option(EpollChannelOption.SO_REUSEPORT, true);
 
-            var nettyServerGroup = EpollKit.group(acceptThreadCount, ioThreadCount);
+            NettyServerGroup nettyServerGroup = EpollKit.group(acceptThreadCount, ioThreadCount);
             this.bossGroup = nettyServerGroup.getBoosGroup();
             this.workerGroup = nettyServerGroup.getWorkerGroup();
             bootstrap.group(bossGroup, workerGroup).channel(nettyServerGroup.getSocketChannel());
@@ -216,15 +222,14 @@ public class NettyServer implements Server {
         bootstrap.handler(new LoggingHandler(LogLevel.DEBUG))
                 .childHandler(new HttpServerInitializer(sslCtx, blade, bossGroup.next()));
 
-        var address = environment.get(ENV_KEY_SERVER_ADDRESS, DEFAULT_SERVER_ADDRESS);
-        var port    = environment.getInt(ENV_KEY_SERVER_PORT, DEFAULT_SERVER_PORT);
+        String  address = environment.get(ENV_KEY_SERVER_ADDRESS, DEFAULT_SERVER_ADDRESS);
+        Integer port    = environment.getInt(ENV_KEY_SERVER_PORT, DEFAULT_SERVER_PORT);
 
         channel = bootstrap.bind(address, port).sync().channel();
 
-        var appName = environment.get(ENV_KEY_APP_NAME, "Blade");
-        var url     = Ansi.BgRed.and(Ansi.Black).format(" %s:%d ", address, port);
-
-        var protocol = SSL ? "https" : "http";
+        String appName  = environment.get(ENV_KEY_APP_NAME, "Blade");
+        String url      = Ansi.BgRed.and(Ansi.Black).format(" %s:%d ", address, port);
+        String protocol = SSL ? "https" : "http";
 
         log.info("{}{} initialize successfully, Time elapsed: {} ms", getStartedSymbol(), appName, (System.currentTimeMillis() - startMs));
         log.info("{}Blade start with {}", getStartedSymbol(), url);
@@ -234,32 +239,34 @@ public class NettyServer implements Server {
     }
 
     private void startTask() {
-        if (taskStruts.size() > 0) {
-            int                 corePoolSize    = environment.getInt(ENV_KEY_TASK_THREAD_COUNT, Runtime.getRuntime().availableProcessors() + 1);
-            CronExecutorService executorService = TaskManager.getExecutorService();
-            if (null == executorService) {
-                executorService = new CronThreadPoolExecutor(corePoolSize, new NamedThreadFactory("task@"));
-                TaskManager.init(executorService);
-            }
+        if (taskStruts.isEmpty()) {
+            return;
+        }
 
-            var jobCount = new AtomicInteger();
-            for (var taskStruct: taskStruts) {
-                addTask(executorService, jobCount, taskStruct);
-            }
+        int corePoolSize = environment.getInt(ENV_KEY_TASK_THREAD_COUNT, Runtime.getRuntime().availableProcessors() + 1);
+
+        CronExecutorService executorService = TaskManager.getExecutorService();
+        if (null == executorService) {
+            executorService = new CronThreadPoolExecutor(corePoolSize, new NamedThreadFactory("task@"));
+            TaskManager.init(executorService);
+        }
+
+        var jobCount = new AtomicInteger();
+        for (var taskStruct: taskStruts) {
+            addTask(executorService, jobCount, taskStruct);
         }
     }
 
     private void addTask(CronExecutorService executorService, AtomicInteger jobCount, TaskStruct taskStruct) {
         try {
-            var schedule = taskStruct.getSchedule();
-            var jobName  = StringKit.isBlank(schedule.name()) ? "task-" + jobCount.getAndIncrement() : schedule.name();
-            var task     = new Task(jobName, new CronExpression(schedule.cron()), schedule.delay());
-
-            var taskContext = new TaskContext(task);
+            Schedule    schedule    = taskStruct.getSchedule();
+            String      jobName     = StringKit.isBlank(schedule.name()) ? "task-" + jobCount.getAndIncrement() : schedule.name();
+            Task        task        = new Task(jobName, new CronExpression(schedule.cron()), schedule.delay());
+            TaskContext taskContext = new TaskContext(task);
 
             task.setTask(() -> {
-                var target = blade.ioc().getBean(taskStruct.getType());
-                var method = taskStruct.getMethod();
+                Object target = blade.ioc().getBean(taskStruct.getType());
+                Method method = taskStruct.getMethod();
                 try {
                     if (method.getParameterCount() == 1 && method.getParameterTypes()[0].equals(TaskContext.class)) {
                         taskStruct.getMethod().invoke(target, taskContext);
@@ -271,7 +278,7 @@ public class NettyServer implements Server {
                 }
             });
 
-            var future = executorService.submit(task);
+            ScheduledFuture future = executorService.submit(task);
             task.setFuture(future);
             TaskManager.addTask(task);
         } catch (Exception e) {
@@ -287,11 +294,11 @@ public class NettyServer implements Server {
             if (null == blade.ioc().getBean(clazz)) {
                 blade.register(clazz);
             }
-            var controller = blade.ioc().getBean(clazz);
+            Object controller = blade.ioc().getBean(clazz);
             routeBuilder.addRouter(clazz, controller);
         }
         if (ReflectKit.hasInterface(clazz, WebHook.class) && null != clazz.getAnnotation(Bean.class)) {
-            var        hook       = blade.ioc().getBean(clazz);
+            Object     hook       = blade.ioc().getBean(clazz);
             URLPattern URLPattern = clazz.getAnnotation(URLPattern.class);
             if (null == URLPattern) {
                 routeBuilder.addWebHook(clazz, "/.*", hook);
@@ -308,7 +315,7 @@ public class NettyServer implements Server {
             this.processors.add((BeanProcessor) blade.ioc().getBean(clazz));
         }
         if (isExceptionHandler(clazz)) {
-            var exceptionHandler = (ExceptionHandler) blade.ioc().getBean(clazz);
+            ExceptionHandler exceptionHandler = (ExceptionHandler) blade.ioc().getBean(clazz);
             blade.exceptionHandler(exceptionHandler);
         }
     }
@@ -319,7 +326,7 @@ public class NettyServer implements Server {
     }
 
     private void watchEnv() {
-        var watchEnv = environment.getBoolean(ENV_KEY_APP_WATCH_ENV, true);
+        boolean watchEnv = environment.getBoolean(ENV_KEY_APP_WATCH_ENV, true);
         log.info("{}Watched environment: {}", getStartedSymbol(), watchEnv, getStartedSymbol());
 
         if (watchEnv) {
@@ -338,12 +345,12 @@ public class NettyServer implements Server {
         // print banner text
         this.printBanner();
 
-        var statics = environment.get(ENV_KEY_STATIC_DIRS, "");
+        String statics = environment.get(ENV_KEY_STATIC_DIRS, "");
         if (StringKit.isNotBlank(statics)) {
             blade.addStatics(statics.split(","));
         }
 
-        var templatePath = environment.get(ENV_KEY_TEMPLATE_PATH, "templates");
+        String templatePath = environment.get(ENV_KEY_TEMPLATE_PATH, "templates");
         if (templatePath.charAt(0) == HttpConst.CHAR_SLASH) {
             templatePath = templatePath.substring(1);
         }
