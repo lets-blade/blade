@@ -15,10 +15,14 @@ import java.util.concurrent.TimeUnit;
 public class Hello {
 
     public static void main(String[] args) {
-        
+
         Blade.of()
 //                .devMode(false)
 //                .environment(Const.ENV_KEY_NETTY_WORKERS, Runtime.getRuntime().availableProcessors())
+                .get("/", ctx -> {
+                    String[] chars = new String[]{"Here a special char \" that not escaped", "And Another \\ char"};
+                    ctx.json(chars);
+                })
                 .get("/hello", ctx -> ctx.text("Hello World."))
                 .get("/error", ctx -> {
                     int a = 1 / 0;
