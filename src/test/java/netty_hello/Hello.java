@@ -60,7 +60,7 @@ public class Hello {
 //                .showFileList(true)
 //                .gzip(true)
 //                .enableCors(true)
-                .start();
+                .start(Hello.class, args);
     }
 
 }
