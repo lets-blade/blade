@@ -809,6 +809,15 @@ public class Blade {
         return this;
     }
 
+    public Blade disableCost(){
+        this.environment.set(ENV_KEY_HTTP_REQUEST_COST, false);
+        return this;
+    }
+
+    public boolean allowCost(){
+        return this.environment.getBoolean(ENV_KEY_HTTP_REQUEST_COST, true);
+    }
+
     public Blade watchEnvChange(boolean watchEnvChange) {
         this.environment.set(ENV_KEY_APP_WATCH_ENV, watchEnvChange);
         return this;

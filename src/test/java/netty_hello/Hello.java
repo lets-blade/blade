@@ -55,9 +55,11 @@ public class Hello {
                 .event(EventType.SESSION_DESTROY, e -> {
                     System.out.println("session 失效了");
                 })
+                .disableSession()
+                .disableCost()
 //                .showFileList(true)
-                .gzip(true)
-                .enableCors(true)
+//                .gzip(true)
+//                .enableCors(true)
                 .start();
     }
 

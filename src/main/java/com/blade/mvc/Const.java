@@ -1,17 +1,15 @@
 /**
  * Copyright (c) 2017, biezhi 王爵 (biezhi.me@gmail.com)
  * <p>
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
  * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
  * <p>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
  */
 package com.blade.mvc;
 
@@ -26,8 +24,7 @@ import java.util.List;
 /**
  * Blade Const
  *
- * @author biezhi
- * 2017/6/2
+ * @author biezhi 2017/6/2
  */
 public interface Const {
 
@@ -43,8 +40,10 @@ public interface Const {
     String       HTTP_DATE_FORMAT           = "EEE, dd MMM yyyy HH:mm:ss zzz";
     String       INTERNAL_SERVER_ERROR_HTML = "<center><h1>500 Internal Server Error</h1><hr/></center>";
     String       DEFAULT_THREAD_NAME        = "_(:3」∠)_";
-    List<String> PLUGIN_PACKAGE_NAME        = new ArrayList<>(Collections.singletonList("com.blade.plugin"));
-    List<String> DEFAULT_STATICS            = new ArrayList<>(Arrays.asList("/favicon.ico", "/robots.txt", "/static", "/upload", "/webjars/"));
+    List<String> PLUGIN_PACKAGE_NAME        = new ArrayList<>(
+            Collections.singletonList("com.blade.plugin"));
+    List<String> DEFAULT_STATICS            = new ArrayList<>(
+            Arrays.asList("/favicon.ico", "/robots.txt", "/static", "/upload", "/webjars/"));
 
     String PROP_NAME0 = "classpath:app.properties";
     String PROP_NAME  = "classpath:application.properties";
@@ -65,6 +64,7 @@ public interface Const {
     String ENV_KEY_AUTH_USERNAME             = "http.auth.username";
     String ENV_KEY_AUTH_PASSWORD             = "http.auth.password";
     String ENV_KEY_HTTP_CACHE_TIMEOUT        = "http.cache.timeout";
+    String ENV_KEY_HTTP_REQUEST_COST         = "http.request.cost";
     String ENV_KEY_PAGE_404                  = "mvc.view.404";
     String ENV_KEY_PAGE_500                  = "mvc.view.500";
     String ENV_KEY_STATIC_DIRS               = "mvc.statics";
