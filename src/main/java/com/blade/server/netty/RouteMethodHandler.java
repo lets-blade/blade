@@ -317,14 +317,12 @@ public class RouteMethodHandler implements RequestHandler<ChannelHandlerContext>
 
         // execution middleware
         if (hasMiddleware && !invokeMiddleware(routeMatcher.getMiddleware(), context)) {
-            handleResponse(request, context.response(), ctx);
             return;
         }
         context.injectParameters();
 
         // web hook before
         if (hasBeforeHook && !invokeHook(routeMatcher.getBefore(uri), context)) {
-            handleResponse(request, context.response(), ctx);
             return;
         }
 
