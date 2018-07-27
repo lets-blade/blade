@@ -25,7 +25,7 @@ public class BasicAuthMiddleware implements WebHook {
 
     public BasicAuthMiddleware(AuthOption authOption) {
         this.urlStartExclusions = authOption.getUrlStartExclusions();
-        this.realm = "Basic realm=" + authOption.getRealm();
+        this.realm = "Basic realm=\"" + authOption.getRealm() + "\"";
         authOption.getAccounts().forEach((user, pass) -> this.authPairs.add(new AuthPair(user, authorizationHeader(user, pass))));
     }
 
