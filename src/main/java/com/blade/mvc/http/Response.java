@@ -240,6 +240,7 @@ public interface Response {
      * @throws IOException throw IOException
      * @since 2.0.1-alpha3
      */
+    @Deprecated
     OutputStreamWrapper outputStream() throws IOException;
 
     /**

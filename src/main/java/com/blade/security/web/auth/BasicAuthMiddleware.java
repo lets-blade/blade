@@ -2,17 +2,14 @@ package com.blade.security.web.auth;
 
 import com.blade.kit.StringKit;
 import com.blade.mvc.RouteContext;
-import com.blade.mvc.hook.Signature;
 import com.blade.mvc.hook.WebHook;
-import com.blade.mvc.http.Request;
-import com.blade.mvc.http.Response;
 import lombok.extern.slf4j.Slf4j;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
 /**
  * BasicAuth Middleware
@@ -22,22 +19,14 @@ import java.util.Map;
 @Slf4j
 public class BasicAuthMiddleware implements WebHook {
 
-    private final String authUserKey = "basic_user";
-
-    private String realm;
-
+    private String         realm;
     private List<AuthPair> authPairs = new ArrayList<>();
+    private Set<String>    urlStartExclusions;
 
-    public BasicAuthMiddleware() {
-    }
-
-    public BasicAuthMiddleware(Map<String, String> accounts) {
-        this(accounts, "Authorization Required");
-    }
-
-    public BasicAuthMiddleware(Map<String, String> accounts, String realm) {
-        this.realm = "Basic realm=" + realm;
-        accounts.forEach((user, pass) -> this.authPairs.add(new AuthPair(user, authorizationHeader(user, pass))));
+    public BasicAuthMiddleware(AuthOption authOption) {
+        this.urlStartExclusions = authOption.getUrlStartExclusions();
+        this.realm = "Basic realm=\"" + authOption.getRealm() + "\"";
+        authOption.getAccounts().forEach((user, pass) -> this.authPairs.add(new AuthPair(user, authorizationHeader(user, pass))));
     }
 
     private String authorizationHeader(String user, String password) {
@@ -57,7 +46,16 @@ public class BasicAuthMiddleware implements WebHook {
 
     @Override
     public boolean before(RouteContext context) {
-        if (null != context.session().attribute(authUserKey)) {
+        boolean isAuth = false;
+
+        for (String startExclusion : urlStartExclusions) {
+            if ("/".equals(startExclusion) || context.uri().startsWith(startExclusion)) {
+                isAuth = true;
+                break;
+            }
+        }
+
+        if (!isAuth) {
             return true;
         }
 
@@ -67,7 +65,6 @@ public class BasicAuthMiddleware implements WebHook {
             context.header("WWW-Authenticate", this.realm).status(401);
             return false;
         }
-        context.session().attribute(authUserKey, user);
         return true;
     }
 

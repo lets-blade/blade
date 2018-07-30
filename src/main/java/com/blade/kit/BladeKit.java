@@ -42,10 +42,7 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -339,4 +336,18 @@ public class BladeKit {
         log.info("{}Add WebSocket {}", getStartedSymbol(), path);
     }
 
+    // --app.env=dev --server.port=9001
+    public static Map<String, String> parseArgs(String[] args) {
+        Map<String, String> argsMap = new HashMap<>();
+        if (null == args || args.length == 0) {
+            return argsMap;
+        }
+        for (String arg : args) {
+            if (arg.startsWith("--") && arg.contains("=")) {
+                String[] param = arg.substring(2).split("=");
+                argsMap.put(param[0], param[1]);
+            }
+        }
+        return argsMap;
+    }
 }

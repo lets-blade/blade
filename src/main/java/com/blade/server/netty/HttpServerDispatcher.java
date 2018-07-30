@@ -46,7 +46,11 @@ public class HttpServerDispatcher extends SimpleChannelInboundHandler<FullHttpRe
         String remoteAddress = ctx.channel().remoteAddress().toString();
 
         boolean isStatic = false;
-        Instant start    = Instant.now();
+        Instant start = null;
+
+        if (WebContext.blade().allowCost()) {
+            start = Instant.now();
+        }
 
         Request  request  = HttpRequest.build(req, remoteAddress);
         Response response = new HttpResponse();
@@ -66,8 +70,12 @@ public class HttpServerDispatcher extends SimpleChannelInboundHandler<FullHttpRe
             } else {
                 routeMethodHandler.handle(ctx, request, response);
             }
-            long cost = log200(log, start, method, uri);
-            request.attribute(REQUEST_COST_TIME, cost);
+
+            if (WebContext.blade().allowCost()) {
+                long cost = log200(log, start, method, uri);
+                request.attribute(REQUEST_COST_TIME, cost);
+            }
+
         } catch (Exception e) {
             this.exceptionCaught(uri, method, e);
         } finally {
@@ -79,7 +87,7 @@ public class HttpServerDispatcher extends SimpleChannelInboundHandler<FullHttpRe
     }
 
     private void finishWrite(ChannelHandlerContext ctx, Request request, Response response) {
-        Session session   = request.session();
+        Session session = request.session();
         if (null != session) {
             Cookie cookie = new Cookie();
             cookie.name(sessionKey);

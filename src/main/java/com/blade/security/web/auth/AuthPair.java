@@ -5,6 +5,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
+ * AuthPair
+ *
  * @author biezhi
  * @date 2018/5/17
  */

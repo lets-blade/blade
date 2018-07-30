@@ -533,7 +533,7 @@ public class Blade {
      */
     public Blade enableCors(boolean enableCors) {
         this.environment.set(ENV_KEY_CORS_ENABLE, enableCors);
-        if(enableCors){
+        if (enableCors) {
             this.use(new CorsMiddleware());
         }
         return this;
@@ -672,7 +672,7 @@ public class Blade {
             return this;
         }
         this.middleware.addAll(Arrays.asList(middleware));
-        for (var webHook: middleware) {
+        for (var webHook : middleware) {
             this.register(webHook);
         }
         return this;
@@ -807,6 +807,15 @@ public class Blade {
     public Blade disableSession() {
         this.sessionManager = null;
         return this;
+    }
+
+    public Blade disableCost() {
+        this.environment.set(ENV_KEY_HTTP_REQUEST_COST, false);
+        return this;
+    }
+
+    public boolean allowCost() {
+        return this.environment.getBoolean(ENV_KEY_HTTP_REQUEST_COST, true);
     }
 
     public Blade watchEnvChange(boolean watchEnvChange) {
@@ -1038,14 +1047,17 @@ public class Blade {
         }
 
         if (!Objects.requireNonNull(bootEnv).isEmpty()) {
-            Map<String, String> bootEnvMap = bootEnv.toMap();
-            Set<Map.Entry<String, String>> entrySet = bootEnvMap.entrySet();
+            Map<String, String>            bootEnvMap = bootEnv.toMap();
+            Set<Map.Entry<String, String>> entrySet   = bootEnvMap.entrySet();
             entrySet.forEach(entry -> environment.set(entry.getKey(), entry.getValue()));
         }
 
         String envName = "default";
-        if (StringKit.isNotEmpty(System.getProperty(ENV_KEY_APP_ENV))) {
-            envName = System.getProperty(ENV_KEY_APP_ENV);
+
+        Map<String, String> argsMap = BladeKit.parseArgs(args);
+
+        if (StringKit.isNotEmpty(argsMap.get(ENV_KEY_APP_ENV))) {
+            envName = argsMap.get(ENV_KEY_APP_ENV);
             String      evnFileName = "application-" + envName + ".properties";
             Environment customEnv   = Environment.of(evnFileName);
             if (customEnv != null && !customEnv.isEmpty()) {
@@ -1069,11 +1081,12 @@ public class Blade {
             return;
         }
 
-        if (StringKit.isNotEmpty(System.getProperty(ENV_KEY_SERVER_ADDRESS))) {
-            this.environment.set(ENV_KEY_SERVER_ADDRESS, System.getProperty(ENV_KEY_SERVER_ADDRESS));
+        if (StringKit.isNotEmpty(argsMap.get(ENV_KEY_SERVER_ADDRESS))) {
+            this.environment.set(ENV_KEY_SERVER_ADDRESS, argsMap.get(ENV_KEY_SERVER_ADDRESS));
         }
-        if (StringKit.isNotEmpty(System.getProperty(ENV_KEY_SERVER_PORT))) {
-            this.environment.set(ENV_KEY_SERVER_PORT, System.getProperty(ENV_KEY_SERVER_PORT));
+
+        if (StringKit.isNotEmpty(argsMap.get(ENV_KEY_SERVER_PORT))) {
+            this.environment.set(ENV_KEY_SERVER_PORT, argsMap.get(ENV_KEY_SERVER_PORT));
         }
 
     }
