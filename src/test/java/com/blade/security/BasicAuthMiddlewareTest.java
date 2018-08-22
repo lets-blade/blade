@@ -9,6 +9,7 @@ import com.blade.mvc.http.HttpRequest;
 import com.blade.mvc.http.Request;
 import com.blade.mvc.http.Response;
 import com.blade.mvc.route.Route;
+import com.blade.security.web.auth.AuthOption;
 import com.blade.security.web.auth.BasicAuthMiddleware;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
@@ -17,6 +18,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 /**
@@ -39,13 +42,12 @@ public class BasicAuthMiddlewareTest extends BaseTestCase {
     @Test
     public void testAuthSuccess() throws Exception {
 
-        Request   mockRequest = mockHttpRequest("GET");
+        Request mockRequest = mockHttpRequest("GET");
 
         WebContext.init(Blade.of(), "/");
 
-
         Map<String, String> headers = new HashMap<>();
-        headers.put("Authorization", "Basic YmxhZGU6YmxhZGU=");
+        headers.put("Authorization", "Basic YWRtaW46MTIzNDU2");
 
         when(mockRequest.parameters()).thenReturn(new HashMap<>());
         when(mockRequest.headers()).thenReturn(headers);
@@ -61,14 +63,17 @@ public class BasicAuthMiddlewareTest extends BaseTestCase {
 
         WebContext.set(new WebContext(request, response));
 
-        BasicAuthMiddleware basicAuthMiddleware = new BasicAuthMiddleware();
+        AuthOption authOption = AuthOption.builder().build();
+        authOption.addUser("admin", "123456");
+
+        BasicAuthMiddleware basicAuthMiddleware = new BasicAuthMiddleware(authOption);
         boolean             flag                = basicAuthMiddleware.before(context);
-        assertEquals(false, flag);
+        assertTrue(flag);
     }
 
     @Test
     public void testAuthFail() throws Exception {
-        Request   mockRequest = mockHttpRequest("GET");
+        Request mockRequest = mockHttpRequest("GET");
 
         WebContext.init(Blade.of(), "/");
 
@@ -90,9 +95,12 @@ public class BasicAuthMiddlewareTest extends BaseTestCase {
 
         WebContext.set(new WebContext(request, response));
 
-        BasicAuthMiddleware basicAuthMiddleware = new BasicAuthMiddleware();
+        AuthOption authOption = AuthOption.builder().build();
+        authOption.addUser("admin", "123456");
+
+        BasicAuthMiddleware basicAuthMiddleware = new BasicAuthMiddleware(authOption);
         boolean             flag                = basicAuthMiddleware.before(context);
-        assertEquals(false, flag);
+        assertFalse(flag);
     }
 
 }
