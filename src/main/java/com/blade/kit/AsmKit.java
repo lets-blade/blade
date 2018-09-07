@@ -31,6 +31,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @since 1.6.6
  */
 @UtilityClass
+@Deprecated
 public class AsmKit {
 
     /**
