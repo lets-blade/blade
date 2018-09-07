@@ -1,19 +1,18 @@
 package com.blade.mvc.handler;
 
 import com.blade.exception.BladeException;
-import com.blade.kit.AsmKit;
 import com.blade.kit.JsonKit;
 import com.blade.kit.ReflectKit;
 import com.blade.kit.StringKit;
 import com.blade.mvc.RouteContext;
 import com.blade.mvc.annotation.*;
-import com.blade.mvc.hook.Signature;
 import com.blade.mvc.http.HttpSession;
 import com.blade.mvc.http.Request;
 import com.blade.mvc.http.Response;
 import com.blade.mvc.http.Session;
 import com.blade.mvc.multipart.FileItem;
 import com.blade.mvc.ui.ModelAndView;
+import com.blade.reflectasm.ASMUtils;
 
 import java.lang.reflect.*;
 import java.math.BigDecimal;
@@ -37,7 +36,7 @@ public final class RouteActionArguments {
 
         Parameter[] parameters     = actionMethod.getParameters();
         Object[]    args           = new Object[parameters.length];
-        String[]    parameterNames = AsmKit.getMethodParamNames(actionMethod);
+        String[]    parameterNames = ASMUtils.findMethodParmeterNames(actionMethod);
 
         for (int i = 0, len = parameters.length; i < len; i++) {
             Parameter parameter = parameters[i];
@@ -169,7 +168,10 @@ public final class RouteActionArguments {
                 || argType.equals(BigDecimal.class) || argType.equals(LocalDate.class)
                 || argType.equals(LocalDateTime.class)) {
 
-            String value = request.query(name).orElseGet(() -> getDefaultValue(param.defaultValue(), argType));
+            String value = request.query(name).orElseGet(() -> {
+                System.out.println("aaa");
+                return getDefaultValue(param.defaultValue(), argType);
+            });
 
             return ReflectKit.convert(argType, value);
         } else {
