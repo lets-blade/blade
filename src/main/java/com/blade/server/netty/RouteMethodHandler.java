@@ -63,7 +63,7 @@ public class RouteMethodHandler implements RequestHandler<ChannelHandlerContext>
             @Override
             public Void onText(StringBody body) {
                 return handleFullResponse(
-                        createTextResponse(request, response, body.content()),
+                        createTextResponse(response, body.content()),
                         context,
                         request.keepAlive());
             }
@@ -81,7 +81,7 @@ public class RouteMethodHandler implements RequestHandler<ChannelHandlerContext>
                     response.contentType(Const.CONTENT_TYPE_HTML);
 
                     return handleFullResponse(
-                            createTextResponse(request, response, sw.toString()),
+                            createTextResponse(response, sw.toString()),
                             context,
                             request.keepAlive());
                 } catch (Exception e) {
@@ -93,7 +93,7 @@ public class RouteMethodHandler implements RequestHandler<ChannelHandlerContext>
             @Override
             public Void onEmpty(EmptyBody emptyBody) {
                 return handleFullResponse(
-                        createTextResponse(request, response, ""),
+                        createTextResponse(response, ""),
                         context,
                         request.keepAlive());
             }
@@ -143,13 +143,9 @@ public class RouteMethodHandler implements RequestHandler<ChannelHandlerContext>
         return null;
     }
 
-    public FullHttpResponse createTextResponse(Request request, Response response, String body) {
+    public FullHttpResponse createTextResponse(Response response, String body) {
         Map<String, String> headers = response.headers();
         headers.putAll(getDefaultHeader());
-
-        if (response.cookiesRaw().size() > 0) {
-            response.cookiesRaw().forEach(cookie -> headers.put(HttpConst.SET_COOKIE.toString(), io.netty.handler.codec.http.cookie.ServerCookieEncoder.LAX.encode(cookie)));
-        }
 
         ByteBuf bodyBuf = Unpooled.wrappedBuffer(body.getBytes(StandardCharsets.UTF_8));
 
@@ -157,6 +153,10 @@ public class RouteMethodHandler implements RequestHandler<ChannelHandlerContext>
                 null == bodyBuf ? Unpooled.buffer(0) : bodyBuf);
 
         httpResponse.headers().set(CONTENT_LENGTH, httpResponse.content().readableBytes());
+
+        if (response.cookiesRaw().size() > 0) {
+            response.cookiesRaw().forEach(cookie -> httpResponse.headers().add(HttpConst.SET_COOKIE, io.netty.handler.codec.http.cookie.ServerCookieEncoder.LAX.encode(cookie)));
+        }
 
         headers.forEach((key, value) -> httpResponse.headers().set(key, value));
         return httpResponse;
