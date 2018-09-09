@@ -168,10 +168,7 @@ public final class RouteActionArguments {
                 || argType.equals(BigDecimal.class) || argType.equals(LocalDate.class)
                 || argType.equals(LocalDateTime.class)) {
 
-            String value = request.query(name).orElseGet(() -> {
-                System.out.println("aaa");
-                return getDefaultValue(param.defaultValue(), argType);
-            });
+            String value = request.query(name).orElseGet(() -> getDefaultValue(param.defaultValue(), argType));
 
             return ReflectKit.convert(argType, value);
         } else {
