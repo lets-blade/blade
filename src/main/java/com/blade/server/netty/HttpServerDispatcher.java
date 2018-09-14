@@ -61,7 +61,7 @@ public class HttpServerDispatcher extends SimpleChannelInboundHandler<FullHttpRe
         String method = BladeCache.getPaddingMethod(request.method());
 
         // set context request and response
-        WebContext.set(new WebContext(request, response));
+        WebContext.set(new WebContext(request, response, ctx));
 
         try {
             if (isStaticFile(uri)) {

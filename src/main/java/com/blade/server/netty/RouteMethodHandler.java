@@ -26,6 +26,7 @@ import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.*;
+import io.netty.handler.codec.http.HttpResponse;
 import io.netty.handler.stream.ChunkedStream;
 import lombok.extern.slf4j.Slf4j;
 import lombok.var;
@@ -100,12 +101,18 @@ public class RouteMethodHandler implements RequestHandler<ChannelHandlerContext>
 
             @Override
             public Void onRawBody(RawBody body) {
-                return handleFullResponse(body.httpResponse(), context, request.keepAlive());
+                if (null != body.httpResponse()) {
+                    return handleFullResponse(body.httpResponse(), context, request.keepAlive());
+                }
+                if (null != body.defaultHttpResponse()) {
+                    return handleFullResponse(body.defaultHttpResponse(), context, request.keepAlive());
+                }
+                return null;
             }
         });
     }
 
-    public Void handleFullResponse(FullHttpResponse response, ChannelHandlerContext context, boolean keepAlive) {
+    private Void handleFullResponse(HttpResponse response, ChannelHandlerContext context, boolean keepAlive){
         if (context.channel().isActive()) {
             if (!keepAlive) {
                 context.write(response).addListener(ChannelFutureListener.CLOSE);
@@ -269,7 +276,7 @@ public class RouteMethodHandler implements RequestHandler<ChannelHandlerContext>
         if (BladeKit.isEmpty(middleware)) {
             return true;
         }
-        for (Route route: middleware) {
+        for (Route route : middleware) {
             WebHook webHook = (WebHook) route.getTarget();
             boolean flag    = webHook.before(context);
             if (!flag) return false;
@@ -285,7 +292,7 @@ public class RouteMethodHandler implements RequestHandler<ChannelHandlerContext>
      * @return return invoke hook is abort
      */
     private boolean invokeHook(List<Route> hooks, RouteContext context) throws Exception {
-        for (Route hook: hooks) {
+        for (Route hook : hooks) {
             if (hook.getTargetType() == RouteHandler.class) {
                 RouteHandler routeHandler = (RouteHandler) hook.getTarget();
                 routeHandler.handle(context);

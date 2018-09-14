@@ -28,7 +28,7 @@ public class ExceptionHandlerTest {
         response = mock(Response.class);
 
         WebContext.init(Blade.me(), "/");
-        WebContext.set(new WebContext(request, response));
+        WebContext.set(new WebContext(request, response, null));
     }
 
     @Test

@@ -20,6 +20,7 @@ import com.blade.Environment;
 import com.blade.mvc.http.Request;
 import com.blade.mvc.http.Response;
 import com.blade.mvc.http.session.SessionManager;
+import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.concurrent.FastThreadLocal;
 import lombok.var;
 
@@ -60,9 +61,12 @@ public class WebContext {
      */
     private Response response;
 
-    public WebContext(Request request, Response response) {
+    private ChannelHandlerContext handlerContext;
+
+    public WebContext(Request request, Response response, ChannelHandlerContext handlerContext) {
         this.request = request;
         this.response = response;
+        this.handlerContext = handlerContext;
     }
 
     /**
@@ -108,6 +112,16 @@ public class WebContext {
     public static Response response() {
         var webContext = get();
         return null != webContext ? webContext.response : null;
+    }
+
+    /**
+     * Get current thread ChannelHandlerContext instance
+     *
+     * @return ChannelHandlerContext instance
+     */
+    public static ChannelHandlerContext handlerContext() {
+        var webContext = get();
+        return null != webContext ? webContext.handlerContext : null;
     }
 
     /**
