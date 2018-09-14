@@ -61,7 +61,7 @@ public class BasicAuthMiddlewareTest extends BaseTestCase {
                 .targetType(AuthHandler.class)
                 .target(new AuthHandler()).build());
 
-        WebContext.set(new WebContext(request, response));
+        WebContext.set(new WebContext(request, response, null));
 
         AuthOption authOption = AuthOption.builder().build();
         authOption.addUser("admin", "123456");
@@ -93,7 +93,7 @@ public class BasicAuthMiddlewareTest extends BaseTestCase {
                 .targetType(AuthHandler.class)
                 .target(new AuthHandler()).build());
 
-        WebContext.set(new WebContext(request, response));
+        WebContext.set(new WebContext(request, response, null));
 
         AuthOption authOption = AuthOption.builder().build();
         authOption.addUser("admin", "123456");
