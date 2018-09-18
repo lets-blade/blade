@@ -74,7 +74,7 @@ public class HttpResponseTest extends BaseTestCase {
         when(mockResponse.headers()).thenReturn(new HashMap<>());
 
         Response response = new HttpResponse(mockResponse);
-        assertEquals(3, response.headers().size());
+        assertEquals(1, response.headers().size());
 
         response.header("a", "123");
         assertEquals(4, response.headers().size());
@@ -88,7 +88,7 @@ public class HttpResponseTest extends BaseTestCase {
         when(mockResponse.headers()).thenReturn(Collections.singletonMap("Server", "Nginx"));
 
         Response response = new HttpResponse(mockResponse);
-        assertEquals(4, response.headers().size());
+        assertEquals(2, response.headers().size());
         assertEquals("Nginx", response.headers().get("Server"));
     }
 
