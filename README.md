@@ -1,19 +1,17 @@
 <p align="center">
-    <a href="https://lets-blade.com"><img src="https://static.biezhi.me/blade-logo.png" width="650"/></a>
+    <a href="https://lets-blade.com"><img src="https://i.loli.net/2018/09/18/5ba0cd93c710e.png" width="650"/></a>
 </p>
 <p align="center">Based on <code>Java8</code> + <code>Netty4</code> to create lightweight, high-performance, simple and elegant Web framework 😋</p>
 <p align="center">Spend <b>1 hour</b> to learn it to do something interesting, a Spring in addition to the framework of the best choice.</p>
 <p align="center">
     🐾 <a href="#quick-start" target="_blank">Quick Start</a> |
-    📘 <a href="https://dev-cheats.com/topics/blade-in-action.html" target="_blank">Blade In Action</a> |
     🎬 <a href="https://www.youtube.com/playlist?list=PLK2w-tGRdrj5TV2lxHFj8hcg4mbmRmnWX" target="_blank">Video Tutorial</a> |
-    🌚 <a href="" target="_blank">Contribution</a> |
+    🌚 <a href="https://lets-blade.com" target="_blank">Document</a> |
     💰 <a href="https://lets-blade.com/donate" target="_blank">Donate</a> |
     🇨🇳 <a href="README_CN.md">简体中文</a>
 </p>
 <p align="center">
     <a href="https://travis-ci.org/lets-blade/blade"><img src="https://img.shields.io/travis/lets-blade/blade.svg?style=flat-square"></a>
-    <a href="http://codecov.io/github/lets-blade/blade?branch=dev"><img src="https://img.shields.io/codecov/c/github/lets-blade/blade/dev.svg?style=flat-square"></a>
     <a href="http://search.maven.org/#search%7Cga%7C1%7Cblade-mvc"><img src="https://img.shields.io/maven-central/v/com.bladejava/blade-mvc.svg?style=flat-square"></a>
     <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache%202-4EB1BA.svg?style=flat-square"></a>
     <a class="badge-align" href="https://www.codacy.com/app/lets-blade/blade"><img src="https://api.codacy.com/project/badge/Grade/5f5fb55f38614f04823372db3a3c1d1b"/></a>

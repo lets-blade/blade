@@ -1,19 +1,17 @@
 <p align="center">
-    <a href="https://lets-blade.com"><img src="https://static.biezhi.me/blade-logo.png" width="650"/></a>
+    <a href="https://lets-blade.com"><img src="https://i.loli.net/2018/09/18/5ba0cd93c710e.png" width="650"/></a>
 </p>
 <p align="center">基于 <code>Java8</code> + <code>Netty4</code> 创造的轻量级、高性能、简洁优雅的Web框架 😋</p>
 <p align="center">花 <b>1小时</b> 学会它做点有趣的项目，一款除了Spring系框架的不二之选。</p>
 <p align="center">
-    🐾 <a href="#快速入门" target="_blank">快速开始</a> | 
-    📘 <a href="https://dev-cheats.com/topics/blade-in-action.html" target="_blank">BladeInAction</a> | 
+    🐾 <a href="#quick-start" target="_blank">快速开始</a> | 
     🎬 <a href="https://www.bilibili.com/video/av15572599" target="_blank">视频教程</a> | 
-    🌚 <a href="" target="_blank">参与贡献</a> | 
-    💰 <a href="https://lets-blade.com/zh-cn/donate" target="_blank">捐赠我们</a> |
+    🌚 <a href="https://lets-blade.com" target="_blank">官方文档</a> | 
+    💰 <a href="https://lets-blade.com/donate.html" target="_blank">捐赠我们</a> |
     🌾 <a href="README.md">English</a>
 </p>
 <p align="center">
     <a href="https://travis-ci.org/lets-blade/blade"><img src="https://img.shields.io/travis/lets-blade/blade.svg?style=flat-square"></a>
-    <a href="http://codecov.io/github/lets-blade/blade?branch=dev"><img src="https://img.shields.io/codecov/c/github/lets-blade/blade/dev.svg?style=flat-square"></a>
     <a href="http://search.maven.org/#search%7Cga%7C1%7Cblade-mvc"><img src="https://img.shields.io/maven-central/v/com.bladejava/blade-mvc.svg?style=flat-square"></a>
     <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache%202-4EB1BA.svg?style=flat-square"></a>
     <a class="badge-align" href="https://www.codacy.com/app/lets-blade/blade"><img src="https://api.codacy.com/project/badge/Grade/5f5fb55f38614f04823372db3a3c1d1b"/></a>
