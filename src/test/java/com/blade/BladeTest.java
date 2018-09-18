@@ -23,7 +23,7 @@ import java.net.Socket;
 import java.util.List;
 
 import static com.blade.mvc.Const.*;
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -147,13 +147,12 @@ public class BladeTest extends BaseTestCase {
 
         Environment environment2 = Blade.of().environment().load(env);
 
-        assertEquals(env, environment2);
+        assertTrue(environment2.hasKey("hello"));
 
         String value = Blade.of().env("blade", "2.0.9");
         assertEquals("2.0.9", value);
 
-        assertEquals(false, Blade.of().env("blade").isPresent());
-
+        assertFalse(Blade.of().env("blade").isPresent());
     }
 
     @Test
