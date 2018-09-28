@@ -308,7 +308,7 @@ curl -X POST http://127.0.0.1:9000/body -d '{"username":"biezhi","age":22}'
 
 ```java
 Environment environment = WebContext.blade().environment();
-String version = environment.get("app.version", "0.0.1");;
+String version = environment.get("app.version", "0.0.1");
 ```
 
 ## 获取 Header
