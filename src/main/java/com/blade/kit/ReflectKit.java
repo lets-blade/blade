@@ -1,6 +1,7 @@
 package com.blade.kit;
 
 import com.blade.exception.BladeException;
+import com.blade.exception.NewInstanceException;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 
@@ -41,8 +42,8 @@ public class ReflectKit {
             }
             return clazz.newInstance();
         } catch (Exception e) {
-            log.warn("new instance fail", e.getMessage());
-            return null;
+            log.warn("new instance fail :{}", e.getCause().toString());
+            throw new NewInstanceException(e.getCause().toString());
         }
     }
 
