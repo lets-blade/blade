@@ -1,5 +1,6 @@
 package com.blade.mvc.http;
 
+import io.netty.buffer.Unpooled;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
@@ -12,8 +13,8 @@ public class EmptyBody implements Body {
     }
 
     @Override
-    public <T> T write(BodyWriter<T> writer) {
-        return writer.onEmpty(INSTANCE);
+    public void write(BodyWriter writer) {
+        writer.onByteBuf( Unpooled.buffer(0));
     }
 
 }

@@ -15,7 +15,7 @@ public class ViewBody implements Body {
     }
 
     @Override
-    public <T> T write(BodyWriter<T> writer) {
-        return writer.onView(this);
+    public void write(BodyWriter writer) {
+        writer.onView(this);
     }
 }

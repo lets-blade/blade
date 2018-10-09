@@ -25,14 +25,16 @@ import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.DefaultFileRegion;
 import io.netty.handler.codec.http.*;
 import io.netty.handler.codec.http.HttpResponse;
+import io.netty.handler.ssl.SslHandler;
+import io.netty.handler.stream.ChunkedFile;
 import io.netty.handler.stream.ChunkedStream;
 import lombok.extern.slf4j.Slf4j;
 import lombok.var;
 
-import java.io.InputStream;
-import java.io.StringWriter;
+import java.io.*;
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
@@ -43,6 +45,7 @@ import static com.blade.kit.BladeKit.log404;
 import static com.blade.server.netty.HttpConst.CONTENT_LENGTH;
 import static com.blade.server.netty.HttpConst.KEEP_ALIVE;
 import static io.netty.handler.codec.http.HttpHeaderNames.TRANSFER_ENCODING;
+import static io.netty.handler.codec.http.HttpResponseStatus.NOT_FOUND;
 import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
 /**
@@ -60,55 +63,96 @@ public class RouteMethodHandler implements RequestHandler<ChannelHandlerContext>
     private final boolean      hasAfterHook  = routeMatcher.hasAfterHook();
 
     public void handleResponse(Request request, Response response, ChannelHandlerContext context) {
-        response.body().write(new BodyWriter<Void>() {
+        response.body().write(new BodyWriter() {
+//            @Override
+//            public void onText(StringBody body) {
+//                handleFullResponse(
+//                        createTextResponse(response, body.content()),
+//                        context,
+//                        request.keepAlive());
+//            }
+
             @Override
-            public Void onText(StringBody body) {
-                return handleFullResponse(
-                        createTextResponse(response, body.content()),
+            public void onByteBuf(ByteBuf byteBuf) {
+                handleFullResponse(
+                        createResponseByByteBuf(response, byteBuf),
                         context,
                         request.keepAlive());
             }
 
             @Override
-            public Void onStream(StreamBody body) {
-                return handleStreamResponse(response, body.content(), context, request.keepAlive());
+            public void onStream(Closeable closeable) {
+//                return handleStreamResponse(response, body.content(), context, request.keepAlive());
+                if(closeable instanceof InputStream){
+                    handleStreamResponse(response, (InputStream) closeable, context, request.keepAlive());
+                }
             }
 
             @Override
-            public Void onView(ViewBody body) {
+            public void onView(ViewBody body) {
                 try {
                     var sw = new StringWriter();
                     WebContext.blade().templateEngine().render(body.modelAndView(), sw);
                     response.contentType(Const.CONTENT_TYPE_HTML);
 
-                    return handleFullResponse(
+                    handleFullResponse(
                             createTextResponse(response, sw.toString()),
                             context,
                             request.keepAlive());
                 } catch (Exception e) {
                     log.error("Render view error", e);
                 }
-                return null;
             }
 
             @Override
-            public Void onEmpty(EmptyBody emptyBody) {
-                return handleFullResponse(
-                        createTextResponse(response, ""),
-                        context,
-                        request.keepAlive());
-            }
-
-            @Override
-            public Void onRawBody(RawBody body) {
+            public void onRawBody(RawBody body) {
                 if (null != body.httpResponse()) {
-                    return handleFullResponse(body.httpResponse(), context, request.keepAlive());
+                    handleFullResponse(body.httpResponse(), context, request.keepAlive());
                 }
                 if (null != body.defaultHttpResponse()) {
-                    return handleFullResponse(body.defaultHttpResponse(), context, request.keepAlive());
+                    handleFullResponse(body.defaultHttpResponse(), context, request.keepAlive());
                 }
-                return null;
             }
+
+            @Override
+            public void onByteBuf(Object byteBuf) {
+                var httpResponse = new DefaultHttpResponse(HTTP_1_1, HttpResponseStatus.valueOf(response.statusCode()));
+
+                response.headers().forEach((key, value) -> httpResponse.headers().set(key, value));
+
+//                File file = null;
+//                if(byteBuf instanceof File){
+//                    file = (File) byteBuf;
+//                }
+//                RandomAccessFile raf;
+//                try {
+//                    raf = new RandomAccessFile(file, "r");
+//                } catch (FileNotFoundException ignore) {
+//                    ignore.printStackTrace();
+//                    return;
+//                }
+//
+//                long fileLength = 0;
+//                try {
+//                    fileLength = raf.length();
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//
+//                httpResponse.headers().set(HttpConst.CONTENT_LENGTH, fileLength);
+
+                // Write the initial line and the header.
+                if (request.keepAlive()) {
+                    httpResponse.headers().set(HttpConst.CONNECTION, KEEP_ALIVE);
+                }
+                context.write(httpResponse, context.voidPromise());
+
+                ChannelFuture lastContentFuture = context.writeAndFlush(byteBuf);
+                if (!request.keepAlive()) {
+                    lastContentFuture.addListener(ChannelFutureListener.CLOSE);
+                }
+            }
+
         });
     }
 
@@ -148,6 +192,23 @@ public class RouteMethodHandler implements RequestHandler<ChannelHandlerContext>
             lastContentFuture.addListener(ChannelFutureListener.CLOSE);
         }
         return null;
+    }
+
+    public FullHttpResponse createResponseByByteBuf(Response response, ByteBuf byteBuf) {
+
+        Map<String, String> headers = response.headers();
+        headers.putAll(getDefaultHeader());
+
+        var httpResponse = new DefaultFullHttpResponse(HTTP_1_1, HttpResponseStatus.valueOf(response.statusCode()), byteBuf);
+
+        httpResponse.headers().set(CONTENT_LENGTH, httpResponse.content().readableBytes());
+
+        if (response.cookiesRaw().size() > 0) {
+            response.cookiesRaw().forEach(cookie -> httpResponse.headers().add(HttpConst.SET_COOKIE, io.netty.handler.codec.http.cookie.ServerCookieEncoder.LAX.encode(cookie)));
+        }
+
+        headers.forEach((key, value) -> httpResponse.headers().set(key, value));
+        return httpResponse;
     }
 
     public FullHttpResponse createTextResponse(Response response, String body) {

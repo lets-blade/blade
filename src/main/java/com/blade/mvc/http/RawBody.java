@@ -25,8 +25,8 @@ public class RawBody implements Body {
     }
 
     @Override
-    public <T> T write(BodyWriter<T> writer) {
-        return writer.onRawBody(this);
+    public void write(BodyWriter writer) {
+        writer.onRawBody(this);
     }
 
 }

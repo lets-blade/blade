@@ -1,5 +1,9 @@
 package com.blade.mvc.http;
 
+import io.netty.buffer.Unpooled;
+
+import java.nio.charset.StandardCharsets;
+
 public class StringBody implements Body {
 
     private final String content;
@@ -8,13 +12,13 @@ public class StringBody implements Body {
         this.content = content;
     }
 
-    public String content() {
-        return content;
+    public static StringBody of(String content){
+        return new StringBody(content);
     }
 
     @Override
-    public <T> T write(BodyWriter<T> writer) {
-        return writer.onText(this);
+    public void write(BodyWriter writer) {
+        writer.onByteBuf(Unpooled.wrappedBuffer(this.content.getBytes(StandardCharsets.UTF_8)));
     }
 
 }
