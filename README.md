@@ -60,7 +60,7 @@ Create a basic `Maven` or `Gradle` project.
 
 > Do not create a `webapp` project, Blade does not require much trouble.
 
-Run with `Maven`：
+Run with `Maven`:
 
 ```xml
 <dependency>
@@ -76,7 +76,7 @@ or `Gradle`:
 compile 'com.bladejava:blade-mvc:2.0.11.ALPHAE'
 ```
 
-Write the `main` method, try `Hello World`：
+Write the `main` method and the `Hello World`:
 
 ```java
 public static void main(String[] args) {
@@ -85,6 +85,7 @@ public static void main(String[] args) {
 ```
 
 Open http://localhost:9000 in your browser to see your first `Blade` application!
+
 
 ## Contents
 
