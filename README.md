@@ -1,5 +1,5 @@
 <p align="center">
-    <a href="https://lets-blade.com"><img src="https://lets-blade.com/static/images/blade.svg" width="650"/></a>
+    <a href="https://lets-blade.com"><img src="https://camo.githubusercontent.com/670d54dc742d462d670e1ada16dbdf47c3b70d1d/68747470733a2f2f692e6c6f6c692e6e65742f323031382f30392f31382f356261306364393363373130652e706e67" width="650"/></a>
 </p>
 <p align="center">Based on <code>Java8</code> + <code>Netty4</code> to create a lightweight, high-performance, simple and elegant Web framework 😋</p>
 <p align="center">Spend <b>1 hour</b> to learn it to do something interesting, a tool in addition to the other available frameworks.</p>
