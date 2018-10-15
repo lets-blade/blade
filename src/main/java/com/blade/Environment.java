@@ -62,7 +62,7 @@ public class Environment {
      * @return return Environment instance
      */
     public static Environment empty() {
-        return EMPTY_ENV;
+        return new Environment();
     }
 
     /**

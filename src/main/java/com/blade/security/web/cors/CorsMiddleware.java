@@ -15,6 +15,7 @@ public class CorsMiddleware implements WebHook {
     public boolean before(RouteContext context) {
         context.header("Access-Control-Allow-Origin", "*");
         context.header("Access-Control-Allow-Credential", "true");
+        context.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Connection, User-Agent, Cookie, Cache-Control");
         context.header("Access-Control-Allow-Methods", "GET, OPTIONS, HEAD, PUT, POST, DELETE");
         if ("OPTIONS".equals(context.method())) {
             context.status(202);

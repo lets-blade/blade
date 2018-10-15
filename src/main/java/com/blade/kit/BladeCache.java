@@ -28,7 +28,7 @@ public class BladeCache {
         PADDING_METHOD_STR.put("POST", StringKit.padRight("POST", 6));
         PADDING_METHOD_STR.put("DELETE", StringKit.padRight("DELETE", 6));
         PADDING_METHOD_STR.put("PUT", StringKit.padRight("PUT", 6));
-        PADDING_METHOD_STR.put("OPTION", StringKit.padRight("OPTION", 6));
+        PADDING_METHOD_STR.put("OPTIONS", StringKit.padRight("OPTIONS", 6));
         PADDING_METHOD_STR.put("HEAD", StringKit.padRight("HEAD", 6));
     }
 

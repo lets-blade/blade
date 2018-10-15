@@ -22,7 +22,6 @@ import java.util.Map;
  * @since 1.5
  */
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode
 public class Route {
@@ -52,13 +51,16 @@ public class Route {
      */
     private Method action;
 
-    @Builder.Default
-    private int sort = Integer.MAX_VALUE;
+    private int sort;
 
     /**
      * Url path params
      */
     private Map<String, String> pathParams = new HashMap<>(8);
+
+    public Route() {
+        this.sort = Integer.MAX_VALUE;
+    }
 
     public Route(HttpMethod httpMethod, String path, Class<?> targetType, Method action) {
         super();
@@ -66,7 +68,7 @@ public class Route {
         this.path = PathKit.fixPath(path);
         this.targetType = targetType;
         this.action = action;
-        sort = Integer.MAX_VALUE;
+        this.sort = Integer.MAX_VALUE;
     }
 
     public Route(HttpMethod httpMethod, String path, Object target, Class<?> targetType, Method action) {
