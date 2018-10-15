@@ -13,6 +13,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
+ * XSS Middleware
+ *
  * @author biezhi
  * @date 2018/6/11
  */
