@@ -55,7 +55,6 @@ public class XssMiddleware implements WebHook {
 
         for (Map.Entry<String, List<String>> entry: entries) {
             List<String> snzValues = entry.getValue().stream().map(this::stripXSS).collect(Collectors.toList());
-            parameters.remove(entry.getKey());
             parameters.put(entry.getKey(), snzValues);
         }
     }
