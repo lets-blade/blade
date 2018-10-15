@@ -1,6 +1,5 @@
 package com.blade.server.netty;
 
-import com.blade.exception.BladeException;
 import com.blade.exception.NotFoundException;
 import com.blade.kit.BladeCache;
 import com.blade.mvc.LocalContext;
@@ -24,11 +23,11 @@ import io.netty.util.concurrent.FastThreadLocal;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import static com.blade.kit.BladeKit.log404;
-import static com.blade.kit.BladeKit.log500;
 import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
 /**
@@ -57,17 +56,20 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<HttpObject> {
     }
 
     @Override
+    public void channelReadComplete(ChannelHandlerContext ctx) {
+        log.info("io thread execute finish.");
+        ctx.flush();
+    }
+
+    @Override
     protected void channelRead0(ChannelHandlerContext ctx, HttpObject msg) {
         String  remoteAddress = ctx.channel().remoteAddress().toString();
         Request request       = HttpRequest.build(remoteAddress, msg);
         if (null == request) {
             return;
         }
-        String uri    = request.uri();
-        String method = request.method();
-
         if (request.isPart()) {
-            this.executePart(ctx, request, uri, method);
+            this.executePart(ctx, request);
             return;
         }
 
@@ -77,7 +79,13 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<HttpObject> {
         }
 
         try {
-            executor.submit(new AsyncRunner(routeMethodHandler, WebContext.get()));
+            AsyncRunner asyncRunner = new AsyncRunner(routeMethodHandler, WebContext.get());
+
+            CompletableFuture<Void> future = CompletableFuture.completedFuture(asyncRunner)
+                    .thenApplyAsync(AsyncRunner::handle, executor)
+                    .thenAcceptAsync(AsyncRunner::finishWrite, executor);
+//                    .thenAccept(AsyncRunner::finishWrite);
+            asyncRunner.setFuture(future);
         } finally {
             WebContext.remove();
             LOCAL_CONTEXT.remove();
@@ -93,10 +101,16 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<HttpObject> {
         LOCAL_CONTEXT.set(localContext);
     }
 
-    private void executePart(ChannelHandlerContext ctx, Request request, String uri, String method) {
+    private void executePart(ChannelHandlerContext ctx, Request request) {
         Response response = new HttpResponse();
+
+        // init web context
         WebContext.set(new WebContext(request, response, ctx));
         WebContext.get().setLocalContext(LOCAL_CONTEXT.get());
+
+        String uri    = request.uri();
+        String method = request.method();
+
         try {
             if (isStaticFile(method, uri)) {
                 staticFileHandler.handle(ctx, request, response);
@@ -112,17 +126,11 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<HttpObject> {
                 }
             }
         } catch (Exception e) {
-            this.exceptionCaught(uri, method, e);
+            routeMethodHandler.exceptionCaught(uri, method, e);
             routeMethodHandler.finishWrite(ctx, request, response);
             LOCAL_CONTEXT.remove();
             WebContext.remove();
         }
-    }
-
-    @Override
-    public void channelReadComplete(ChannelHandlerContext ctx) {
-        System.out.println("IO线程处理完毕：" + Thread.currentThread().getThreadGroup() + ":" + Thread.currentThread().getName());
-        ctx.flush();
     }
 
     @Override
@@ -140,18 +148,6 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<HttpObject> {
         }
         Optional<String> result = WebContext.blade().getStatics().stream().filter(s -> s.equals(uri) || uri.startsWith(s)).findFirst();
         return result.isPresent();
-    }
-
-    private void exceptionCaught(String uri, String method, Exception e) {
-        if (e instanceof BladeException) {
-        } else {
-            log500(log, method, uri);
-        }
-        if (null != WebContext.blade().exceptionHandler()) {
-            WebContext.blade().exceptionHandler().handle(e);
-        } else {
-            log.error("Request Exception", e);
-        }
     }
 
 }

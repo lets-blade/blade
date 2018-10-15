@@ -43,6 +43,7 @@ import java.util.List;
 import java.util.Map;
 
 import static com.blade.kit.BladeKit.log404;
+import static com.blade.kit.BladeKit.log500;
 import static com.blade.mvc.Const.ENV_KEY_SESSION_KEY;
 import static com.blade.server.netty.HttpConst.CONTENT_LENGTH;
 import static com.blade.server.netty.HttpConst.KEEP_ALIVE;
@@ -64,6 +65,18 @@ public class RouteMethodHandler implements RequestHandler<ChannelHandlerContext>
     private final boolean      hasBeforeHook = routeMatcher.hasBeforeHook();
     private final boolean      hasAfterHook  = routeMatcher.hasAfterHook();
 
+    public void exceptionCaught(String uri, String method, Exception e) {
+        if (e instanceof BladeException) {
+        } else {
+            log500(log, method, uri);
+        }
+        if (null != WebContext.blade().exceptionHandler()) {
+            WebContext.blade().exceptionHandler().handle(e);
+        } else {
+            log.error("Request Exception", e);
+        }
+    }
+
     public void finishWrite(ChannelHandlerContext ctx, Request request, Response response) {
         Session session = request.session();
         if (null != session) {
@@ -80,14 +93,6 @@ public class RouteMethodHandler implements RequestHandler<ChannelHandlerContext>
 
     public void handleResponse(Request request, Response response, ChannelHandlerContext context) {
         response.body().write(new BodyWriter() {
-//            @Override
-//            public void onText(StringBody body) {
-//                handleFullResponse(
-//                        createTextResponse(response, body.content()),
-//                        context,
-//                        request.keepAlive());
-//            }
-
             @Override
             public void onByteBuf(ByteBuf byteBuf) {
                 handleFullResponse(
@@ -98,7 +103,6 @@ public class RouteMethodHandler implements RequestHandler<ChannelHandlerContext>
 
             @Override
             public void onStream(Closeable closeable) {
-//                return handleStreamResponse(response, body.content(), context, request.keepAlive());
                 if (closeable instanceof InputStream) {
                     handleStreamResponse(response, (InputStream) closeable, context, request.keepAlive());
                 }

@@ -67,11 +67,13 @@ public class Hello {
 //                })
                 .get("/rand", ctx -> {
                     try {
-                        TimeUnit.MILLISECONDS.sleep(new Random().nextInt(1000));
+                        int timeout = ctx.fromInt("timeout", new Random().nextInt(1000));
+                        TimeUnit.SECONDS.sleep(timeout);
+                        ctx.text("sleep " + timeout + "s");
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-                    ctx.body(EmptyBody.empty());
+
                 })
 //                .use(new XssMiddleware())
 //                .use(new CsrfMiddleware())

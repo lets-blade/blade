@@ -215,7 +215,7 @@ public class NettyServer implements Server {
             log.info("{}Use NioEventLoopGroup", getStartedSymbol());
 
             this.bossGroup = new NioEventLoopGroup(acceptThreadCount, new NamedThreadFactory("boss@"));
-            this.workerGroup = new NioEventLoopGroup(ioThreadCount, new NamedThreadFactory("worker@"));
+            this.workerGroup = new NioEventLoopGroup(ioThreadCount, new NamedThreadFactory("io@"));
             bootstrap.group(bossGroup, workerGroup).channel(NioServerSocketChannel.class);
         }
 
