@@ -295,7 +295,12 @@ public class HttpRequestTest extends BaseTestCase {
         Request mockRequest = mockHttpRequest("GET");
 
         Map<String, FileItem> attr     = new HashMap<>();
-        FileItem              fileItem = new FileItem("hello.png", "/usr/hello.png", "image/png", 20445L);
+        FileItem              fileItem = new FileItem();
+        fileItem.setFileName("hello.png");
+        fileItem.setPath("/usr/hello.png");
+        fileItem.setContentType("image/png");
+        fileItem.setLength(20445L);
+
         attr.put("img", fileItem);
 
         when(mockRequest.fileItems()).thenReturn(attr);

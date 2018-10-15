@@ -25,6 +25,7 @@ public class Hello {
                     String[] chars = new String[]{"Here a special char \" that not escaped", "And Another \\ char"};
                     ctx.json(chars);
                 })
+                .get("/up", ctx -> ctx.render("upload.html"))
                 .get("/d1", ctx -> {
                     File file = new File("/Users/biezhi/Pictures/rand/003.jpg");
                     ctx.response().contentType("image/jpeg");
@@ -79,7 +80,7 @@ public class Hello {
                     System.out.println("session 失效了");
                 })
                 .disableSession()
-                .disableCost()
+//                .disableCost()
 //                .showFileList(true)
 //                .gzip(true)
 //                .enableCors(true)

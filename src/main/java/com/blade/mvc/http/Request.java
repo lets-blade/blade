@@ -526,4 +526,10 @@ public interface Request {
         return this.body().toString(CharsetUtil.UTF_8);
     }
 
+    boolean isPart();
+
+    boolean readChunk();
+
+    boolean chunkIsEnd();
+
 }

@@ -7,8 +7,9 @@ import com.blade.mvc.multipart.FileItem;
 import com.blade.mvc.ui.RestResponse;
 import com.blade.validator.Validators;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -47,7 +48,7 @@ public class DemoController {
 
     @JSON
     @PostRoute("api_test/:size")
-    public RestResponse<Integer> api_portal(@PathParam Integer size){
+    public RestResponse<Integer> api_portal(@PathParam Integer size) {
         return RestResponse.ok(size);
     }
 
@@ -69,10 +70,11 @@ public class DemoController {
     }
 
     @PostRoute("upload")
-    public void upload(@MultipartParam FileItem fileItem) {
-        System.out.println(fileItem.getFileName());
-        System.out.println(fileItem.getContentType());
-        System.out.println(fileItem.getLength());
+    @JSON
+    public RestResponse upload(@MultipartParam FileItem fileItem) throws IOException {
+        System.out.println(fileItem);
+        fileItem.moveTo(new File(fileItem.getFileName()));
+        return RestResponse.ok();
     }
 
     @PostRoute("save")

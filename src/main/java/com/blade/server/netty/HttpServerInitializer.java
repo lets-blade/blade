@@ -26,7 +26,7 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class HttpServerInitializer extends ChannelInitializer<SocketChannel> {
 
-    private final HttpServerDispatcher HTTP_SERVER_HANDLER = new HttpServerDispatcher();
+    private final HttpServerHandler HTTP_SERVER_HANDLER = new HttpServerHandler();
 
     private final SslContext sslCtx;
     private final Blade      blade;
@@ -54,30 +54,28 @@ public class HttpServerInitializer extends ChannelInitializer<SocketChannel> {
 
     @Override
     protected void initChannel(SocketChannel ch) {
-        ChannelPipeline p = ch.pipeline();
+        ChannelPipeline pipeline = ch.pipeline();
         try {
             if (sslCtx != null) {
-                p.addLast(sslCtx.newHandler(ch.alloc()));
+                pipeline.addLast(sslCtx.newHandler(ch.alloc()));
             }
 
-            p.addLast(new HttpServerCodec(36192 * 2, 36192 * 8, 36192 * 16, false));
-            p.addLast(new HttpObjectAggregator(Integer.MAX_VALUE));
-            p.addLast(new HttpServerExpectContinueHandler());
+            pipeline.addLast(new HttpRequestDecoder());
+            pipeline.addLast(new HttpResponseEncoder());
+            pipeline.addLast(new HttpServerExpectContinueHandler());
 
             if (useGZIP) {
-                p.addLast(new HttpContentCompressor());
+                pipeline.addLast(new HttpContentCompressor());
             }
-
-            p.addLast(new ChunkedWriteHandler());
 
             if (enableCors) {
-                p.addLast(new CorsHandler(CorsConfigBuilder.forAnyOrigin().allowNullOrigin().allowCredentials().build()));
+                pipeline.addLast(new CorsHandler(CorsConfigBuilder.forAnyOrigin().allowNullOrigin().allowCredentials().build()));
             }
             if (isWebSocket) {
-                p.addLast(new WebSocketServerProtocolHandler(blade.webSocketPath(), null, true));
-                p.addLast(WEB_SOCKET_HANDLER);
+                pipeline.addLast(new WebSocketServerProtocolHandler(blade.webSocketPath(), null, true));
+                pipeline.addLast(WEB_SOCKET_HANDLER);
             }
-            p.addLast(HTTP_SERVER_HANDLER);
+            pipeline.addLast(HTTP_SERVER_HANDLER);
         } catch (Exception e) {
             log.error("Add channel pipeline error", e);
         }

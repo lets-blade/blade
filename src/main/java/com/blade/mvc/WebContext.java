@@ -37,7 +37,7 @@ import java.util.Optional;
 public class WebContext {
 
     /**
-     * ThreadLocal, used netty fast theadLocal
+     * ThreadLocal, used netty FastThreadLocal
      */
     private static final FastThreadLocal<WebContext> fastThreadLocal = new FastThreadLocal<>();
 
@@ -62,6 +62,8 @@ public class WebContext {
     private Response response;
 
     private ChannelHandlerContext handlerContext;
+
+    private LocalContext localContext;
 
     public WebContext(Request request, Response response, ChannelHandlerContext handlerContext) {
         this.request = request;
@@ -112,6 +114,18 @@ public class WebContext {
     public static Response response() {
         var webContext = get();
         return null != webContext ? webContext.response : null;
+    }
+
+    public Request getRequest() {
+        return request;
+    }
+
+    public Response getResponse() {
+        return response;
+    }
+
+    public ChannelHandlerContext getHandlerContext() {
+        return handlerContext;
     }
 
     /**
@@ -187,4 +201,11 @@ public class WebContext {
         return blade().env(key, defaultValue);
     }
 
+    public LocalContext getLocalContext() {
+        return localContext;
+    }
+
+    public void setLocalContext(LocalContext localContext) {
+        this.localContext = localContext;
+    }
 }

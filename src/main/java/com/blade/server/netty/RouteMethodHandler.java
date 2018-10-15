@@ -16,6 +16,7 @@ import com.blade.mvc.handler.RouteHandler;
 import com.blade.mvc.handler.RouteHandler0;
 import com.blade.mvc.hook.WebHook;
 import com.blade.mvc.http.*;
+import com.blade.mvc.http.Cookie;
 import com.blade.mvc.route.Route;
 import com.blade.mvc.route.RouteMatcher;
 import com.blade.mvc.ui.ModelAndView;
@@ -42,6 +43,7 @@ import java.util.List;
 import java.util.Map;
 
 import static com.blade.kit.BladeKit.log404;
+import static com.blade.mvc.Const.ENV_KEY_SESSION_KEY;
 import static com.blade.server.netty.HttpConst.CONTENT_LENGTH;
 import static com.blade.server.netty.HttpConst.KEEP_ALIVE;
 import static io.netty.handler.codec.http.HttpHeaderNames.TRANSFER_ENCODING;
@@ -61,6 +63,20 @@ public class RouteMethodHandler implements RequestHandler<ChannelHandlerContext>
     private final boolean      hasMiddleware = routeMatcher.getMiddleware().size() > 0;
     private final boolean      hasBeforeHook = routeMatcher.hasBeforeHook();
     private final boolean      hasAfterHook  = routeMatcher.hasAfterHook();
+
+    public void finishWrite(ChannelHandlerContext ctx, Request request, Response response) {
+        Session session = request.session();
+        if (null != session) {
+            String sessionKey = WebContext.blade().environment().get(ENV_KEY_SESSION_KEY, HttpConst.DEFAULT_SESSION_KEY);
+            Cookie cookie     = new Cookie();
+            cookie.name(sessionKey);
+            cookie.value(session.id());
+            cookie.httpOnly(true);
+            cookie.secure(request.isSecure());
+            response.cookie(cookie);
+        }
+        this.handleResponse(request, response, ctx);
+    }
 
     public void handleResponse(Request request, Response response, ChannelHandlerContext context) {
         response.body().write(new BodyWriter() {
@@ -83,7 +99,7 @@ public class RouteMethodHandler implements RequestHandler<ChannelHandlerContext>
             @Override
             public void onStream(Closeable closeable) {
 //                return handleStreamResponse(response, body.content(), context, request.keepAlive());
-                if(closeable instanceof InputStream){
+                if (closeable instanceof InputStream) {
                     handleStreamResponse(response, (InputStream) closeable, context, request.keepAlive());
                 }
             }
@@ -156,7 +172,7 @@ public class RouteMethodHandler implements RequestHandler<ChannelHandlerContext>
         });
     }
 
-    private Void handleFullResponse(HttpResponse response, ChannelHandlerContext context, boolean keepAlive){
+    private Void handleFullResponse(HttpResponse response, ChannelHandlerContext context, boolean keepAlive) {
         if (context.channel().isActive()) {
             if (!keepAlive) {
                 context.write(response).addListener(ChannelFutureListener.CLOSE);
