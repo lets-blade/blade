@@ -101,7 +101,7 @@ public class NettyServer implements Server {
     private volatile boolean isStop;
 
     @Override
-    public void start(Blade blade, String[] args) throws Exception {
+    public void start(Blade blade) throws Exception {
         this.blade = blade;
         this.environment = blade.environment();
         this.processors = blade.processors();

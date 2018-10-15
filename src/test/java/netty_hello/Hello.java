@@ -17,7 +17,6 @@ import java.util.concurrent.TimeUnit;
 public class Hello {
 
     public static void main(String[] args) {
-
         Blade.of()
 //                .devMode(false)
 //                .environment(Const.ENV_KEY_NETTY_WORKERS, Runtime.getRuntime().availableProcessors())

@@ -61,7 +61,6 @@ public class AsyncRunner {
     }
 
     public void finishWrite() {
-        System.out.println("finishWrite 线程: " + Thread.currentThread());
         routeHandler.finishWrite(webContext.getHandlerContext(), request, response);
         WebContext.remove();
         isFinished = true;
