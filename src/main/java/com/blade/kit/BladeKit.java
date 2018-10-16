@@ -181,10 +181,6 @@ public class BladeKit {
         return httpMethod == HttpMethod.BEFORE || httpMethod == HttpMethod.AFTER;
     }
 
-    public static boolean notIsWebHook(HttpMethod httpMethod) {
-        return !isWebHook(httpMethod);
-    }
-
     public static boolean epollIsAvailable() {
         try {
             Object obj = Class.forName("io.netty.channel.epoll.Epoll").getMethod("isAvailable").invoke(null);
