@@ -20,6 +20,7 @@ import com.blade.Environment;
 import com.blade.mvc.http.Request;
 import com.blade.mvc.http.Response;
 import com.blade.mvc.http.session.SessionManager;
+import com.blade.mvc.route.Route;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.concurrent.FastThreadLocal;
 import lombok.var;
@@ -29,7 +30,7 @@ import java.util.Optional;
 /**
  * Blade Web Context
  * <p>
- * Cached current thread context request and response instance
+ * Route logic current thread context request and response instance.
  *
  * @author biezhi
  * 2017/6/1
@@ -61,14 +62,16 @@ public class WebContext {
      */
     private Response response;
 
-    private ChannelHandlerContext handlerContext;
+    private Route route;
 
     private LocalContext localContext;
 
-    public WebContext(Request request, Response response, ChannelHandlerContext handlerContext) {
+    private ChannelHandlerContext channelHandlerContext;
+
+    public WebContext(Request request, Response response, ChannelHandlerContext channelHandlerContext) {
         this.request = request;
         this.response = response;
-        this.handlerContext = handlerContext;
+        this.channelHandlerContext = channelHandlerContext;
     }
 
     /**
@@ -122,20 +125,6 @@ public class WebContext {
 
     public Response getResponse() {
         return response;
-    }
-
-    public ChannelHandlerContext getHandlerContext() {
-        return handlerContext;
-    }
-
-    /**
-     * Get current thread ChannelHandlerContext instance
-     *
-     * @return ChannelHandlerContext instance
-     */
-    public static ChannelHandlerContext handlerContext() {
-        var webContext = get();
-        return null != webContext ? webContext.handlerContext : null;
     }
 
     /**
@@ -201,11 +190,24 @@ public class WebContext {
         return blade().env(key, defaultValue);
     }
 
+    public ChannelHandlerContext getChannelHandlerContext() {
+        return channelHandlerContext;
+    }
+
     public LocalContext getLocalContext() {
         return localContext;
+    }
+
+    public Route getRoute() {
+        return route;
     }
 
     public void setLocalContext(LocalContext localContext) {
         this.localContext = localContext;
     }
+
+    public void setRoute(Route route) {
+        this.route = route;
+    }
+
 }

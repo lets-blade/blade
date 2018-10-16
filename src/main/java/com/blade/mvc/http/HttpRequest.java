@@ -1,5 +1,21 @@
+/**
+ * Copyright (c) 2018, biezhi 王爵 nice (biezhi.me@gmail.com)
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.blade.mvc.http;
 
+import com.blade.exception.InternalErrorException;
 import com.blade.kit.PathKit;
 import com.blade.kit.StringKit;
 import com.blade.mvc.Const;
@@ -16,6 +32,7 @@ import io.netty.handler.codec.http.*;
 import io.netty.handler.codec.http.cookie.ServerCookieDecoder;
 import io.netty.handler.codec.http.multipart.*;
 import io.netty.util.CharsetUtil;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import lombok.var;
@@ -34,15 +51,16 @@ import java.util.*;
  * 2017/5/31
  */
 @Slf4j
+@NoArgsConstructor
 public class HttpRequest implements Request {
 
-    private static final SessionHandler  SESSION_HANDLER = WebContext.sessionManager() != null ? new SessionHandler(WebContext.blade()) : null;
-    private static final HttpDataFactory factory         = new DefaultHttpDataFactory(DefaultHttpDataFactory.MINSIZE); // Disk if size exceed
-    private static final ByteBuf         EMPTY_BUF       = Unpooled.copiedBuffer("", CharsetUtil.UTF_8);
+    private static final HttpDataFactory factory = new DefaultHttpDataFactory(DefaultHttpDataFactory.MINSIZE); // Disk if size exceed
+
+    private static final ByteBuf EMPTY_BUF = Unpooled.copiedBuffer("", CharsetUtil.UTF_8);
 
     static {
         DiskAttribute.deleteOnExitTemporaryFile = true; // should delete file on
-        DiskAttribute.baseDirectory = null; // system temp directory
+        DiskAttribute.baseDirectory = null;             // system temp directory
     }
 
     private ByteBuf body = EMPTY_BUF;
@@ -54,27 +72,34 @@ public class HttpRequest implements Request {
     private boolean keepAlive;
     private Session session;
 
+    private boolean isRequestPart;
+    private boolean isEnd;
+
     private Map<String, String>       headers    = null;
     private Map<String, Object>       attributes = null;
-    private Map<String, List<String>> parameters = new HashMap<>();
     private Map<String, String>       pathParams = null;
+    private Map<String, List<String>> parameters = new HashMap<>();
     private Map<String, Cookie>       cookies    = new HashMap<>();
     private Map<String, FileItem>     fileItems  = new HashMap<>();
 
-    /**
-     * parse netty cookie to {@link Cookie}.
-     *
-     * @param nettyCookie netty raw cookie instance
-     */
-    private void parseCookie(io.netty.handler.codec.http.cookie.Cookie nettyCookie) {
-        var cookie = new Cookie();
-        cookie.name(nettyCookie.name());
-        cookie.value(nettyCookie.value());
-        cookie.httpOnly(nettyCookie.isHttpOnly());
-        cookie.path(nettyCookie.path());
-        cookie.domain(nettyCookie.domain());
-        cookie.maxAge(nettyCookie.maxAge());
-        this.cookies.put(cookie.name(), cookie);
+    public HttpRequest(Request request) {
+        this.pathParams = request.pathParams();
+        this.cookies = request.cookies();
+        this.attributes = request.attributes();
+        this.body = request.body();
+        this.fileItems = request.fileItems();
+        this.headers = request.headers();
+        this.keepAlive = request.keepAlive();
+        this.method = request.method();
+        this.url = request.url();
+
+        if (null != this.url && this.url.length() > 0) {
+            var pathEndPos = this.url.indexOf('?');
+            this.uri = pathEndPos < 0 ? this.url : this.url.substring(0, pathEndPos);
+        }
+
+        this.parameters = request.parameters();
+        this.protocol = request.protocol();
     }
 
     @Override
@@ -220,37 +245,50 @@ public class HttpRequest implements Request {
         return this.body;
     }
 
-    public HttpRequest() {
-    }
-
-    public HttpRequest(Request request) {
-        this.pathParams = request.pathParams();
-        this.cookies = request.cookies();
-        this.attributes = request.attributes();
-        this.body = request.body();
-        this.fileItems = request.fileItems();
-        this.headers = request.headers();
-        this.keepAlive = request.keepAlive();
-        this.method = request.method();
-        this.url = request.url();
-
-        if (null != this.url && this.url.length() > 0) {
-            var pathEndPos = this.url.indexOf('?');
-            this.uri = pathEndPos < 0 ? this.url : this.url.substring(0, pathEndPos);
+    @Override
+    public boolean readChunk() {
+        LocalContext localContext = HttpServerHandler.getLocalContext();
+        if (null == localContext) {
+            throw new InternalErrorException("It is impossible to run here");
         }
 
-        this.parameters = request.parameters();
-        this.protocol = request.protocol();
+        HttpObject msg = localContext.msg();
+        localContext.updateMsg(msg);
+
+        if (localContext.hasDecoder() && msg instanceof HttpContent) {
+            // New chunk is received
+            HttpContent chunk = (HttpContent) msg;
+            // body content
+            // this.body = chunk.content().copy();
+            localContext.decoder().offer(chunk);
+            readHttpDataChunkByChunk(localContext.decoder());
+        }
+
+        if (msg instanceof LastHttpContent) {
+            this.isEnd = true;
+        }
+        return this.isEnd;
     }
 
-    private boolean isRequestPart;
-    private boolean isEnd;
+    @Override
+    public boolean chunkIsEnd() {
+        return this.isEnd;
+    }
+
+    @Override
+    public boolean isPart() {
+        return isRequestPart;
+    }
 
     public static HttpRequest build(String remoteAddress, HttpObject msg) {
         boolean isRequestPart = false;
+
+        io.netty.handler.codec.http.HttpRequest nettyRequest = null;
         if (msg instanceof io.netty.handler.codec.http.HttpRequest) {
             isRequestPart = true;
+            nettyRequest = (io.netty.handler.codec.http.HttpRequest) msg;
         }
+
         LocalContext localContext = HttpServerHandler.getLocalContext();
         if (null != localContext) {
             HttpRequest request = localContext.request();
@@ -260,16 +298,12 @@ public class HttpRequest implements Request {
             return request;
         }
 
-        HttpRequest request = new HttpRequest();
-        request.isRequestPart = isRequestPart;
-
-        io.netty.handler.codec.http.HttpRequest nettyRequest;
-        if (isRequestPart) {
-            nettyRequest = (io.netty.handler.codec.http.HttpRequest) msg;
-        } else {
+        if (!isRequestPart) {
             return null;
         }
 
+        HttpRequest request = new HttpRequest();
+        request.isRequestPart = true;
         request.keepAlive = HttpUtil.isKeepAlive(nettyRequest);
         request.remoteAddress = remoteAddress;
         request.url = nettyRequest.uri();
@@ -286,8 +320,10 @@ public class HttpRequest implements Request {
             cleanUri = PathKit.cleanPath(cleanUri.replaceFirst(request.contextPath(), "/"));
             request.uri = cleanUri;
         }
-        if (null != SESSION_HANDLER) {
-            request.session = SESSION_HANDLER.createSession(request);
+
+        SessionHandler sessionHandler = WebContext.sessionManager() != null ? new SessionHandler(WebContext.blade()) : null;
+        if (null != sessionHandler) {
+            request.session = sessionHandler.createSession(request);
         }
 
         HttpServerHandler.setLocalContext(new LocalContext(msg, request, decoder));
@@ -338,36 +374,6 @@ public class HttpRequest implements Request {
         }
     }
 
-    @Override
-    public boolean readChunk() {
-        LocalContext localContext = HttpServerHandler.getLocalContext();
-        if (null == localContext) {
-            throw new RuntimeException("");
-        }
-
-        HttpObject msg = localContext.msg();
-        localContext.updateMsg(msg);
-
-        if (localContext.hasDecoder() && msg instanceof HttpContent) {
-            // New chunk is received
-            HttpContent chunk = (HttpContent) msg;
-            // body content
-            // this.body = chunk.content().copy();
-            localContext.decoder().offer(chunk);
-            readHttpDataChunkByChunk(localContext.decoder());
-        }
-
-        if (msg instanceof LastHttpContent) {
-            this.isEnd = true;
-        }
-        return this.isEnd;
-    }
-
-    @Override
-    public boolean chunkIsEnd() {
-        return this.isEnd;
-    }
-
     /**
      * Example of reading request by chunk and getting values from chunk to chunk
      */
@@ -388,24 +394,10 @@ public class HttpRequest implements Request {
         try {
             switch (data.getHttpDataType()) {
                 case Attribute:
-                    var attribute = (Attribute) data;
-                    var name = attribute.getName();
-                    var value = attribute.getValue();
-
-                    List<String> values;
-                    if (this.parameters.containsKey(name)) {
-                        values = this.parameters.get(name);
-                        values.add(value);
-                    } else {
-                        values = new ArrayList<>();
-                        values.add(value);
-                        this.parameters.put(name, values);
-                    }
-
+                    this.parseAttribute((Attribute) data);
                     break;
                 case FileUpload:
-                    var fileUpload = (FileUpload) data;
-                    parseFileUpload(fileUpload);
+                    this.parseFileUpload((FileUpload) data);
                     break;
                 default:
                     break;
@@ -417,27 +409,63 @@ public class HttpRequest implements Request {
         }
     }
 
-    private void parseFileUpload(FileUpload fileUpload) throws IOException {
-        if (fileUpload.isCompleted()) {
-            FileItem fileItem = new FileItem();
-            fileItem.setName(fileUpload.getName());
-            fileItem.setFileName(fileUpload.getFilename());
+    private void parseAttribute(Attribute attribute) throws IOException {
+        var name  = attribute.getName();
+        var value = attribute.getValue();
 
-            Path tmpFile = Files.createTempFile(Paths.get(fileUpload.getFile().getParent()), "blade_", "_upload");
-            Files.move(Paths.get(fileUpload.getFile().getPath()), tmpFile, StandardCopyOption.REPLACE_EXISTING);
-
-            fileItem.setFile(tmpFile.toFile());
-            fileItem.setPath(tmpFile.toFile().getPath());
-            fileItem.setContentType(fileUpload.getContentType());
-            fileItem.setLength(fileUpload.length());
-
-            fileItems.put(fileItem.getName(), fileItem);
+        List<String> values;
+        if (this.parameters.containsKey(name)) {
+            values = this.parameters.get(name);
+            values.add(value);
+        } else {
+            values = new ArrayList<>();
+            values.add(value);
+            this.parameters.put(name, values);
         }
     }
 
-    @Override
-    public boolean isPart() {
-        return isRequestPart;
+    /**
+     * Parse FileUpload to {@link FileItem}.
+     *
+     * @param fileUpload netty http file upload
+     * @throws IOException
+     */
+    private void parseFileUpload(FileUpload fileUpload) throws IOException {
+        if (!fileUpload.isCompleted()) {
+            return;
+        }
+        FileItem fileItem = new FileItem();
+        fileItem.setName(fileUpload.getName());
+        fileItem.setFileName(fileUpload.getFilename());
+
+        // Upload the file is moved to the specified temporary file,
+        // because FileUpload will be release after completion of the analysis.
+        // tmpFile will be deleted automatically if they are used.
+        Path tmpFile = Files.createTempFile(Paths.get(fileUpload.getFile().getParent()), "blade_", "_upload");
+        Files.move(Paths.get(fileUpload.getFile().getPath()), tmpFile, StandardCopyOption.REPLACE_EXISTING);
+
+        fileItem.setFile(tmpFile.toFile());
+        fileItem.setPath(tmpFile.toFile().getPath());
+        fileItem.setContentType(fileUpload.getContentType());
+        fileItem.setLength(fileUpload.length());
+
+        fileItems.put(fileItem.getName(), fileItem);
+    }
+
+    /**
+     * Parse netty cookie to {@link Cookie}.
+     *
+     * @param nettyCookie netty raw cookie instance
+     */
+    private void parseCookie(io.netty.handler.codec.http.cookie.Cookie nettyCookie) {
+        var cookie = new Cookie();
+        cookie.name(nettyCookie.name());
+        cookie.value(nettyCookie.value());
+        cookie.httpOnly(nettyCookie.isHttpOnly());
+        cookie.path(nettyCookie.path());
+        cookie.domain(nettyCookie.domain());
+        cookie.maxAge(nettyCookie.maxAge());
+        this.cookies.put(cookie.name(), cookie);
     }
 
 }

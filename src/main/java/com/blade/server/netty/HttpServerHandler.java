@@ -1,3 +1,18 @@
+/**
+ * Copyright (c) 2018, biezhi 王爵 nice (biezhi.me@gmail.com)
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.blade.server.netty;
 
 import com.blade.exception.NotFoundException;
@@ -43,9 +58,9 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<HttpObject> {
     private static final FastThreadLocal<LocalContext> LOCAL_CONTEXT = new FastThreadLocal<>();
 
     private final StaticFileHandler  staticFileHandler  = new StaticFileHandler(WebContext.blade());
+    private final RouteMatcher       routeMatcher       = WebContext.blade().routeMatcher();
     private final RouteMethodHandler routeMethodHandler = new RouteMethodHandler();
-
-    private final ExecutorService executor = Executors.newFixedThreadPool(8);
+    private final ExecutorService    logicExecutor      = Executors.newFixedThreadPool(8);
 
     @Override
     public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
@@ -79,12 +94,12 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<HttpObject> {
         }
 
         try {
-            AsyncRunner asyncRunner = new AsyncRunner(routeMethodHandler, WebContext.get());
+            LogicRunner asyncRunner = new LogicRunner(routeMethodHandler, WebContext.get());
 
             CompletableFuture<Void> future = CompletableFuture.completedFuture(asyncRunner)
-                    .thenApplyAsync(AsyncRunner::handle, executor)
-                    .thenAcceptAsync(AsyncRunner::finishWrite, executor);
-//                    .thenAccept(AsyncRunner::finishWrite);
+                    .thenApplyAsync(LogicRunner::handle, logicExecutor)
+                    .thenAccept(LogicRunner::finishWrite);
+
             asyncRunner.setFuture(future);
         } finally {
             WebContext.remove();
@@ -105,29 +120,32 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<HttpObject> {
         Response response = new HttpResponse();
 
         // init web context
-        WebContext.set(new WebContext(request, response, ctx));
-        WebContext.get().setLocalContext(LOCAL_CONTEXT.get());
+        WebContext webContext = new WebContext(request, response, ctx);
+        webContext.setLocalContext(LOCAL_CONTEXT.get());
+
+        WebContext.set(webContext);
 
         String uri    = request.uri();
         String method = request.method();
 
         try {
             if (isStaticFile(method, uri)) {
-                staticFileHandler.handle(ctx, request, response);
+                staticFileHandler.handle(webContext);
                 LOCAL_CONTEXT.remove();
                 WebContext.remove();
             } else {
-                RouteMatcher routeMatcher = WebContext.blade().routeMatcher();
-                Route        route        = routeMatcher.lookupRoute(method, uri);
+                Route route = routeMatcher.lookupRoute(method, uri);
                 if (null == route) {
                     String paddingMethod = BladeCache.getPaddingMethod(method);
                     log404(log, paddingMethod, uri);
                     throw new NotFoundException(uri);
                 }
+                //
+                WebContext.get().setRoute(route);
             }
         } catch (Exception e) {
             routeMethodHandler.exceptionCaught(uri, method, e);
-            routeMethodHandler.finishWrite(ctx, request, response);
+            routeMethodHandler.finishWrite(WebContext.get());
             LOCAL_CONTEXT.remove();
             WebContext.remove();
         }

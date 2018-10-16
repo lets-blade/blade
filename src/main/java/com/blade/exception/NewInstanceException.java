@@ -15,15 +15,19 @@
  */
 package com.blade.exception;
 
+import lombok.NoArgsConstructor;
+
 /**
  * New instance exception
  *
  * @author crossoverJie
  * @date 2018/10/8
  */
+@NoArgsConstructor
 public class NewInstanceException extends RuntimeException {
 
     public NewInstanceException(String message) {
         super(message);
     }
+
 }

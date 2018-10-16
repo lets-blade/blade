@@ -58,12 +58,47 @@ import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
  * 2017/5/31
  */
 @Slf4j
-public class RouteMethodHandler implements RequestHandler<ChannelHandlerContext> {
+public class RouteMethodHandler implements RequestHandler {
 
     private final RouteMatcher routeMatcher  = WebContext.blade().routeMatcher();
     private final boolean      hasMiddleware = routeMatcher.getMiddleware().size() > 0;
     private final boolean      hasBeforeHook = routeMatcher.hasBeforeHook();
     private final boolean      hasAfterHook  = routeMatcher.hasAfterHook();
+
+    @Override
+    public void handle(WebContext webContext) throws Exception {
+        RouteContext context = new RouteContext(webContext.getRequest(), webContext.getResponse());
+
+        // if execution returns false then execution is interrupted
+        String uri   = context.uri();
+        Route  route = webContext.getRoute();
+        if (null == route) {
+            log404(log, context.method(), context.uri());
+            throw new NotFoundException(context.uri());
+        }
+
+        // init route, request parameters, route action method and parameter.
+        context.initRoute(route);
+
+        // execution middleware
+        if (hasMiddleware && !invokeMiddleware(routeMatcher.getMiddleware(), context)) {
+            return;
+        }
+        context.injectParameters();
+
+        // web hook before
+        if (hasBeforeHook && !invokeHook(routeMatcher.getBefore(uri), context)) {
+            return;
+        }
+
+        // execute
+        this.routeHandle(context);
+
+        // webHook
+        if (hasAfterHook) {
+            this.invokeHook(routeMatcher.getAfter(uri), context);
+        }
+    }
 
     public void exceptionCaught(String uri, String method, Exception e) {
         if (e instanceof BladeException) {
@@ -77,8 +112,11 @@ public class RouteMethodHandler implements RequestHandler<ChannelHandlerContext>
         }
     }
 
-    public void finishWrite(ChannelHandlerContext ctx, Request request, Response response) {
-        Session session = request.session();
+    public void finishWrite(WebContext webContext) {
+        Request  request  = webContext.getRequest();
+        Response response = webContext.getResponse();
+        Session  session  = request.session();
+
         if (null != session) {
             String sessionKey = WebContext.blade().environment().get(ENV_KEY_SESSION_KEY, HttpConst.DEFAULT_SESSION_KEY);
             Cookie cookie     = new Cookie();
@@ -88,7 +126,7 @@ public class RouteMethodHandler implements RequestHandler<ChannelHandlerContext>
             cookie.secure(request.isSecure());
             response.cookie(cookie);
         }
-        this.handleResponse(request, response, ctx);
+        this.handleResponse(request, response, webContext.getChannelHandlerContext());
     }
 
     public void handleResponse(Request request, Response response, ChannelHandlerContext context) {
@@ -386,41 +424,6 @@ public class RouteMethodHandler implements RequestHandler<ChannelHandlerContext>
             }
         }
         return true;
-    }
-
-    @Override
-    public void handle(ChannelHandlerContext ctx, Request request, Response response) throws Exception {
-        RouteContext context = new RouteContext(request, response);
-        // if execution returns false then execution is interrupted
-        String uri = context.uri();
-
-        Route route = routeMatcher.lookupRoute(context.method(), uri);
-        if (null == route) {
-            log404(log, context.method(), context.uri());
-            throw new NotFoundException(context.uri());
-        }
-
-        // init route, request parameters, route action method and parameter.
-        context.initRoute(route);
-
-        // execution middleware
-        if (hasMiddleware && !invokeMiddleware(routeMatcher.getMiddleware(), context)) {
-            return;
-        }
-        context.injectParameters();
-
-        // web hook before
-        if (hasBeforeHook && !invokeHook(routeMatcher.getBefore(uri), context)) {
-            return;
-        }
-
-        // execute
-        this.routeHandle(context);
-
-        // webHook
-        if (hasAfterHook) {
-            this.invokeHook(routeMatcher.getAfter(uri), context);
-        }
     }
 
 }
