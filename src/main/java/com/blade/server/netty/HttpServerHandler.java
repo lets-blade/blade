@@ -103,7 +103,7 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<HttpObject> {
 
             CompletableFuture<Void> future = CompletableFuture.completedFuture(asyncRunner)
                     .thenApplyAsync(LogicRunner::handle, LOGIC_EXECUTOR)
-                    .thenAcceptAsync(LogicRunner::finishWrite, LOGIC_EXECUTOR);
+                    .thenAccept(LogicRunner::finishWrite);
 
             asyncRunner.setFuture(future);
         } finally {
