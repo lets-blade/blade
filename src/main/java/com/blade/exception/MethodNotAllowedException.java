@@ -16,17 +16,17 @@
 package com.blade.exception;
 
 /**
- * HTTP 404 not found exception
+ * HTTP 405 Method Not Allowed
  *
  * @author biezhi
- * @date 2017/9/18
+ * @date 2018/10/16
  */
-public class NotFoundException extends BladeException {
+public class MethodNotAllowedException extends BladeException {
 
-    public static final  int    STATUS = 404;
-    private static final String NAME   = "Not Found";
+    public static final  int    STATUS = 405;
+    private static final String NAME   = "Method Not Allowed";
 
-    public NotFoundException(String message) {
+    public MethodNotAllowedException(String message) {
         super(STATUS, NAME, message);
     }
 

@@ -1,15 +1,19 @@
 package com.blade.mvc.http;
 
-public interface BodyWriter<T> {
+import io.netty.buffer.ByteBuf;
 
-    T onText(StringBody body);
+import java.io.Closeable;
 
-    T onStream(StreamBody body);
+public interface BodyWriter {
 
-    T onView(ViewBody body);
+    void onStream(Closeable closeable);
 
-    T onEmpty(EmptyBody emptyBody);
+    void onView(ViewBody body);
 
-    T onRawBody(RawBody body);
+    void onRawBody(RawBody body);
+
+    void onByteBuf(Object byteBuf);
+
+    void onByteBuf(ByteBuf byteBuf);
 
 }

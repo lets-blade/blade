@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://cdn.staticfile.org/jquery/3.3.1/jquery.min.js"></script>
+</head>
+<body>
+
+<center>
+    <h1>
+        <a href="/upload/">查看文件列表</a>
+    </h1>
+    <form id="uploadForm" enctype="multipart/form-data">
+        <input id="file" type="file" name="file"/>
+        <button id="upload" type="button">上传</button>
+    </form>
+</center>
+
+<script>
+    $('#upload').click(function () {
+        $.ajax({
+            url: '/upload',
+            type: 'POST',
+            cache: false,
+            data: new FormData($('#uploadForm')[0]),
+            processData: false,
+            contentType: false
+        }).done(function (res) {
+            console.log(res);
+            if(res.success){
+                alert('上传成功.');
+                window.location.href = '/upload/';
+            } else {
+                alert(res.msg || '上传失败');
+            }
+        }).fail(function (res) {
+
+        });
+    });
+</script>
+
+</body>
+</html>

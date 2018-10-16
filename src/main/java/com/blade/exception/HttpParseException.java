@@ -15,19 +15,28 @@
  */
 package com.blade.exception;
 
+import lombok.NoArgsConstructor;
+
 /**
- * HTTP 404 not found exception
+ * Http Param parse exception
+ * <p>
+ * Contains form form parameter conversion, upload file
  *
  * @author biezhi
- * @date 2017/9/18
+ * @date 2018/10/16
  */
-public class NotFoundException extends BladeException {
+@NoArgsConstructor
+public class HttpParseException extends RuntimeException {
 
-    public static final  int    STATUS = 404;
-    private static final String NAME   = "Not Found";
-
-    public NotFoundException(String message) {
-        super(STATUS, NAME, message);
+    public HttpParseException(String message) {
+        super(message);
     }
 
+    public HttpParseException(Throwable cause) {
+        super(cause);
+    }
+
+    public HttpParseException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

@@ -14,10 +14,9 @@ public interface Server {
      * Start blade application
      *
      * @param blade blade instance
-     * @param args  command arguments
      * @throws Exception
      */
-    void start(Blade blade, String[] args) throws Exception;
+    void start(Blade blade) throws Exception;
 
     /**
      * Join current server

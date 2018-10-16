@@ -1,5 +1,6 @@
 package com.blade.mvc.route;
 
+import com.blade.exception.MethodNotAllowedException;
 import com.blade.ioc.annotation.Order;
 import com.blade.kit.*;
 import com.blade.mvc.RouteContext;
@@ -10,6 +11,9 @@ import com.blade.mvc.hook.WebHook;
 import com.blade.mvc.http.HttpMethod;
 import com.blade.mvc.http.Request;
 import com.blade.mvc.http.Response;
+import com.blade.mvc.route.mapping.FastRouteMappingInfo;
+import com.blade.mvc.route.mapping.RegexMapping;
+import com.blade.mvc.route.mapping.StaticMapping;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Method;
@@ -44,11 +48,8 @@ public class RouteMatcher {
     private Map<String, Method[]>    classMethodPool = new ConcurrentHashMap<>();
     private Map<Class<?>, Object>    controllerPool  = new ConcurrentHashMap<>();
 
-    private Map<HttpMethod, Map<Integer, FastRouteMappingInfo>> regexRoutes        = new HashMap<>();
-    private Map<String, Route>                                  staticRoutes       = new HashMap<>();
-    private Map<HttpMethod, Pattern>                            regexRoutePatterns = new HashMap<>();
-    private Map<HttpMethod, Integer>                            indexes            = new HashMap<>();
-    private Map<HttpMethod, StringBuilder>                      patternBuilders    = new HashMap<>();
+    private RegexMapping  regexMapping  = new RegexMapping();
+    private StaticMapping staticMapping = new StaticMapping();
 
     private List<String> webSockets = new ArrayList<>(4);
 
@@ -159,23 +160,31 @@ public class RouteMatcher {
     }
 
     public Route lookupRoute(String httpMethod, String path) {
-        path = parsePath(path);
-        String routeKey = path + '#' + httpMethod.toUpperCase();
-        Route  route    = staticRoutes.get(routeKey);
+        Route route = staticMapping.findRoute(path, httpMethod);
         if (null != route) {
             return route;
         }
-        route = staticRoutes.get(path + "#ALL");
+        path = parsePath(path);
+        route = staticMapping.findRoute(path, httpMethod);
         if (null != route) {
             return route;
+        }
+        route = staticMapping.findRoute(path, HttpMethod.ALL.name());
+        if (null != route) {
+            return route;
+        } else {
+            if (staticMapping.hasPath(path)) {
+                throw new MethodNotAllowedException("[" + httpMethod + "] Method Not Allowed");
+            }
         }
 
-        Map<String, String> uriVariables  = new LinkedHashMap<>();
-        HttpMethod          requestMethod = HttpMethod.valueOf(httpMethod);
+        Map<String, String> uriVariables = new LinkedHashMap<>();
+
+        HttpMethod requestMethod = HttpMethod.valueOf(httpMethod);
         try {
-            Pattern pattern = regexRoutePatterns.get(requestMethod);
+            Pattern pattern = regexMapping.findPattern(requestMethod);
             if (null == pattern) {
-                pattern = regexRoutePatterns.get(HttpMethod.ALL);
+                pattern = regexMapping.findPattern(HttpMethod.ALL);
                 if (null != pattern) {
                     requestMethod = HttpMethod.ALL;
                 }
@@ -193,7 +202,7 @@ public class RouteMatcher {
             }
             if (!matched) {
                 requestMethod = HttpMethod.ALL;
-                pattern = regexRoutePatterns.get(requestMethod);
+                pattern = regexMapping.findPattern(requestMethod);
                 if (null == pattern) {
                     return null;
                 }
@@ -205,7 +214,7 @@ public class RouteMatcher {
             if (matched) {
                 int i;
                 for (i = 1; matcher.group(i) == null; i++) ;
-                FastRouteMappingInfo mappingInfo = regexRoutes.get(requestMethod).get(i);
+                FastRouteMappingInfo mappingInfo = regexMapping.findMappingInfo(requestMethod, i);
                 route = mappingInfo.getRoute();
 
                 // find path variable
@@ -334,16 +343,7 @@ public class RouteMatcher {
         Stream.of(routes.values(), hooks.values().stream().findAny().orElse(new ArrayList<>()))
                 .flatMap(Collection::stream).forEach(this::registerRoute);
 
-        patternBuilders.keySet().stream()
-                .filter(BladeKit::notIsWebHook)
-                .forEach(httpMethod -> {
-                    StringBuilder patternBuilder = patternBuilders.get(httpMethod);
-                    if (patternBuilder.length() > 1) {
-                        patternBuilder.setCharAt(patternBuilder.length() - 1, '$');
-                    }
-                    log.debug("Fast Route Method: {}, regex: {}", httpMethod, patternBuilder);
-                    regexRoutePatterns.put(httpMethod, Pattern.compile(patternBuilder.toString()));
-                });
+        regexMapping.register();
 
         webSockets.forEach(path -> logWebSocket(log, path));
     }
@@ -373,18 +373,9 @@ public class RouteMatcher {
         }
         HttpMethod httpMethod = route.getHttpMethod();
         if (find || BladeKit.isWebHook(httpMethod)) {
-            if (regexRoutes.get(httpMethod) == null) {
-                regexRoutes.put(httpMethod, new HashMap<>());
-                patternBuilders.put(httpMethod, new StringBuilder("^"));
-                indexes.put(httpMethod, 1);
-            }
-            int i = indexes.get(httpMethod);
-            regexRoutes.get(httpMethod).put(i, new FastRouteMappingInfo(route, uriVariableNames));
-            indexes.put(httpMethod, i + uriVariableNames.size() + 1);
-            patternBuilders.get(httpMethod).append(new PathRegexBuilder().parsePath(path));
+            regexMapping.addRoute(path, httpMethod, route, uriVariableNames);
         } else {
-            String routeKey = path + '#' + httpMethod.toString();
-            staticRoutes.putIfAbsent(routeKey, route);
+            staticMapping.addRoute(path, httpMethod, route);
         }
     }
 
@@ -400,8 +391,8 @@ public class RouteMatcher {
         return hooks;
     }
 
-    public Map<String, Route> getStaticRoutes() {
-        return staticRoutes;
+    public StaticMapping getStaticMapping() {
+        return staticMapping;
     }
 
     public void clear() {
@@ -409,11 +400,8 @@ public class RouteMatcher {
         this.hooks.clear();
         this.classMethodPool.clear();
         this.controllerPool.clear();
-        this.regexRoutePatterns.clear();
-        this.staticRoutes.clear();
-        this.regexRoutes.clear();
-        this.indexes.clear();
-        this.patternBuilders.clear();
+        this.staticMapping.clear();
+        this.regexMapping.clear();
     }
 
     public void initMiddleware(List<WebHook> hooks) {
@@ -425,24 +413,6 @@ public class RouteMatcher {
 
     public void addWebSocket(String path) {
         webSockets.add(path);
-    }
-
-    private class FastRouteMappingInfo {
-        Route        route;
-        List<String> variableNames;
-
-        FastRouteMappingInfo(Route route, List<String> variableNames) {
-            this.route = route;
-            this.variableNames = variableNames;
-        }
-
-        public Route getRoute() {
-            return route;
-        }
-
-        List<String> getVariableNames() {
-            return variableNames;
-        }
     }
 
 }

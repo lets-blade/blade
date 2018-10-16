@@ -148,11 +148,6 @@ public class DateKit {
         return GMT_FMT.format(LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault()).atZone(GMT_ZONE_ID));
     }
 
-    public static void main(String[] args) {
-        String s = "Thu, 31 May 2018 00:38:15 GMT";
-        System.out.println(LocalDateTime.parse(s, GMT_FMT).atZone(GMT_ZONE_ID).toInstant().getEpochSecond());
-    }
-
     private static final Map<String, String> PRETTY_TIME_I18N = new HashMap<>();
 
     static {

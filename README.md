@@ -1,19 +1,17 @@
 <p align="center">
-    <a href="https://lets-blade.com"><img src="https://static.biezhi.me/blade-logo.png" width="650"/></a>
+    <a href="https://lets-blade.com"><img src="https://i.loli.net/2018/09/18/5ba0cd93c710e.png" width="650"/></a>
 </p>
-<p align="center">Based on <code>Java8</code> + <code>Netty4</code> to create lightweight, high-performance, simple and elegant Web framework 😋</p>
-<p align="center">Spend <b>1 hour</b> to learn it to do something interesting, a Spring in addition to the framework of the best choice.</p>
+<p align="center">Based on <code>Java8</code> + <code>Netty4</code> to create a lightweight, high-performance, simple and elegant Web framework 😋</p>
+<p align="center">Spend <b>1 hour</b> to learn it to do something interesting, a tool in addition to the other available frameworks.</p>
 <p align="center">
     🐾 <a href="#quick-start" target="_blank">Quick Start</a> |
-    📘 <a href="https://dev-cheats.com/topics/blade-in-action.html" target="_blank">Blade In Action</a> |
     🎬 <a href="https://www.youtube.com/playlist?list=PLK2w-tGRdrj5TV2lxHFj8hcg4mbmRmnWX" target="_blank">Video Tutorial</a> |
-    🌚 <a href="" target="_blank">Contribution</a> |
+    🌚 <a href="https://lets-blade.com" target="_blank">Document</a> |
     💰 <a href="https://lets-blade.com/donate" target="_blank">Donate</a> |
     🇨🇳 <a href="README_CN.md">简体中文</a>
 </p>
 <p align="center">
     <a href="https://travis-ci.org/lets-blade/blade"><img src="https://img.shields.io/travis/lets-blade/blade.svg?style=flat-square"></a>
-    <a href="http://codecov.io/github/lets-blade/blade?branch=dev"><img src="https://img.shields.io/codecov/c/github/lets-blade/blade/dev.svg?style=flat-square"></a>
     <a href="http://search.maven.org/#search%7Cga%7C1%7Cblade-mvc"><img src="https://img.shields.io/maven-central/v/com.bladejava/blade-mvc.svg?style=flat-square"></a>
     <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache%202-4EB1BA.svg?style=flat-square"></a>
     <a class="badge-align" href="https://www.codacy.com/app/lets-blade/blade"><img src="https://api.codacy.com/project/badge/Grade/5f5fb55f38614f04823372db3a3c1d1b"/></a>
@@ -25,25 +23,25 @@
 
 ## What Is Blade?
 
-`Blade` is a pursuit of simple, efficient Web framework, so that `JavaWeb` development even more powerful, both in performance and flexibility.
+`Blade` is a pursuit of simple, efficient Web framework, so that `JavaWeb` development becomes even more powerful, both in performance and flexibility.
 If you like to try something interesting, I believe you will love it.
-If you think this item is good can [star](https://github.com/biezhi/blade/stargazers) support or [donate](https://lets-blade.com/donate) it :blush:
+If you think it's good, you can support it with a [star](https://github.com/biezhi/blade/stargazers) or by [donating](https://lets-blade.com/donate) :blush:
 
 ## Features
 
-* [x] A new generation of MVC frameworks that do not depend on more libraries
+* [x] A new generation MVC framework that doesn't depend on other libraries
 * [x] Get rid of SSH's bloated, modular design
-* [x] Source less than `500kb`, learning is also simple
-* [x] Restful style routing design
+* [x] Source is less than `500kb`, learning it is also simple
+* [x] RESTful-style routing design
 * [x] Template engine support, view development more flexible
 * [x] High performance, 100 concurrent qps 14w/s
 * [x] Run the `JAR` package to open the web service
-* [x] Streaming API style
+* [x] Streams-style API
 * [x] `CSRF` and `XSS` defense
 * [x] `Basic Auth` and `Authorization`
 * [x] Supports plug-in extensions
 * [x] Support webjars resources
-* [x] Based on `cron` expression of tasks
+* [x] Tasks based on `cron` expressions
 * [x] Built-in a variety of commonly used middleware
 * [x] Built-in JSON output
 * [x] JDK8 +
@@ -51,32 +49,32 @@ If you think this item is good can [star](https://github.com/biezhi/blade/starga
 ## Overview
 
 » Simplicity: The design is simple, easy to understand and doesn't introduce many layers between you and the standard library. The goal of this project is that the users should be able to understand the whole framework in a single day.<br/>
-» Elegance: `blade` supports the RESTful style routing interface, has no invasive interceptors and provides the writing of DSL grammar.<br/>
-» Easy deploy: support `maven` package `jar` file running.<br/>
+» Elegance: `blade` supports the RESTful style routing interface, has no invasive interceptors and provides the writing of a DSL grammar.<br/>
+» Easy deploy: supports `maven` package `jar` file running.<br/>
 
 ## Quick Start
 
-Run with `Maven`：
+Create a basic `Maven` or `Gradle` project.
 
-Create a basic `Maven` project
+> Do not create a `webapp` project, Blade does not require much trouble.
+
+Run with `Maven`:
 
 ```xml
 <dependency>
     <groupId>com.bladejava</groupId>
     <artifactId>blade-mvc</artifactId>
-    <version>2.0.11.ALPHA</version>
+    <version>2.0.11.BETA</version>
 </dependency>
 ```
-
-> Do not create a `webapp` project, blade is not so much trouble.
 
 or `Gradle`:
 
 ```sh
-compile 'com.bladejava:blade-mvc:2.0.11.ALPHAE'
+compile 'com.bladejava:blade-mvc:2.0.11.BETA'
 ```
 
-Write `main` method, try `Hello World`：
+Write the `main` method and the `Hello World`:
 
 ```java
 public static void main(String[] args) {
@@ -84,7 +82,8 @@ public static void main(String[] args) {
 }
 ```
 
-Using browser open http://localhost:9000 so you can see the first `Blade` application!
+Open http://localhost:9000 in your browser to see your first `Blade` application!
+
 
 ## Contents
 
@@ -181,7 +180,7 @@ public void savePerson(@Param String username, @Param Integer age){
 }
 ```
 
-The terminal sends a data test
+Test it with sample data from the terminal
 
 ```bash
 curl -X GET http://127.0.0.1:9000/user?age=25
@@ -226,7 +225,7 @@ public void userTopics(@PathParam String username, @PathParam Integer page){
 }
 ```
 
-The terminal sends a data test
+Test it with sample data from the terminal
 
 ```bash
 curl -X GET http://127.0.0.1:9000/users/biezhi/2
@@ -242,7 +241,7 @@ public static void main(String[] args) {
 }
 ```
 
-The terminal sends a data test
+Test it with sample data from the terminal
 
 ```bash
 curl -X POST http://127.0.0.1:9000/body -d '{"username":"biezhi","age":22}'
@@ -250,7 +249,7 @@ curl -X POST http://127.0.0.1:9000/body -d '{"username":"biezhi","age":22}'
 
 ### Parse To Model
 
-This is `User` model.
+This is the `User` model.
 
 ```java
 public class User {
@@ -269,7 +268,7 @@ public void saveUser(@Param User user){
 }
 ```
 
-The terminal sends a data test
+Test it with sample data from the terminal
 
 ```bash
 curl -X POST http://127.0.0.1:9000/users -F username=jack -F age=16
@@ -284,7 +283,7 @@ public void saveUser(@Param(name="u") User user){
 }
 ```
 
-The terminal sends a data test
+Test it with sample data from the terminal
 
 ```bash
 curl -X POST http://127.0.0.1:9000/users -F u[username]=jack -F u[age]=16
@@ -298,7 +297,7 @@ public void getUser(@BodyParam User user){
 }
 ```
 
-The terminal sends a data test
+Test it with sample data from the terminal
 
 ```bash
 curl -X POST http://127.0.0.1:9000/body -d '{"username":"biezhi","age":22}'
@@ -308,7 +307,7 @@ curl -X POST http://127.0.0.1:9000/body -d '{"username":"biezhi","age":22}'
 
 ```java
 Environment environment = WebContext.blade().environment();
-String version = environment.get("app.version", "0.0.1");;
+String version = environment.get("app.version", "0.0.1");
 ```
 
 ## Get Header
@@ -357,15 +356,15 @@ public void getCookie(@CookieParam String UID){
 
 ## Static Resource
 
-Blade built a few static resource catalog, as long as you will save the resource file in the static directory under the classpath, and then browse http://127.0.0.1:9000/static/style.css
+Blade builds a few static resource catalog, as long as you will save the resource file in the static directory under the classpath, and then browse http://127.0.0.1:9000/static/style.css
 
-If you want to customize the static resource URL.
+If you want to customize the static resource URL
 
 ```java
 Blade.of().addStatics("/mydir");
 ```
 
-Of course you can also specify in the configuration file. `application.properties` (location in classpath)
+Of course you can also specify it in the configuration file. `application.properties` (location in classpath)
 
 ```bash
 mvc.statics=/mydir
@@ -452,11 +451,11 @@ public void printHtml(RouteContext ctx){
 
 ## Render Template
 
-By default all template files are in the templates directory, most of the cases you do not need to change it.
+By default all template files are in the templates directory; in most of the cases you do not need to change it.
 
 ### Default Template
 
-By default, the Blade uses the built-in template engine, which is very simple if you really do a web project can try several other extensions.
+By default, Blade uses the built-in template engine, which is very simple. In a real-world web project, you can try several other extensions.
 
 ```java
 public static void main(String[] args) {
@@ -488,7 +487,7 @@ The `hello.html` template
 
 **Config Jetbrick Template**
 
-Create a `BladeLoader` class load some config
+Create a `BladeLoader` class and load some config
 
 ```java
 @Bean
@@ -577,7 +576,7 @@ public static void main(String[] args) {
 
 ## Logging
 
-Blade using slf4-api as a log interface, the default implementation of a simple log package (modified from simple-logger), if you need complex logging you can also use custom, you only need to exclude the `blade-log` in dependencies.
+Blade uses slf4j-api as logging interface, the default implementation of a simple log package (modified from simple-logger); if you need complex logging you can also use a custom library, you only need to exclude the `blade-log` from the dependencies.
 
 ```java
 private static final Logger log = LoggerFactory.getLogger(Hello.class);
@@ -592,7 +591,7 @@ public static void main(String[] args) {
 
 ## Basic Auth
 
-Blade built a few middleware, when you need Basic certification can be used, of course, can also be customized to achieve.
+Blade includes a few middleware, like Basic Authentication; of course, it can also be customized to achieve more complex goals.
 
 ```java
 public static void main(String[] args) {
@@ -609,7 +608,7 @@ http.auth.password=123456
 
 ## Change Server Port
 
-There are three ways to modify the port, hard coding, configuration files, start the command line parameters.
+There are three ways to modify the port: hard coding it, in a configuration file, and through a command line parameter.
 
 **Hard Coding**
 
@@ -642,7 +641,7 @@ server.ssl.private-key-pass=123456
 
 ## Custom Exception Handler
 
-Blade has already implemented an exception handler by default, and sometimes you need to deal with custom exceptions, so you can do it.
+Blade has an exception handler already implemented by default; if you need to deal with custom exceptions, you can do it like follows.
 
 ```java
 @Bean
@@ -662,7 +661,7 @@ public class GlobalExceptionHandler extends DefaultExceptionHandler {
 }
 ```
 
-How easy it all looks, but the features above are the tip of the iceberg, and there are more surprises to see in the documentation and sample projects:
+Besides looking easy, the features above are only the tip of the iceberg, and there are more surprises to see in the documentation and sample projects:
 
 + [FirstBladeApp](https://github.com/lets-blade/first-blade-app)
 + [Blade Demos](https://github.com/lets-blade/blade-demos)

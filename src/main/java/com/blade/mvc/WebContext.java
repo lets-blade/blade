@@ -19,27 +19,26 @@ import com.blade.Blade;
 import com.blade.Environment;
 import com.blade.mvc.http.Request;
 import com.blade.mvc.http.Response;
-import com.blade.mvc.http.session.SessionManager;
+import com.blade.mvc.route.Route;
+import com.blade.server.netty.HttpServerHandler;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.util.concurrent.FastThreadLocal;
+import lombok.NoArgsConstructor;
 import lombok.var;
 
 import java.util.Optional;
 
+import static com.blade.server.netty.HttpServerHandler.WEB_CONTEXT_THREAD_LOCAL;
+
 /**
  * Blade Web Context
  * <p>
- * Cached current thread context request and response instance
+ * Route logic current thread context request and response instance.
  *
  * @author biezhi
  * 2017/6/1
  */
+@NoArgsConstructor
 public class WebContext {
-
-    /**
-     * ThreadLocal, used netty fast theadLocal
-     */
-    private static final FastThreadLocal<WebContext> fastThreadLocal = new FastThreadLocal<>();
 
     /**
      * Blade instance, when the project is initialized when it will permanently reside in memory
@@ -61,21 +60,16 @@ public class WebContext {
      */
     private Response response;
 
-    private ChannelHandlerContext handlerContext;
+    private Route route;
 
-    public WebContext(Request request, Response response, ChannelHandlerContext handlerContext) {
+    private LocalContext localContext;
+
+    private ChannelHandlerContext channelHandlerContext;
+
+    public WebContext(Request request, Response response, ChannelHandlerContext channelHandlerContext) {
         this.request = request;
         this.response = response;
-        this.handlerContext = handlerContext;
-    }
-
-    /**
-     * Set current thread context WebContext instance
-     *
-     * @param webContext webContext instance
-     */
-    public static void set(WebContext webContext) {
-        fastThreadLocal.set(webContext);
+        this.channelHandlerContext = channelHandlerContext;
     }
 
     /**
@@ -84,14 +78,7 @@ public class WebContext {
      * @return WebContext instance
      */
     public static WebContext get() {
-        return fastThreadLocal.get();
-    }
-
-    /**
-     * Remove current thread context WebContext instance
-     */
-    public static void remove() {
-        fastThreadLocal.remove();
+        return WEB_CONTEXT_THREAD_LOCAL.get();
     }
 
     /**
@@ -114,14 +101,30 @@ public class WebContext {
         return null != webContext ? webContext.response : null;
     }
 
-    /**
-     * Get current thread ChannelHandlerContext instance
-     *
-     * @return ChannelHandlerContext instance
-     */
-    public static ChannelHandlerContext handlerContext() {
-        var webContext = get();
-        return null != webContext ? webContext.handlerContext : null;
+    public static WebContext create(Request request, Response response, ChannelHandlerContext ctx, LocalContext localContext) {
+        WebContext webContext = new WebContext();
+        webContext.request = request;
+        webContext.response = response;
+        webContext.channelHandlerContext = ctx;
+        webContext.localContext = localContext;
+        WEB_CONTEXT_THREAD_LOCAL.set(webContext);
+        return webContext;
+    }
+
+    public static void set(WebContext webContext) {
+        HttpServerHandler.WEB_CONTEXT_THREAD_LOCAL.set(webContext);
+    }
+
+    public static void remove() {
+        HttpServerHandler.WEB_CONTEXT_THREAD_LOCAL.remove();
+    }
+
+    public Request getRequest() {
+        return request;
+    }
+
+    public Response getResponse() {
+        return response;
     }
 
     /**
@@ -135,6 +138,7 @@ public class WebContext {
         WebContext.contextPath = contextPath;
     }
 
+
     /**
      * Get blade instance
      *
@@ -142,10 +146,6 @@ public class WebContext {
      */
     public static Blade blade() {
         return blade;
-    }
-
-    public static SessionManager sessionManager() {
-        return null != blade() ? blade().sessionManager() : null;
     }
 
     /**
@@ -158,7 +158,7 @@ public class WebContext {
     }
 
     public static void clean() {
-        fastThreadLocal.remove();
+        WEB_CONTEXT_THREAD_LOCAL.remove();
         blade = null;
     }
 
@@ -185,6 +185,26 @@ public class WebContext {
      */
     public String env(String key, String defaultValue) {
         return blade().env(key, defaultValue);
+    }
+
+    public ChannelHandlerContext getChannelHandlerContext() {
+        return channelHandlerContext;
+    }
+
+    public LocalContext getLocalContext() {
+        return localContext;
+    }
+
+    public Route getRoute() {
+        return route;
+    }
+
+    public void setLocalContext(LocalContext localContext) {
+        this.localContext = localContext;
+    }
+
+    public void setRoute(Route route) {
+        this.route = route;
     }
 
 }

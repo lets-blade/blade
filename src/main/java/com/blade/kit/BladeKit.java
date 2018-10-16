@@ -181,10 +181,6 @@ public class BladeKit {
         return httpMethod == HttpMethod.BEFORE || httpMethod == HttpMethod.AFTER;
     }
 
-    public static boolean notIsWebHook(HttpMethod httpMethod) {
-        return !isWebHook(httpMethod);
-    }
-
     public static boolean epollIsAvailable() {
         try {
             Object obj = Class.forName("io.netty.channel.epoll.Epoll").getMethod("isAvailable").invoke(null);
@@ -285,6 +281,15 @@ public class BladeKit {
         }
         String pad    = StringKit.padLeft("", 6);
         String msg404 = Ansi.BgRed.and(Ansi.Black).format(" 404 ");
+        log.warn("{} {}  {} {}", msg404, pad, method, uri);
+    }
+
+    public static void log405(Logger log, String method, String uri) {
+        if (!log.isWarnEnabled()) {
+            return;
+        }
+        String pad    = StringKit.padLeft("", 6);
+        String msg404 = Ansi.BgRed.and(Ansi.Black).format(" 405 ");
         log.warn("{} {}  {} {}", msg404, pad, method, uri);
     }
 

@@ -101,7 +101,7 @@ public class NettyServer implements Server {
     private volatile boolean isStop;
 
     @Override
-    public void start(Blade blade, String[] args) throws Exception {
+    public void start(Blade blade) throws Exception {
         this.blade = blade;
         this.environment = blade.environment();
         this.processors = blade.processors();
@@ -215,7 +215,7 @@ public class NettyServer implements Server {
             log.info("{}Use NioEventLoopGroup", getStartedSymbol());
 
             this.bossGroup = new NioEventLoopGroup(acceptThreadCount, new NamedThreadFactory("boss@"));
-            this.workerGroup = new NioEventLoopGroup(ioThreadCount, new NamedThreadFactory("worker@"));
+            this.workerGroup = new NioEventLoopGroup(ioThreadCount, new NamedThreadFactory("io@"));
             bootstrap.group(bossGroup, workerGroup).channel(NioServerSocketChannel.class);
         }
 

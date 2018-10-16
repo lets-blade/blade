@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2018, biezhi 王爵 nice (biezhi.me@gmail.com)
+ * Copyright (c) 2018, crossoverJie (crossoverJie@gmail.com)
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,19 +15,19 @@
  */
 package com.blade.exception;
 
+import lombok.NoArgsConstructor;
+
 /**
- * HTTP 404 not found exception
+ * New instance exception
  *
- * @author biezhi
- * @date 2017/9/18
+ * @author crossoverJie
+ * @date 2018/10/8
  */
-public class NotFoundException extends BladeException {
+@NoArgsConstructor
+public class NewInstanceException extends RuntimeException {
 
-    public static final  int    STATUS = 404;
-    private static final String NAME   = "Not Found";
-
-    public NotFoundException(String message) {
-        super(STATUS, NAME, message);
+    public NewInstanceException(String message) {
+        super(message);
     }
 
 }

@@ -511,6 +511,32 @@ public interface Request {
     }
 
     /**
+     * @return return whether the HTTP header is currently being read
+     * @since 2.0.11
+     */
+    boolean isPart();
+
+    /**
+     * @return return current request is chunk content
+     * @since 2.0.11
+     */
+    boolean isChunked();
+
+    /**
+     * @return return whether Chunk content has been read
+     * @since 2.0.11
+     */
+    boolean chunkIsEnd();
+
+    /**
+     * Continue to read Chunk content, return after reading or not
+     *
+     * @return return whether Chunk content has been read
+     * @since 2.0.11
+     */
+    boolean readChunk();
+
+    /**
      * Get current request body as ByteBuf
      *
      * @return Return request body

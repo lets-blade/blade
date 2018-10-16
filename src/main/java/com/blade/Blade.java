@@ -843,30 +843,14 @@ public class Blade {
      * @return return blade instance
      */
     public Blade start(Class<?> mainCls, String... args) {
-        return this.start(mainCls, DEFAULT_SERVER_ADDRESS, DEFAULT_SERVER_PORT, args);
-    }
-
-    /**
-     * Start the blade web server
-     *
-     * @param bootClass Start the boot class, used to scan the class in all of the packages
-     * @param address   web server bind ip address
-     * @param port      web server bind port
-     * @param args      launch parameters
-     * @return blade
-     */
-    public Blade start(Class<?> bootClass, @NonNull String address, int port, String... args) {
         try {
             this.loadConfig(args);
-            this.environment.set(ENV_KEY_SERVER_ADDRESS, address);
 
-            Assert.greaterThan(port, 0, "server port not is negative number.");
-            this.bootClass = bootClass;
-
+            this.bootClass = mainCls;
             eventManager.fireEvent(EventType.SERVER_STARTING, new Event().attribute("blade", this));
             Thread thread = new Thread(() -> {
                 try {
-                    server.start(Blade.this, args);
+                    server.start(Blade.this);
                     latch.countDown();
                     server.join();
 
@@ -910,6 +894,21 @@ public class Blade {
         } catch (Exception e) {
             startupExceptionHandler.accept(e);
         }
+        return this;
+
+    }
+
+    /**
+     * Start the blade web server
+     *
+     * @param bootClass Start the boot class, used to scan the class in all of the packages
+     * @param address   web server bind ip address
+     * @param port      web server bind port
+     * @param args      launch parameters
+     * @return blade
+     */
+    @Deprecated
+    public Blade start(Class<?> bootClass, @NonNull String address, int port, String... args) {
         return this;
     }
 
