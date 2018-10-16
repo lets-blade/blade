@@ -18,7 +18,6 @@ package com.blade.server.netty;
 import com.blade.kit.BladeCache;
 import com.blade.mvc.WebContext;
 import com.blade.mvc.http.Request;
-import com.blade.mvc.http.Response;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.Instant;
@@ -37,8 +36,6 @@ import static com.blade.mvc.Const.REQUEST_COST_TIME;
 public class LogicRunner {
 
     private CompletableFuture<Void> future;
-    private Request                 request;
-    private Response                response;
     private WebContext              webContext;
     private Instant                 started;
     private RouteMethodHandler      routeHandler;
@@ -46,8 +43,6 @@ public class LogicRunner {
 
     public LogicRunner(RouteMethodHandler routeHandler, WebContext webContext) {
         this.routeHandler = routeHandler;
-        this.request = webContext.getRequest();
-        this.response = webContext.getResponse();
         this.webContext = webContext;
         if (WebContext.blade().allowCost()) {
             this.started = Instant.now();
@@ -62,8 +57,9 @@ public class LogicRunner {
     public LogicRunner handle() {
         log.info("handle...");
         WebContext.set(webContext);
-        String uri    = request.uri();
-        String method = request.method();
+        Request request = webContext.getRequest();
+        String  uri     = request.uri();
+        String  method  = request.method();
         try {
             routeHandler.handle(webContext);
             if (WebContext.blade().allowCost()) {

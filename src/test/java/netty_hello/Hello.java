@@ -53,7 +53,7 @@ public class Hello {
                 })
                 .post("/hello", ctx -> ctx.text("Hello World."))
                 .post("/body", ctx -> {
-                    ctx.text("Hello World.");
+                    ctx.text(ctx.bodyToString());
                 })
                 .put("/hello", ctx -> ctx.text("Hello World."))
                 .delete("/hello", ctx -> ctx.text("Hello World."))

@@ -261,10 +261,13 @@ public class HttpRequest implements Request {
         if (localContext.hasDecoder() && msg instanceof HttpContent) {
             // New chunk is received
             HttpContent chunk = (HttpContent) msg;
-            // body content
-            // this.body = chunk.content().copy();
-            localContext.decoder().offer(chunk);
-            readHttpDataChunkByChunk(localContext.decoder());
+
+            localContext.decoder().offer(chunk.copy());
+            boolean hasNext = readHttpDataChunkByChunk(localContext.decoder());
+            if (!hasNext && msg instanceof LastHttpContent) {
+                // body content
+                this.body = chunk.content().copy();
+            }
         }
 
         if (msg instanceof LastHttpContent) {
@@ -358,7 +361,7 @@ public class HttpRequest implements Request {
 
         request.initCookie();
 
-        if (!request.httpMethod().equals(HttpMethod.POST)) {
+        if (request.httpMethod().equals(HttpMethod.GET)) {
             return null;
         }
 
