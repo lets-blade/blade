@@ -258,21 +258,21 @@ public class HttpRequest implements Request {
         HttpObject msg = localContext.msg();
         localContext.updateMsg(msg);
 
-        if (localContext.hasDecoder() && msg instanceof HttpContent) {
-            // New chunk is received
-            HttpContent chunk = (HttpContent) msg;
+        if (msg instanceof LastHttpContent) {
+            this.isEnd = true;
 
-            localContext.decoder().offer(chunk.copy());
-            boolean hasNext = readHttpDataChunkByChunk(localContext.decoder());
-            if (!hasNext && msg instanceof LastHttpContent) {
-                // body content
-                this.body = chunk.content().copy();
+            if (!localContext.request().isMultipart) {
+                this.body = ((HttpContent) msg).copy().content();
             }
         }
 
-        if (msg instanceof LastHttpContent) {
-            this.isEnd = true;
+        if (localContext.hasDecoder() && msg instanceof HttpContent) {
+            // New chunk is received
+            HttpContent chunk = (HttpContent) msg;
+            localContext.decoder().offer(chunk);
+            readHttpDataChunkByChunk(localContext.decoder());
         }
+
         return this.isEnd;
     }
 
@@ -397,6 +397,9 @@ public class HttpRequest implements Request {
                 }
             }
             return read;
+        } catch (HttpPostRequestDecoder.EndOfDataDecoderException e) {
+            // ignore
+            return true;
         } catch (Exception e) {
             throw new HttpParseException(e);
         }
