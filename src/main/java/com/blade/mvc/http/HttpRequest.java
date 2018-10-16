@@ -366,8 +366,11 @@ public class HttpRequest implements Request {
         } else {
             request.headers = new HashMap<>(httpHeaders.size());
 
-            httpHeaders.forEach(entry ->
-                    request.headers.put(entry.getKey(), entry.getValue()));
+            Iterator<Map.Entry<String, String>> entryIterator = httpHeaders.iteratorAsString();
+            while (entryIterator.hasNext()) {
+                Map.Entry<String, String> next = entryIterator.next();
+                request.headers.put(next.getKey(), next.getValue());
+            }
         }
 
         // request query parameters
