@@ -11,7 +11,6 @@ import com.blade.mvc.hook.WebHook;
 import com.blade.mvc.http.HttpMethod;
 import com.blade.mvc.http.Request;
 import com.blade.mvc.http.Response;
-import com.blade.mvc.route.mapping.CacheMapping;
 import com.blade.mvc.route.mapping.FastRouteMappingInfo;
 import com.blade.mvc.route.mapping.RegexMapping;
 import com.blade.mvc.route.mapping.StaticMapping;
@@ -160,22 +159,19 @@ public class RouteMatcher {
         }
     }
 
-    private CacheMapping cacheMapping = new CacheMapping();
-
     public Route lookupRoute(String httpMethod, String path) {
-        if(cacheMapping.hasRoute(httpMethod, path)){
-            return cacheMapping.getRoute(httpMethod, path);
-        }
-
-        path = parsePath(path);
-
         Route route = staticMapping.findRoute(path, httpMethod);
         if (null != route) {
-            return cacheMapping.cached(route);
+            return route;
+        }
+        path = parsePath(path);
+        route = staticMapping.findRoute(path, httpMethod);
+        if (null != route) {
+            return route;
         }
         route = staticMapping.findRoute(path, HttpMethod.ALL.name());
         if (null != route) {
-            return cacheMapping.cached(route);
+            return route;
         } else {
             if (staticMapping.hasPath(path)) {
                 throw new MethodNotAllowedException("[" + httpMethod + "] Method Not Allowed");
@@ -231,7 +227,7 @@ public class RouteMatcher {
                 route.setPathParams(uriVariables);
                 log.trace("lookup path: " + path + " uri variables: " + uriVariables);
             }
-            return cacheMapping.cached(route);
+            return route;
         } catch (Exception e) {
             throw e;
         }

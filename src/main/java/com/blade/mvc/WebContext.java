@@ -19,14 +19,15 @@ import com.blade.Blade;
 import com.blade.Environment;
 import com.blade.mvc.http.Request;
 import com.blade.mvc.http.Response;
-import com.blade.mvc.http.session.SessionManager;
 import com.blade.mvc.route.Route;
+import com.blade.server.netty.HttpServerHandler;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.util.concurrent.FastThreadLocal;
 import lombok.NoArgsConstructor;
 import lombok.var;
 
 import java.util.Optional;
+
+import static com.blade.server.netty.HttpServerHandler.WEB_CONTEXT_THREAD_LOCAL;
 
 /**
  * Blade Web Context
@@ -38,11 +39,6 @@ import java.util.Optional;
  */
 @NoArgsConstructor
 public class WebContext {
-
-    /**
-     * ThreadLocal, used netty FastThreadLocal
-     */
-    private static final FastThreadLocal<WebContext> fastThreadLocal = new FastThreadLocal<>();
 
     /**
      * Blade instance, when the project is initialized when it will permanently reside in memory
@@ -77,28 +73,12 @@ public class WebContext {
     }
 
     /**
-     * Set current thread context WebContext instance
-     *
-     * @param webContext webContext instance
-     */
-    public static void set(WebContext webContext) {
-        fastThreadLocal.set(webContext);
-    }
-
-    /**
      * Get current thread context WebContext instance
      *
      * @return WebContext instance
      */
     public static WebContext get() {
-        return fastThreadLocal.get();
-    }
-
-    /**
-     * Remove current thread context WebContext instance
-     */
-    public static void remove() {
-        fastThreadLocal.remove();
+        return WEB_CONTEXT_THREAD_LOCAL.get();
     }
 
     /**
@@ -127,8 +107,16 @@ public class WebContext {
         webContext.response = response;
         webContext.channelHandlerContext = ctx;
         webContext.localContext = localContext;
-        fastThreadLocal.set(webContext);
+        WEB_CONTEXT_THREAD_LOCAL.set(webContext);
         return webContext;
+    }
+
+    public static void set(WebContext webContext) {
+        HttpServerHandler.WEB_CONTEXT_THREAD_LOCAL.set(webContext);
+    }
+
+    public static void remove() {
+        HttpServerHandler.WEB_CONTEXT_THREAD_LOCAL.remove();
     }
 
     public Request getRequest() {
@@ -170,7 +158,7 @@ public class WebContext {
     }
 
     public static void clean() {
-        fastThreadLocal.remove();
+        WEB_CONTEXT_THREAD_LOCAL.remove();
         blade = null;
     }
 

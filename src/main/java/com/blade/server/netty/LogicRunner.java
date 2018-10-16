@@ -53,8 +53,6 @@ public class LogicRunner {
 
     /**
      * Routing logic execution
-     *
-     * @return
      */
     public LogicRunner handle() {
         WebContext.set(webContext);
@@ -64,8 +62,7 @@ public class LogicRunner {
         try {
             routeHandler.handle(webContext);
             if (allowCost) {
-                String paddingMethod = BladeCache.getPaddingMethod(method);
-                long   cost          = log200(log, this.started, paddingMethod, uri);
+                long cost = log200(log, this.started, BladeCache.getPaddingMethod(method), uri);
                 request.attribute(REQUEST_COST_TIME, cost);
             }
         } catch (Exception e) {

@@ -17,7 +17,7 @@ import java.util.Map;
 @NoArgsConstructor
 public class StaticMapping {
 
-    private Map<String, Map<String, Route>> mapping = new HashMap<>();
+    private Map<String, Map<String, Route>> mapping = new HashMap<>(32);
 
     public void addRoute(String path, HttpMethod httpMethod, Route route) {
         if (!mapping.containsKey(path)) {

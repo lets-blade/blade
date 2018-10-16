@@ -28,7 +28,7 @@ public class HttpResponse implements Response {
 
     private int    statusCode  = 200;
     private String contentType = HttpConst.CONTENT_TYPE_HTML;
-    private Body   body        = new EmptyBody();
+    private Body   body;
 
     @Override
     public int statusCode() {
@@ -194,6 +194,9 @@ public class HttpResponse implements Response {
 
     @Override
     public Body body() {
+        if (null == this.body) {
+            return EmptyBody.empty();
+        }
         return this.body;
     }
 
