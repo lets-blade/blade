@@ -23,6 +23,7 @@ import com.blade.mvc.Const;
 import com.blade.mvc.LocalContext;
 import com.blade.mvc.WebContext;
 import com.blade.mvc.handler.SessionHandler;
+import com.blade.mvc.http.session.SessionManager;
 import com.blade.mvc.multipart.FileItem;
 import com.blade.mvc.route.Route;
 import com.blade.server.netty.HttpConst;
@@ -59,6 +60,8 @@ public class HttpRequest implements Request {
 
     private static final ByteBuf EMPTY_BUF = Unpooled.copiedBuffer("", CharsetUtil.UTF_8);
 
+    private static final SessionHandler SESSION_HANDLER = new SessionHandler(WebContext.blade());
+
     static {
         DiskAttribute.deleteOnExitTemporaryFile = true; // should delete file on
         DiskAttribute.baseDirectory = null;             // system temp directory
@@ -81,9 +84,9 @@ public class HttpRequest implements Request {
     private Map<String, String>       headers    = null;
     private Map<String, Object>       attributes = null;
     private Map<String, String>       pathParams = null;
-    private Map<String, List<String>> parameters = new HashMap<>();
-    private Map<String, Cookie>       cookies    = new HashMap<>();
-    private Map<String, FileItem>     fileItems  = new HashMap<>();
+    private Map<String, List<String>> parameters = new HashMap<>(8);
+    private Map<String, Cookie>       cookies    = new HashMap<>(8);
+    private Map<String, FileItem>     fileItems  = new HashMap<>(8);
 
     public HttpRequest(Request request) {
         this.pathParams = request.pathParams();
@@ -286,6 +289,11 @@ public class HttpRequest implements Request {
         return isRequestPart;
     }
 
+    @Override
+    public boolean isChunked() {
+        return isChunked;
+    }
+
     public static HttpRequest build(String remoteAddress, HttpObject msg) {
         boolean isRequestPart = false;
 
@@ -328,9 +336,9 @@ public class HttpRequest implements Request {
             request.uri = cleanUri;
         }
 
-        SessionHandler sessionHandler = WebContext.sessionManager() != null ? new SessionHandler(WebContext.blade()) : null;
-        if (null != sessionHandler) {
-            request.session = sessionHandler.createSession(request);
+        SessionManager sessionManager = WebContext.blade().sessionManager();
+        if (null != sessionManager) {
+            request.session = SESSION_HANDLER.createSession(request);
         }
 
         HttpServerHandler.setLocalContext(new LocalContext(msg, request, decoder));
@@ -345,23 +353,25 @@ public class HttpRequest implements Request {
         } else {
             request.headers = new HashMap<>(httpHeaders.size());
 
-            var entryIterator = httpHeaders.iteratorAsString();
-            while (entryIterator.hasNext()) {
-                var entry = entryIterator.next();
-                request.headers().put(entry.getKey(), entry.getValue());
-            }
+            httpHeaders.forEach(entry -> request.headers.put(entry.getKey(), entry.getValue()));
+
+//            Iterator<Map.Entry<String, String>> entryIterator = httpHeaders.iteratorAsString();
+//            while (entryIterator.hasNext()) {
+//                var entry = entryIterator.next();
+//                request.headers.put(entry.getKey(), entry.getValue());
+//            }
         }
 
         // request query parameters
         var parameters = new QueryStringDecoder(request.url(), CharsetUtil.UTF_8).parameters();
         if (null != parameters) {
             request.parameters = new HashMap<>();
-            request.parameters().putAll(parameters);
+            request.parameters.putAll(parameters);
         }
 
         request.initCookie();
 
-        if (request.httpMethod().equals(HttpMethod.GET)) {
+        if ("GET".equals(request.method())) {
             return null;
         }
 
@@ -378,7 +388,7 @@ public class HttpRequest implements Request {
         // cookies
         var cookie = this.header(HttpConst.COOKIE_STRING);
         cookie = cookie.length() > 0 ? cookie : this.header(HttpConst.COOKIE_STRING.toLowerCase());
-        if (StringKit.isNotEmpty(cookie)) {
+        if (null != cookie && cookie.length() > 0) {
             ServerCookieDecoder.LAX.decode(cookie).forEach(this::parseCookie);
         }
     }

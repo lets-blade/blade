@@ -36,7 +36,9 @@ import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.util.concurrent.FastThreadLocal;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -58,7 +60,7 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<HttpObject> {
     private final StaticFileHandler  staticFileHandler  = new StaticFileHandler(WebContext.blade());
     private final RouteMethodHandler routeMethodHandler = new RouteMethodHandler();
     private final RouteMatcher       routeMatcher       = WebContext.blade().routeMatcher();
-    private final ExecutorService    logicExecutor      = Executors.newFixedThreadPool(8);
+    private final ExecutorService    logicExecutor      = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2);
 
     @Override
     public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
@@ -95,7 +97,7 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<HttpObject> {
 
             CompletableFuture<Void> future = CompletableFuture.completedFuture(asyncRunner)
                     .thenApplyAsync(LogicRunner::handle, logicExecutor)
-                    .thenAccept(LogicRunner::finishWrite);
+                    .thenAcceptAsync(LogicRunner::finishWrite, logicExecutor);
 
             asyncRunner.setFuture(future);
         } finally {
@@ -152,12 +154,18 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<HttpObject> {
         }
     }
 
+    private Set<String> notStaticUri = new HashSet<>(32);
+
     private boolean isStaticFile(String method, String uri) {
-        if ("POST".equals(method)) {
+        if ("POST".equals(method) || notStaticUri.contains(uri)) {
             return false;
         }
         Optional<String> result = WebContext.blade().getStatics().stream().filter(s -> s.equals(uri) || uri.startsWith(s)).findFirst();
-        return result.isPresent();
+        if (!result.isPresent()) {
+            notStaticUri.add(uri);
+            return false;
+        }
+        return true;
     }
 
 }

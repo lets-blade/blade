@@ -160,10 +160,6 @@ public class WebContext {
         return blade;
     }
 
-    public static SessionManager sessionManager() {
-        return null != blade() ? blade().sessionManager() : null;
-    }
-
     /**
      * Get context path
      *
