@@ -38,6 +38,7 @@ import java.io.StringWriter;
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -174,28 +175,11 @@ public class RouteMethodHandler implements RequestHandler {
             public void onByteBuf(Object byteBuf) {
                 var httpResponse = new DefaultHttpResponse(HTTP_1_1, HttpResponseStatus.valueOf(response.statusCode()));
 
-                response.headers().forEach((key, value) -> httpResponse.headers().set(key, value));
-
-//                File file = null;
-//                if(byteBuf instanceof File){
-//                    file = (File) byteBuf;
-//                }
-//                RandomAccessFile raf;
-//                try {
-//                    raf = new RandomAccessFile(file, "r");
-//                } catch (FileNotFoundException ignore) {
-//                    ignore.printStackTrace();
-//                    return;
-//                }
-//
-//                long fileLength = 0;
-//                try {
-//                    fileLength = raf.length();
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//
-//                httpResponse.headers().set(HttpConst.CONTENT_LENGTH, fileLength);
+                Iterator<Map.Entry<String, String>> iterator = response.headers().entrySet().iterator();
+                while (iterator.hasNext()) {
+                    Map.Entry<String, String> next = iterator.next();
+                    httpResponse.headers().set(next.getKey(), next.getValue());
+                }
 
                 // Write the initial line and the header.
                 if (request.keepAlive()) {
@@ -226,7 +210,7 @@ public class RouteMethodHandler implements RequestHandler {
     }
 
     public Map<String, String> getDefaultHeader() {
-        var map = new HashMap<String, String>();
+        var map = new HashMap<String, String>(2);
         map.put(HttpConst.DATE.toString(), HttpServerInitializer.date.toString());
         map.put(HttpConst.X_POWER_BY.toString(), HttpConst.VERSION.toString());
         return map;
@@ -239,7 +223,12 @@ public class RouteMethodHandler implements RequestHandler {
 
         httpResponse.headers().set(TRANSFER_ENCODING, HttpHeaderValues.CHUNKED);
 
-        response.headers().forEach((key, value) -> httpResponse.headers().set(key, value));
+        Iterator<Map.Entry<String, String>> iterator = response.headers().entrySet().iterator();
+        while (iterator.hasNext()) {
+            Map.Entry<String, String> next = iterator.next();
+            httpResponse.headers().set(next.getKey(), next.getValue());
+        }
+
         context.write(response);
 
         context.write(new ChunkedStream(body));
@@ -260,10 +249,14 @@ public class RouteMethodHandler implements RequestHandler {
         httpResponse.headers().set(CONTENT_LENGTH, httpResponse.content().readableBytes());
 
         if (response.cookiesRaw().size() > 0) {
-            response.cookiesRaw().forEach(cookie -> httpResponse.headers().add(HttpConst.SET_COOKIE, io.netty.handler.codec.http.cookie.ServerCookieEncoder.LAX.encode(cookie)));
+            this.appendCookie(response, httpResponse);
         }
 
-        headers.forEach((key, value) -> httpResponse.headers().set(key, value));
+        Iterator<Map.Entry<String, String>> iterator = headers.entrySet().iterator();
+        while (iterator.hasNext()) {
+            Map.Entry<String, String> next = iterator.next();
+            httpResponse.headers().set(next.getKey(), next.getValue());
+        }
         return httpResponse;
     }
 
@@ -279,11 +272,23 @@ public class RouteMethodHandler implements RequestHandler {
         httpResponse.headers().set(CONTENT_LENGTH, httpResponse.content().readableBytes());
 
         if (response.cookiesRaw().size() > 0) {
-            response.cookiesRaw().forEach(cookie -> httpResponse.headers().add(HttpConst.SET_COOKIE, io.netty.handler.codec.http.cookie.ServerCookieEncoder.LAX.encode(cookie)));
+            this.appendCookie(response, httpResponse);
         }
 
-        headers.forEach((key, value) -> httpResponse.headers().set(key, value));
+        Iterator<Map.Entry<String, String>> iterator = headers.entrySet().iterator();
+        while (iterator.hasNext()) {
+            Map.Entry<String, String> next = iterator.next();
+            httpResponse.headers().set(next.getKey(), next.getValue());
+        }
         return httpResponse;
+    }
+
+    private void appendCookie(Response response, DefaultFullHttpResponse httpResponse) {
+        Iterator<io.netty.handler.codec.http.cookie.Cookie> iterator = response.cookiesRaw().iterator();
+        while (iterator.hasNext()) {
+            io.netty.handler.codec.http.cookie.Cookie next = iterator.next();
+            httpResponse.headers().add(HttpConst.SET_COOKIE, io.netty.handler.codec.http.cookie.ServerCookieEncoder.LAX.encode(next));
+        }
     }
 
     /**
