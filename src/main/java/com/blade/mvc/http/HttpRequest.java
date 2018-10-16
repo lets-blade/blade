@@ -56,7 +56,8 @@ import java.util.*;
 @NoArgsConstructor
 public class HttpRequest implements Request {
 
-    private static final HttpDataFactory factory = new DefaultHttpDataFactory(DefaultHttpDataFactory.MINSIZE); // Disk if size exceed
+    private static final HttpDataFactory factory =
+            new DefaultHttpDataFactory(DefaultHttpDataFactory.MINSIZE); // Disk if size exceed
 
     private static final ByteBuf EMPTY_BUF = Unpooled.copiedBuffer("", CharsetUtil.UTF_8);
 
@@ -147,10 +148,10 @@ public class HttpRequest implements Request {
 
     @Override
     public String queryString() {
-        if (null != this.url && this.url.contains("?")) {
-            return this.url.substring(this.url.indexOf("?") + 1);
+        if (null == url || !url.contains("?")) {
+            return "";
         }
-        return "";
+        return url.substring(url.indexOf("?") + 1);
     }
 
     @Override
@@ -180,10 +181,14 @@ public class HttpRequest implements Request {
 
     @Override
     public boolean useGZIP() {
-        boolean useGZIP = WebContext.blade().environment().getBoolean(Const.ENV_KEY_GZIP_ENABLE, false);
+
+        boolean useGZIP = WebContext.blade().environment()
+                .getBoolean(Const.ENV_KEY_GZIP_ENABLE, false);
+
         if (!useGZIP) {
             return false;
         }
+
         String acceptEncoding = this.header(HttpConst.ACCEPT_ENCODING);
         if (StringKit.isEmpty(acceptEncoding)) {
             return false;
@@ -345,7 +350,10 @@ public class HttpRequest implements Request {
         return request;
     }
 
-    private static HttpPostRequestDecoder initRequest(HttpRequest request, io.netty.handler.codec.http.HttpRequest nettyRequest) {
+    private static HttpPostRequestDecoder initRequest(
+            HttpRequest request,
+            io.netty.handler.codec.http.HttpRequest nettyRequest) {
+
         // headers
         var httpHeaders = nettyRequest.headers();
         if (httpHeaders.isEmpty()) {
@@ -353,17 +361,14 @@ public class HttpRequest implements Request {
         } else {
             request.headers = new HashMap<>(httpHeaders.size());
 
-            httpHeaders.forEach(entry -> request.headers.put(entry.getKey(), entry.getValue()));
-
-//            Iterator<Map.Entry<String, String>> entryIterator = httpHeaders.iteratorAsString();
-//            while (entryIterator.hasNext()) {
-//                var entry = entryIterator.next();
-//                request.headers.put(entry.getKey(), entry.getValue());
-//            }
+            httpHeaders.forEach(entry ->
+                    request.headers.put(entry.getKey(), entry.getValue()));
         }
 
         // request query parameters
-        var parameters = new QueryStringDecoder(request.url(), CharsetUtil.UTF_8).parameters();
+        var parameters = new QueryStringDecoder(request.url(), CharsetUtil.UTF_8)
+                .parameters();
+
         if (null != parameters) {
             request.parameters = new HashMap<>();
             request.parameters.putAll(parameters);
@@ -376,7 +381,9 @@ public class HttpRequest implements Request {
         }
 
         try {
-            HttpPostRequestDecoder decoder = new HttpPostRequestDecoder(factory, nettyRequest);
+            HttpPostRequestDecoder decoder =
+                    new HttpPostRequestDecoder(factory, nettyRequest);
+
             request.isMultipart = decoder.isMultipart();
             return decoder;
         } catch (Exception e) {
@@ -387,7 +394,10 @@ public class HttpRequest implements Request {
     private void initCookie() {
         // cookies
         var cookie = this.header(HttpConst.COOKIE_STRING);
-        cookie = cookie.length() > 0 ? cookie : this.header(HttpConst.COOKIE_STRING.toLowerCase());
+
+        cookie = cookie.length() > 0 ?
+                cookie : this.header(HttpConst.COOKIE_STRING.toLowerCase());
+
         if (null != cookie && cookie.length() > 0) {
             ServerCookieDecoder.LAX.decode(cookie).forEach(this::parseCookie);
         }
@@ -466,8 +476,11 @@ public class HttpRequest implements Request {
         // Upload the file is moved to the specified temporary file,
         // because FileUpload will be release after completion of the analysis.
         // tmpFile will be deleted automatically if they are used.
-        Path tmpFile = Files.createTempFile(Paths.get(fileUpload.getFile().getParent()), "blade_", "_upload");
-        Files.move(Paths.get(fileUpload.getFile().getPath()), tmpFile, StandardCopyOption.REPLACE_EXISTING);
+        Path tmpFile = Files.createTempFile(
+                Paths.get(fileUpload.getFile().getParent()), "blade_", "_upload");
+
+        Path fileUploadPath = Paths.get(fileUpload.getFile().getPath());
+        Files.move(fileUploadPath, tmpFile, StandardCopyOption.REPLACE_EXISTING);
 
         fileItem.setFile(tmpFile.toFile());
         fileItem.setPath(tmpFile.toFile().getPath());
