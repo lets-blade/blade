@@ -2,7 +2,6 @@ package com.blade.server.netty;
 
 import com.blade.exception.BladeException;
 import com.blade.exception.InternalErrorException;
-import com.blade.exception.NotAllowedMethodException;
 import com.blade.exception.NotFoundException;
 import com.blade.kit.BladeCache;
 import com.blade.kit.BladeKit;
@@ -21,38 +20,33 @@ import com.blade.mvc.http.Cookie;
 import com.blade.mvc.route.Route;
 import com.blade.mvc.route.RouteMatcher;
 import com.blade.mvc.ui.ModelAndView;
-import com.blade.mvc.ui.RestResponse;
 import com.blade.reflectasm.MethodAccess;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.DefaultFileRegion;
 import io.netty.handler.codec.http.*;
 import io.netty.handler.codec.http.HttpResponse;
-import io.netty.handler.ssl.SslHandler;
-import io.netty.handler.stream.ChunkedFile;
 import io.netty.handler.stream.ChunkedStream;
 import lombok.extern.slf4j.Slf4j;
 import lombok.var;
 
-import java.io.*;
+import java.io.Closeable;
+import java.io.InputStream;
+import java.io.StringWriter;
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 import static com.blade.kit.BladeKit.log404;
-import static com.blade.kit.BladeKit.log405;
 import static com.blade.kit.BladeKit.log500;
 import static com.blade.mvc.Const.ENV_KEY_SESSION_KEY;
 import static com.blade.server.netty.HttpConst.CONTENT_LENGTH;
 import static com.blade.server.netty.HttpConst.KEEP_ALIVE;
 import static io.netty.handler.codec.http.HttpHeaderNames.TRANSFER_ENCODING;
-import static io.netty.handler.codec.http.HttpResponseStatus.NOT_FOUND;
 import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
 /**

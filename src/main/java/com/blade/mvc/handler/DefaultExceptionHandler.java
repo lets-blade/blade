@@ -1,6 +1,5 @@
 package com.blade.mvc.handler;
 
-import com.blade.Blade;
 import com.blade.exception.*;
 import com.blade.kit.BladeCache;
 import com.blade.mvc.WebContext;
