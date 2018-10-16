@@ -55,7 +55,6 @@ public class LogicRunner {
      * @return
      */
     public LogicRunner handle() {
-        log.info("handle...");
         WebContext.set(webContext);
         Request request = webContext.getRequest();
         String  uri     = request.uri();

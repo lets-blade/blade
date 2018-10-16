@@ -9,6 +9,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * Static Route Mapping
+ *
  * @author biezhi
  * @date 2018/10/16
  */
@@ -27,10 +29,6 @@ public class StaticMapping {
         }
     }
 
-    public void clear() {
-        mapping.clear();
-    }
-
     public Route findRoute(String path, String httpMethod) {
         if (!mapping.containsKey(path)) {
             return null;
@@ -40,6 +38,10 @@ public class StaticMapping {
 
     public boolean hasPath(String path) {
         return mapping.containsKey(path);
+    }
+
+    public void clear() {
+        mapping.clear();
     }
 
 }

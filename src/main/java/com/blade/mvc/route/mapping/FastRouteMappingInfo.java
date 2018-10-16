@@ -1,25 +1,16 @@
 package com.blade.mvc.route.mapping;
 
-
 import com.blade.mvc.route.Route;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 
 import java.util.List;
 
+@Data
+@AllArgsConstructor
 public class FastRouteMappingInfo {
-    Route        route;
-    List<String> variableNames;
 
-    FastRouteMappingInfo(Route route, List<String> variableNames) {
-        this.route = route;
-        this.variableNames = variableNames;
-    }
-
-    public Route getRoute() {
-        return route;
-    }
-
-    public List<String> getVariableNames() {
-        return variableNames;
-    }
+    private Route        route;
+    private List<String> variableNames;
 
 }

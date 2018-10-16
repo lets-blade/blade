@@ -284,6 +284,15 @@ public class BladeKit {
         log.warn("{} {}  {} {}", msg404, pad, method, uri);
     }
 
+    public static void log405(Logger log, String method, String uri) {
+        if (!log.isWarnEnabled()) {
+            return;
+        }
+        String pad    = StringKit.padLeft("", 6);
+        String msg404 = Ansi.BgRed.and(Ansi.Black).format(" 405 ");
+        log.warn("{} {}  {} {}", msg404, pad, method, uri);
+    }
+
     public static boolean isWindows() {
         return isWindows;
     }

@@ -2,6 +2,7 @@ package com.blade.server.netty;
 
 import com.blade.exception.BladeException;
 import com.blade.exception.InternalErrorException;
+import com.blade.exception.NotAllowedMethodException;
 import com.blade.exception.NotFoundException;
 import com.blade.kit.BladeCache;
 import com.blade.kit.BladeKit;
@@ -20,6 +21,7 @@ import com.blade.mvc.http.Cookie;
 import com.blade.mvc.route.Route;
 import com.blade.mvc.route.RouteMatcher;
 import com.blade.mvc.ui.ModelAndView;
+import com.blade.mvc.ui.RestResponse;
 import com.blade.reflectasm.MethodAccess;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -41,8 +43,10 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import static com.blade.kit.BladeKit.log404;
+import static com.blade.kit.BladeKit.log405;
 import static com.blade.kit.BladeKit.log500;
 import static com.blade.mvc.Const.ENV_KEY_SESSION_KEY;
 import static com.blade.server.netty.HttpConst.CONTENT_LENGTH;
@@ -102,6 +106,16 @@ public class RouteMethodHandler implements RequestHandler {
 
     public void exceptionCaught(String uri, String method, Exception e) {
         if (e instanceof BladeException) {
+            if (e instanceof NotAllowedMethodException) {
+                log405(log, method, uri);
+                Request  request  = WebContext.request();
+                Response response = WebContext.response();
+                if (request.isJsonRequest()) {
+                    response.json(RestResponse.fail(405, e.getMessage()));
+                } else {
+                    response.text(e.getMessage());
+                }
+            }
         } else {
             log500(log, method, uri);
         }

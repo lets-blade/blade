@@ -14,6 +14,8 @@ import java.util.regex.Pattern;
 import static com.blade.kit.BladeKit.isWebHook;
 
 /**
+ * Regex Route Mapping
+ *
  * @author biezhi
  * @date 2018/10/16
  */
@@ -25,17 +27,6 @@ public class RegexMapping {
     private Map<HttpMethod, Pattern>                            regexRoutePatterns = new HashMap<>();
     private Map<HttpMethod, Integer>                            indexes            = new HashMap<>();
     private Map<HttpMethod, StringBuilder>                      patternBuilders    = new HashMap<>();
-
-    public FastRouteMappingInfo findMappingInfo(HttpMethod httpMethod, int index) {
-        return regexRoutes.get(httpMethod).get(index);
-    }
-
-    public void clear() {
-        regexRoutes.clear();
-        regexRoutePatterns.clear();
-        indexes.clear();
-        patternBuilders.clear();
-    }
 
     public void addRoute(String path, HttpMethod httpMethod, Route route, List<String> uriVariableNames) {
         if (regexRoutes.get(httpMethod) == null) {
@@ -49,17 +40,23 @@ public class RegexMapping {
         patternBuilders.get(httpMethod).append(new PathRegexBuilder().parsePath(path));
     }
 
+    public FastRouteMappingInfo findMappingInfo(HttpMethod httpMethod, int index) {
+        return regexRoutes.get(httpMethod).get(index);
+    }
+
     public void register() {
         patternBuilders.keySet().stream()
                 .filter(this::notIsWebHook)
-                .forEach(httpMethod -> {
-                    StringBuilder patternBuilder = patternBuilders.get(httpMethod);
-                    if (patternBuilder.length() > 1) {
-                        patternBuilder.setCharAt(patternBuilder.length() - 1, '$');
-                    }
-                    log.debug("Fast Route Method: {}, regex: {}", httpMethod, patternBuilder);
-                    regexRoutePatterns.put(httpMethod, Pattern.compile(patternBuilder.toString()));
-                });
+                .forEach(this::registerRoutePatterns);
+    }
+
+    private void registerRoutePatterns(HttpMethod httpMethod) {
+        StringBuilder patternBuilder = patternBuilders.get(httpMethod);
+        if (patternBuilder.length() > 1) {
+            patternBuilder.setCharAt(patternBuilder.length() - 1, '$');
+        }
+        log.debug("Fast Route Method: {}, regex: {}", httpMethod, patternBuilder);
+        regexRoutePatterns.put(httpMethod, Pattern.compile(patternBuilder.toString()));
     }
 
     public Pattern findPattern(HttpMethod requestMethod) {
@@ -70,5 +67,10 @@ public class RegexMapping {
         return !isWebHook(httpMethod);
     }
 
-
+    public void clear() {
+        regexRoutes.clear();
+        regexRoutePatterns.clear();
+        indexes.clear();
+        patternBuilders.clear();
+    }
 }

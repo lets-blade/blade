@@ -171,7 +171,7 @@ public class RouteMatcher {
             return route;
         } else {
             if (staticMapping.hasPath(path)) {
-                throw new NotAllowedMethodException("");
+                throw new NotAllowedMethodException("[" + httpMethod + "] Method Not Allowed");
             }
         }
 

@@ -15,6 +15,7 @@
  */
 package com.blade.server.netty;
 
+import com.blade.exception.NotAllowedMethodException;
 import com.blade.exception.NotFoundException;
 import com.blade.kit.BladeCache;
 import com.blade.mvc.LocalContext;
@@ -43,6 +44,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import static com.blade.kit.BladeKit.log404;
+import static com.blade.kit.BladeKit.log405;
 import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
 /**
