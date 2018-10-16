@@ -74,6 +74,7 @@ public class HttpRequest implements Request {
     private String  url;
     private String  protocol;
     private String  method;
+    private String  cookieString;
     private boolean keepAlive;
     private Session session;
 
@@ -81,6 +82,7 @@ public class HttpRequest implements Request {
     private boolean isChunked;
     private boolean isMultipart;
     private boolean isEnd;
+    private boolean initCookie;
 
     private Map<String, String>       headers    = null;
     private Map<String, Object>       attributes = null;
@@ -214,6 +216,9 @@ public class HttpRequest implements Request {
 
     @Override
     public Map<String, Cookie> cookies() {
+        if (!initCookie && StringKit.isNotEmpty(cookieString)) {
+            ServerCookieDecoder.LAX.decode(cookieString).forEach(this::parseCookie);
+        }
         return this.cookies;
     }
 
@@ -374,7 +379,8 @@ public class HttpRequest implements Request {
             request.parameters.putAll(parameters);
         }
 
-        request.initCookie();
+        // cookies
+        request.cookieString = request.header(HttpConst.COOKIE_STRING);
 
         if ("GET".equals(request.method())) {
             return null;
@@ -391,35 +397,19 @@ public class HttpRequest implements Request {
         }
     }
 
-    private void initCookie() {
-        // cookies
-        var cookie = this.header(HttpConst.COOKIE_STRING);
-
-        cookie = cookie.length() > 0 ?
-                cookie : this.header(HttpConst.COOKIE_STRING.toLowerCase());
-
-        if (null != cookie && cookie.length() > 0) {
-            ServerCookieDecoder.LAX.decode(cookie).forEach(this::parseCookie);
-        }
-    }
-
     /**
-     * Example of reading request by chunk and getting values from chunk to chunk
+     * Reading request by chunk and getting values from chunk
      */
-    private boolean readHttpDataChunkByChunk(HttpPostRequestDecoder decoder) {
+    private void readHttpDataChunkByChunk(HttpPostRequestDecoder decoder) {
         try {
-            boolean read = false;
             while (decoder.hasNext()) {
-                read = true;
                 InterfaceHttpData data = decoder.next();
                 if (data != null) {
                     parseData(data);
                 }
             }
-            return read;
         } catch (HttpPostRequestDecoder.EndOfDataDecoderException e) {
             // ignore
-            return true;
         } catch (Exception e) {
             throw new HttpParseException(e);
         }
@@ -463,7 +453,6 @@ public class HttpRequest implements Request {
      * Parse FileUpload to {@link FileItem}.
      *
      * @param fileUpload netty http file upload
-     * @throws IOException
      */
     private void parseFileUpload(FileUpload fileUpload) throws IOException {
         if (!fileUpload.isCompleted()) {
