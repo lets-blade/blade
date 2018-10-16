@@ -164,7 +164,7 @@ public class IndexController {
 ```java
 public static void main(String[] args) {
     Blade.of().get("/user", ctx -> {
-        Integer age = ctx.queryInt("age");
+        Integer age = ctx.fromInt("age");
         System.out.println("age is:" + age);
     }).start();
 }
@@ -377,9 +377,7 @@ mvc.statics=/mydir
 @PostRoute("upload")
 public void upload(Request request){
     request.fileItem("img").ifPresent(fileItem -> {
-        byte[] data = fileItem.getData();
-        // Save the temporary file to the specified path
-        Files.write(Paths.get(filePath), data);              
+        fileItem.moveTo(new File(fileItem.getFileName()));              
     });
 }
 ```
@@ -389,9 +387,8 @@ public void upload(Request request){
 ```java
 @PostRoute("upload")
 public void upload(@MultipartParam FileItem fileItem){
-    byte[] data = fileItem.getData();
-    // Save the temporary file to the specified path
-    Files.write(Paths.get(filePath), data);
+    // 保存到新位置
+    fileItem.moveTo(new File(fileItem.getFileName()));
 }
 ```
 
