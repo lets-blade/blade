@@ -133,12 +133,11 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<HttpObject> {
                 WebContext.remove();
             } else {
                 Route route = routeMatcher.lookupRoute(method, uri);
-                if (null == route) {
-                    String paddingMethod = BladeCache.getPaddingMethod(method);
-                    log404(log, paddingMethod, uri);
+                if (null != route) {
+                    webContext.setRoute(route);
+                } else {
                     throw new NotFoundException(uri);
                 }
-                webContext.setRoute(route);
             }
         } catch (Exception e) {
             routeMethodHandler.exceptionCaught(uri, method, e);

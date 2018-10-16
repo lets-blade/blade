@@ -106,16 +106,6 @@ public class RouteMethodHandler implements RequestHandler {
 
     public void exceptionCaught(String uri, String method, Exception e) {
         if (e instanceof BladeException) {
-            if (e instanceof NotAllowedMethodException) {
-                log405(log, method, uri);
-                Request  request  = WebContext.request();
-                Response response = WebContext.response();
-                if (request.isJsonRequest()) {
-                    response.json(RestResponse.fail(405, e.getMessage()));
-                } else {
-                    response.text(e.getMessage());
-                }
-            }
         } else {
             log500(log, method, uri);
         }

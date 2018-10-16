@@ -1,10 +1,8 @@
 package com.blade.mvc.handler;
 
 import com.blade.Blade;
-import com.blade.exception.BladeException;
-import com.blade.exception.InternalErrorException;
-import com.blade.exception.NotFoundException;
-import com.blade.exception.ValidatorException;
+import com.blade.exception.*;
+import com.blade.kit.BladeCache;
 import com.blade.mvc.WebContext;
 import com.blade.mvc.http.RawBody;
 import com.blade.mvc.http.Request;
@@ -25,6 +23,8 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Optional;
 
+import static com.blade.kit.BladeKit.log404;
+import static com.blade.kit.BladeKit.log405;
 import static com.blade.mvc.Const.*;
 
 /**
@@ -90,17 +90,36 @@ public class DefaultExceptionHandler implements ExceptionHandler {
             this.render500(request, response);
         }
 
+        String paddingMethod = BladeCache.getPaddingMethod(request.method());
+
         if (e.getStatus() == NotFoundException.STATUS) {
-            var page404 = Optional.ofNullable(blade.environment().get(ENV_KEY_PAGE_404, null));
-            if (page404.isPresent()) {
-                modelAndView.setView(page404.get());
-                renderPage(response, modelAndView);
-                response.render(page404.get());
+            log404(log, paddingMethod, request.uri());
+
+            if (request.isJsonRequest()) {
+                response.json(RestResponse.fail(NotFoundException.STATUS, "Not Found [" + request.uri() + "]"));
             } else {
-                HtmlCreator htmlCreator = new HtmlCreator();
-                htmlCreator.center("<h1>404 Not Found - " + request.uri() + "</h1>");
-                htmlCreator.hr();
-                response.html(htmlCreator.html());
+                var page404 = Optional.ofNullable(blade.environment().get(ENV_KEY_PAGE_404, null));
+                if (page404.isPresent()) {
+                    modelAndView.setView(page404.get());
+                    renderPage(response, modelAndView);
+                    response.render(page404.get());
+                } else {
+                    HtmlCreator htmlCreator = new HtmlCreator();
+                    htmlCreator.center("<h1>404 Not Found - " + request.uri() + "</h1>");
+                    htmlCreator.hr();
+                    response.html(htmlCreator.html());
+                }
+            }
+        }
+
+        if (e.getStatus() == NotAllowedMethodException.STATUS) {
+
+            log405(log, paddingMethod, request.uri());
+
+            if (request.isJsonRequest()) {
+                response.json(RestResponse.fail(NotAllowedMethodException.STATUS, e.getMessage()));
+            } else {
+                response.text(e.getMessage());
             }
         }
     }
