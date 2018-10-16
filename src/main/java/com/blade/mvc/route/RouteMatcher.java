@@ -1,6 +1,6 @@
 package com.blade.mvc.route;
 
-import com.blade.exception.NotAllowedMethodException;
+import com.blade.exception.MethodNotAllowedException;
 import com.blade.ioc.annotation.Order;
 import com.blade.kit.*;
 import com.blade.mvc.RouteContext;
@@ -171,7 +171,7 @@ public class RouteMatcher {
             return route;
         } else {
             if (staticMapping.hasPath(path)) {
-                throw new NotAllowedMethodException("[" + httpMethod + "] Method Not Allowed");
+                throw new MethodNotAllowedException("[" + httpMethod + "] Method Not Allowed");
             }
         }
 

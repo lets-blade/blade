@@ -111,12 +111,12 @@ public class DefaultExceptionHandler implements ExceptionHandler {
             }
         }
 
-        if (e.getStatus() == NotAllowedMethodException.STATUS) {
+        if (e.getStatus() == MethodNotAllowedException.STATUS) {
 
             log405(log, paddingMethod, request.uri());
 
             if (request.isJsonRequest()) {
-                response.json(RestResponse.fail(NotAllowedMethodException.STATUS, e.getMessage()));
+                response.json(RestResponse.fail(MethodNotAllowedException.STATUS, e.getMessage()));
             } else {
                 response.text(e.getMessage());
             }

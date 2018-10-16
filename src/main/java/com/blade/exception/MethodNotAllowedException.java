@@ -21,12 +21,12 @@ package com.blade.exception;
  * @author biezhi
  * @date 2018/10/16
  */
-public class NotAllowedMethodException extends BladeException {
+public class MethodNotAllowedException extends BladeException {
 
     public static final  int    STATUS = 405;
     private static final String NAME   = "Method Not Allowed";
 
-    public NotAllowedMethodException(String message) {
+    public MethodNotAllowedException(String message) {
         super(STATUS, NAME, message);
     }
 
