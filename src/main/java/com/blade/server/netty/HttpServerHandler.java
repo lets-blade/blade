@@ -58,8 +58,8 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<HttpObject> {
     private static final FastThreadLocal<LocalContext> LOCAL_CONTEXT = new FastThreadLocal<>();
 
     private final StaticFileHandler  staticFileHandler  = new StaticFileHandler(WebContext.blade());
-    private final RouteMatcher       routeMatcher       = WebContext.blade().routeMatcher();
     private final RouteMethodHandler routeMethodHandler = new RouteMethodHandler();
+    private final RouteMatcher       routeMatcher       = WebContext.blade().routeMatcher();
     private final ExecutorService    logicExecutor      = Executors.newFixedThreadPool(8);
 
     @Override
@@ -72,7 +72,6 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<HttpObject> {
 
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx) {
-        log.info("io thread execute finish.");
         ctx.flush();
     }
 
@@ -120,10 +119,7 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<HttpObject> {
         Response response = new HttpResponse();
 
         // init web context
-        WebContext webContext = new WebContext(request, response, ctx);
-        webContext.setLocalContext(LOCAL_CONTEXT.get());
-
-        WebContext.set(webContext);
+        WebContext webContext = WebContext.create(request, response, ctx, LOCAL_CONTEXT.get());
 
         String uri    = request.uri();
         String method = request.method();
@@ -140,12 +136,11 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<HttpObject> {
                     log404(log, paddingMethod, uri);
                     throw new NotFoundException(uri);
                 }
-                //
-                WebContext.get().setRoute(route);
+                webContext.setRoute(route);
             }
         } catch (Exception e) {
             routeMethodHandler.exceptionCaught(uri, method, e);
-            routeMethodHandler.finishWrite(WebContext.get());
+            routeMethodHandler.finishWrite(webContext);
             LOCAL_CONTEXT.remove();
             WebContext.remove();
         }

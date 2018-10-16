@@ -23,6 +23,7 @@ import com.blade.mvc.http.session.SessionManager;
 import com.blade.mvc.route.Route;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.concurrent.FastThreadLocal;
+import lombok.NoArgsConstructor;
 import lombok.var;
 
 import java.util.Optional;
@@ -35,6 +36,7 @@ import java.util.Optional;
  * @author biezhi
  * 2017/6/1
  */
+@NoArgsConstructor
 public class WebContext {
 
     /**
@@ -119,6 +121,16 @@ public class WebContext {
         return null != webContext ? webContext.response : null;
     }
 
+    public static WebContext create(Request request, Response response, ChannelHandlerContext ctx, LocalContext localContext) {
+        WebContext webContext = new WebContext();
+        webContext.request = request;
+        webContext.response = response;
+        webContext.channelHandlerContext = ctx;
+        webContext.localContext = localContext;
+        fastThreadLocal.set(webContext);
+        return webContext;
+    }
+
     public Request getRequest() {
         return request;
     }
@@ -137,6 +149,7 @@ public class WebContext {
         WebContext.blade = blade;
         WebContext.contextPath = contextPath;
     }
+
 
     /**
      * Get blade instance

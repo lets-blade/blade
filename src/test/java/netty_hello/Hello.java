@@ -52,6 +52,9 @@ public class Hello {
                     ctx.text("Hello World.");
                 })
                 .post("/hello", ctx -> ctx.text("Hello World."))
+                .post("/body", ctx -> {
+                    ctx.text("Hello World.");
+                })
                 .put("/hello", ctx -> ctx.text("Hello World."))
                 .delete("/hello", ctx -> ctx.text("Hello World."))
                 .get("/download", ctx -> {

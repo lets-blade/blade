@@ -62,15 +62,18 @@ public class HttpServerInitializer extends ChannelInitializer<SocketChannel> {
 
             pipeline.addLast(new HttpRequestDecoder());
             pipeline.addLast(new HttpResponseEncoder());
-            pipeline.addLast(new HttpServerExpectContinueHandler());
 
             if (useGZIP) {
                 pipeline.addLast(new HttpContentCompressor());
             }
 
+            pipeline.addLast(new ChunkedWriteHandler());
+            pipeline.addLast(new HttpServerExpectContinueHandler());
+
             if (enableCors) {
                 pipeline.addLast(new CorsHandler(CorsConfigBuilder.forAnyOrigin().allowNullOrigin().allowCredentials().build()));
             }
+
             if (isWebSocket) {
                 pipeline.addLast(new WebSocketServerProtocolHandler(blade.webSocketPath(), null, true));
                 pipeline.addLast(WEB_SOCKET_HANDLER);

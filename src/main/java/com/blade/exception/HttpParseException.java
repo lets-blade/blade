@@ -26,7 +26,7 @@ import lombok.NoArgsConstructor;
  * @date 2018/10/16
  */
 @NoArgsConstructor
-public class HttpParseException extends Exception {
+public class HttpParseException extends RuntimeException {
 
     public HttpParseException(String message) {
         super(message);
@@ -34,5 +34,9 @@ public class HttpParseException extends Exception {
 
     public HttpParseException(Throwable cause) {
         super(cause);
+    }
+
+    public HttpParseException(String message, Throwable cause) {
+        super(message, cause);
     }
 }

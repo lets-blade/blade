@@ -15,6 +15,7 @@
  */
 package com.blade.mvc.http;
 
+import com.blade.exception.HttpParseException;
 import com.blade.exception.InternalErrorException;
 import com.blade.kit.PathKit;
 import com.blade.kit.StringKit;
@@ -73,6 +74,8 @@ public class HttpRequest implements Request {
     private Session session;
 
     private boolean isRequestPart;
+    private boolean isChunked;
+    private boolean isMultipart;
     private boolean isEnd;
 
     private Map<String, String>       headers    = null;
@@ -307,6 +310,7 @@ public class HttpRequest implements Request {
         request.keepAlive = HttpUtil.isKeepAlive(nettyRequest);
         request.remoteAddress = remoteAddress;
         request.url = nettyRequest.uri();
+        request.isChunked = HttpUtil.isTransferEncodingChunked(nettyRequest);
 
         int pathEndPos = request.url().indexOf('?');
         request.uri = pathEndPos < 0 ? request.url() : request.url().substring(0, pathEndPos);
@@ -354,15 +358,17 @@ public class HttpRequest implements Request {
 
         request.initCookie();
 
-        HttpPostRequestDecoder decoder = null;
-        if (!nettyRequest.method().equals(io.netty.handler.codec.http.HttpMethod.GET)) {
-            try {
-                decoder = new HttpPostRequestDecoder(factory, nettyRequest);
-            } catch (HttpPostRequestDecoder.ErrorDataDecoderException e1) {
-                e1.printStackTrace();
-            }
+        if (!request.httpMethod().equals(HttpMethod.POST)) {
+            return null;
         }
-        return decoder;
+
+        try {
+            HttpPostRequestDecoder decoder = new HttpPostRequestDecoder(factory, nettyRequest);
+            request.isMultipart = decoder.isMultipart();
+            return decoder;
+        } catch (Exception e) {
+            throw new HttpParseException("build decoder fail", e);
+        }
     }
 
     private void initCookie() {
@@ -377,16 +383,19 @@ public class HttpRequest implements Request {
     /**
      * Example of reading request by chunk and getting values from chunk to chunk
      */
-    private void readHttpDataChunkByChunk(HttpPostRequestDecoder decoder) {
+    private boolean readHttpDataChunkByChunk(HttpPostRequestDecoder decoder) {
         try {
+            boolean read = false;
             while (decoder.hasNext()) {
+                read = true;
                 InterfaceHttpData data = decoder.next();
                 if (data != null) {
                     parseData(data);
                 }
             }
-        } catch (HttpPostRequestDecoder.EndOfDataDecoderException e1) {
-            // end
+            return read;
+        } catch (Exception e) {
+            throw new HttpParseException(e);
         }
     }
 
