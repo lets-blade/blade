@@ -42,12 +42,12 @@ public class LogicRunner {
     private boolean                 isFinished;
     private boolean                 allowCost;
 
-    public LogicRunner(RouteMethodHandler routeHandler, WebContext webContext) {
+    public LogicRunner(RouteMethodHandler routeHandler, boolean allowCost, WebContext webContext) {
         this.routeHandler = routeHandler;
         this.webContext = webContext;
-        if (WebContext.blade().allowCost()) {
+        this.allowCost = allowCost;
+        if (allowCost) {
             this.started = Instant.now();
-            this.allowCost = true;
         }
     }
 

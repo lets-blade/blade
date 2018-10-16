@@ -1,6 +1,5 @@
 package com.blade.mvc.http;
 
-import com.blade.exception.BladeException;
 import com.blade.exception.NotFoundException;
 import com.blade.kit.StringKit;
 import com.blade.mvc.ui.ModelAndView;
@@ -24,8 +23,8 @@ import java.util.*;
 @Slf4j
 public class HttpResponse implements Response {
 
-    private Map<String, String> headers = new HashMap<>(8);
-    private Set<Cookie>         cookies = new HashSet<>(4);
+    private Map<String, String> headers = new HashMap<>();
+    private Set<Cookie>         cookies = new HashSet<>();
 
     private int    statusCode  = 200;
     private String contentType = HttpConst.CONTENT_TYPE_HTML;

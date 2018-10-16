@@ -62,6 +62,8 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<HttpObject> {
     private final RouteMatcher       routeMatcher       = WebContext.blade().routeMatcher();
     private final ExecutorService    logicExecutor      = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2);
 
+    private static final boolean allowCost = WebContext.blade().allowCost();
+
     @Override
     public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
         super.channelUnregistered(ctx);
@@ -93,7 +95,7 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<HttpObject> {
         }
 
         try {
-            LogicRunner asyncRunner = new LogicRunner(routeMethodHandler, WebContext.get());
+            LogicRunner asyncRunner = new LogicRunner(routeMethodHandler, allowCost, WebContext.get());
 
             CompletableFuture<Void> future = CompletableFuture.completedFuture(asyncRunner)
                     .thenApplyAsync(LogicRunner::handle, logicExecutor)
