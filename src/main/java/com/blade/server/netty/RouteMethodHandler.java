@@ -211,8 +211,8 @@ public class RouteMethodHandler implements RequestHandler {
 
     public Map<String, String> getDefaultHeader() {
         var map = new HashMap<String, String>(2);
-        map.put(HttpConst.DATE.toString(), HttpServerInitializer.date.toString());
-        map.put(HttpConst.X_POWER_BY.toString(), HttpConst.VERSION.toString());
+        map.put("Date", HttpServerInitializer.date);
+        map.put("X-Powered-By", HttpConst.VERSION);
         return map;
     }
 

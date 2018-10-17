@@ -17,7 +17,6 @@ public interface HttpConst {
     String COOKIE_STRING       = "Cookie";
     String METHOD_GET          = "GET";
     String METHOD_POST         = "POST";
-    String IE_UA               = "MSIE";
     String DEFAULT_SESSION_KEY = "SESSION";
     String SLASH               = "/";
     char   CHAR_SLASH          = '/';
@@ -29,7 +28,6 @@ public interface HttpConst {
     CharSequence CONTENT_ENCODING = AsciiString.cached("Content-Encoding");
     CharSequence DATE             = AsciiString.cached("Date");
     CharSequence LOCATION         = AsciiString.cached("Location");
-    CharSequence X_POWER_BY       = AsciiString.cached("X-Powered-By");
     CharSequence EXPIRES          = AsciiString.cached("Expires");
     CharSequence CACHE_CONTROL    = AsciiString.cached("Cache-Control");
     CharSequence LAST_MODIFIED    = AsciiString.cached("Last-Modified");
@@ -39,6 +37,6 @@ public interface HttpConst {
 
     String CONTENT_TYPE_HTML = "text/html; charset=UTF-8";
 
-    CharSequence VERSION = AsciiString.cached("blade-" + Const.VERSION);
+    String VERSION    = "blade-" + Const.VERSION;
 
 }

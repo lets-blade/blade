@@ -254,7 +254,16 @@ public class BladeKit {
         log.warn("{} {}  {} {}", msg304, pad, method, uri);
     }
 
-    public static long log200(Logger log, Instant start, String method, String uri) {
+    public static void log200(Logger log, String method, String uri) {
+        if (!log.isInfoEnabled()) {
+            return;
+        }
+        String pad    = StringKit.padLeft("", 6);
+        String msg200 = Ansi.BgGreen.and(Ansi.Black).format(" 200 ");
+        log.info("{} {}  {} {}", msg200, pad, method, uri);
+    }
+
+    public static long log200AndCost(Logger log, Instant start, String method, String uri) {
         long cost = getCostMS(start);
         if (!log.isInfoEnabled()) {
             return cost;

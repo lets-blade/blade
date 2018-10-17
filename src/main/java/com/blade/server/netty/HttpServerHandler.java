@@ -43,6 +43,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import static com.blade.mvc.Const.ENV_KEY_HTTP_REQUEST_COST;
+import static com.blade.mvc.Const.ENV_KEY_PERFORMANCE;
 import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
 /**
@@ -62,7 +64,8 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<HttpObject> {
     private static final RouteMethodHandler            ROUTE_METHOD_HANDLER       = new RouteMethodHandler();
     private static final Set<String>                   NOT_STATIC_URI             = new HashSet<>(32);
     private static final RouteMatcher                  ROUTE_MATCHER              = WebContext.blade().routeMatcher();
-    private static final boolean                       ALLOW_COST                 = WebContext.blade().allowCost();
+    private static final boolean                       ALLOW_COST                 = WebContext.get().environment().getBoolean(ENV_KEY_HTTP_REQUEST_COST, false);
+    private static final boolean                       PERFORMANCE                = WebContext.get().environment().getBoolean(ENV_KEY_PERFORMANCE, false);
 
     private static final ExecutorService LOGIC_EXECUTOR =
             Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2);
@@ -99,11 +102,11 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<HttpObject> {
         }
 
         try {
-            LogicRunner asyncRunner = new LogicRunner(ROUTE_METHOD_HANDLER, ALLOW_COST, WebContext.get());
+            LogicRunner asyncRunner = new LogicRunner(ROUTE_METHOD_HANDLER, ALLOW_COST, PERFORMANCE, WebContext.get());
 
             CompletableFuture<Void> future = CompletableFuture.completedFuture(asyncRunner)
                     .thenApplyAsync(LogicRunner::handle, LOGIC_EXECUTOR)
-                    .thenAccept(LogicRunner::finishWrite);
+                    .thenAcceptAsync(LogicRunner::finishWrite, LOGIC_EXECUTOR);
 
             asyncRunner.setFuture(future);
         } finally {
