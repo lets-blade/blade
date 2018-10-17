@@ -202,7 +202,7 @@ public class RouteMethodHandler implements RequestHandler {
                 context.write(response).addListener(ChannelFutureListener.CLOSE);
             } else {
                 response.headers().set(HttpConst.CONNECTION, KEEP_ALIVE);
-                context.write(response, context.voidPromise());
+                context.write(response);
             }
             context.flush();
         }
