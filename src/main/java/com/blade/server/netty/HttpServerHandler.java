@@ -65,7 +65,7 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<HttpObject> {
     private static final RouteMatcher                  ROUTE_MATCHER              = WebContext.blade().routeMatcher();
 
     static final boolean ALLOW_COST =
-            WebContext.blade().environment().getBoolean(ENV_KEY_HTTP_REQUEST_COST, false);
+            WebContext.blade().environment().getBoolean(ENV_KEY_HTTP_REQUEST_COST, true);
 
     public static final boolean PERFORMANCE =
             WebContext.blade().environment().getBoolean(ENV_KEY_PERFORMANCE, false);

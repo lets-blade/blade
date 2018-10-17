@@ -84,7 +84,7 @@ public interface Const {
     // netty default config
     int DEFAULT_SO_BACKLOG          = 1024;
     int DEFAULT_ACCEPT_THREAD_COUNT = 1;
-    int DEFAULT_IO_THREAD_COUNT     = Runtime.getRuntime().availableProcessors();
+    int DEFAULT_IO_THREAD_COUNT     = 0;
 
     /**
      * A request processing ends the elapsed time, in milliseconds.

@@ -78,6 +78,7 @@ public class LogicRunner {
     }
 
     public void finishWrite() {
+        WebContext.set(webContext);
         routeHandler.finishWrite(webContext);
         WebContext.remove();
         isFinished = true;
