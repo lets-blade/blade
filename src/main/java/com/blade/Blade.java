@@ -22,6 +22,7 @@ import com.blade.ioc.Ioc;
 import com.blade.ioc.SimpleIoc;
 import com.blade.kit.Assert;
 import com.blade.kit.BladeKit;
+import com.blade.kit.JsonKit;
 import com.blade.kit.StringKit;
 import com.blade.kit.reload.FileChangeDetector;
 import com.blade.loader.BladeLoader;
@@ -1045,6 +1046,8 @@ public class Blade {
         String envName = "default";
 
         Map<String, String> argsMap = BladeKit.parseArgs(args);
+
+        log.info("Command line args: {}", JsonKit.toString(argsMap));
 
         if (StringKit.isNotEmpty(argsMap.get(ENV_KEY_APP_ENV))) {
             envName = argsMap.get(ENV_KEY_APP_ENV);
