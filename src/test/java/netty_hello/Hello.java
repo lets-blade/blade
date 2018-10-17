@@ -84,7 +84,6 @@ public class Hello {
                     System.out.println("session 失效了");
                 })
                 .disableSession()
-//                .disableCost()
 //                .showFileList(true)
 //                .gzip(true)
 //                .enableCors(true)

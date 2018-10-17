@@ -346,9 +346,11 @@ public class HttpRequest implements Request {
             request.uri = cleanUri;
         }
 
-        SessionManager sessionManager = WebContext.blade().sessionManager();
-        if (null != sessionManager) {
-            request.session = SESSION_HANDLER.createSession(request);
+        if (!HttpServerHandler.PERFORMANCE) {
+            SessionManager sessionManager = WebContext.blade().sessionManager();
+            if (null != sessionManager) {
+                request.session = SESSION_HANDLER.createSession(request);
+            }
         }
 
         HttpServerHandler.setLocalContext(new LocalContext(msg, request, decoder));

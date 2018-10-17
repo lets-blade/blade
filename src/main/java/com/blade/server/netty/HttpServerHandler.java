@@ -57,15 +57,18 @@ import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 @ChannelHandler.Sharable
 public class HttpServerHandler extends SimpleChannelInboundHandler<HttpObject> {
 
-    public static final FastThreadLocal<WebContext> WEB_CONTEXT_THREAD_LOCAL = new FastThreadLocal<>();
-
+    public static final  FastThreadLocal<WebContext>   WEB_CONTEXT_THREAD_LOCAL   = new FastThreadLocal<>();
     private static final FastThreadLocal<LocalContext> LOCAL_CONTEXT_THREAD_LOCAL = new FastThreadLocal<>();
     private static final StaticFileHandler             STATIC_FILE_HANDLER        = new StaticFileHandler(WebContext.blade());
     private static final RouteMethodHandler            ROUTE_METHOD_HANDLER       = new RouteMethodHandler();
     private static final Set<String>                   NOT_STATIC_URI             = new HashSet<>(32);
     private static final RouteMatcher                  ROUTE_MATCHER              = WebContext.blade().routeMatcher();
-    private static final boolean                       ALLOW_COST                 = WebContext.get().environment().getBoolean(ENV_KEY_HTTP_REQUEST_COST, false);
-    private static final boolean                       PERFORMANCE                = WebContext.get().environment().getBoolean(ENV_KEY_PERFORMANCE, false);
+
+    static final boolean ALLOW_COST =
+            WebContext.blade().environment().getBoolean(ENV_KEY_HTTP_REQUEST_COST, false);
+
+    public static final boolean PERFORMANCE =
+            WebContext.blade().environment().getBoolean(ENV_KEY_PERFORMANCE, false);
 
     private static final ExecutorService LOGIC_EXECUTOR =
             Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2);
@@ -102,7 +105,7 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<HttpObject> {
         }
 
         try {
-            LogicRunner asyncRunner = new LogicRunner(ROUTE_METHOD_HANDLER, ALLOW_COST, PERFORMANCE, WebContext.get());
+            LogicRunner asyncRunner = new LogicRunner(ROUTE_METHOD_HANDLER, WebContext.get());
 
             CompletableFuture<Void> future = CompletableFuture.completedFuture(asyncRunner)
                     .thenApplyAsync(LogicRunner::handle, LOGIC_EXECUTOR)

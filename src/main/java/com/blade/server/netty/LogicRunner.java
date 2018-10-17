@@ -41,16 +41,11 @@ public class LogicRunner {
     private Instant                 started;
     private RouteMethodHandler      routeHandler;
     private boolean                 isFinished;
-    private boolean                 allowCost;
-    private boolean                 performance;
 
-    public LogicRunner(RouteMethodHandler routeHandler, boolean allowCost, boolean performance, WebContext webContext) {
+    public LogicRunner(RouteMethodHandler routeHandler, WebContext webContext) {
         this.routeHandler = routeHandler;
         this.webContext = webContext;
-        this.allowCost = allowCost;
-        this.performance = performance;
-
-        if (!performance && allowCost) {
+        if (!HttpServerHandler.PERFORMANCE && HttpServerHandler.ALLOW_COST) {
             this.started = Instant.now();
         }
     }
@@ -66,11 +61,11 @@ public class LogicRunner {
         try {
             routeHandler.handle(webContext);
 
-            if (performance) {
+            if (HttpServerHandler.PERFORMANCE) {
                 return this;
             }
 
-            if (allowCost) {
+            if (HttpServerHandler.ALLOW_COST) {
                 long cost = log200AndCost(log, this.started, BladeCache.getPaddingMethod(method), uri);
                 request.attribute(REQUEST_COST_TIME, cost);
             } else {
