@@ -56,7 +56,8 @@ import java.util.*;
 @NoArgsConstructor
 public class HttpRequest implements Request {
 
-    private static final HttpDataFactory factory = new DefaultHttpDataFactory(DefaultHttpDataFactory.MINSIZE); // Disk if size exceed
+    private static final HttpDataFactory factory =
+            new DefaultHttpDataFactory(DefaultHttpDataFactory.MINSIZE); // Disk if size exceed
 
     private static final ByteBuf EMPTY_BUF = Unpooled.copiedBuffer("", CharsetUtil.UTF_8);
 
@@ -73,6 +74,7 @@ public class HttpRequest implements Request {
     private String  url;
     private String  protocol;
     private String  method;
+    private String  cookieString;
     private boolean keepAlive;
     private Session session;
 
@@ -80,6 +82,7 @@ public class HttpRequest implements Request {
     private boolean isChunked;
     private boolean isMultipart;
     private boolean isEnd;
+    private boolean initCookie;
 
     private Map<String, String>       headers    = null;
     private Map<String, Object>       attributes = null;
@@ -147,10 +150,10 @@ public class HttpRequest implements Request {
 
     @Override
     public String queryString() {
-        if (null != this.url && this.url.contains("?")) {
-            return this.url.substring(this.url.indexOf("?") + 1);
+        if (null == url || !url.contains("?")) {
+            return "";
         }
-        return "";
+        return url.substring(url.indexOf("?") + 1);
     }
 
     @Override
@@ -180,10 +183,14 @@ public class HttpRequest implements Request {
 
     @Override
     public boolean useGZIP() {
-        boolean useGZIP = WebContext.blade().environment().getBoolean(Const.ENV_KEY_GZIP_ENABLE, false);
+
+        boolean useGZIP = WebContext.blade().environment()
+                .getBoolean(Const.ENV_KEY_GZIP_ENABLE, false);
+
         if (!useGZIP) {
             return false;
         }
+
         String acceptEncoding = this.header(HttpConst.ACCEPT_ENCODING);
         if (StringKit.isEmpty(acceptEncoding)) {
             return false;
@@ -209,6 +216,10 @@ public class HttpRequest implements Request {
 
     @Override
     public Map<String, Cookie> cookies() {
+        if (!initCookie && StringKit.isNotEmpty(cookieString)) {
+            initCookie = true;
+            ServerCookieDecoder.LAX.decode(cookieString).forEach(this::parseCookie);
+        }
         return this.cookies;
     }
 
@@ -336,16 +347,21 @@ public class HttpRequest implements Request {
             request.uri = cleanUri;
         }
 
-        SessionManager sessionManager = WebContext.blade().sessionManager();
-        if (null != sessionManager) {
-            request.session = SESSION_HANDLER.createSession(request);
+        if (!HttpServerHandler.PERFORMANCE) {
+            SessionManager sessionManager = WebContext.blade().sessionManager();
+            if (null != sessionManager) {
+                request.session = SESSION_HANDLER.createSession(request);
+            }
         }
 
         HttpServerHandler.setLocalContext(new LocalContext(msg, request, decoder));
         return request;
     }
 
-    private static HttpPostRequestDecoder initRequest(HttpRequest request, io.netty.handler.codec.http.HttpRequest nettyRequest) {
+    private static HttpPostRequestDecoder initRequest(
+            HttpRequest request,
+            io.netty.handler.codec.http.HttpRequest nettyRequest) {
+
         // headers
         var httpHeaders = nettyRequest.headers();
         if (httpHeaders.isEmpty()) {
@@ -353,30 +369,34 @@ public class HttpRequest implements Request {
         } else {
             request.headers = new HashMap<>(httpHeaders.size());
 
-            httpHeaders.forEach(entry -> request.headers.put(entry.getKey(), entry.getValue()));
-
-//            Iterator<Map.Entry<String, String>> entryIterator = httpHeaders.iteratorAsString();
-//            while (entryIterator.hasNext()) {
-//                var entry = entryIterator.next();
-//                request.headers.put(entry.getKey(), entry.getValue());
-//            }
+            Iterator<Map.Entry<String, String>> entryIterator = httpHeaders.iteratorAsString();
+            while (entryIterator.hasNext()) {
+                Map.Entry<String, String> next = entryIterator.next();
+                request.headers.put(next.getKey(), next.getValue());
+            }
         }
 
         // request query parameters
-        var parameters = new QueryStringDecoder(request.url(), CharsetUtil.UTF_8).parameters();
-        if (null != parameters) {
-            request.parameters = new HashMap<>();
-            request.parameters.putAll(parameters);
+        if (request.url().contains("?")) {
+            var parameters = new QueryStringDecoder(request.url(), CharsetUtil.UTF_8)
+                    .parameters();
+
+            if (null != parameters) {
+                request.parameters.putAll(parameters);
+            }
         }
 
-        request.initCookie();
+        // cookies
+        request.cookieString = request.header(HttpConst.COOKIE_STRING);
 
         if ("GET".equals(request.method())) {
             return null;
         }
 
         try {
-            HttpPostRequestDecoder decoder = new HttpPostRequestDecoder(factory, nettyRequest);
+            HttpPostRequestDecoder decoder =
+                    new HttpPostRequestDecoder(factory, nettyRequest);
+
             request.isMultipart = decoder.isMultipart();
             return decoder;
         } catch (Exception e) {
@@ -384,32 +404,19 @@ public class HttpRequest implements Request {
         }
     }
 
-    private void initCookie() {
-        // cookies
-        var cookie = this.header(HttpConst.COOKIE_STRING);
-        cookie = cookie.length() > 0 ? cookie : this.header(HttpConst.COOKIE_STRING.toLowerCase());
-        if (null != cookie && cookie.length() > 0) {
-            ServerCookieDecoder.LAX.decode(cookie).forEach(this::parseCookie);
-        }
-    }
-
     /**
-     * Example of reading request by chunk and getting values from chunk to chunk
+     * Reading request by chunk and getting values from chunk
      */
-    private boolean readHttpDataChunkByChunk(HttpPostRequestDecoder decoder) {
+    private void readHttpDataChunkByChunk(HttpPostRequestDecoder decoder) {
         try {
-            boolean read = false;
             while (decoder.hasNext()) {
-                read = true;
                 InterfaceHttpData data = decoder.next();
                 if (data != null) {
                     parseData(data);
                 }
             }
-            return read;
         } catch (HttpPostRequestDecoder.EndOfDataDecoderException e) {
             // ignore
-            return true;
         } catch (Exception e) {
             throw new HttpParseException(e);
         }
@@ -453,7 +460,6 @@ public class HttpRequest implements Request {
      * Parse FileUpload to {@link FileItem}.
      *
      * @param fileUpload netty http file upload
-     * @throws IOException
      */
     private void parseFileUpload(FileUpload fileUpload) throws IOException {
         if (!fileUpload.isCompleted()) {
@@ -466,8 +472,11 @@ public class HttpRequest implements Request {
         // Upload the file is moved to the specified temporary file,
         // because FileUpload will be release after completion of the analysis.
         // tmpFile will be deleted automatically if they are used.
-        Path tmpFile = Files.createTempFile(Paths.get(fileUpload.getFile().getParent()), "blade_", "_upload");
-        Files.move(Paths.get(fileUpload.getFile().getPath()), tmpFile, StandardCopyOption.REPLACE_EXISTING);
+        Path tmpFile = Files.createTempFile(
+                Paths.get(fileUpload.getFile().getParent()), "blade_", "_upload");
+
+        Path fileUploadPath = Paths.get(fileUpload.getFile().getPath());
+        Files.move(fileUploadPath, tmpFile, StandardCopyOption.REPLACE_EXISTING);
 
         fileItem.setFile(tmpFile.toFile());
         fileItem.setPath(tmpFile.toFile().getPath());

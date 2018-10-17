@@ -31,7 +31,7 @@ public interface Const {
     int          DEFAULT_SERVER_PORT        = 9000;
     String       DEFAULT_SERVER_ADDRESS     = "0.0.0.0";
     String       LOCAL_IP_ADDRESS           = "127.0.0.1";
-    String       VERSION                    = "2.0.11.BETA";
+    String       VERSION                    = "2.0.11.RELEASE";
     String       WEB_JARS                   = "/webjars/";
     String       CLASSPATH                  = BladeKit.getCurrentClassPath();
     String       CONTENT_TYPE_HTML          = "text/html; charset=UTF-8";
@@ -69,6 +69,7 @@ public interface Const {
     String ENV_KEY_TEMPLATE_PATH             = "mvc.template.path";
     String ENV_KEY_SERVER_ADDRESS            = "server.address";
     String ENV_KEY_SERVER_PORT               = "server.port";
+    String ENV_KEY_PERFORMANCE               = "server.performance";
     String ENV_KEY_SSL                       = "server.ssl.enable";
     String ENV_KEY_SSL_CERT                  = "server.ssl.cert-path";
     String ENE_KEY_SSL_PRIVATE_KEY           = "server.ssl.private-key-path";

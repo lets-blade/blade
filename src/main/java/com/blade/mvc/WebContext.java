@@ -163,7 +163,7 @@ public class WebContext {
     }
 
     public Environment environment() {
-        return blade().environment();
+        return blade.environment();
     }
 
     /**
@@ -191,16 +191,8 @@ public class WebContext {
         return channelHandlerContext;
     }
 
-    public LocalContext getLocalContext() {
-        return localContext;
-    }
-
     public Route getRoute() {
         return route;
-    }
-
-    public void setLocalContext(LocalContext localContext) {
-        this.localContext = localContext;
     }
 
     public void setRoute(Route route) {

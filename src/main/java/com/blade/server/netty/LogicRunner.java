@@ -24,6 +24,7 @@ import java.time.Instant;
 import java.util.concurrent.CompletableFuture;
 
 import static com.blade.kit.BladeKit.log200;
+import static com.blade.kit.BladeKit.log200AndCost;
 import static com.blade.mvc.Const.REQUEST_COST_TIME;
 
 /**
@@ -40,13 +41,11 @@ public class LogicRunner {
     private Instant                 started;
     private RouteMethodHandler      routeHandler;
     private boolean                 isFinished;
-    private boolean                 allowCost;
 
-    public LogicRunner(RouteMethodHandler routeHandler, boolean allowCost, WebContext webContext) {
+    public LogicRunner(RouteMethodHandler routeHandler, WebContext webContext) {
         this.routeHandler = routeHandler;
         this.webContext = webContext;
-        this.allowCost = allowCost;
-        if (allowCost) {
+        if (!HttpServerHandler.PERFORMANCE && HttpServerHandler.ALLOW_COST) {
             this.started = Instant.now();
         }
     }
@@ -61,9 +60,16 @@ public class LogicRunner {
         String  method  = request.method();
         try {
             routeHandler.handle(webContext);
-            if (allowCost) {
-                long cost = log200(log, this.started, BladeCache.getPaddingMethod(method), uri);
+
+            if (HttpServerHandler.PERFORMANCE) {
+                return this;
+            }
+
+            if (HttpServerHandler.ALLOW_COST) {
+                long cost = log200AndCost(log, this.started, BladeCache.getPaddingMethod(method), uri);
                 request.attribute(REQUEST_COST_TIME, cost);
+            } else {
+                log200(log, BladeCache.getPaddingMethod(method), uri);
             }
         } catch (Exception e) {
             routeHandler.exceptionCaught(uri, method, e);
@@ -72,6 +78,7 @@ public class LogicRunner {
     }
 
     public void finishWrite() {
+        WebContext.set(webContext);
         routeHandler.finishWrite(webContext);
         WebContext.remove();
         isFinished = true;

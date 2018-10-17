@@ -7,13 +7,15 @@ import com.blade.mvc.Const;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
-import io.netty.handler.codec.http.*;
+import io.netty.handler.codec.http.HttpContentCompressor;
+import io.netty.handler.codec.http.HttpRequestDecoder;
+import io.netty.handler.codec.http.HttpResponseEncoder;
+import io.netty.handler.codec.http.HttpServerExpectContinueHandler;
 import io.netty.handler.codec.http.cors.CorsConfigBuilder;
 import io.netty.handler.codec.http.cors.CorsHandler;
 import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.stream.ChunkedWriteHandler;
-import io.netty.util.AsciiString;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
@@ -26,7 +28,7 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class HttpServerInitializer extends ChannelInitializer<SocketChannel> {
 
-    private final HttpServerHandler HTTP_SERVER_HANDLER = new HttpServerHandler();
+    private final HttpServerHandler httpServerHandler;
 
     private final SslContext sslCtx;
     private final Blade      blade;
@@ -34,7 +36,7 @@ public class HttpServerInitializer extends ChannelInitializer<SocketChannel> {
     private final boolean    isWebSocket;
     private final boolean    useGZIP;
 
-    public static volatile CharSequence date = new AsciiString(DateKit.gmtDate(LocalDateTime.now()));
+    public static volatile String date = DateKit.gmtDate(LocalDateTime.now());
 
     private static WebSocketHandler WEB_SOCKET_HANDLER;
 
@@ -49,7 +51,9 @@ public class HttpServerInitializer extends ChannelInitializer<SocketChannel> {
             WEB_SOCKET_HANDLER = new WebSocketHandler(blade);
         }
 
-        service.scheduleWithFixedDelay(() -> date = new AsciiString(DateKit.gmtDate(LocalDateTime.now())), 1000, 1000, TimeUnit.MILLISECONDS);
+        httpServerHandler = new HttpServerHandler();
+
+        service.scheduleWithFixedDelay(() -> date = DateKit.gmtDate(LocalDateTime.now()), 1000, 1000, TimeUnit.MILLISECONDS);
     }
 
     @Override
@@ -78,7 +82,7 @@ public class HttpServerInitializer extends ChannelInitializer<SocketChannel> {
                 pipeline.addLast(new WebSocketServerProtocolHandler(blade.webSocketPath(), null, true));
                 pipeline.addLast(WEB_SOCKET_HANDLER);
             }
-            pipeline.addLast(HTTP_SERVER_HANDLER);
+            pipeline.addLast(httpServerHandler);
         } catch (Exception e) {
             log.error("Add channel pipeline error", e);
         }

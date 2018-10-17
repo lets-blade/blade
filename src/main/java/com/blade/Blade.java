@@ -22,6 +22,7 @@ import com.blade.ioc.Ioc;
 import com.blade.ioc.SimpleIoc;
 import com.blade.kit.Assert;
 import com.blade.kit.BladeKit;
+import com.blade.kit.JsonKit;
 import com.blade.kit.StringKit;
 import com.blade.kit.reload.FileChangeDetector;
 import com.blade.loader.BladeLoader;
@@ -809,15 +810,6 @@ public class Blade {
         return this;
     }
 
-    public Blade disableCost() {
-        this.environment.set(ENV_KEY_HTTP_REQUEST_COST, false);
-        return this;
-    }
-
-    public boolean allowCost() {
-        return this.environment.getBoolean(ENV_KEY_HTTP_REQUEST_COST, true);
-    }
-
     public Blade watchEnvChange(boolean watchEnvChange) {
         this.environment.set(ENV_KEY_APP_WATCH_ENV, watchEnvChange);
         return this;
@@ -1040,6 +1032,7 @@ public class Blade {
     private void loadConfig(String[] args) {
         String      bootConf = environment().get(ENV_KEY_BOOT_CONF, PROP_NAME);
         Environment bootEnv  = Environment.of(bootConf);
+        String      envName  = "default";
 
         if (null == bootEnv || bootEnv.isEmpty()) {
             bootEnv = Environment.of(PROP_NAME0);
@@ -1051,9 +1044,8 @@ public class Blade {
             entrySet.forEach(entry -> environment.set(entry.getKey(), entry.getValue()));
         }
 
-        String envName = "default";
-
         Map<String, String> argsMap = BladeKit.parseArgs(args);
+        log.info("command line args: {}", JsonKit.toString(argsMap));
 
         if (StringKit.isNotEmpty(argsMap.get(ENV_KEY_APP_ENV))) {
             envName = argsMap.get(ENV_KEY_APP_ENV);
@@ -1065,10 +1057,16 @@ public class Blade {
                 // compatible with older versions
                 evnFileName = "app-" + envName + ".properties";
                 customEnv = Environment.of(evnFileName);
+
                 if (customEnv != null && !customEnv.isEmpty()) {
-                    customEnv.props().forEach((key, value) -> this.environment.set(key.toString(), value));
+                    Iterator<Map.Entry<Object, Object>> iterator = customEnv.props().entrySet().iterator();
+                    while (iterator.hasNext()) {
+                        Map.Entry<Object, Object> next = iterator.next();
+                        this.environment.set(next.getKey().toString(), next.getValue());
+                    }
                 }
             }
+            argsMap.remove(ENV_KEY_APP_ENV);
         }
 
         log.info("current environment is: {}", envName);
@@ -1080,12 +1078,10 @@ public class Blade {
             return;
         }
 
-        if (StringKit.isNotEmpty(argsMap.get(ENV_KEY_SERVER_ADDRESS))) {
-            this.environment.set(ENV_KEY_SERVER_ADDRESS, argsMap.get(ENV_KEY_SERVER_ADDRESS));
-        }
-
-        if (StringKit.isNotEmpty(argsMap.get(ENV_KEY_SERVER_PORT))) {
-            this.environment.set(ENV_KEY_SERVER_PORT, argsMap.get(ENV_KEY_SERVER_PORT));
+        Iterator<Map.Entry<String, String>> iterator = argsMap.entrySet().iterator();
+        while (iterator.hasNext()) {
+            Map.Entry<String, String> next = iterator.next();
+            this.environment.set(next.getKey(), next.getValue());
         }
 
     }

@@ -105,7 +105,7 @@ public class StaticFileHandler implements RequestHandler {
                 throw new NotFoundException(uri);
             }
             if (writeJarResource(ctx, request, cleanUri, input)) {
-                log200(log, start, method, uri);
+                log200AndCost(log, start, method, uri);
             }
             return;
         }
@@ -118,7 +118,7 @@ public class StaticFileHandler implements RequestHandler {
                 throw new NotFoundException(uri);
             }
             if (writeJarResource(ctx, request, cleanUri, input)) {
-                log200(log, start, method, uri);
+                log200AndCost(log, start, method, uri);
             }
             return;
         }
@@ -213,7 +213,7 @@ public class StaticFileHandler implements RequestHandler {
         if (!request.keepAlive()) {
             lastContentFuture.addListener(ChannelFutureListener.CLOSE);
         }
-        log200(log, start, method, uri);
+        log200AndCost(log, start, method, uri);
     }
 
     private boolean writeJarResource(ChannelHandlerContext ctx, Request request, String uri, InputStream input) throws IOException {
