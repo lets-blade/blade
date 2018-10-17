@@ -46,6 +46,7 @@ import lombok.var;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.net.BindException;
 import java.nio.file.*;
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
@@ -845,7 +846,9 @@ public class Blade {
                     server.start(Blade.this);
                     latch.countDown();
                     server.join();
-
+                } catch (BindException e) {
+                    log.error("Bind address error\n", e);
+                    System.exit(0);
                 } catch (Exception e) {
                     startupExceptionHandler.accept(e);
                 }
@@ -1045,7 +1048,9 @@ public class Blade {
         }
 
         Map<String, String> argsMap = BladeKit.parseArgs(args);
-        log.info("command line args: {}", JsonKit.toString(argsMap));
+        if (null != argsMap && !argsMap.isEmpty()) {
+            log.info(" command line args: {}", JsonKit.toString(argsMap));
+        }
 
         if (StringKit.isNotEmpty(argsMap.get(ENV_KEY_APP_ENV))) {
             envName = argsMap.get(ENV_KEY_APP_ENV);
@@ -1069,7 +1074,7 @@ public class Blade {
             argsMap.remove(ENV_KEY_APP_ENV);
         }
 
-        log.info("current environment is: {}", envName);
+        this.environment.set(ENV_KEY_APP_ENV, envName);
 
         this.register(this.environment);
 

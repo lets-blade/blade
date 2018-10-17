@@ -96,8 +96,6 @@ public class NettyServer implements Server {
     private List<BladeLoader>   loaders;
     private List<TaskStruct>    taskStruts = new ArrayList<>();
 
-    private final int padSize = 26;
-
     private volatile boolean isStop;
 
     @Override
@@ -108,12 +106,18 @@ public class NettyServer implements Server {
         this.loaders = blade.loaders();
 
         long startMs = System.currentTimeMillis();
-        log.info("{} {}{}", StringKit.padRight("environment.jdk.version", padSize), getPrefixSymbol(), System.getProperty("java.version"));
-        log.info("{} {}{}", StringKit.padRight("environment.user.dir", padSize), getPrefixSymbol(), System.getProperty("user.dir"));
-        log.info("{} {}{}", StringKit.padRight("environment.java.io.tmpdir", padSize), getPrefixSymbol(), System.getProperty("java.io.tmpdir"));
-        log.info("{} {}{}", StringKit.padRight("environment.user.timezone", padSize), getPrefixSymbol(), System.getProperty("user.timezone"));
-        log.info("{} {}{}", StringKit.padRight("environment.file.encoding", padSize), getPrefixSymbol(), System.getProperty("file.encoding"));
-        log.info("{} {}{}", StringKit.padRight("environment.classpath", padSize), getPrefixSymbol(), CLASSPATH);
+
+        int padSize = 16;
+        log.info("{} {}{}", StringKit.padRight("app.env", padSize), getPrefixSymbol(), environment.get(ENV_KEY_APP_ENV, "default"));
+        log.info("{} {}{}", StringKit.padRight("app.pid", padSize), getPrefixSymbol(), BladeKit.getPID());
+        log.info("{} {}{}", StringKit.padRight("app.devMode", padSize), getPrefixSymbol(), blade.devMode());
+
+        log.info("{} {}{}", StringKit.padRight("jdk.version", padSize), getPrefixSymbol(), System.getProperty("java.version"));
+        log.info("{} {}{}", StringKit.padRight("user.dir", padSize), getPrefixSymbol(), System.getProperty("user.dir"));
+        log.info("{} {}{}", StringKit.padRight("java.io.tmpdir", padSize), getPrefixSymbol(), System.getProperty("java.io.tmpdir"));
+        log.info("{} {}{}", StringKit.padRight("user.timezone", padSize), getPrefixSymbol(), System.getProperty("user.timezone"));
+        log.info("{} {}{}", StringKit.padRight("file.encoding", padSize), getPrefixSymbol(), System.getProperty("file.encoding"));
+        log.info("{} {}{}", StringKit.padRight("app.classpath", padSize), getPrefixSymbol(), CLASSPATH);
 
         this.initConfig();
 
