@@ -28,7 +28,7 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class HttpServerInitializer extends ChannelInitializer<SocketChannel> {
 
-    private final HttpServerHandler HTTP_SERVER_HANDLER = new HttpServerHandler();
+    private final HttpServerHandler httpServerHandler;
 
     private final SslContext sslCtx;
     private final Blade      blade;
@@ -50,6 +50,8 @@ public class HttpServerInitializer extends ChannelInitializer<SocketChannel> {
         if (isWebSocket) {
             WEB_SOCKET_HANDLER = new WebSocketHandler(blade);
         }
+
+        httpServerHandler = new HttpServerHandler();
 
         service.scheduleWithFixedDelay(() -> date = DateKit.gmtDate(LocalDateTime.now()), 1000, 1000, TimeUnit.MILLISECONDS);
     }
@@ -80,7 +82,7 @@ public class HttpServerInitializer extends ChannelInitializer<SocketChannel> {
                 pipeline.addLast(new WebSocketServerProtocolHandler(blade.webSocketPath(), null, true));
                 pipeline.addLast(WEB_SOCKET_HANDLER);
             }
-            pipeline.addLast(HTTP_SERVER_HANDLER);
+            pipeline.addLast(httpServerHandler);
         } catch (Exception e) {
             log.error("Add channel pipeline error", e);
         }
