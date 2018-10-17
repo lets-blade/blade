@@ -19,7 +19,7 @@ public interface ExceptionHandler {
     void handle(Exception e);
 
     static boolean isResetByPeer(Throwable e) {
-        if ("Connection reset by peer".equals(e.getMessage())) {
+        if (e.getMessage().contains("Connection reset by peer")) {
             return true;
         }
         return false;

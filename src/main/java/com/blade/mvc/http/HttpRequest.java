@@ -83,6 +83,9 @@ public class HttpRequest implements Request {
     private boolean isMultipart;
     private boolean isEnd;
     private boolean initCookie;
+    private boolean initQueryParam;
+
+    private HttpHeaders httpHeaders;
 
     private Map<String, String>       headers    = null;
     private Map<String, Object>       attributes = null;
@@ -158,6 +161,19 @@ public class HttpRequest implements Request {
 
     @Override
     public Map<String, List<String>> parameters() {
+        if (!initQueryParam) {
+            initQueryParam = true;
+            if (!url.contains("?")) {
+                return this.parameters;
+            }
+
+            var parameters =
+                    new QueryStringDecoder(url, CharsetUtil.UTF_8).parameters();
+
+            if (null != parameters) {
+                this.parameters.putAll(parameters);
+            }
+        }
         return this.parameters;
     }
 
@@ -216,9 +232,12 @@ public class HttpRequest implements Request {
 
     @Override
     public Map<String, Cookie> cookies() {
-        if (!initCookie && StringKit.isNotEmpty(cookieString)) {
+        if (!initCookie) {
             initCookie = true;
-            ServerCookieDecoder.LAX.decode(cookieString).forEach(this::parseCookie);
+            String cookie = header(HttpConst.COOKIE_STRING);
+            if (StringKit.isNotEmpty(cookie)) {
+                ServerCookieDecoder.LAX.decode(cookieString).forEach(this::parseCookie);
+            }
         }
         return this.cookies;
     }
@@ -236,6 +255,14 @@ public class HttpRequest implements Request {
 
     @Override
     public Map<String, String> headers() {
+        if (null == headers) {
+            headers = new HashMap<>(httpHeaders.size());
+            Iterator<Map.Entry<String, String>> entryIterator = httpHeaders.iteratorAsString();
+            while (entryIterator.hasNext()) {
+                Map.Entry<String, String> next = entryIterator.next();
+                headers.put(next.getKey(), next.getValue());
+            }
+        }
         return this.headers;
     }
 
@@ -339,8 +366,6 @@ public class HttpRequest implements Request {
         request.protocol = nettyRequest.protocolVersion().text();
         request.method = nettyRequest.method().name();
 
-        HttpPostRequestDecoder decoder = initRequest(request, nettyRequest);
-
         String cleanUri = request.uri;
         if (!"/".equals(request.contextPath())) {
             cleanUri = PathKit.cleanPath(cleanUri.replaceFirst(request.contextPath(), "/"));
@@ -354,55 +379,22 @@ public class HttpRequest implements Request {
             }
         }
 
-        HttpServerHandler.setLocalContext(new LocalContext(msg, request, decoder));
+        request.httpHeaders = nettyRequest.headers();
+
+        if ("GET".equals(request.method())) {
+            HttpServerHandler.setLocalContext(new LocalContext(msg, request, null));
+        } else {
+            try {
+                HttpPostRequestDecoder decoder = new HttpPostRequestDecoder(factory, nettyRequest);
+                request.isMultipart = decoder.isMultipart();
+                HttpServerHandler.setLocalContext(new LocalContext(msg, request, decoder));
+            } catch (Exception e) {
+                throw new HttpParseException("build decoder fail", e);
+            }
+        }
         return request;
     }
 
-    private static HttpPostRequestDecoder initRequest(
-            HttpRequest request,
-            io.netty.handler.codec.http.HttpRequest nettyRequest) {
-
-        // headers
-        var httpHeaders = nettyRequest.headers();
-        if (httpHeaders.isEmpty()) {
-            request.headers = new HashMap<>();
-        } else {
-            request.headers = new HashMap<>(httpHeaders.size());
-
-            Iterator<Map.Entry<String, String>> entryIterator = httpHeaders.iteratorAsString();
-            while (entryIterator.hasNext()) {
-                Map.Entry<String, String> next = entryIterator.next();
-                request.headers.put(next.getKey(), next.getValue());
-            }
-        }
-
-        // request query parameters
-        if (request.url().contains("?")) {
-            var parameters = new QueryStringDecoder(request.url(), CharsetUtil.UTF_8)
-                    .parameters();
-
-            if (null != parameters) {
-                request.parameters.putAll(parameters);
-            }
-        }
-
-        // cookies
-        request.cookieString = request.header(HttpConst.COOKIE_STRING);
-
-        if ("GET".equals(request.method())) {
-            return null;
-        }
-
-        try {
-            HttpPostRequestDecoder decoder =
-                    new HttpPostRequestDecoder(factory, nettyRequest);
-
-            request.isMultipart = decoder.isMultipart();
-            return decoder;
-        } catch (Exception e) {
-            throw new HttpParseException("build decoder fail", e);
-        }
-    }
 
     /**
      * Reading request by chunk and getting values from chunk
