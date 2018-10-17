@@ -217,6 +217,7 @@ public class HttpRequest implements Request {
     @Override
     public Map<String, Cookie> cookies() {
         if (!initCookie && StringKit.isNotEmpty(cookieString)) {
+            initCookie = true;
             ServerCookieDecoder.LAX.decode(cookieString).forEach(this::parseCookie);
         }
         return this.cookies;
@@ -376,12 +377,13 @@ public class HttpRequest implements Request {
         }
 
         // request query parameters
-        var parameters = new QueryStringDecoder(request.url(), CharsetUtil.UTF_8)
-                .parameters();
+        if (request.url().contains("?")) {
+            var parameters = new QueryStringDecoder(request.url(), CharsetUtil.UTF_8)
+                    .parameters();
 
-        if (null != parameters) {
-            request.parameters = new HashMap<>();
-            request.parameters.putAll(parameters);
+            if (null != parameters) {
+                request.parameters.putAll(parameters);
+            }
         }
 
         // cookies
