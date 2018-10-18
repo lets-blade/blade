@@ -7,19 +7,19 @@ import java.nio.charset.StandardCharsets;
 
 public class StringBody implements Body {
 
-    private final String content;
+    private final byte[] bytes;
 
     public StringBody(final String content) {
-        this.content = content;
+        this.bytes = content.getBytes(StandardCharsets.UTF_8);
     }
 
-    public static StringBody of(String content){
+    public static StringBody of(String content) {
         return new StringBody(content);
     }
 
     @Override
     public FullHttpResponse write(BodyWriter writer) {
-        return writer.onByteBuf(Unpooled.copiedBuffer(this.content.getBytes(StandardCharsets.UTF_8)));
+        return writer.onByteBuf(Unpooled.copiedBuffer(bytes));
     }
 
 }
