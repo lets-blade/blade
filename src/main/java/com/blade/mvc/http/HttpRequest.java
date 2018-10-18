@@ -16,11 +16,9 @@
 package com.blade.mvc.http;
 
 import com.blade.exception.HttpParseException;
-import com.blade.exception.InternalErrorException;
 import com.blade.kit.PathKit;
 import com.blade.kit.StringKit;
 import com.blade.mvc.Const;
-import com.blade.mvc.LocalContext;
 import com.blade.mvc.WebContext;
 import com.blade.mvc.handler.SessionHandler;
 import com.blade.mvc.http.session.SessionManager;
@@ -79,8 +77,6 @@ public class HttpRequest implements Request {
     private boolean keepAlive;
     private Session session;
 
-    private boolean isRequestPart;
-    private boolean isChunked;
     private boolean isMultipart;
     private boolean isEnd;
     private boolean initCookie;
@@ -91,7 +87,7 @@ public class HttpRequest implements Request {
     private HttpHeaders httpHeaders;
 
     private io.netty.handler.codec.http.HttpRequest nettyRequest;
-    private List<HttpContent> contents = new ArrayList<>();
+    private List<HttpContent>                       contents = new ArrayList<>();
 
     private Map<String, String>       headers    = null;
     private Map<String, Object>       attributes = null;
@@ -296,109 +292,62 @@ public class HttpRequest implements Request {
     }
 
     @Override
-    public boolean readChunk() {
-        LocalContext localContext = HttpServerHandler.getLocalContext();
-        if (null == localContext) {
-            throw new InternalErrorException("It is impossible to run here");
-        }
-
-        HttpObject msg = localContext.msg();
-        localContext.updateMsg(msg);
-
-        if (msg instanceof LastHttpContent) {
-            this.isEnd = true;
-
-            if (!localContext.request().isMultipart) {
-                this.body = ((HttpContent) msg).copy().content();
-            }
-        }
-
-        if (localContext.hasDecoder() && msg instanceof HttpContent) {
-            // New chunk is received
-            HttpContent chunk = (HttpContent) msg;
-            localContext.decoder().offer(chunk);
-            readHttpDataChunkByChunk(localContext.decoder());
-        }
-
-        return this.isEnd;
-    }
-
-    @Override
     public boolean chunkIsEnd() {
         return this.isEnd;
     }
 
     @Override
-    public boolean isPart() {
-        return isRequestPart;
+    public boolean isMultipart() {
+        return isMultipart;
     }
 
-    @Override
-    public boolean isChunked() {
-        return isChunked;
+    public void setNettyRequest(io.netty.handler.codec.http.HttpRequest nettyRequest) {
+        this.nettyRequest = nettyRequest;
     }
 
-    public static HttpRequest build(String remoteAddress, HttpObject msg) {
-        boolean isRequestPart = false;
-
-        io.netty.handler.codec.http.HttpRequest nettyRequest = null;
-        if (msg instanceof io.netty.handler.codec.http.HttpRequest) {
-            isRequestPart = true;
-            nettyRequest = (io.netty.handler.codec.http.HttpRequest) msg;
+    public void appendContent(HttpContent msg) {
+        this.contents.add(msg);
+        if (msg instanceof LastHttpContent) {
+            this.isEnd = true;
         }
+    }
 
-        LocalContext localContext = HttpServerHandler.getLocalContext();
-        if (null != localContext) {
-            HttpRequest request = localContext.request();
-            request.isRequestPart = isRequestPart;
+    public void init(String remoteAddress) {
+        this.remoteAddress = remoteAddress;
+        this.keepAlive = HttpUtil.isKeepAlive(nettyRequest);
+        this.url = nettyRequest.uri();
 
-            localContext.updateMsg(msg);
-            return request;
-        }
+        int pathEndPos = this.url().indexOf('?');
+        this.uri = pathEndPos < 0 ? this.url() : this.url().substring(0, pathEndPos);
+        this.protocol = nettyRequest.protocolVersion().text();
+        this.method = nettyRequest.method().name();
 
-        if (!isRequestPart) {
-            return null;
-        }
-
-        HttpRequest request = new HttpRequest();
-        request.isRequestPart = true;
-        request.keepAlive = HttpUtil.isKeepAlive(nettyRequest);
-        request.remoteAddress = remoteAddress;
-        request.url = nettyRequest.uri();
-        request.isChunked = HttpUtil.isTransferEncodingChunked(nettyRequest);
-
-        int pathEndPos = request.url().indexOf('?');
-        request.uri = pathEndPos < 0 ? request.url() : request.url().substring(0, pathEndPos);
-        request.protocol = nettyRequest.protocolVersion().text();
-        request.method = nettyRequest.method().name();
-
-        String cleanUri = request.uri;
-        if (!"/".equals(request.contextPath())) {
-            cleanUri = PathKit.cleanPath(cleanUri.replaceFirst(request.contextPath(), "/"));
-            request.uri = cleanUri;
+        String cleanUri = this.uri;
+        if (!"/".equals(this.contextPath())) {
+            cleanUri = PathKit.cleanPath(cleanUri.replaceFirst(this.contextPath(), "/"));
+            this.uri = cleanUri;
         }
 
         if (!HttpServerHandler.PERFORMANCE) {
             SessionManager sessionManager = WebContext.blade().sessionManager();
             if (null != sessionManager) {
-                request.session = SESSION_HANDLER.createSession(request);
+                this.session = SESSION_HANDLER.createSession(this);
             }
         }
 
-        request.httpHeaders = nettyRequest.headers();
+        this.httpHeaders = nettyRequest.headers();
 
-        if ("GET".equals(request.method())) {
-            HttpServerHandler.setLocalContext(new LocalContext(msg, request, null));
-        } else {
-            try {
-                HttpPostRequestDecoder decoder = new HttpPostRequestDecoder(factory, nettyRequest);
-                request.isMultipart = decoder.isMultipart();
-                HttpServerHandler.setLocalContext(new LocalContext(msg, request, decoder));
-            } catch (Exception e) {
-                throw new HttpParseException("build decoder fail", e);
-            }
+        if ("GET".equals(this.method())) {
+            return;
         }
-        return request;
+
+        try {
+            HttpPostRequestDecoder decoder = new HttpPostRequestDecoder(factory, nettyRequest);
+            this.isMultipart = decoder.isMultipart();
+            this.readHttpDataChunkByChunk(decoder);
+        } catch (Exception e) {
+            throw new HttpParseException("build decoder fail", e);
+        }
     }
 
     /**
@@ -507,51 +456,4 @@ public class HttpRequest implements Request {
         this.cookies.put(cookie.name(), cookie);
     }
 
-    public void setNettyRequest(io.netty.handler.codec.http.HttpRequest nettyRequest) {
-        this.nettyRequest = nettyRequest;
-    }
-
-    public void appendContent(HttpContent msg) {
-        this.contents.add(msg);
-        if(msg instanceof LastHttpContent){
-            this.isEnd = true;
-        }
-    }
-
-    public void init(String remoteAddress) {
-        this.remoteAddress = remoteAddress;
-        this.keepAlive = HttpUtil.isKeepAlive(nettyRequest);
-        this.url = nettyRequest.uri();
-        this.isChunked = HttpUtil.isTransferEncodingChunked(nettyRequest);
-
-        int pathEndPos = this.url().indexOf('?');
-        this.uri = pathEndPos < 0 ? this.url() : this.url().substring(0, pathEndPos);
-        this.protocol = nettyRequest.protocolVersion().text();
-        this.method = nettyRequest.method().name();
-
-        String cleanUri = this.uri;
-        if (!"/".equals(this.contextPath())) {
-            cleanUri = PathKit.cleanPath(cleanUri.replaceFirst(this.contextPath(), "/"));
-            this.uri = cleanUri;
-        }
-
-        if (!HttpServerHandler.PERFORMANCE) {
-            SessionManager sessionManager = WebContext.blade().sessionManager();
-            if (null != sessionManager) {
-                this.session = SESSION_HANDLER.createSession(this);
-            }
-        }
-
-        this.httpHeaders = nettyRequest.headers();
-
-        if (!"GET".equals(this.method())) {
-            try {
-                HttpPostRequestDecoder decoder = new HttpPostRequestDecoder(factory, nettyRequest);
-                this.isMultipart = decoder.isMultipart();
-            } catch (Exception e) {
-                throw new HttpParseException("build decoder fail", e);
-            }
-        }
-
-    }
 }

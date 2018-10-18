@@ -62,8 +62,6 @@ public class WebContext {
 
     private Route route;
 
-    private LocalContext localContext;
-
     private ChannelHandlerContext channelHandlerContext;
 
     public WebContext(Request request, Response response, ChannelHandlerContext channelHandlerContext) {
@@ -187,6 +185,10 @@ public class WebContext {
     }
 
     public ChannelHandlerContext getChannelHandlerContext() {
+        return channelHandlerContext;
+    }
+
+    public ChannelHandlerContext getHandlerContext() {
         return channelHandlerContext;
     }
 
