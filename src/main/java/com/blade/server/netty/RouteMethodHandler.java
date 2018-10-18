@@ -228,7 +228,8 @@ public class RouteMethodHandler implements RequestHandler {
 
     private void appendCookie(Response response, DefaultFullHttpResponse httpResponse) {
         for (io.netty.handler.codec.http.cookie.Cookie next : response.cookiesRaw()) {
-            httpResponse.headers().add(HttpConst.SET_COOKIE, io.netty.handler.codec.http.cookie.ServerCookieEncoder.LAX.encode(next));
+            httpResponse.headers().add(HttpConst.SET_COOKIE,
+                    io.netty.handler.codec.http.cookie.ServerCookieEncoder.LAX.encode(next));
         }
     }
 

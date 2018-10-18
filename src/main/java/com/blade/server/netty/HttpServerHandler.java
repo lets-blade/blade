@@ -28,6 +28,7 @@ import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.handler.codec.http.DefaultFullHttpResponse;
 import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.handler.codec.http.HttpResponseStatus;
@@ -60,7 +61,7 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<HttpRequest> 
 
     public static final FastThreadLocal<WebContext> WEB_CONTEXT_THREAD_LOCAL = new FastThreadLocal<>();
 
-    private final       boolean                     ALLOW_COST               =
+    private final boolean ALLOW_COST =
             WebContext.blade().environment()
                     .getBoolean(ENV_KEY_HTTP_REQUEST_COST, true);
 
@@ -72,7 +73,8 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<HttpRequest> 
     private final RouteMethodHandler routeHandler      = new RouteMethodHandler();
     private final Set<String>        notStaticUri      = new HashSet<>(32);
     private final RouteMatcher       routeMatcher      = WebContext.blade().routeMatcher();
-    private final ExecutorService logicPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() + 1);
+    private final NioEventLoopGroup  logicExecutor     = new NioEventLoopGroup(
+            Runtime.getRuntime().availableProcessors());
 
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx) {
@@ -82,15 +84,21 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<HttpRequest> 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, HttpRequest httpRequest) {
         CompletableFuture<HttpRequest> future = CompletableFuture.completedFuture(httpRequest);
+
         Executor executor = ctx.executor();
 
         // write response
         future.thenApplyAsync(req -> buildWebContext(future, ctx, req), executor)
                 .thenApplyAsync(this::dispatchRequest, executor)
-                .thenApplyAsync(this::executeLogic, logicPool)
+                .thenApplyAsync(this::executeLogic, logicExecutor)
                 .exceptionally(this::handleException)
                 .thenApplyAsync(this::buildResponse, executor)
-                .thenAcceptAsync(ctx::writeAndFlush, executor);
+                .thenAcceptAsync(msg -> writeResponse(ctx, future, msg), executor);
+    }
+
+    private void writeResponse(ChannelHandlerContext ctx, CompletableFuture<HttpRequest> future, FullHttpResponse msg) {
+        ctx.writeAndFlush(msg);
+        future.complete(null);
     }
 
     private WebContext handleException(Throwable e) {
