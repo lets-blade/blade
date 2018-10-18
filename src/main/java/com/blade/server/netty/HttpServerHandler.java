@@ -25,16 +25,12 @@ import com.blade.mvc.http.Request;
 import com.blade.mvc.http.Response;
 import com.blade.mvc.route.Route;
 import com.blade.mvc.route.RouteMatcher;
-import io.netty.channel.ChannelFutureListener;
-import io.netty.channel.ChannelHandler;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.SimpleChannelInboundHandler;
-import io.netty.handler.codec.http.DefaultFullHttpResponse;
-import io.netty.handler.codec.http.FullHttpResponse;
-import io.netty.handler.codec.http.HttpObject;
-import io.netty.handler.codec.http.HttpResponseStatus;
+import io.netty.buffer.Unpooled;
+import io.netty.channel.*;
+import io.netty.handler.codec.http.*;
 import io.netty.util.concurrent.FastThreadLocal;
 import lombok.extern.slf4j.Slf4j;
+import lombok.var;
 
 import java.util.HashSet;
 import java.util.Optional;
@@ -85,66 +81,82 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<HttpObject> {
         ctx.flush();
     }
 
+    private static FastThreadLocal<HttpRequest> requestFastThreadLocal = new FastThreadLocal<>();
+
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, HttpObject msg) {
-
-        String  remoteAddress = ctx.channel().remoteAddress().toString();
-        Request request       = HttpRequest.build(remoteAddress, msg);
-        if (null == request) {
-            return;
-        }
-        if (request.isPart()) {
-            this.executePart(ctx, request);
+        if (msg instanceof io.netty.handler.codec.http.HttpRequest) {
+            HttpRequest httpRequest = new HttpRequest();
+            httpRequest.setNettyRequest((io.netty.handler.codec.http.HttpRequest) msg);
+            requestFastThreadLocal.set(httpRequest);
             return;
         }
 
-        // content has not been read yet
-        if (!request.chunkIsEnd() &&
-                !request.readChunk()) {
+        HttpRequest httpRequest = requestFastThreadLocal.get();
+        if (null == httpRequest) {
             return;
         }
 
-        try {
-            LogicRunner asyncRunner = new LogicRunner(ROUTE_METHOD_HANDLER, WebContext.get());
-
-            CompletableFuture<Void> future = CompletableFuture.completedFuture(asyncRunner)
-                    .thenApplyAsync(LogicRunner::handle, LOGIC_EXECUTOR)
-                    .thenAcceptAsync(LogicRunner::finishWrite, LOGIC_EXECUTOR);
-
-            asyncRunner.setFuture(future);
-        } finally {
-            this.cleanContext();
+        if (msg instanceof HttpContent) {
+            httpRequest.appendContent((HttpContent) msg);
         }
-    }
 
-    private void executePart(ChannelHandlerContext ctx, Request request) {
-        Response response = new HttpResponse();
+        if (httpRequest.chunkIsEnd()) {
+            String remoteAddress = ctx.channel().remoteAddress().toString();
 
-        // init web context
-        WebContext webContext = WebContext
-                .create(request, response, ctx, LOCAL_CONTEXT_THREAD_LOCAL.get());
+            CompletableFuture<HttpRequest> future = CompletableFuture.completedFuture(httpRequest);
 
-        String uri    = request.uri();
-        String method = request.method();
+            // write response
+            future.thenApplyAsync(req -> {
+                req.init(remoteAddress);
+                return WebContext.create(req, new HttpResponse(), ctx);
+            }, LOGIC_EXECUTOR).thenApplyAsync(webContext -> {
+                // dispatch
+                String uri    = webContext.getRequest().uri();
+                String method = webContext.getRequest().method();
 
-        try {
-            if (isStaticFile(method, uri)) {
-                STATIC_FILE_HANDLER.handle(webContext);
-                this.cleanContext();
-            } else {
-                Route route = ROUTE_MATCHER.lookupRoute(method, uri);
-                if (null != route) {
-                    webContext.setRoute(route);
-                } else {
-                    throw new NotFoundException(uri);
+                try {
+                    if (isStaticFile(method, uri)) {
+                        STATIC_FILE_HANDLER.handle(webContext);
+                        this.cleanContext();
+                    } else {
+                        Route route = ROUTE_MATCHER.lookupRoute(method, uri);
+                        if (null != route) {
+                            webContext.setRoute(route);
+                        } else {
+                            throw new NotFoundException(uri);
+                        }
+                    }
+                } catch (Exception e) {
+                    ROUTE_METHOD_HANDLER.exceptionCaught(uri, method, e);
+                    ROUTE_METHOD_HANDLER.finishWrite(webContext);
+                    this.cleanContext();
                 }
-            }
-        } catch (Exception e) {
-            ROUTE_METHOD_HANDLER.exceptionCaught(uri, method, e);
-            ROUTE_METHOD_HANDLER.finishWrite(webContext);
-            this.cleanContext();
+                return webContext;
+            }, LOGIC_EXECUTOR).thenApplyAsync(webContext -> {
+                // logic
+                try {
+                    ROUTE_METHOD_HANDLER.handle(webContext);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return webContext;
+            }, LOGIC_EXECUTOR).thenApplyAsync(webContext -> {
+                // return response
+                return ROUTE_METHOD_HANDLER.handleResponse(
+                        webContext.getRequest(), webContext.getResponse(),
+                        webContext.getChannelHandlerContext()
+                );
+            }, LOGIC_EXECUTOR).exceptionally(e -> {
+                e.printStackTrace();
+                var httpResponse = new DefaultFullHttpResponse(HTTP_1_1,
+                        HttpResponseStatus.valueOf(200), Unpooled.buffer());
+
+                return httpResponse;
+            }).thenAcceptAsync(ctx::writeAndFlush, LOGIC_EXECUTOR);
         }
     }
+
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {

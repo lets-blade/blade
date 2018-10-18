@@ -27,7 +27,6 @@ public class HttpResponse implements Response {
     private Set<Cookie>         cookies = new HashSet<>();
 
     private int    statusCode  = 200;
-    private String contentType = HttpConst.CONTENT_TYPE_HTML;
     private Body   body;
 
     @Override
@@ -43,18 +42,17 @@ public class HttpResponse implements Response {
 
     @Override
     public Response contentType(@NonNull String contentType) {
-        this.contentType = contentType;
+        this.headers.put("Content-Type", contentType);
         return this;
     }
 
     @Override
     public String contentType() {
-        return null == this.contentType ? null : String.valueOf(this.contentType);
+        return this.headers.get("Content-Type");
     }
 
     @Override
     public Map<String, String> headers() {
-        this.headers.put(HttpConst.CONTENT_TYPE_STRING, this.contentType);
         return this.headers;
     }
 
@@ -179,7 +177,6 @@ public class HttpResponse implements Response {
     }
 
     public HttpResponse(Response response) {
-        this.contentType = response.contentType();
         this.statusCode = response.statusCode();
         if (null != response.headers()) {
             response.headers().forEach(this.headers::put);
@@ -190,6 +187,7 @@ public class HttpResponse implements Response {
     }
 
     public HttpResponse() {
+
     }
 
     @Override

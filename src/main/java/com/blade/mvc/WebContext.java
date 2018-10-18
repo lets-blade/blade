@@ -101,12 +101,11 @@ public class WebContext {
         return null != webContext ? webContext.response : null;
     }
 
-    public static WebContext create(Request request, Response response, ChannelHandlerContext ctx, LocalContext localContext) {
+    public static WebContext create(Request request, Response response, ChannelHandlerContext ctx) {
         WebContext webContext = new WebContext();
         webContext.request = request;
         webContext.response = response;
         webContext.channelHandlerContext = ctx;
-        webContext.localContext = localContext;
         WEB_CONTEXT_THREAD_LOCAL.set(webContext);
         return webContext;
     }

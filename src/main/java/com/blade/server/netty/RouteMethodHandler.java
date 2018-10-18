@@ -66,6 +66,7 @@ public class RouteMethodHandler implements RequestHandler {
 
     @Override
     public void handle(WebContext webContext) throws Exception {
+        WebContext.set(webContext);
         RouteContext context = new RouteContext(webContext.getRequest(), webContext.getResponse());
 
         // if execution returns false then execution is interrupted
@@ -128,51 +129,47 @@ public class RouteMethodHandler implements RequestHandler {
         this.handleResponse(request, response, webContext.getChannelHandlerContext());
     }
 
-    public void handleResponse(Request request, Response response, ChannelHandlerContext context) {
-        response.body().write(new BodyWriter() {
+    public FullHttpResponse handleResponse(Request request, Response response, ChannelHandlerContext context) {
+        FullHttpResponse fullHttpResponse = response.body().write(new BodyWriter() {
             @Override
-            public void onByteBuf(ByteBuf byteBuf) {
-                handleFullResponse(
-                        createResponseByByteBuf(response, byteBuf),
-                        context,
-                        request.keepAlive());
+            public FullHttpResponse onByteBuf(ByteBuf byteBuf) {
+                return createResponseByByteBuf(response, byteBuf);
             }
 
             @Override
-            public void onStream(Closeable closeable) {
-                if (closeable instanceof InputStream) {
-                    handleStreamResponse(response, (InputStream) closeable, context, request.keepAlive());
-                }
+            public FullHttpResponse onStream(Closeable closeable) {
+//                if (closeable instanceof InputStream) {
+//                    return handleStreamResponse(response, (InputStream) closeable, context, request.keepAlive());
+//                }
+                return null;
             }
 
             @Override
-            public void onView(ViewBody body) {
+            public FullHttpResponse onView(ViewBody body) {
                 try {
                     var sw = new StringWriter();
                     WebContext.blade().templateEngine().render(body.modelAndView(), sw);
-                    response.contentType(Const.CONTENT_TYPE_HTML);
-
-                    handleFullResponse(
-                            createTextResponse(response, sw.toString()),
-                            context,
-                            request.keepAlive());
+                    WebContext.response().contentType(Const.CONTENT_TYPE_HTML);
+                    return this.onByteBuf(Unpooled.copiedBuffer(sw.toString().getBytes(StandardCharsets.UTF_8)));
                 } catch (Exception e) {
                     log.error("Render view error", e);
                 }
+                return null;
             }
 
             @Override
-            public void onRawBody(RawBody body) {
-                if (null != body.httpResponse()) {
-                    handleFullResponse(body.httpResponse(), context, request.keepAlive());
-                }
-                if (null != body.defaultHttpResponse()) {
-                    handleFullResponse(body.defaultHttpResponse(), context, request.keepAlive());
-                }
+            public FullHttpResponse onRawBody(RawBody body) {
+//                if (null != body.httpResponse()) {
+//                    handleFullResponse(body.httpResponse(), context, request.keepAlive());
+//                }
+//                if (null != body.defaultHttpResponse()) {
+//                    handleFullResponse(body.defaultHttpResponse(), context, request.keepAlive());
+//                }
+                return null;
             }
 
             @Override
-            public void onByteBuf(Object byteBuf) {
+            public FullHttpResponse onByteBuf(Object byteBuf) {
                 var httpResponse = new DefaultHttpResponse(HTTP_1_1, HttpResponseStatus.valueOf(response.statusCode()));
 
                 Iterator<Map.Entry<String, String>> iterator = response.headers().entrySet().iterator();
@@ -191,29 +188,19 @@ public class RouteMethodHandler implements RequestHandler {
                 if (!request.keepAlive()) {
                     lastContentFuture.addListener(ChannelFutureListener.CLOSE);
                 }
+                return null;
             }
 
         });
-    }
-
-    private Void handleFullResponse(HttpResponse response, ChannelHandlerContext context, boolean keepAlive) {
-        if (context.channel().isActive()) {
-            if (!keepAlive) {
-                context.write(response).addListener(ChannelFutureListener.CLOSE);
-            } else {
-                response.headers().set(HttpConst.CONNECTION, KEEP_ALIVE);
-                context.write(response);
-            }
-            context.flush();
+        if(request.keepAlive()){
+            fullHttpResponse.headers().set(HttpConst.CONNECTION, KEEP_ALIVE);
         }
-        return null;
+        return fullHttpResponse;
     }
 
-    public Map<String, String> getDefaultHeader() {
-        var map = new HashMap<String, String>(2);
-        map.put("Date", HttpServerInitializer.date);
-        map.put("X-Powered-By", HttpConst.VERSION);
-        return map;
+    public void setDefaultHeaders(HttpHeaders headers) {
+        headers.set(HttpConst.DATE, HttpServerInitializer.date);
+        headers.set(HttpConst.X_POWER_BY, HttpConst.HEADER_VERSION);
     }
 
     public Void handleStreamResponse(Response response, InputStream body,
@@ -222,6 +209,7 @@ public class RouteMethodHandler implements RequestHandler {
         var httpResponse = new DefaultHttpResponse(HTTP_1_1, HttpResponseStatus.valueOf(response.statusCode()));
 
         httpResponse.headers().set(TRANSFER_ENCODING, HttpHeaderValues.CHUNKED);
+        setDefaultHeaders(httpResponse.headers());
 
         Iterator<Map.Entry<String, String>> iterator = response.headers().entrySet().iterator();
         while (iterator.hasNext()) {
@@ -242,34 +230,11 @@ public class RouteMethodHandler implements RequestHandler {
     public FullHttpResponse createResponseByByteBuf(Response response, ByteBuf byteBuf) {
 
         Map<String, String> headers = response.headers();
-        headers.putAll(getDefaultHeader());
 
         var httpResponse = new DefaultFullHttpResponse(HTTP_1_1, HttpResponseStatus.valueOf(response.statusCode()), byteBuf);
 
         httpResponse.headers().set(CONTENT_LENGTH, httpResponse.content().readableBytes());
-
-        if (response.cookiesRaw().size() > 0) {
-            this.appendCookie(response, httpResponse);
-        }
-
-        Iterator<Map.Entry<String, String>> iterator = headers.entrySet().iterator();
-        while (iterator.hasNext()) {
-            Map.Entry<String, String> next = iterator.next();
-            httpResponse.headers().set(next.getKey(), next.getValue());
-        }
-        return httpResponse;
-    }
-
-    public FullHttpResponse createTextResponse(Response response, String body) {
-        Map<String, String> headers = response.headers();
-        headers.putAll(getDefaultHeader());
-
-        ByteBuf bodyBuf = Unpooled.wrappedBuffer(body.getBytes(StandardCharsets.UTF_8));
-
-        var httpResponse = new DefaultFullHttpResponse(HTTP_1_1, HttpResponseStatus.valueOf(response.statusCode()),
-                null == bodyBuf ? Unpooled.buffer(0) : bodyBuf);
-
-        httpResponse.headers().set(CONTENT_LENGTH, httpResponse.content().readableBytes());
+        setDefaultHeaders(httpResponse.headers());
 
         if (response.cookiesRaw().size() > 0) {
             this.appendCookie(response, httpResponse);

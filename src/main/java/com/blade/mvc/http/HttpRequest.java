@@ -90,6 +90,9 @@ public class HttpRequest implements Request {
 
     private HttpHeaders httpHeaders;
 
+    private io.netty.handler.codec.http.HttpRequest nettyRequest;
+    private List<HttpContent> contents = new ArrayList<>();
+
     private Map<String, String>       headers    = null;
     private Map<String, Object>       attributes = null;
     private Map<String, String>       pathParams = null;
@@ -408,7 +411,6 @@ public class HttpRequest implements Request {
                 if (data != null) {
                     // check if current HttpData is a FileUpload and previously set as partial
                     if (partialContent == data) {
-//                        log.info(" 100% (FinalSize: " + partialContent.length() + ")");
                         partialContent = null;
                     }
                     try {
@@ -444,23 +446,6 @@ public class HttpRequest implements Request {
         }
     }
 
-    /**
-     * Reading request by chunk and getting values from chunk
-     */
-//    private void readHttpDataChunkByChunk(HttpPostRequestDecoder decoder) {
-//        try {
-//            while (decoder.hasNext()) {
-//                InterfaceHttpData data = decoder.next();
-//                if (data != null) {
-//                    parseData(data);
-//                }
-//            }
-//        } catch (HttpPostRequestDecoder.EndOfDataDecoderException e) {
-//            // ignore
-//        } catch (Exception e) {
-//            throw new HttpParseException(e);
-//        }
-//    }
     private void parseAttribute(Attribute attribute) throws IOException {
         var name  = attribute.getName();
         var value = attribute.getValue();
@@ -522,4 +507,51 @@ public class HttpRequest implements Request {
         this.cookies.put(cookie.name(), cookie);
     }
 
+    public void setNettyRequest(io.netty.handler.codec.http.HttpRequest nettyRequest) {
+        this.nettyRequest = nettyRequest;
+    }
+
+    public void appendContent(HttpContent msg) {
+        this.contents.add(msg);
+        if(msg instanceof LastHttpContent){
+            this.isEnd = true;
+        }
+    }
+
+    public void init(String remoteAddress) {
+        this.remoteAddress = remoteAddress;
+        this.keepAlive = HttpUtil.isKeepAlive(nettyRequest);
+        this.url = nettyRequest.uri();
+        this.isChunked = HttpUtil.isTransferEncodingChunked(nettyRequest);
+
+        int pathEndPos = this.url().indexOf('?');
+        this.uri = pathEndPos < 0 ? this.url() : this.url().substring(0, pathEndPos);
+        this.protocol = nettyRequest.protocolVersion().text();
+        this.method = nettyRequest.method().name();
+
+        String cleanUri = this.uri;
+        if (!"/".equals(this.contextPath())) {
+            cleanUri = PathKit.cleanPath(cleanUri.replaceFirst(this.contextPath(), "/"));
+            this.uri = cleanUri;
+        }
+
+        if (!HttpServerHandler.PERFORMANCE) {
+            SessionManager sessionManager = WebContext.blade().sessionManager();
+            if (null != sessionManager) {
+                this.session = SESSION_HANDLER.createSession(this);
+            }
+        }
+
+        this.httpHeaders = nettyRequest.headers();
+
+        if (!"GET".equals(this.method())) {
+            try {
+                HttpPostRequestDecoder decoder = new HttpPostRequestDecoder(factory, nettyRequest);
+                this.isMultipart = decoder.isMultipart();
+            } catch (Exception e) {
+                throw new HttpParseException("build decoder fail", e);
+            }
+        }
+
+    }
 }

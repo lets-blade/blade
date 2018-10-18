@@ -10,6 +10,9 @@ import io.netty.util.AsciiString;
  * @date 2017/10/16
  */
 public interface HttpConst {
+
+    String VERSION = "blade-" + Const.VERSION;
+
     String IF_MODIFIED_SINCE   = "If-Modified-Since";
     String USER_AGENT          = "User-Agent";
     String CONTENT_TYPE_STRING = "Content-Type";
@@ -22,21 +25,21 @@ public interface HttpConst {
     char   CHAR_SLASH          = '/';
     char   CHAR_POINT          = '.';
 
-    CharSequence CONNECTION       = AsciiString.cached("Connection");
-    CharSequence CONTENT_LENGTH   = AsciiString.cached("Content-Length");
-    CharSequence CONTENT_TYPE     = AsciiString.cached("Content-Type");
-    CharSequence CONTENT_ENCODING = AsciiString.cached("Content-Encoding");
-    CharSequence DATE             = AsciiString.cached("Date");
-    CharSequence LOCATION         = AsciiString.cached("Location");
-    CharSequence EXPIRES          = AsciiString.cached("Expires");
-    CharSequence CACHE_CONTROL    = AsciiString.cached("Cache-Control");
-    CharSequence LAST_MODIFIED    = AsciiString.cached("Last-Modified");
-    CharSequence SERVER           = AsciiString.cached("Server");
-    CharSequence SET_COOKIE       = AsciiString.cached("Set-Cookie");
-    CharSequence KEEP_ALIVE       = AsciiString.cached("keep-alive");
+    AsciiString CONNECTION       = AsciiString.cached("Connection");
+    AsciiString CONTENT_LENGTH   = AsciiString.cached("Content-Length");
+    AsciiString CONTENT_TYPE     = AsciiString.cached("Content-Type");
+    AsciiString CONTENT_ENCODING = AsciiString.cached("Content-Encoding");
+    AsciiString DATE             = AsciiString.cached("Date");
+    AsciiString LOCATION         = AsciiString.cached("Location");
+    AsciiString EXPIRES          = AsciiString.cached("Expires");
+    AsciiString CACHE_CONTROL    = AsciiString.cached("Cache-Control");
+    AsciiString LAST_MODIFIED    = AsciiString.cached("Last-Modified");
+    AsciiString SERVER           = AsciiString.cached("Server");
+    AsciiString SET_COOKIE       = AsciiString.cached("Set-Cookie");
+    AsciiString KEEP_ALIVE       = AsciiString.cached("keep-alive");
+    AsciiString X_POWER_BY       = AsciiString.cached("X-Powered-By");
+    AsciiString HEADER_VERSION   = AsciiString.cached(VERSION);
 
     String CONTENT_TYPE_HTML = "text/html; charset=UTF-8";
-
-    String VERSION    = "blade-" + Const.VERSION;
 
 }
