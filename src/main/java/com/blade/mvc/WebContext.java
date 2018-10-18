@@ -26,6 +26,7 @@ import lombok.NoArgsConstructor;
 import lombok.var;
 
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 import static com.blade.server.netty.HttpServerHandler.WEB_CONTEXT_THREAD_LOCAL;
 
@@ -64,6 +65,8 @@ public class WebContext {
 
     private ChannelHandlerContext channelHandlerContext;
 
+    private CompletableFuture future;
+
     public WebContext(Request request, Response response, ChannelHandlerContext channelHandlerContext) {
         this.request = request;
         this.response = response;
@@ -99,11 +102,12 @@ public class WebContext {
         return null != webContext ? webContext.response : null;
     }
 
-    public static WebContext create(Request request, Response response, ChannelHandlerContext ctx) {
+    public static WebContext create(Request request, Response response, ChannelHandlerContext ctx, CompletableFuture future) {
         WebContext webContext = new WebContext();
         webContext.request = request;
         webContext.response = response;
         webContext.channelHandlerContext = ctx;
+        webContext.future = future;
         WEB_CONTEXT_THREAD_LOCAL.set(webContext);
         return webContext;
     }
@@ -198,6 +202,10 @@ public class WebContext {
 
     public void setRoute(Route route) {
         this.route = route;
+    }
+
+    public CompletableFuture getFuture() {
+        return future;
     }
 
 }

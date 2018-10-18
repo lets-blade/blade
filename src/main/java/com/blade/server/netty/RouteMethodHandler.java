@@ -112,24 +112,19 @@ public class RouteMethodHandler implements RequestHandler {
         }
     }
 
-    public void finishWrite(WebContext webContext) {
-        Request  request  = webContext.getRequest();
-        Response response = webContext.getResponse();
-        Session  session  = request.session();
-
+    public FullHttpResponse handleResponse(Request request, Response response, ChannelHandlerContext context) {
+        Session session = request.session();
         if (null != session) {
             String sessionKey = WebContext.blade().environment().get(ENV_KEY_SESSION_KEY, HttpConst.DEFAULT_SESSION_KEY);
-            Cookie cookie     = new Cookie();
+
+            Cookie cookie = new Cookie();
             cookie.name(sessionKey);
             cookie.value(session.id());
             cookie.httpOnly(true);
             cookie.secure(request.isSecure());
             response.cookie(cookie);
         }
-        this.handleResponse(request, response, webContext.getChannelHandlerContext());
-    }
 
-    public FullHttpResponse handleResponse(Request request, Response response, ChannelHandlerContext context) {
         FullHttpResponse fullHttpResponse = response.body().write(new BodyWriter() {
             @Override
             public FullHttpResponse onByteBuf(ByteBuf byteBuf) {
@@ -138,9 +133,7 @@ public class RouteMethodHandler implements RequestHandler {
 
             @Override
             public FullHttpResponse onStream(Closeable closeable) {
-//                if (closeable instanceof InputStream) {
-//                    return handleStreamResponse(response, (InputStream) closeable, context, request.keepAlive());
-//                }
+                // TODO
                 return null;
             }
 
@@ -159,22 +152,14 @@ public class RouteMethodHandler implements RequestHandler {
 
             @Override
             public FullHttpResponse onRawBody(RawBody body) {
-//                if (null != body.httpResponse()) {
-//                    handleFullResponse(body.httpResponse(), context, request.keepAlive());
-//                }
-//                if (null != body.defaultHttpResponse()) {
-//                    handleFullResponse(body.defaultHttpResponse(), context, request.keepAlive());
-//                }
-                return null;
+                return body.httpResponse();
             }
 
             @Override
             public FullHttpResponse onByteBuf(Object byteBuf) {
                 var httpResponse = new DefaultHttpResponse(HTTP_1_1, HttpResponseStatus.valueOf(response.statusCode()));
 
-                Iterator<Map.Entry<String, String>> iterator = response.headers().entrySet().iterator();
-                while (iterator.hasNext()) {
-                    Map.Entry<String, String> next = iterator.next();
+                for (Map.Entry<String, String> next : response.headers().entrySet()) {
                     httpResponse.headers().set(next.getKey(), next.getValue());
                 }
 
@@ -192,13 +177,13 @@ public class RouteMethodHandler implements RequestHandler {
             }
 
         });
-        if(request.keepAlive()){
+        if (request.keepAlive()) {
             fullHttpResponse.headers().set(HttpConst.CONNECTION, KEEP_ALIVE);
         }
         return fullHttpResponse;
     }
 
-    public void setDefaultHeaders(HttpHeaders headers) {
+    private void setDefaultHeaders(HttpHeaders headers) {
         headers.set(HttpConst.DATE, HttpServerInitializer.date);
         headers.set(HttpConst.X_POWER_BY, HttpConst.HEADER_VERSION);
     }
@@ -211,9 +196,7 @@ public class RouteMethodHandler implements RequestHandler {
         httpResponse.headers().set(TRANSFER_ENCODING, HttpHeaderValues.CHUNKED);
         setDefaultHeaders(httpResponse.headers());
 
-        Iterator<Map.Entry<String, String>> iterator = response.headers().entrySet().iterator();
-        while (iterator.hasNext()) {
-            Map.Entry<String, String> next = iterator.next();
+        for (Map.Entry<String, String> next : response.headers().entrySet()) {
             httpResponse.headers().set(next.getKey(), next.getValue());
         }
 
@@ -227,7 +210,7 @@ public class RouteMethodHandler implements RequestHandler {
         return null;
     }
 
-    public FullHttpResponse createResponseByByteBuf(Response response, ByteBuf byteBuf) {
+    private FullHttpResponse createResponseByByteBuf(Response response, ByteBuf byteBuf) {
 
         Map<String, String> headers = response.headers();
 
@@ -240,18 +223,14 @@ public class RouteMethodHandler implements RequestHandler {
             this.appendCookie(response, httpResponse);
         }
 
-        Iterator<Map.Entry<String, String>> iterator = headers.entrySet().iterator();
-        while (iterator.hasNext()) {
-            Map.Entry<String, String> next = iterator.next();
+        for (Map.Entry<String, String> next : headers.entrySet()) {
             httpResponse.headers().set(next.getKey(), next.getValue());
         }
         return httpResponse;
     }
 
     private void appendCookie(Response response, DefaultFullHttpResponse httpResponse) {
-        Iterator<io.netty.handler.codec.http.cookie.Cookie> iterator = response.cookiesRaw().iterator();
-        while (iterator.hasNext()) {
-            io.netty.handler.codec.http.cookie.Cookie next = iterator.next();
+        for (io.netty.handler.codec.http.cookie.Cookie next : response.cookiesRaw()) {
             httpResponse.headers().add(HttpConst.SET_COOKIE, io.netty.handler.codec.http.cookie.ServerCookieEncoder.LAX.encode(next));
         }
     }

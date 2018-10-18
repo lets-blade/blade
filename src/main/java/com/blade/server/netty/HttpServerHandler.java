@@ -16,13 +16,14 @@
 package com.blade.server.netty;
 
 import com.blade.exception.NotFoundException;
+import com.blade.kit.BladeCache;
 import com.blade.mvc.WebContext;
 import com.blade.mvc.handler.ExceptionHandler;
 import com.blade.mvc.http.HttpRequest;
 import com.blade.mvc.http.HttpResponse;
+import com.blade.mvc.http.Request;
 import com.blade.mvc.route.Route;
 import com.blade.mvc.route.RouteMatcher;
-import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
@@ -30,8 +31,8 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.*;
 import io.netty.util.concurrent.FastThreadLocal;
 import lombok.extern.slf4j.Slf4j;
-import lombok.var;
 
+import java.time.Instant;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -39,8 +40,9 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import static com.blade.mvc.Const.ENV_KEY_HTTP_REQUEST_COST;
-import static com.blade.mvc.Const.ENV_KEY_PERFORMANCE;
+import static com.blade.kit.BladeKit.log200;
+import static com.blade.kit.BladeKit.log200AndCost;
+import static com.blade.mvc.Const.*;
 import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
 /**
@@ -53,21 +55,26 @@ import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 @ChannelHandler.Sharable
 public class HttpServerHandler extends SimpleChannelInboundHandler<HttpObject> {
 
-    public static final  FastThreadLocal<WebContext>  WEB_CONTEXT_THREAD_LOCAL = new FastThreadLocal<>();
-    private static final FastThreadLocal<HttpRequest> requestFastThreadLocal   = new FastThreadLocal<>();
-    private static final StaticFileHandler            STATIC_FILE_HANDLER      = new StaticFileHandler(WebContext.blade());
-    private static final RouteMethodHandler           ROUTE_METHOD_HANDLER     = new RouteMethodHandler();
-    private static final Set<String>                  NOT_STATIC_URI           = new HashSet<>(32);
-    private static final RouteMatcher                 ROUTE_MATCHER            = WebContext.blade().routeMatcher();
+    public static final FastThreadLocal<WebContext> WEB_CONTEXT_THREAD_LOCAL = new FastThreadLocal<>();
 
-    static final boolean ALLOW_COST =
-            WebContext.blade().environment().getBoolean(ENV_KEY_HTTP_REQUEST_COST, true);
+    private static final FastThreadLocal<HttpRequest> requestFastThreadLocal = new FastThreadLocal<>();
 
-    public static final boolean PERFORMANCE =
-            WebContext.blade().environment().getBoolean(ENV_KEY_PERFORMANCE, false);
+    private final boolean ALLOW_COST =
+            WebContext.blade().environment()
+                    .getBoolean(ENV_KEY_HTTP_REQUEST_COST, true);
 
-    private static final ExecutorService LOGIC_EXECUTOR =
-            Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2);
+    public final boolean PERFORMANCE =
+            WebContext.blade().environment()
+                    .getBoolean(ENV_KEY_PERFORMANCE, false);
+
+    private final ExecutorService LOGIC_EXECUTOR =
+            Executors.newFixedThreadPool(
+                    Runtime.getRuntime().availableProcessors() * 2);
+
+    private final StaticFileHandler  staticFileHandler = new StaticFileHandler(WebContext.blade());
+    private final RouteMethodHandler routeHandler      = new RouteMethodHandler();
+    private final Set<String>        notStaticUri      = new HashSet<>(32);
+    private final RouteMatcher       routeMatcher      = WebContext.blade().routeMatcher();
 
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx) {
@@ -93,30 +100,30 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<HttpObject> {
         }
 
         if (httpRequest.chunkIsEnd()) {
-            String remoteAddress = ctx.channel().remoteAddress().toString();
 
             CompletableFuture<HttpRequest> future = CompletableFuture.completedFuture(httpRequest);
 
             // write response
-            future.thenApplyAsync(req -> buildWebContext(ctx, remoteAddress, req), LOGIC_EXECUTOR)
+            future.thenApplyAsync(req -> buildWebContext(future, ctx, req), LOGIC_EXECUTOR)
                     .thenApplyAsync(this::dispatchRequest, LOGIC_EXECUTOR)
                     .thenApplyAsync(this::executeLogic, LOGIC_EXECUTOR)
-                    .thenApplyAsync(this::buildResponse, LOGIC_EXECUTOR)
                     .exceptionally(this::handleException)
+                    .thenApplyAsync(this::buildResponse, LOGIC_EXECUTOR)
                     .thenAcceptAsync(ctx::writeAndFlush, LOGIC_EXECUTOR);
         }
     }
 
-    private FullHttpResponse handleException(Throwable e) {
-        e.printStackTrace();
-        var httpResponse = new DefaultFullHttpResponse(HTTP_1_1,
-                HttpResponseStatus.valueOf(200), Unpooled.buffer());
-
-        return httpResponse;
+    private WebContext handleException(Throwable e) {
+        Request request = WebContext.request();
+        String  method  = request.method();
+        String  uri     = request.uri();
+        routeHandler.exceptionCaught(uri, method, (Exception) e.getCause());
+        return WebContext.get();
     }
 
     private FullHttpResponse buildResponse(WebContext webContext) {
-        return ROUTE_METHOD_HANDLER.handleResponse(
+        WebContext.set(webContext);
+        return routeHandler.handleResponse(
                 webContext.getRequest(), webContext.getResponse(),
                 webContext.getChannelHandlerContext()
         );
@@ -124,9 +131,23 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<HttpObject> {
 
     private WebContext executeLogic(WebContext webContext) {
         try {
-            ROUTE_METHOD_HANDLER.handle(webContext);
+            Instant start = Instant.now();
+            routeHandler.handle(webContext);
+            if (PERFORMANCE) {
+                return webContext;
+            }
+            Request request = webContext.getRequest();
+            String  method  = request.method();
+            String  uri     = request.uri();
+
+            if (ALLOW_COST) {
+                long cost = log200AndCost(log, start, BladeCache.getPaddingMethod(method), uri);
+                request.attribute(REQUEST_COST_TIME, cost);
+            } else {
+                log200(log, BladeCache.getPaddingMethod(method), uri);
+            }
         } catch (Exception e) {
-            e.printStackTrace();
+            webContext.getFuture().completeExceptionally(e);
         }
         return webContext;
     }
@@ -137,9 +158,9 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<HttpObject> {
 
         try {
             if (isStaticFile(method, uri)) {
-                STATIC_FILE_HANDLER.handle(webContext);
+                staticFileHandler.handle(webContext);
             } else {
-                Route route = ROUTE_MATCHER.lookupRoute(method, uri);
+                Route route = routeMatcher.lookupRoute(method, uri);
                 if (null != route) {
                     webContext.setRoute(route);
                 } else {
@@ -147,17 +168,19 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<HttpObject> {
                 }
             }
         } catch (Exception e) {
-            ROUTE_METHOD_HANDLER.exceptionCaught(uri, method, e);
-            ROUTE_METHOD_HANDLER.finishWrite(webContext);
+            webContext.getFuture().completeExceptionally(e);
         }
         return webContext;
     }
 
-    private WebContext buildWebContext(ChannelHandlerContext ctx, String remoteAddress, HttpRequest req) {
-        req.init(remoteAddress);
-        return WebContext.create(req, new HttpResponse(), ctx);
-    }
+    private WebContext buildWebContext(CompletableFuture future,
+                                       ChannelHandlerContext ctx,
+                                       HttpRequest req) {
 
+        String remoteAddress = ctx.channel().remoteAddress().toString();
+        req.init(remoteAddress);
+        return WebContext.create(req, new HttpResponse(), ctx, future);
+    }
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
@@ -169,12 +192,12 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<HttpObject> {
     }
 
     private boolean isStaticFile(String method, String uri) {
-        if ("POST".equals(method) || NOT_STATIC_URI.contains(uri)) {
+        if ("POST".equals(method) || notStaticUri.contains(uri)) {
             return false;
         }
         Optional<String> result = WebContext.blade().getStatics().stream().filter(s -> s.equals(uri) || uri.startsWith(s)).findFirst();
         if (!result.isPresent()) {
-            NOT_STATIC_URI.add(uri);
+            notStaticUri.add(uri);
             return false;
         }
         return true;
