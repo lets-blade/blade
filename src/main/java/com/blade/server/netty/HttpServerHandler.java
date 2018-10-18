@@ -74,8 +74,7 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<HttpObject> {
             Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2);
 
     @Override
-    public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
-        super.channelUnregistered(ctx);
+    public void channelInactive(ChannelHandlerContext ctx) {
         if (LOCAL_CONTEXT_THREAD_LOCAL.get() != null && LOCAL_CONTEXT_THREAD_LOCAL.get().hasDecoder()) {
             LOCAL_CONTEXT_THREAD_LOCAL.get().decoder().cleanFiles();
         }

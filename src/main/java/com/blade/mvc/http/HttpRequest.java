@@ -64,8 +64,10 @@ public class HttpRequest implements Request {
     private static final SessionHandler SESSION_HANDLER = new SessionHandler(WebContext.blade());
 
     static {
-        DiskAttribute.deleteOnExitTemporaryFile = true; // should delete file on
-        DiskAttribute.baseDirectory = null;             // system temp directory
+        DiskFileUpload.deleteOnExitTemporaryFile = true; // should delete file
+        DiskFileUpload.baseDirectory = null;             // system temp directory
+        DiskAttribute.deleteOnExitTemporaryFile = true;  // should delete file on
+        DiskAttribute.baseDirectory = null;              // system temp directory
     }
 
     private ByteBuf body = EMPTY_BUF;
@@ -83,6 +85,8 @@ public class HttpRequest implements Request {
     private boolean isEnd;
     private boolean initCookie;
     private boolean initQueryParam;
+
+    private HttpData partialContent;
 
     private HttpHeaders httpHeaders;
 
@@ -394,44 +398,69 @@ public class HttpRequest implements Request {
         return request;
     }
 
-
     /**
-     * Reading request by chunk and getting values from chunk
+     * Example of reading request by chunk and getting values from chunk to chunk
      */
     private void readHttpDataChunkByChunk(HttpPostRequestDecoder decoder) {
         try {
             while (decoder.hasNext()) {
                 InterfaceHttpData data = decoder.next();
                 if (data != null) {
-                    parseData(data);
+                    // check if current HttpData is a FileUpload and previously set as partial
+                    if (partialContent == data) {
+//                        log.info(" 100% (FinalSize: " + partialContent.length() + ")");
+                        partialContent = null;
+                    }
+                    try {
+                        // new value
+                        writeHttpData(data);
+                    } finally {
+                        data.release();
+                    }
                 }
             }
-        } catch (HttpPostRequestDecoder.EndOfDataDecoderException e) {
-            // ignore
-        } catch (Exception e) {
-            throw new HttpParseException(e);
+            // Check partial decoding for a FileUpload
+            InterfaceHttpData data = decoder.currentPartialHttpData();
+            if (data != null) {
+                if (partialContent == null) {
+                    partialContent = (HttpData) data;
+                }
+            }
+        } catch (HttpPostRequestDecoder.EndOfDataDecoderException e1) {
+            // end
         }
     }
 
-    private void parseData(InterfaceHttpData data) {
+    private void writeHttpData(InterfaceHttpData data) {
         try {
-            switch (data.getHttpDataType()) {
-                case Attribute:
-                    this.parseAttribute((Attribute) data);
-                    break;
-                case FileUpload:
-                    this.parseFileUpload((FileUpload) data);
-                    break;
-                default:
-                    break;
+            InterfaceHttpData.HttpDataType dataType = data.getHttpDataType();
+            if (dataType == InterfaceHttpData.HttpDataType.Attribute) {
+                parseAttribute((Attribute) data);
+            } else if (dataType == InterfaceHttpData.HttpDataType.FileUpload) {
+                parseFileUpload((FileUpload) data);
             }
         } catch (IOException e) {
             log.error("Parse request parameter error", e);
-        } finally {
-            data.release();
         }
     }
 
+    /**
+     * Reading request by chunk and getting values from chunk
+     */
+//    private void readHttpDataChunkByChunk(HttpPostRequestDecoder decoder) {
+//        try {
+//            while (decoder.hasNext()) {
+//                InterfaceHttpData data = decoder.next();
+//                if (data != null) {
+//                    parseData(data);
+//                }
+//            }
+//        } catch (HttpPostRequestDecoder.EndOfDataDecoderException e) {
+//            // ignore
+//        } catch (Exception e) {
+//            throw new HttpParseException(e);
+//        }
+//    }
     private void parseAttribute(Attribute attribute) throws IOException {
         var name  = attribute.getName();
         var value = attribute.getValue();

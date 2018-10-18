@@ -8,14 +8,12 @@ import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.http.HttpContentCompressor;
-import io.netty.handler.codec.http.HttpRequestDecoder;
-import io.netty.handler.codec.http.HttpResponseEncoder;
+import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.codec.http.HttpServerExpectContinueHandler;
 import io.netty.handler.codec.http.cors.CorsConfigBuilder;
 import io.netty.handler.codec.http.cors.CorsHandler;
 import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
 import io.netty.handler.ssl.SslContext;
-import io.netty.handler.stream.ChunkedWriteHandler;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
@@ -64,15 +62,12 @@ public class HttpServerInitializer extends ChannelInitializer<SocketChannel> {
                 pipeline.addLast(sslCtx.newHandler(ch.alloc()));
             }
 
-            pipeline.addLast(new HttpRequestDecoder());
-            pipeline.addLast(new HttpResponseEncoder());
+            pipeline.addLast(new HttpServerCodec());
+            pipeline.addLast(new HttpServerExpectContinueHandler());
 
             if (useGZIP) {
                 pipeline.addLast(new HttpContentCompressor());
             }
-
-            pipeline.addLast(new ChunkedWriteHandler());
-            pipeline.addLast(new HttpServerExpectContinueHandler());
 
             if (enableCors) {
                 pipeline.addLast(new CorsHandler(CorsConfigBuilder.forAnyOrigin().allowNullOrigin().allowCredentials().build()));
