@@ -57,7 +57,7 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<HttpObject> {
 
     public static final FastThreadLocal<WebContext> WEB_CONTEXT_THREAD_LOCAL = new FastThreadLocal<>();
 
-    private static final FastThreadLocal<HttpRequest> requestFastThreadLocal = new FastThreadLocal<>();
+    private static final FastThreadLocal<HttpRequest> REQUEST_FAST_THREAD_LOCAL = new FastThreadLocal<>();
 
     private final boolean ALLOW_COST =
             WebContext.blade().environment()
@@ -77,14 +77,6 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<HttpObject> {
     private final RouteMatcher       routeMatcher      = WebContext.blade().routeMatcher();
 
     @Override
-    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        HttpRequest httpRequest = requestFastThreadLocal.get();
-        if (null != httpRequest && null != httpRequest.getDecoder()) {
-            httpRequest.getDecoder().cleanFiles();
-        }
-    }
-
-    @Override
     public void channelReadComplete(ChannelHandlerContext ctx) {
         ctx.flush();
     }
@@ -94,11 +86,11 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<HttpObject> {
         if (msg instanceof io.netty.handler.codec.http.HttpRequest) {
             HttpRequest httpRequest = new HttpRequest();
             httpRequest.setNettyRequest((io.netty.handler.codec.http.HttpRequest) msg);
-            requestFastThreadLocal.set(httpRequest);
+            REQUEST_FAST_THREAD_LOCAL.set(httpRequest);
             return;
         }
 
-        HttpRequest httpRequest = requestFastThreadLocal.get();
+        HttpRequest httpRequest = REQUEST_FAST_THREAD_LOCAL.get();
         if (null == httpRequest) {
             return;
         }
