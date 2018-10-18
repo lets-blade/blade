@@ -88,6 +88,7 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<HttpObject> {
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, HttpObject msg) {
+
         String  remoteAddress = ctx.channel().remoteAddress().toString();
         Request request       = HttpRequest.build(remoteAddress, msg);
         if (null == request) {

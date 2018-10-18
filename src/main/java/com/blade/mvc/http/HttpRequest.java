@@ -74,7 +74,6 @@ public class HttpRequest implements Request {
     private String  url;
     private String  protocol;
     private String  method;
-    private String  cookieString;
     private boolean keepAlive;
     private Session session;
 
@@ -236,7 +235,7 @@ public class HttpRequest implements Request {
             initCookie = true;
             String cookie = header(HttpConst.COOKIE_STRING);
             if (StringKit.isNotEmpty(cookie)) {
-                ServerCookieDecoder.LAX.decode(cookieString).forEach(this::parseCookie);
+                ServerCookieDecoder.LAX.decode(cookie).forEach(this::parseCookie);
             }
         }
         return this.cookies;
