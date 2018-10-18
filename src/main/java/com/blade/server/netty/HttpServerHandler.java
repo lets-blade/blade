@@ -73,8 +73,6 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<HttpRequest> 
     private final RouteMethodHandler routeHandler      = new RouteMethodHandler();
     private final Set<String>        notStaticUri      = new HashSet<>(32);
     private final RouteMatcher       routeMatcher      = WebContext.blade().routeMatcher();
-    private final NioEventLoopGroup  logicExecutor     = new NioEventLoopGroup(
-            Runtime.getRuntime().availableProcessors());
 
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx) {
@@ -90,10 +88,10 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<HttpRequest> 
         // write response
         future.thenApplyAsync(req -> buildWebContext(future, ctx, req), executor)
                 .thenApplyAsync(this::dispatchRequest, executor)
-                .thenApplyAsync(this::executeLogic, logicExecutor)
+                .thenApplyAsync(this::executeLogic, executor)
                 .exceptionally(this::handleException)
                 .thenApplyAsync(this::buildResponse, executor)
-                .thenAcceptAsync(msg -> writeResponse(ctx, future, msg), executor);
+                .thenAcceptAsync(msg -> writeResponse(ctx, future, msg), ctx.channel().eventLoop());
     }
 
     private void writeResponse(ChannelHandlerContext ctx, CompletableFuture<HttpRequest> future, FullHttpResponse msg) {

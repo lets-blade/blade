@@ -308,7 +308,7 @@ public class HttpRequest implements Request {
     }
 
     public void appendContent(HttpContent msg) {
-        this.contents.add(msg.retain());
+        this.contents.add(msg);
         if (msg instanceof LastHttpContent) {
             this.isEnd = true;
         }
@@ -348,7 +348,7 @@ public class HttpRequest implements Request {
             this.isMultipart = decoder.isMultipart();
             for (HttpContent content : this.contents) {
                 if (!isMultipart && content instanceof LastHttpContent) {
-                    this.body = content.copy().content();
+                    this.body = content.duplicate().content();
                 }
                 decoder.offer(content);
                 this.readHttpDataChunkByChunk(decoder);

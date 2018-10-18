@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.time.Instant;
 import java.util.Collection;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Session cleaner
@@ -24,20 +23,11 @@ public class SessionCleaner implements Runnable {
 
     @Override
     public void run() {
-        while (true) {
-            try {
-                Collection<Session> sessions = sessionManager.sessionMap().values();
-                sessions.parallelStream().filter(this::expires).forEach(sessionManager::destorySession);
-            } catch (Exception e) {
-                log.error("Session clean error", e);
-            } finally {
-                try {
-                    TimeUnit.MILLISECONDS.sleep(500);
-                } catch (InterruptedException e) {
-                    log.error("Session cleaner interrupted", e);
-                }
-            }
-
+        try {
+            Collection<Session> sessions = sessionManager.sessionMap().values();
+            sessions.parallelStream().filter(this::expires).forEach(sessionManager::destorySession);
+        } catch (Exception e) {
+            log.error("Session clean error", e);
         }
     }
 
