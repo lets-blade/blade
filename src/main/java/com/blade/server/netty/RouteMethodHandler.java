@@ -221,7 +221,7 @@ public class RouteMethodHandler implements RequestHandler {
         }
 
         for (Map.Entry<String, String> next : headers.entrySet()) {
-            httpResponse.headers().set(next.getKey(), next.getValue());
+            httpResponse.headers().set(HttpConst.getAsciiString(next.getKey()), next.getValue());
         }
         return httpResponse;
     }

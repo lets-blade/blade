@@ -44,6 +44,7 @@ public interface Const {
     List<String> DEFAULT_STATICS            = new ArrayList<>(
             Arrays.asList("/favicon.ico", "/robots.txt", "/static", "/upload", "/webjars/"));
 
+    @Deprecated
     String PROP_NAME0 = "classpath:app.properties";
     String PROP_NAME  = "classpath:application.properties";
 
@@ -76,13 +77,11 @@ public interface Const {
     String ENE_KEY_SSL_PRIVATE_KEY_PASS      = "server.ssl.private-key-pass";
     String ENC_KEY_NETTY_ACCEPT_THREAD_COUNT = "server.netty.accept-thread-count";
     String ENV_KEY_NETTY_IO_THREAD_COUNT     = "server.netty.io-thread-count";
-    String ENV_KEY_NETTY_SO_BACKLOG          = "server.netty.so-backlog";
 
     String ENV_KEY_BOOT_CONF        = "boot_conf";
     String ENV_KEY_AUTO_REFRESH_DIR = "app.auto.refresh.dir";
 
     // netty default config
-    int DEFAULT_SO_BACKLOG          = 1024;
     int DEFAULT_ACCEPT_THREAD_COUNT = 1;
     int DEFAULT_IO_THREAD_COUNT     = 0;
 

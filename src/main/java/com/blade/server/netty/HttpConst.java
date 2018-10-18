@@ -3,6 +3,9 @@ package com.blade.server.netty;
 import com.blade.mvc.Const;
 import io.netty.util.AsciiString;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Http headers const
  *
@@ -19,7 +22,6 @@ public interface HttpConst {
     String ACCEPT_ENCODING     = "Accept-Encoding";
     String COOKIE_STRING       = "Cookie";
     String METHOD_GET          = "GET";
-    String METHOD_POST         = "POST";
     String DEFAULT_SESSION_KEY = "SESSION";
     String SLASH               = "/";
     char   CHAR_SLASH          = '/';
@@ -40,6 +42,10 @@ public interface HttpConst {
     AsciiString X_POWER_BY       = AsciiString.cached("X-Powered-By");
     AsciiString HEADER_VERSION   = AsciiString.cached(VERSION);
 
-    String CONTENT_TYPE_HTML = "text/html; charset=UTF-8";
+    Map<String, AsciiString> CACHE = new HashMap<>(16);
+
+    static AsciiString getAsciiString(String name) {
+        return CACHE.computeIfAbsent(name, AsciiString::cached);
+    }
 
 }

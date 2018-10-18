@@ -40,6 +40,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import static com.blade.kit.BladeKit.log200;
 import static com.blade.kit.BladeKit.log200AndCost;
@@ -70,6 +72,7 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<HttpRequest> 
     private final RouteMethodHandler routeHandler      = new RouteMethodHandler();
     private final Set<String>        notStaticUri      = new HashSet<>(32);
     private final RouteMatcher       routeMatcher      = WebContext.blade().routeMatcher();
+    private final ExecutorService logicPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() + 1);
 
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx) {
@@ -84,7 +87,7 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<HttpRequest> 
         // write response
         future.thenApplyAsync(req -> buildWebContext(future, ctx, req), executor)
                 .thenApplyAsync(this::dispatchRequest, executor)
-                .thenApplyAsync(this::executeLogic, executor)
+                .thenApplyAsync(this::executeLogic, logicPool)
                 .exceptionally(this::handleException)
                 .thenApplyAsync(this::buildResponse, executor)
                 .thenAcceptAsync(ctx::writeAndFlush, executor);
