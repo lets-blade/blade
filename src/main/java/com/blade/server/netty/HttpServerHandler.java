@@ -28,7 +28,9 @@ import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
-import io.netty.handler.codec.http.*;
+import io.netty.handler.codec.http.DefaultFullHttpResponse;
+import io.netty.handler.codec.http.FullHttpResponse;
+import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.util.concurrent.FastThreadLocal;
 import lombok.extern.slf4j.Slf4j;
 
@@ -37,8 +39,7 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.Executor;
 
 import static com.blade.kit.BladeKit.log200;
 import static com.blade.kit.BladeKit.log200AndCost;
@@ -53,23 +54,17 @@ import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
  */
 @Slf4j
 @ChannelHandler.Sharable
-public class HttpServerHandler extends SimpleChannelInboundHandler<HttpObject> {
+public class HttpServerHandler extends SimpleChannelInboundHandler<HttpRequest> {
 
     public static final FastThreadLocal<WebContext> WEB_CONTEXT_THREAD_LOCAL = new FastThreadLocal<>();
 
-    private static final FastThreadLocal<HttpRequest> REQUEST_FAST_THREAD_LOCAL = new FastThreadLocal<>();
-
-    private final boolean ALLOW_COST =
+    private final       boolean                     ALLOW_COST               =
             WebContext.blade().environment()
                     .getBoolean(ENV_KEY_HTTP_REQUEST_COST, true);
 
     public static final boolean PERFORMANCE =
             WebContext.blade().environment()
                     .getBoolean(ENV_KEY_PERFORMANCE, false);
-
-    private final ExecutorService LOGIC_EXECUTOR =
-            Executors.newFixedThreadPool(
-                    Runtime.getRuntime().availableProcessors() * 2);
 
     private final StaticFileHandler  staticFileHandler = new StaticFileHandler(WebContext.blade());
     private final RouteMethodHandler routeHandler      = new RouteMethodHandler();
@@ -82,35 +77,17 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<HttpObject> {
     }
 
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, HttpObject msg) {
-        if (msg instanceof io.netty.handler.codec.http.HttpRequest) {
-            HttpRequest httpRequest = new HttpRequest();
-            httpRequest.setNettyRequest((io.netty.handler.codec.http.HttpRequest) msg);
-            REQUEST_FAST_THREAD_LOCAL.set(httpRequest);
-            return;
-        }
+    protected void channelRead0(ChannelHandlerContext ctx, HttpRequest httpRequest) {
+        CompletableFuture<HttpRequest> future = CompletableFuture.completedFuture(httpRequest);
+        Executor executor = ctx.executor();
 
-        HttpRequest httpRequest = REQUEST_FAST_THREAD_LOCAL.get();
-        if (null == httpRequest) {
-            return;
-        }
-
-        if (msg instanceof HttpContent) {
-            httpRequest.appendContent((HttpContent) msg);
-        }
-
-        if (httpRequest.chunkIsEnd()) {
-
-            CompletableFuture<HttpRequest> future = CompletableFuture.completedFuture(httpRequest);
-
-            // write response
-            future.thenApplyAsync(req -> buildWebContext(future, ctx, req), LOGIC_EXECUTOR)
-                    .thenApplyAsync(this::dispatchRequest, LOGIC_EXECUTOR)
-                    .thenApplyAsync(this::executeLogic, LOGIC_EXECUTOR)
-                    .exceptionally(this::handleException)
-                    .thenApplyAsync(this::buildResponse, LOGIC_EXECUTOR)
-                    .thenAcceptAsync(ctx::writeAndFlush, LOGIC_EXECUTOR);
-        }
+        // write response
+        future.thenApplyAsync(req -> buildWebContext(future, ctx, req), executor)
+                .thenApplyAsync(this::dispatchRequest, executor)
+                .thenApplyAsync(this::executeLogic, executor)
+                .exceptionally(this::handleException)
+                .thenApplyAsync(this::buildResponse, executor)
+                .thenAcceptAsync(ctx::writeAndFlush, executor);
     }
 
     private WebContext handleException(Throwable e) {

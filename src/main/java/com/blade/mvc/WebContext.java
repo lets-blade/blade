@@ -20,7 +20,7 @@ import com.blade.Environment;
 import com.blade.mvc.http.Request;
 import com.blade.mvc.http.Response;
 import com.blade.mvc.route.Route;
-import com.blade.server.netty.HttpServerHandler;
+import com.blade.server.netty.MergeRequestHandler;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.NoArgsConstructor;
 import lombok.var;
@@ -113,11 +113,11 @@ public class WebContext {
     }
 
     public static void set(WebContext webContext) {
-        HttpServerHandler.WEB_CONTEXT_THREAD_LOCAL.set(webContext);
+        WEB_CONTEXT_THREAD_LOCAL.set(webContext);
     }
 
     public static void remove() {
-        HttpServerHandler.WEB_CONTEXT_THREAD_LOCAL.remove();
+        WEB_CONTEXT_THREAD_LOCAL.remove();
     }
 
     public Request getRequest() {

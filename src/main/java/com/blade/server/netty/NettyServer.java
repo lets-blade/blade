@@ -52,7 +52,6 @@ import com.blade.task.cron.CronThreadPoolExecutor;
 import com.blade.watcher.EnvironmentWatcher;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
-import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.epoll.EpollChannelOption;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -195,13 +194,7 @@ public class NettyServer implements Server {
             sslCtx = SslContextBuilder.forServer(new File(certFilePath), new File(privateKeyPath), privateKeyPassword).build();
         }
 
-        // Configure the server.
-        int backlog = environment.getInt(ENV_KEY_NETTY_SO_BACKLOG, DEFAULT_SO_BACKLOG);
-
         var bootstrap = new ServerBootstrap();
-        bootstrap.option(ChannelOption.SO_BACKLOG, backlog);
-        bootstrap.option(ChannelOption.SO_REUSEADDR, true);
-        bootstrap.childOption(ChannelOption.SO_REUSEADDR, true);
 
         int acceptThreadCount = environment.getInt(ENC_KEY_NETTY_ACCEPT_THREAD_COUNT, DEFAULT_ACCEPT_THREAD_COUNT);
         int ioThreadCount     = environment.getInt(ENV_KEY_NETTY_IO_THREAD_COUNT, DEFAULT_IO_THREAD_COUNT);
@@ -256,7 +249,7 @@ public class NettyServer implements Server {
         }
 
         var jobCount = new AtomicInteger();
-        for (var taskStruct: taskStruts) {
+        for (var taskStruct : taskStruts) {
             addTask(executorService, jobCount, taskStruct);
         }
     }

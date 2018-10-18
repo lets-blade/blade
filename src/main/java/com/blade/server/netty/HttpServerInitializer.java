@@ -77,6 +77,7 @@ public class HttpServerInitializer extends ChannelInitializer<SocketChannel> {
                 pipeline.addLast(new WebSocketServerProtocolHandler(blade.webSocketPath(), null, true));
                 pipeline.addLast(WEB_SOCKET_HANDLER);
             }
+            pipeline.addLast(new MergeRequestHandler());
             pipeline.addLast(httpServerHandler);
         } catch (Exception e) {
             log.error("Add channel pipeline error", e);
