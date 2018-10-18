@@ -63,7 +63,7 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<HttpObject> {
             WebContext.blade().environment()
                     .getBoolean(ENV_KEY_HTTP_REQUEST_COST, true);
 
-    public final boolean PERFORMANCE =
+    public static final boolean PERFORMANCE =
             WebContext.blade().environment()
                     .getBoolean(ENV_KEY_PERFORMANCE, false);
 
@@ -75,6 +75,14 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<HttpObject> {
     private final RouteMethodHandler routeHandler      = new RouteMethodHandler();
     private final Set<String>        notStaticUri      = new HashSet<>(32);
     private final RouteMatcher       routeMatcher      = WebContext.blade().routeMatcher();
+
+    @Override
+    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+        HttpRequest httpRequest = requestFastThreadLocal.get();
+        if (null != httpRequest && null != httpRequest.getDecoder()) {
+            httpRequest.getDecoder().cleanFiles();
+        }
+    }
 
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx) {

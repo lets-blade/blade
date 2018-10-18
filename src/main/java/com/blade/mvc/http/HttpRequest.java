@@ -87,7 +87,9 @@ public class HttpRequest implements Request {
     private HttpHeaders httpHeaders;
 
     private io.netty.handler.codec.http.HttpRequest nettyRequest;
-    private List<HttpContent>                       contents = new ArrayList<>();
+    private HttpPostRequestDecoder                  decoder;
+
+    private Queue<HttpContent> contents = new LinkedList<>();
 
     private Map<String, String>       headers    = null;
     private Map<String, Object>       attributes = null;
@@ -306,7 +308,7 @@ public class HttpRequest implements Request {
     }
 
     public void appendContent(HttpContent msg) {
-        this.contents.add(msg);
+        this.contents.add(msg.retain());
         if (msg instanceof LastHttpContent) {
             this.isEnd = true;
         }
@@ -344,7 +346,14 @@ public class HttpRequest implements Request {
         try {
             HttpPostRequestDecoder decoder = new HttpPostRequestDecoder(factory, nettyRequest);
             this.isMultipart = decoder.isMultipart();
-            this.readHttpDataChunkByChunk(decoder);
+            for (HttpContent content : this.contents) {
+                if (!isMultipart && content instanceof LastHttpContent) {
+                    this.body = content.copy().content();
+                }
+                decoder.offer(content);
+                this.readHttpDataChunkByChunk(decoder);
+                content.release();
+            }
         } catch (Exception e) {
             throw new HttpParseException("build decoder fail", e);
         }
@@ -456,4 +465,7 @@ public class HttpRequest implements Request {
         this.cookies.put(cookie.name(), cookie);
     }
 
+    public HttpPostRequestDecoder getDecoder() {
+        return decoder;
+    }
 }
