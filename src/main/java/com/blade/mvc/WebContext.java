@@ -20,14 +20,14 @@ import com.blade.Environment;
 import com.blade.mvc.http.Request;
 import com.blade.mvc.http.Response;
 import com.blade.mvc.route.Route;
-import com.blade.server.netty.MergeRequestHandler;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.NoArgsConstructor;
 import lombok.var;
 
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 
+import static com.blade.mvc.Const.ENV_KEY_SESSION_KEY;
+import static com.blade.server.netty.HttpConst.DEFAULT_SESSION_KEY;
 import static com.blade.server.netty.HttpServerHandler.WEB_CONTEXT_THREAD_LOCAL;
 
 /**
@@ -52,6 +52,11 @@ public class WebContext {
     private static String contextPath;
 
     /**
+     * Session Key, default is: SESSION
+     */
+    private static String sessionKey;
+
+    /**
      * Http Request instance of current thread context
      */
     private Request request;
@@ -65,59 +70,12 @@ public class WebContext {
 
     private ChannelHandlerContext channelHandlerContext;
 
-    private CompletableFuture future;
+    public WebContext(Request request, Response response,
+                      ChannelHandlerContext channelHandlerContext) {
 
-    public WebContext(Request request, Response response, ChannelHandlerContext channelHandlerContext) {
         this.request = request;
         this.response = response;
         this.channelHandlerContext = channelHandlerContext;
-    }
-
-    /**
-     * Get current thread context WebContext instance
-     *
-     * @return WebContext instance
-     */
-    public static WebContext get() {
-        return WEB_CONTEXT_THREAD_LOCAL.get();
-    }
-
-    /**
-     * Get current thread context Request instance
-     *
-     * @return Request instance
-     */
-    public static Request request() {
-        var webContext = get();
-        return null != webContext ? webContext.request : null;
-    }
-
-    /**
-     * Get current thread context Response instance
-     *
-     * @return Response instance
-     */
-    public static Response response() {
-        var webContext = get();
-        return null != webContext ? webContext.response : null;
-    }
-
-    public static WebContext create(Request request, Response response, ChannelHandlerContext ctx, CompletableFuture future) {
-        WebContext webContext = new WebContext();
-        webContext.request = request;
-        webContext.response = response;
-        webContext.channelHandlerContext = ctx;
-        webContext.future = future;
-        WEB_CONTEXT_THREAD_LOCAL.set(webContext);
-        return webContext;
-    }
-
-    public static void set(WebContext webContext) {
-        WEB_CONTEXT_THREAD_LOCAL.set(webContext);
-    }
-
-    public static void remove() {
-        WEB_CONTEXT_THREAD_LOCAL.remove();
     }
 
     public Request getRequest() {
@@ -128,43 +86,12 @@ public class WebContext {
         return response;
     }
 
-    /**
-     * Initializes the project when it starts
-     *
-     * @param blade       Blade instance
-     * @param contextPath context path
-     */
-    public static void init(Blade blade, String contextPath) {
-        WebContext.blade = blade;
-        WebContext.contextPath = contextPath;
-    }
-
-
-    /**
-     * Get blade instance
-     *
-     * @return return Blade
-     */
-    public static Blade blade() {
-        return blade;
-    }
-
-    /**
-     * Get context path
-     *
-     * @return return context path string, e.g: /
-     */
-    public static String contextPath() {
-        return contextPath;
-    }
-
-    public static void clean() {
-        WEB_CONTEXT_THREAD_LOCAL.remove();
-        blade = null;
-    }
-
     public Environment environment() {
         return blade.environment();
+    }
+
+    public static String sessionKey() {
+        return sessionKey;
     }
 
     /**
@@ -204,8 +131,85 @@ public class WebContext {
         this.route = route;
     }
 
-    public CompletableFuture getFuture() {
-        return future;
+    /**
+     * Initializes the project when it starts
+     *
+     * @param blade       Blade instance
+     * @param contextPath context path
+     */
+    public static void init(Blade blade, String contextPath) {
+        WebContext.blade = blade;
+        WebContext.contextPath = contextPath;
+        WebContext.sessionKey = blade.environment().get(ENV_KEY_SESSION_KEY, DEFAULT_SESSION_KEY);
+    }
+
+    /**
+     * Get current thread context WebContext instance
+     *
+     * @return WebContext instance
+     */
+    public static WebContext get() {
+        return WEB_CONTEXT_THREAD_LOCAL.get();
+    }
+
+    /**
+     * Get current thread context Request instance
+     *
+     * @return Request instance
+     */
+    public static Request request() {
+        var webContext = get();
+        return null != webContext ? webContext.request : null;
+    }
+
+    /**
+     * Get current thread context Response instance
+     *
+     * @return Response instance
+     */
+    public static Response response() {
+        var webContext = get();
+        return null != webContext ? webContext.response : null;
+    }
+
+    public static WebContext create(Request request, Response response, ChannelHandlerContext ctx) {
+        WebContext webContext = new WebContext();
+        webContext.request = request;
+        webContext.response = response;
+        webContext.channelHandlerContext = ctx;
+        WEB_CONTEXT_THREAD_LOCAL.set(webContext);
+        return webContext;
+    }
+
+    public static void set(WebContext webContext) {
+        WEB_CONTEXT_THREAD_LOCAL.set(webContext);
+    }
+
+    public static void remove() {
+        WEB_CONTEXT_THREAD_LOCAL.remove();
+    }
+
+    /**
+     * Get blade instance
+     *
+     * @return return Blade
+     */
+    public static Blade blade() {
+        return blade;
+    }
+
+    /**
+     * Get context path
+     *
+     * @return return context path string, e.g: /
+     */
+    public static String contextPath() {
+        return contextPath;
+    }
+
+    public static void clean() {
+        WEB_CONTEXT_THREAD_LOCAL.remove();
+        blade = null;
     }
 
 }

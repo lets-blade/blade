@@ -315,7 +315,7 @@ public class HttpRequest implements Request {
     }
 
     public void init(String remoteAddress) {
-        this.remoteAddress = remoteAddress;
+        this.remoteAddress = remoteAddress.substring(1);
         this.keepAlive = HttpUtil.isKeepAlive(nettyRequest);
         this.url = nettyRequest.uri();
 
@@ -330,14 +330,14 @@ public class HttpRequest implements Request {
             this.uri = cleanUri;
         }
 
+        this.httpHeaders = nettyRequest.headers();
+
         if (!HttpServerHandler.PERFORMANCE) {
             SessionManager sessionManager = WebContext.blade().sessionManager();
             if (null != sessionManager) {
                 this.session = SESSION_HANDLER.createSession(this);
             }
         }
-
-        this.httpHeaders = nettyRequest.headers();
 
         if ("GET".equals(this.method())) {
             return;

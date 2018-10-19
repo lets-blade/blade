@@ -41,7 +41,6 @@ import java.util.Map;
 
 import static com.blade.kit.BladeKit.log404;
 import static com.blade.kit.BladeKit.log500;
-import static com.blade.mvc.Const.ENV_KEY_SESSION_KEY;
 import static com.blade.server.netty.HttpConst.CONTENT_LENGTH;
 import static com.blade.server.netty.HttpConst.KEEP_ALIVE;
 import static io.netty.handler.codec.http.HttpHeaderNames.TRANSFER_ENCODING;
@@ -63,7 +62,6 @@ public class RouteMethodHandler implements RequestHandler {
 
     @Override
     public void handle(WebContext webContext) throws Exception {
-        WebContext.set(webContext);
         RouteContext context = new RouteContext(webContext.getRequest(), webContext.getResponse());
 
         // if execution returns false then execution is interrupted
@@ -105,17 +103,15 @@ public class RouteMethodHandler implements RequestHandler {
         if (null != WebContext.blade().exceptionHandler()) {
             WebContext.blade().exceptionHandler().handle(e);
         } else {
-            log.error("Request Exception", e);
+            log.error("", e);
         }
     }
 
     public FullHttpResponse handleResponse(Request request, Response response, ChannelHandlerContext context) {
         Session session = request.session();
         if (null != session) {
-            String sessionKey = WebContext.blade().environment().get(ENV_KEY_SESSION_KEY, HttpConst.DEFAULT_SESSION_KEY);
-
             Cookie cookie = new Cookie();
-            cookie.name(sessionKey);
+            cookie.name(WebContext.sessionKey());
             cookie.value(session.id());
             cookie.httpOnly(true);
             cookie.secure(request.isSecure());
@@ -272,7 +268,11 @@ public class RouteMethodHandler implements RequestHandler {
             int len = actionMethod.getParameterTypes().length;
 
             MethodAccess methodAccess = BladeCache.getMethodAccess(target.getClass());
-            Object       returnParam  = methodAccess.invoke(target, actionMethod.getName(), len > 0 ? context.routeParameters() : null);
+
+            Object returnParam = methodAccess.invoke(
+                    target, actionMethod.getName(), len > 0 ?
+                            context.routeParameters() : null);
+
             if (null == returnParam) {
                 return;
             }
@@ -282,11 +282,15 @@ public class RouteMethodHandler implements RequestHandler {
                 return;
             }
             if (returnType == String.class) {
-                context.body(new ViewBody(new ModelAndView(returnParam.toString())));
+                context.body(
+                        ViewBody.of(new ModelAndView(returnParam.toString()))
+                );
                 return;
             }
             if (returnType == ModelAndView.class) {
-                context.body(new ViewBody((ModelAndView) returnParam));
+                context.body(
+                        ViewBody.of((ModelAndView) returnParam)
+                );
             }
         }
     }
@@ -319,7 +323,9 @@ public class RouteMethodHandler implements RequestHandler {
                 returnParam = methodAccess.invoke(target, hookMethod.getName(), context);
             } else if (len == 2) {
                 MethodAccess methodAccess = BladeCache.getMethodAccess(target.getClass());
-                returnParam = methodAccess.invoke(target, hookMethod.getName(), context.request(), context.response());
+
+                returnParam = methodAccess.invoke(target, hookMethod.getName(),
+                        context.request(), context.response());
             } else {
                 throw new InternalErrorException("Bad web hook structure");
             }
@@ -336,7 +342,9 @@ public class RouteMethodHandler implements RequestHandler {
         return true;
     }
 
-    private boolean invokeMiddleware(List<Route> middleware, RouteContext context) throws BladeException {
+    private boolean invokeMiddleware(List<Route> middleware,
+                                     RouteContext context) throws BladeException {
+
         if (BladeKit.isEmpty(middleware)) {
             return true;
         }

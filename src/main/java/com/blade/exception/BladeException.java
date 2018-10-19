@@ -29,6 +29,10 @@ public class BladeException extends RuntimeException {
     protected int    status;
     protected String name;
 
+    public BladeException(Throwable cause) {
+        super(cause);
+    }
+
     public BladeException(int status, String name) {
         this.status = status;
         this.name = name;
@@ -38,6 +42,10 @@ public class BladeException extends RuntimeException {
         super(message);
         this.status = status;
         this.name = name;
+    }
+
+    public static BladeException wrapper(Exception e) {
+        return new BladeException(e);
     }
 
 }

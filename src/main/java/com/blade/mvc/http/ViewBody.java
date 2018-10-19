@@ -13,6 +13,10 @@ public class ViewBody implements Body {
         this.modelAndView = modelAndView;
     }
 
+    public static ViewBody of(ModelAndView modelAndView){
+        return new ViewBody(modelAndView);
+    }
+
     public ModelAndView modelAndView() {
         return modelAndView;
     }

@@ -61,7 +61,7 @@ public class DefaultExceptionHandler implements ExceptionHandler {
     }
 
     protected void handleException(Exception e, Request request, Response response) {
-        log.error("Request Exception", e);
+        log.error("", e);
         if (null == response) {
             return;
         }
@@ -85,7 +85,7 @@ public class DefaultExceptionHandler implements ExceptionHandler {
         }
 
         if (e.getStatus() == InternalErrorException.STATUS) {
-            log.error("Request Exception", e);
+            log.error("", e);
             this.render500(request, response);
         }
 
