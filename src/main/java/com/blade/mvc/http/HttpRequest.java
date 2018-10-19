@@ -348,7 +348,7 @@ public class HttpRequest implements Request {
             this.isMultipart = decoder.isMultipart();
             for (HttpContent content : this.contents) {
                 if (!isMultipart && content instanceof LastHttpContent) {
-                    this.body = content.duplicate().content();
+                    this.body = content.duplicate().content().copy();
                 }
                 decoder.offer(content);
                 this.readHttpDataChunkByChunk(decoder);

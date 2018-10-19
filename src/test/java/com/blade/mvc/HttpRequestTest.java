@@ -306,11 +306,12 @@ public class HttpRequestTest extends BaseTestCase {
         when(mockRequest.fileItems()).thenReturn(attr);
 
         Request  request = new HttpRequest(mockRequest);
+
         FileItem img     = request.fileItem("img").get();
 
         assertNotNull(img);
 
-        assertNull(img.getData());
+        assertNull(img.getFile());
 
         assertEquals("hello.png", img.getName());
         assertEquals("/usr/hello.png", img.getFileName());

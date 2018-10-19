@@ -25,6 +25,8 @@ public class BaseTestCase {
     protected com.blade.mvc.http.HttpRequest mockHttpRequest(String methodName) {
         com.blade.mvc.http.HttpRequest request = mock(com.blade.mvc.http.HttpRequest.class);
         when(request.method()).thenReturn(methodName);
+        when(request.url()).thenReturn("/");
+        when(request.uri()).thenReturn("/");
         when(request.httpMethod()).thenReturn(HttpMethod.valueOf(methodName));
         return request;
     }
