@@ -139,6 +139,11 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<HttpRequest> 
             Request request = webContext.getRequest();
             String  method  = request.method();
             String  uri     = request.uri();
+            Instant start   = null;
+
+            if (ALLOW_COST && !PERFORMANCE) {
+                start = Instant.now();
+            }
 
             if (isStaticFile(method, uri)) {
                 staticFileHandler.handle(webContext);
@@ -150,11 +155,12 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<HttpRequest> 
                     throw new NotFoundException(uri);
                 }
 
-                Instant start = Instant.now();
                 routeHandler.handle(webContext);
+
                 if (PERFORMANCE) {
                     return webContext;
                 }
+
                 if (ALLOW_COST) {
                     long cost = log200AndCost(log, start, BladeCache.getPaddingMethod(method), uri);
                     request.attribute(REQUEST_COST_TIME, cost);
@@ -181,7 +187,10 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<HttpRequest> 
         if ("POST".equals(method) || notStaticUri.contains(uri)) {
             return false;
         }
-        Optional<String> result = WebContext.blade().getStatics().stream().filter(s -> s.equals(uri) || uri.startsWith(s)).findFirst();
+
+        Optional<String> result = WebContext.blade().getStatics().stream()
+                .filter(s -> s.equals(uri) || uri.startsWith(s)).findFirst();
+
         if (!result.isPresent()) {
             notStaticUri.add(uri);
             return false;
