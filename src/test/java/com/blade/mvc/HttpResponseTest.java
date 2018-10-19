@@ -77,7 +77,7 @@ public class HttpResponseTest extends BaseTestCase {
         assertEquals(0, response.headers().size());
 
         response.header("a", "123");
-        assertEquals(2, response.headers().size());
+        assertEquals(1, response.headers().size());
     }
 
     @Test

@@ -296,6 +296,7 @@ public class HttpRequestTest extends BaseTestCase {
 
         Map<String, FileItem> attr     = new HashMap<>();
         FileItem              fileItem = new FileItem();
+        fileItem.setName("file");
         fileItem.setFileName("hello.png");
         fileItem.setPath("/usr/hello.png");
         fileItem.setContentType("image/png");
@@ -305,16 +306,17 @@ public class HttpRequestTest extends BaseTestCase {
 
         when(mockRequest.fileItems()).thenReturn(attr);
 
-        Request  request = new HttpRequest(mockRequest);
+        Request request = new HttpRequest(mockRequest);
 
-        FileItem img     = request.fileItem("img").get();
+        FileItem img = request.fileItem("img").get();
 
         assertNotNull(img);
 
         assertNull(img.getFile());
 
-        assertEquals("hello.png", img.getName());
-        assertEquals("/usr/hello.png", img.getFileName());
+        assertEquals("file", img.getName());
+        assertEquals("hello.png", img.getFileName());
+        assertEquals("/usr/hello.png", img.getPath());
         assertEquals(Long.valueOf(20445), Optional.of(img.getLength()).get());
         assertEquals("image/png", img.getContentType());
 
