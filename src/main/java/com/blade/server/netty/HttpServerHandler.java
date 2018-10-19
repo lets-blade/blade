@@ -43,8 +43,7 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
-import static com.blade.kit.BladeKit.log200;
-import static com.blade.kit.BladeKit.log200AndCost;
+import static com.blade.kit.BladeKit.*;
 import static com.blade.mvc.Const.*;
 import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
@@ -85,7 +84,6 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<HttpRequest> 
         Executor executor = ctx.executor();
 
         future.thenApplyAsync(req -> buildWebContext(ctx, req), executor)
-                .thenApplyAsync(this::dispatchRequest, executor)
                 .thenApplyAsync(this::executeLogic, executor)
                 .thenApplyAsync(this::buildResponse, executor)
                 .exceptionally(this::handleException)
@@ -111,7 +109,16 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<HttpRequest> 
         String   method   = request.method();
         String   uri      = request.uri();
 
-        routeHandler.exceptionCaught(uri, method, (Exception) e.getCause().getCause());
+        Exception srcException = (Exception) e.getCause().getCause();
+        if (srcException instanceof BladeException) {
+        } else {
+            log500(log, method, uri);
+        }
+        if (null != WebContext.blade().exceptionHandler()) {
+            WebContext.blade().exceptionHandler().handle(srcException);
+        } else {
+            log.error("", srcException);
+        }
 
         return routeHandler.handleResponse(
                 request, response, WebContext.get().getChannelHandlerContext()
@@ -129,31 +136,9 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<HttpRequest> 
     private WebContext executeLogic(WebContext webContext) {
         try {
             WebContext.set(webContext);
-            Instant start = Instant.now();
-            routeHandler.handle(webContext);
-            if (PERFORMANCE) {
-                return webContext;
-            }
             Request request = webContext.getRequest();
             String  method  = request.method();
             String  uri     = request.uri();
-
-            if (ALLOW_COST) {
-                long cost = log200AndCost(log, start, BladeCache.getPaddingMethod(method), uri);
-                request.attribute(REQUEST_COST_TIME, cost);
-            } else {
-                log200(log, BladeCache.getPaddingMethod(method), uri);
-            }
-            return webContext;
-        } catch (Exception e) {
-            throw BladeException.wrapper(e);
-        }
-    }
-
-    private WebContext dispatchRequest(WebContext webContext) {
-        try {
-            String uri    = webContext.getRequest().uri();
-            String method = webContext.getRequest().method();
 
             if (isStaticFile(method, uri)) {
                 staticFileHandler.handle(webContext);
@@ -163,6 +148,18 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<HttpRequest> 
                     webContext.setRoute(route);
                 } else {
                     throw new NotFoundException(uri);
+                }
+
+                Instant start = Instant.now();
+                routeHandler.handle(webContext);
+                if (PERFORMANCE) {
+                    return webContext;
+                }
+                if (ALLOW_COST) {
+                    long cost = log200AndCost(log, start, BladeCache.getPaddingMethod(method), uri);
+                    request.attribute(REQUEST_COST_TIME, cost);
+                } else {
+                    log200(log, BladeCache.getPaddingMethod(method), uri);
                 }
             }
             return webContext;

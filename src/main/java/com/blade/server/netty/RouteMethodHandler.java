@@ -39,7 +39,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
-import static com.blade.kit.BladeKit.log404;
 import static com.blade.kit.BladeKit.log500;
 import static com.blade.server.netty.HttpConst.CONTENT_LENGTH;
 import static com.blade.server.netty.HttpConst.KEEP_ALIVE;
@@ -68,7 +67,6 @@ public class RouteMethodHandler implements RequestHandler {
         String uri   = context.uri();
         Route  route = webContext.getRoute();
         if (null == route) {
-            log404(log, context.method(), context.uri());
             throw new NotFoundException(context.uri());
         }
 
@@ -92,18 +90,6 @@ public class RouteMethodHandler implements RequestHandler {
         // webHook
         if (hasAfterHook) {
             this.invokeHook(routeMatcher.getAfter(uri), context);
-        }
-    }
-
-    public void exceptionCaught(String uri, String method, Exception e) {
-        if (e instanceof BladeException) {
-        } else {
-            log500(log, method, uri);
-        }
-        if (null != WebContext.blade().exceptionHandler()) {
-            WebContext.blade().exceptionHandler().handle(e);
-        } else {
-            log.error("", e);
         }
     }
 
