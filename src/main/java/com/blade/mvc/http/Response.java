@@ -169,7 +169,9 @@ public interface Response {
      */
     default void text(String text) {
         if (null == text) return;
-        this.contentType(Const.CONTENT_TYPE_TEXT);
+        if (null == contentType()) {
+            this.contentType(Const.CONTENT_TYPE_TEXT);
+        }
         this.body(text);
     }
 
@@ -180,7 +182,9 @@ public interface Response {
      */
     default void html(String html) {
         if (null == html) return;
-        this.contentType(Const.CONTENT_TYPE_HTML);
+        if (null == contentType()) {
+            this.contentType(Const.CONTENT_TYPE_HTML);
+        }
         this.body(html);
     }
 
@@ -191,10 +195,12 @@ public interface Response {
      */
     default void json(String json) {
         if (null == json) return;
-        if (Objects.requireNonNull(WebContext.request()).isIE()) {
-            this.contentType(Const.CONTENT_TYPE_HTML);
-        } else {
-            this.contentType(Const.CONTENT_TYPE_JSON);
+        if (null == contentType()) {
+            if (Objects.requireNonNull(WebContext.request()).isIE()) {
+                this.contentType(Const.CONTENT_TYPE_HTML);
+            } else {
+                this.contentType(Const.CONTENT_TYPE_JSON);
+            }
         }
         this.body(json);
     }

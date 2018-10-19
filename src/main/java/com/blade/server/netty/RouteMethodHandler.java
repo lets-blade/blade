@@ -27,7 +27,6 @@ import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.*;
-import io.netty.handler.codec.http.HttpResponse;
 import io.netty.handler.stream.ChunkedStream;
 import lombok.extern.slf4j.Slf4j;
 import lombok.var;
@@ -37,14 +36,10 @@ import java.io.InputStream;
 import java.io.StringWriter;
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import static com.blade.kit.BladeKit.log404;
 import static com.blade.kit.BladeKit.log500;
-import static com.blade.mvc.Const.ENV_KEY_SESSION_KEY;
 import static com.blade.server.netty.HttpConst.CONTENT_LENGTH;
 import static com.blade.server.netty.HttpConst.KEEP_ALIVE;
 import static io.netty.handler.codec.http.HttpHeaderNames.TRANSFER_ENCODING;
@@ -72,7 +67,6 @@ public class RouteMethodHandler implements RequestHandler {
         String uri   = context.uri();
         Route  route = webContext.getRoute();
         if (null == route) {
-            log404(log, context.method(), context.uri());
             throw new NotFoundException(context.uri());
         }
 
@@ -99,85 +93,52 @@ public class RouteMethodHandler implements RequestHandler {
         }
     }
 
-    public void exceptionCaught(String uri, String method, Exception e) {
-        if (e instanceof BladeException) {
-        } else {
-            log500(log, method, uri);
-        }
-        if (null != WebContext.blade().exceptionHandler()) {
-            WebContext.blade().exceptionHandler().handle(e);
-        } else {
-            log.error("Request Exception", e);
-        }
-    }
-
-    public void finishWrite(WebContext webContext) {
-        Request  request  = webContext.getRequest();
-        Response response = webContext.getResponse();
-        Session  session  = request.session();
-
+    public FullHttpResponse handleResponse(Request request, Response response, ChannelHandlerContext context) {
+        Session session = request.session();
         if (null != session) {
-            String sessionKey = WebContext.blade().environment().get(ENV_KEY_SESSION_KEY, HttpConst.DEFAULT_SESSION_KEY);
-            Cookie cookie     = new Cookie();
-            cookie.name(sessionKey);
+            Cookie cookie = new Cookie();
+            cookie.name(WebContext.sessionKey());
             cookie.value(session.id());
             cookie.httpOnly(true);
             cookie.secure(request.isSecure());
             response.cookie(cookie);
         }
-        this.handleResponse(request, response, webContext.getChannelHandlerContext());
-    }
 
-    public void handleResponse(Request request, Response response, ChannelHandlerContext context) {
-        response.body().write(new BodyWriter() {
+        FullHttpResponse fullHttpResponse = response.body().write(new BodyWriter() {
             @Override
-            public void onByteBuf(ByteBuf byteBuf) {
-                handleFullResponse(
-                        createResponseByByteBuf(response, byteBuf),
-                        context,
-                        request.keepAlive());
+            public FullHttpResponse onByteBuf(ByteBuf byteBuf) {
+                return createResponseByByteBuf(response, byteBuf);
             }
 
             @Override
-            public void onStream(Closeable closeable) {
-                if (closeable instanceof InputStream) {
-                    handleStreamResponse(response, (InputStream) closeable, context, request.keepAlive());
-                }
+            public FullHttpResponse onStream(Closeable closeable) {
+                // TODO
+                return null;
             }
 
             @Override
-            public void onView(ViewBody body) {
+            public FullHttpResponse onView(ViewBody body) {
                 try {
                     var sw = new StringWriter();
                     WebContext.blade().templateEngine().render(body.modelAndView(), sw);
-                    response.contentType(Const.CONTENT_TYPE_HTML);
-
-                    handleFullResponse(
-                            createTextResponse(response, sw.toString()),
-                            context,
-                            request.keepAlive());
+                    WebContext.response().contentType(Const.CONTENT_TYPE_HTML);
+                    return this.onByteBuf(Unpooled.copiedBuffer(sw.toString().getBytes(StandardCharsets.UTF_8)));
                 } catch (Exception e) {
                     log.error("Render view error", e);
                 }
+                return null;
             }
 
             @Override
-            public void onRawBody(RawBody body) {
-                if (null != body.httpResponse()) {
-                    handleFullResponse(body.httpResponse(), context, request.keepAlive());
-                }
-                if (null != body.defaultHttpResponse()) {
-                    handleFullResponse(body.defaultHttpResponse(), context, request.keepAlive());
-                }
+            public FullHttpResponse onRawBody(RawBody body) {
+                return body.httpResponse();
             }
 
             @Override
-            public void onByteBuf(Object byteBuf) {
+            public FullHttpResponse onByteBuf(Object byteBuf) {
                 var httpResponse = new DefaultHttpResponse(HTTP_1_1, HttpResponseStatus.valueOf(response.statusCode()));
 
-                Iterator<Map.Entry<String, String>> iterator = response.headers().entrySet().iterator();
-                while (iterator.hasNext()) {
-                    Map.Entry<String, String> next = iterator.next();
+                for (Map.Entry<String, String> next : response.headers().entrySet()) {
                     httpResponse.headers().set(next.getKey(), next.getValue());
                 }
 
@@ -191,29 +152,19 @@ public class RouteMethodHandler implements RequestHandler {
                 if (!request.keepAlive()) {
                     lastContentFuture.addListener(ChannelFutureListener.CLOSE);
                 }
+                return null;
             }
 
         });
-    }
-
-    private Void handleFullResponse(HttpResponse response, ChannelHandlerContext context, boolean keepAlive) {
-        if (context.channel().isActive()) {
-            if (!keepAlive) {
-                context.write(response).addListener(ChannelFutureListener.CLOSE);
-            } else {
-                response.headers().set(HttpConst.CONNECTION, KEEP_ALIVE);
-                context.write(response, context.voidPromise());
-            }
-            context.flush();
+        if (request.keepAlive()) {
+            fullHttpResponse.headers().set(HttpConst.CONNECTION, KEEP_ALIVE);
         }
-        return null;
+        return fullHttpResponse;
     }
 
-    public Map<String, String> getDefaultHeader() {
-        var map = new HashMap<String, String>(2);
-        map.put("Date", HttpServerInitializer.date);
-        map.put("X-Powered-By", HttpConst.VERSION);
-        return map;
+    private void setDefaultHeaders(HttpHeaders headers) {
+        headers.set(HttpConst.DATE, HttpServerInitializer.date);
+        headers.set(HttpConst.X_POWER_BY, HttpConst.HEADER_VERSION);
     }
 
     public Void handleStreamResponse(Response response, InputStream body,
@@ -222,10 +173,9 @@ public class RouteMethodHandler implements RequestHandler {
         var httpResponse = new DefaultHttpResponse(HTTP_1_1, HttpResponseStatus.valueOf(response.statusCode()));
 
         httpResponse.headers().set(TRANSFER_ENCODING, HttpHeaderValues.CHUNKED);
+        setDefaultHeaders(httpResponse.headers());
 
-        Iterator<Map.Entry<String, String>> iterator = response.headers().entrySet().iterator();
-        while (iterator.hasNext()) {
-            Map.Entry<String, String> next = iterator.next();
+        for (Map.Entry<String, String> next : response.headers().entrySet()) {
             httpResponse.headers().set(next.getKey(), next.getValue());
         }
 
@@ -239,55 +189,29 @@ public class RouteMethodHandler implements RequestHandler {
         return null;
     }
 
-    public FullHttpResponse createResponseByByteBuf(Response response, ByteBuf byteBuf) {
+    private FullHttpResponse createResponseByByteBuf(Response response, ByteBuf byteBuf) {
 
         Map<String, String> headers = response.headers();
-        headers.putAll(getDefaultHeader());
 
         var httpResponse = new DefaultFullHttpResponse(HTTP_1_1, HttpResponseStatus.valueOf(response.statusCode()), byteBuf);
 
         httpResponse.headers().set(CONTENT_LENGTH, httpResponse.content().readableBytes());
+        setDefaultHeaders(httpResponse.headers());
 
         if (response.cookiesRaw().size() > 0) {
             this.appendCookie(response, httpResponse);
         }
 
-        Iterator<Map.Entry<String, String>> iterator = headers.entrySet().iterator();
-        while (iterator.hasNext()) {
-            Map.Entry<String, String> next = iterator.next();
-            httpResponse.headers().set(next.getKey(), next.getValue());
-        }
-        return httpResponse;
-    }
-
-    public FullHttpResponse createTextResponse(Response response, String body) {
-        Map<String, String> headers = response.headers();
-        headers.putAll(getDefaultHeader());
-
-        ByteBuf bodyBuf = Unpooled.wrappedBuffer(body.getBytes(StandardCharsets.UTF_8));
-
-        var httpResponse = new DefaultFullHttpResponse(HTTP_1_1, HttpResponseStatus.valueOf(response.statusCode()),
-                null == bodyBuf ? Unpooled.buffer(0) : bodyBuf);
-
-        httpResponse.headers().set(CONTENT_LENGTH, httpResponse.content().readableBytes());
-
-        if (response.cookiesRaw().size() > 0) {
-            this.appendCookie(response, httpResponse);
-        }
-
-        Iterator<Map.Entry<String, String>> iterator = headers.entrySet().iterator();
-        while (iterator.hasNext()) {
-            Map.Entry<String, String> next = iterator.next();
-            httpResponse.headers().set(next.getKey(), next.getValue());
+        for (Map.Entry<String, String> next : headers.entrySet()) {
+            httpResponse.headers().set(HttpConst.getAsciiString(next.getKey()), next.getValue());
         }
         return httpResponse;
     }
 
     private void appendCookie(Response response, DefaultFullHttpResponse httpResponse) {
-        Iterator<io.netty.handler.codec.http.cookie.Cookie> iterator = response.cookiesRaw().iterator();
-        while (iterator.hasNext()) {
-            io.netty.handler.codec.http.cookie.Cookie next = iterator.next();
-            httpResponse.headers().add(HttpConst.SET_COOKIE, io.netty.handler.codec.http.cookie.ServerCookieEncoder.LAX.encode(next));
+        for (io.netty.handler.codec.http.cookie.Cookie next : response.cookiesRaw()) {
+            httpResponse.headers().add(HttpConst.SET_COOKIE,
+                    io.netty.handler.codec.http.cookie.ServerCookieEncoder.LAX.encode(next));
         }
     }
 
@@ -330,7 +254,11 @@ public class RouteMethodHandler implements RequestHandler {
             int len = actionMethod.getParameterTypes().length;
 
             MethodAccess methodAccess = BladeCache.getMethodAccess(target.getClass());
-            Object       returnParam  = methodAccess.invoke(target, actionMethod.getName(), len > 0 ? context.routeParameters() : null);
+
+            Object returnParam = methodAccess.invoke(
+                    target, actionMethod.getName(), len > 0 ?
+                            context.routeParameters() : null);
+
             if (null == returnParam) {
                 return;
             }
@@ -340,11 +268,15 @@ public class RouteMethodHandler implements RequestHandler {
                 return;
             }
             if (returnType == String.class) {
-                context.body(new ViewBody(new ModelAndView(returnParam.toString())));
+                context.body(
+                        ViewBody.of(new ModelAndView(returnParam.toString()))
+                );
                 return;
             }
             if (returnType == ModelAndView.class) {
-                context.body(new ViewBody((ModelAndView) returnParam));
+                context.body(
+                        ViewBody.of((ModelAndView) returnParam)
+                );
             }
         }
     }
@@ -377,7 +309,9 @@ public class RouteMethodHandler implements RequestHandler {
                 returnParam = methodAccess.invoke(target, hookMethod.getName(), context);
             } else if (len == 2) {
                 MethodAccess methodAccess = BladeCache.getMethodAccess(target.getClass());
-                returnParam = methodAccess.invoke(target, hookMethod.getName(), context.request(), context.response());
+
+                returnParam = methodAccess.invoke(target, hookMethod.getName(),
+                        context.request(), context.response());
             } else {
                 throw new InternalErrorException("Bad web hook structure");
             }
@@ -394,7 +328,9 @@ public class RouteMethodHandler implements RequestHandler {
         return true;
     }
 
-    private boolean invokeMiddleware(List<Route> middleware, RouteContext context) throws BladeException {
+    private boolean invokeMiddleware(List<Route> middleware,
+                                     RouteContext context) throws BladeException {
+
         if (BladeKit.isEmpty(middleware)) {
             return true;
         }

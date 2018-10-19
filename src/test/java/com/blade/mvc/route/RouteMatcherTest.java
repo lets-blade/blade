@@ -83,12 +83,4 @@ public class RouteMatcherTest {
 
     }
 
-    class RouteMatcherDemoController {
-        public void index() {
-        }
-
-        public void remove() {
-        }
-    }
-
 }

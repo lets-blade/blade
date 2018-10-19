@@ -20,13 +20,14 @@ import com.blade.Environment;
 import com.blade.mvc.http.Request;
 import com.blade.mvc.http.Response;
 import com.blade.mvc.route.Route;
-import com.blade.server.netty.HttpServerHandler;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.NoArgsConstructor;
 import lombok.var;
 
 import java.util.Optional;
 
+import static com.blade.mvc.Const.ENV_KEY_SESSION_KEY;
+import static com.blade.server.netty.HttpConst.DEFAULT_SESSION_KEY;
 import static com.blade.server.netty.HttpServerHandler.WEB_CONTEXT_THREAD_LOCAL;
 
 /**
@@ -51,6 +52,11 @@ public class WebContext {
     private static String contextPath;
 
     /**
+     * Session Key, default is: SESSION
+     */
+    private static String sessionKey;
+
+    /**
      * Http Request instance of current thread context
      */
     private Request request;
@@ -62,14 +68,79 @@ public class WebContext {
 
     private Route route;
 
-    private LocalContext localContext;
-
     private ChannelHandlerContext channelHandlerContext;
 
-    public WebContext(Request request, Response response, ChannelHandlerContext channelHandlerContext) {
+    public WebContext(Request request, Response response,
+                      ChannelHandlerContext channelHandlerContext) {
+
         this.request = request;
         this.response = response;
         this.channelHandlerContext = channelHandlerContext;
+    }
+
+    public Request getRequest() {
+        return request;
+    }
+
+    public Response getResponse() {
+        return response;
+    }
+
+    public Environment environment() {
+        return blade.environment();
+    }
+
+    public static String sessionKey() {
+        return sessionKey;
+    }
+
+    /**
+     * Get application environment information.
+     *
+     * @param key environment key
+     * @return environment optional value
+     */
+    public Optional<String> env(String key) {
+        return blade().env(key);
+    }
+
+    /**
+     * Get application environment information.
+     *
+     * @param key          environment key
+     * @param defaultValue default value, if value is null
+     * @return environment optional value
+     */
+    public String env(String key, String defaultValue) {
+        return blade().env(key, defaultValue);
+    }
+
+    public ChannelHandlerContext getChannelHandlerContext() {
+        return channelHandlerContext;
+    }
+
+    public ChannelHandlerContext getHandlerContext() {
+        return channelHandlerContext;
+    }
+
+    public Route getRoute() {
+        return route;
+    }
+
+    public void setRoute(Route route) {
+        this.route = route;
+    }
+
+    /**
+     * Initializes the project when it starts
+     *
+     * @param blade       Blade instance
+     * @param contextPath context path
+     */
+    public static void init(Blade blade, String contextPath) {
+        WebContext.blade = blade;
+        WebContext.contextPath = contextPath;
+        WebContext.sessionKey = blade.environment().get(ENV_KEY_SESSION_KEY, DEFAULT_SESSION_KEY);
     }
 
     /**
@@ -101,43 +172,22 @@ public class WebContext {
         return null != webContext ? webContext.response : null;
     }
 
-    public static WebContext create(Request request, Response response, ChannelHandlerContext ctx, LocalContext localContext) {
+    public static WebContext create(Request request, Response response, ChannelHandlerContext ctx) {
         WebContext webContext = new WebContext();
         webContext.request = request;
         webContext.response = response;
         webContext.channelHandlerContext = ctx;
-        webContext.localContext = localContext;
         WEB_CONTEXT_THREAD_LOCAL.set(webContext);
         return webContext;
     }
 
     public static void set(WebContext webContext) {
-        HttpServerHandler.WEB_CONTEXT_THREAD_LOCAL.set(webContext);
+        WEB_CONTEXT_THREAD_LOCAL.set(webContext);
     }
 
     public static void remove() {
-        HttpServerHandler.WEB_CONTEXT_THREAD_LOCAL.remove();
+        WEB_CONTEXT_THREAD_LOCAL.remove();
     }
-
-    public Request getRequest() {
-        return request;
-    }
-
-    public Response getResponse() {
-        return response;
-    }
-
-    /**
-     * Initializes the project when it starts
-     *
-     * @param blade       Blade instance
-     * @param contextPath context path
-     */
-    public static void init(Blade blade, String contextPath) {
-        WebContext.blade = blade;
-        WebContext.contextPath = contextPath;
-    }
-
 
     /**
      * Get blade instance
@@ -160,43 +210,6 @@ public class WebContext {
     public static void clean() {
         WEB_CONTEXT_THREAD_LOCAL.remove();
         blade = null;
-    }
-
-    public Environment environment() {
-        return blade.environment();
-    }
-
-    /**
-     * Get application environment information.
-     *
-     * @param key environment key
-     * @return environment optional value
-     */
-    public Optional<String> env(String key) {
-        return blade().env(key);
-    }
-
-    /**
-     * Get application environment information.
-     *
-     * @param key          environment key
-     * @param defaultValue default value, if value is null
-     * @return environment optional value
-     */
-    public String env(String key, String defaultValue) {
-        return blade().env(key, defaultValue);
-    }
-
-    public ChannelHandlerContext getChannelHandlerContext() {
-        return channelHandlerContext;
-    }
-
-    public Route getRoute() {
-        return route;
-    }
-
-    public void setRoute(Route route) {
-        this.route = route;
     }
 
 }

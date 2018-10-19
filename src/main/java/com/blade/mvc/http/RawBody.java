@@ -25,8 +25,8 @@ public class RawBody implements Body {
     }
 
     @Override
-    public void write(BodyWriter writer) {
-        writer.onRawBody(this);
+    public FullHttpResponse write(BodyWriter writer) {
+        return writer.onRawBody(this);
     }
 
 }

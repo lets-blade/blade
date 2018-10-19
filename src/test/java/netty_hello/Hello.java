@@ -5,6 +5,7 @@ import com.blade.event.EventType;
 import com.blade.mvc.http.EmptyBody;
 import com.blade.mvc.http.ByteBody;
 import com.blade.mvc.http.StreamBody;
+import com.blade.mvc.http.StringBody;
 
 import java.io.*;
 import java.util.Random;
@@ -15,11 +16,10 @@ import java.util.concurrent.TimeUnit;
  * 2017/6/5
  */
 public class Hello {
+    private static final StringBody hello = StringBody.of("Hello World.");
 
     public static void main(String[] args) {
         Blade.of()
-//                .devMode(false)
-//                .environment(Const.ENV_KEY_NETTY_WORKERS, Runtime.getRuntime().availableProcessors())
                 .get("/", ctx -> {
                     String[] chars = new String[]{"Here a special char \" that not escaped", "And Another \\ char"};
                     ctx.json(chars);
@@ -46,7 +46,11 @@ public class Hello {
                     ctx.response().contentType("text/html");
                     ctx.response().body(ByteBody.of(str.getBytes()));
                 })
-                .get("/hello", ctx -> ctx.text("Hello World."))
+                .get("/error", ctx -> {
+                    int a = 1 / 0;
+                    ctx.text("ok");
+                })
+                .get("/hello", ctx -> ctx.body(hello))
                 .get("/error", ctx -> {
                     int a = 1 / 0;
                     ctx.text("Hello World.");
@@ -64,9 +68,6 @@ public class Hello {
                         e.printStackTrace();
                     }
                 })
-//                .before("/*", ctx -> {
-//                    System.out.println("Before...");
-//                })
                 .get("/rand", ctx -> {
                     try {
                         int timeout = ctx.fromInt("timeout", new Random().nextInt(1000));
@@ -77,16 +78,10 @@ public class Hello {
                     }
 
                 })
-//                .use(new XssMiddleware())
-//                .use(new CsrfMiddleware())
                 .event(EventType.ENVIRONMENT_CHANGED, new ConfigChanged())
                 .event(EventType.SESSION_DESTROY, e -> {
                     System.out.println("session 失效了");
                 })
-                .disableSession()
-//                .showFileList(true)
-//                .gzip(true)
-//                .enableCors(true)
                 .start(Hello.class, args);
     }
 

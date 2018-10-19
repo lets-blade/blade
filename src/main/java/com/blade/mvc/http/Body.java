@@ -1,7 +1,9 @@
 package com.blade.mvc.http;
 
+import io.netty.handler.codec.http.FullHttpResponse;
+
 public interface Body {
 
-    void write(BodyWriter writer);
+    FullHttpResponse write(BodyWriter writer);
 
 }

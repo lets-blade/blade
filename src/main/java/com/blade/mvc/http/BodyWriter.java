@@ -1,19 +1,20 @@
 package com.blade.mvc.http;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.handler.codec.http.FullHttpResponse;
 
 import java.io.Closeable;
 
 public interface BodyWriter {
 
-    void onStream(Closeable closeable);
+    FullHttpResponse onStream(Closeable closeable);
 
-    void onView(ViewBody body);
+    FullHttpResponse onView(ViewBody body);
 
-    void onRawBody(RawBody body);
+    FullHttpResponse onRawBody(RawBody body);
 
-    void onByteBuf(Object byteBuf);
+    FullHttpResponse onByteBuf(Object byteBuf);
 
-    void onByteBuf(ByteBuf byteBuf);
+    FullHttpResponse onByteBuf(ByteBuf byteBuf);
 
 }

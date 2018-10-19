@@ -16,11 +16,9 @@
 package com.blade.mvc.http;
 
 import com.blade.exception.HttpParseException;
-import com.blade.exception.InternalErrorException;
 import com.blade.kit.PathKit;
 import com.blade.kit.StringKit;
 import com.blade.mvc.Const;
-import com.blade.mvc.LocalContext;
 import com.blade.mvc.WebContext;
 import com.blade.mvc.handler.SessionHandler;
 import com.blade.mvc.http.session.SessionManager;
@@ -64,8 +62,10 @@ public class HttpRequest implements Request {
     private static final SessionHandler SESSION_HANDLER = new SessionHandler(WebContext.blade());
 
     static {
-        DiskAttribute.deleteOnExitTemporaryFile = true; // should delete file on
-        DiskAttribute.baseDirectory = null;             // system temp directory
+        DiskFileUpload.deleteOnExitTemporaryFile = true; // should delete file
+        DiskFileUpload.baseDirectory = null;             // system temp directory
+        DiskAttribute.deleteOnExitTemporaryFile = true;  // should delete file on
+        DiskAttribute.baseDirectory = null;              // system temp directory
     }
 
     private ByteBuf body = EMPTY_BUF;
@@ -74,15 +74,22 @@ public class HttpRequest implements Request {
     private String  url;
     private String  protocol;
     private String  method;
-    private String  cookieString;
     private boolean keepAlive;
     private Session session;
 
-    private boolean isRequestPart;
-    private boolean isChunked;
     private boolean isMultipart;
     private boolean isEnd;
     private boolean initCookie;
+    private boolean initQueryParam;
+
+    private HttpData partialContent;
+
+    private HttpHeaders httpHeaders;
+
+    private io.netty.handler.codec.http.HttpRequest nettyRequest;
+    private HttpPostRequestDecoder                  decoder;
+
+    private Queue<HttpContent> contents = new LinkedList<>();
 
     private Map<String, String>       headers    = null;
     private Map<String, Object>       attributes = null;
@@ -158,6 +165,19 @@ public class HttpRequest implements Request {
 
     @Override
     public Map<String, List<String>> parameters() {
+        if (!initQueryParam) {
+            initQueryParam = true;
+            if (!url.contains("?")) {
+                return this.parameters;
+            }
+
+            var parameters =
+                    new QueryStringDecoder(url, CharsetUtil.UTF_8).parameters();
+
+            if (null != parameters) {
+                this.parameters.putAll(parameters);
+            }
+        }
         return this.parameters;
     }
 
@@ -216,9 +236,12 @@ public class HttpRequest implements Request {
 
     @Override
     public Map<String, Cookie> cookies() {
-        if (!initCookie && StringKit.isNotEmpty(cookieString)) {
+        if (!initCookie) {
             initCookie = true;
-            ServerCookieDecoder.LAX.decode(cookieString).forEach(this::parseCookie);
+            String cookie = header(HttpConst.COOKIE_STRING);
+            if (StringKit.isNotEmpty(cookie)) {
+                ServerCookieDecoder.LAX.decode(cookie).forEach(this::parseCookie);
+            }
         }
         return this.cookies;
     }
@@ -236,6 +259,14 @@ public class HttpRequest implements Request {
 
     @Override
     public Map<String, String> headers() {
+        if (null == headers) {
+            headers = new HashMap<>(httpHeaders.size());
+            Iterator<Map.Entry<String, String>> entryIterator = httpHeaders.iteratorAsString();
+            while (entryIterator.hasNext()) {
+                Map.Entry<String, String> next = entryIterator.next();
+                headers.put(next.getKey(), next.getValue());
+            }
+        }
         return this.headers;
     }
 
@@ -263,181 +294,113 @@ public class HttpRequest implements Request {
     }
 
     @Override
-    public boolean readChunk() {
-        LocalContext localContext = HttpServerHandler.getLocalContext();
-        if (null == localContext) {
-            throw new InternalErrorException("It is impossible to run here");
-        }
-
-        HttpObject msg = localContext.msg();
-        localContext.updateMsg(msg);
-
-        if (msg instanceof LastHttpContent) {
-            this.isEnd = true;
-
-            if (!localContext.request().isMultipart) {
-                this.body = ((HttpContent) msg).copy().content();
-            }
-        }
-
-        if (localContext.hasDecoder() && msg instanceof HttpContent) {
-            // New chunk is received
-            HttpContent chunk = (HttpContent) msg;
-            localContext.decoder().offer(chunk);
-            readHttpDataChunkByChunk(localContext.decoder());
-        }
-
-        return this.isEnd;
-    }
-
-    @Override
     public boolean chunkIsEnd() {
         return this.isEnd;
     }
 
     @Override
-    public boolean isPart() {
-        return isRequestPart;
+    public boolean isMultipart() {
+        return isMultipart;
     }
 
-    @Override
-    public boolean isChunked() {
-        return isChunked;
+    public void setNettyRequest(io.netty.handler.codec.http.HttpRequest nettyRequest) {
+        this.nettyRequest = nettyRequest;
     }
 
-    public static HttpRequest build(String remoteAddress, HttpObject msg) {
-        boolean isRequestPart = false;
+    public void appendContent(HttpContent msg) {
+        this.contents.add(msg.retain());
+        if (msg instanceof LastHttpContent) {
+            this.isEnd = true;
+        }
+    }
 
-        io.netty.handler.codec.http.HttpRequest nettyRequest = null;
-        if (msg instanceof io.netty.handler.codec.http.HttpRequest) {
-            isRequestPart = true;
-            nettyRequest = (io.netty.handler.codec.http.HttpRequest) msg;
+    public void init(String remoteAddress) {
+        this.remoteAddress = remoteAddress.substring(1);
+        this.keepAlive = HttpUtil.isKeepAlive(nettyRequest);
+        this.url = nettyRequest.uri();
+
+        int pathEndPos = this.url().indexOf('?');
+        this.uri = pathEndPos < 0 ? this.url() : this.url().substring(0, pathEndPos);
+        this.protocol = nettyRequest.protocolVersion().text();
+        this.method = nettyRequest.method().name();
+
+        String cleanUri = this.uri;
+        if (!"/".equals(this.contextPath())) {
+            cleanUri = PathKit.cleanPath(cleanUri.replaceFirst(this.contextPath(), "/"));
+            this.uri = cleanUri;
         }
 
-        LocalContext localContext = HttpServerHandler.getLocalContext();
-        if (null != localContext) {
-            HttpRequest request = localContext.request();
-            request.isRequestPart = isRequestPart;
-
-            localContext.updateMsg(msg);
-            return request;
-        }
-
-        if (!isRequestPart) {
-            return null;
-        }
-
-        HttpRequest request = new HttpRequest();
-        request.isRequestPart = true;
-        request.keepAlive = HttpUtil.isKeepAlive(nettyRequest);
-        request.remoteAddress = remoteAddress;
-        request.url = nettyRequest.uri();
-        request.isChunked = HttpUtil.isTransferEncodingChunked(nettyRequest);
-
-        int pathEndPos = request.url().indexOf('?');
-        request.uri = pathEndPos < 0 ? request.url() : request.url().substring(0, pathEndPos);
-        request.protocol = nettyRequest.protocolVersion().text();
-        request.method = nettyRequest.method().name();
-
-        HttpPostRequestDecoder decoder = initRequest(request, nettyRequest);
-
-        String cleanUri = request.uri;
-        if (!"/".equals(request.contextPath())) {
-            cleanUri = PathKit.cleanPath(cleanUri.replaceFirst(request.contextPath(), "/"));
-            request.uri = cleanUri;
-        }
+        this.httpHeaders = nettyRequest.headers();
 
         if (!HttpServerHandler.PERFORMANCE) {
             SessionManager sessionManager = WebContext.blade().sessionManager();
             if (null != sessionManager) {
-                request.session = SESSION_HANDLER.createSession(request);
+                this.session = SESSION_HANDLER.createSession(this);
             }
         }
 
-        HttpServerHandler.setLocalContext(new LocalContext(msg, request, decoder));
-        return request;
-    }
-
-    private static HttpPostRequestDecoder initRequest(
-            HttpRequest request,
-            io.netty.handler.codec.http.HttpRequest nettyRequest) {
-
-        // headers
-        var httpHeaders = nettyRequest.headers();
-        if (httpHeaders.isEmpty()) {
-            request.headers = new HashMap<>();
-        } else {
-            request.headers = new HashMap<>(httpHeaders.size());
-
-            Iterator<Map.Entry<String, String>> entryIterator = httpHeaders.iteratorAsString();
-            while (entryIterator.hasNext()) {
-                Map.Entry<String, String> next = entryIterator.next();
-                request.headers.put(next.getKey(), next.getValue());
-            }
-        }
-
-        // request query parameters
-        if (request.url().contains("?")) {
-            var parameters = new QueryStringDecoder(request.url(), CharsetUtil.UTF_8)
-                    .parameters();
-
-            if (null != parameters) {
-                request.parameters.putAll(parameters);
-            }
-        }
-
-        // cookies
-        request.cookieString = request.header(HttpConst.COOKIE_STRING);
-
-        if ("GET".equals(request.method())) {
-            return null;
+        if ("GET".equals(this.method())) {
+            return;
         }
 
         try {
-            HttpPostRequestDecoder decoder =
-                    new HttpPostRequestDecoder(factory, nettyRequest);
-
-            request.isMultipart = decoder.isMultipart();
-            return decoder;
+            HttpPostRequestDecoder decoder = new HttpPostRequestDecoder(factory, nettyRequest);
+            this.isMultipart = decoder.isMultipart();
+            for (HttpContent content : this.contents) {
+                if (!isMultipart && content instanceof LastHttpContent) {
+                    this.body = content.duplicate().content().copy();
+                }
+                decoder.offer(content);
+                this.readHttpDataChunkByChunk(decoder);
+                content.release();
+            }
         } catch (Exception e) {
             throw new HttpParseException("build decoder fail", e);
         }
     }
 
     /**
-     * Reading request by chunk and getting values from chunk
+     * Example of reading request by chunk and getting values from chunk to chunk
      */
     private void readHttpDataChunkByChunk(HttpPostRequestDecoder decoder) {
         try {
             while (decoder.hasNext()) {
                 InterfaceHttpData data = decoder.next();
                 if (data != null) {
-                    parseData(data);
+                    // check if current HttpData is a FileUpload and previously set as partial
+                    if (partialContent == data) {
+                        partialContent = null;
+                    }
+                    try {
+                        // new value
+                        writeHttpData(data);
+                    } finally {
+                        data.release();
+                    }
                 }
             }
-        } catch (HttpPostRequestDecoder.EndOfDataDecoderException e) {
-            // ignore
-        } catch (Exception e) {
-            throw new HttpParseException(e);
+            // Check partial decoding for a FileUpload
+            InterfaceHttpData data = decoder.currentPartialHttpData();
+            if (data != null) {
+                if (partialContent == null) {
+                    partialContent = (HttpData) data;
+                }
+            }
+        } catch (HttpPostRequestDecoder.EndOfDataDecoderException e1) {
+            // end
         }
     }
 
-    private void parseData(InterfaceHttpData data) {
+    private void writeHttpData(InterfaceHttpData data) {
         try {
-            switch (data.getHttpDataType()) {
-                case Attribute:
-                    this.parseAttribute((Attribute) data);
-                    break;
-                case FileUpload:
-                    this.parseFileUpload((FileUpload) data);
-                    break;
-                default:
-                    break;
+            InterfaceHttpData.HttpDataType dataType = data.getHttpDataType();
+            if (dataType == InterfaceHttpData.HttpDataType.Attribute) {
+                parseAttribute((Attribute) data);
+            } else if (dataType == InterfaceHttpData.HttpDataType.FileUpload) {
+                parseFileUpload((FileUpload) data);
             }
         } catch (IOException e) {
             log.error("Parse request parameter error", e);
-        } finally {
-            data.release();
         }
     }
 
@@ -502,4 +465,7 @@ public class HttpRequest implements Request {
         this.cookies.put(cookie.name(), cookie);
     }
 
+    public HttpPostRequestDecoder getDecoder() {
+        return decoder;
+    }
 }

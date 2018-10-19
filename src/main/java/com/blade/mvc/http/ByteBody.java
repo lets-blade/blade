@@ -2,6 +2,7 @@ package com.blade.mvc.http;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import io.netty.handler.codec.http.FullHttpResponse;
 
 import java.io.File;
 import java.io.IOException;
@@ -57,12 +58,11 @@ public class ByteBody implements Body {
     }
 
     @Override
-    public void write(BodyWriter writer) {
+    public FullHttpResponse write(BodyWriter writer) {
         if (null != outputStream) {
-            writer.onByteBuf(outputStream);
-            return;
+            return writer.onByteBuf(outputStream);
         }
-        writer.onByteBuf(byteBuf);
+        return writer.onByteBuf(byteBuf);
     }
 
 }

@@ -15,8 +15,9 @@
  */
 package com.blade.server.netty;
 
+import com.blade.exception.BladeException;
 import com.blade.exception.NotFoundException;
-import com.blade.mvc.LocalContext;
+import com.blade.kit.BladeCache;
 import com.blade.mvc.WebContext;
 import com.blade.mvc.handler.ExceptionHandler;
 import com.blade.mvc.http.HttpRequest;
@@ -31,20 +32,19 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.DefaultFullHttpResponse;
 import io.netty.handler.codec.http.FullHttpResponse;
-import io.netty.handler.codec.http.HttpObject;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.util.concurrent.FastThreadLocal;
 import lombok.extern.slf4j.Slf4j;
 
+import java.time.Instant;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.Executor;
 
-import static com.blade.mvc.Const.ENV_KEY_HTTP_REQUEST_COST;
-import static com.blade.mvc.Const.ENV_KEY_PERFORMANCE;
+import static com.blade.kit.BladeKit.*;
+import static com.blade.mvc.Const.*;
 import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
 /**
@@ -55,31 +55,22 @@ import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
  */
 @Slf4j
 @ChannelHandler.Sharable
-public class HttpServerHandler extends SimpleChannelInboundHandler<HttpObject> {
+public class HttpServerHandler extends SimpleChannelInboundHandler<HttpRequest> {
 
-    public static final  FastThreadLocal<WebContext>   WEB_CONTEXT_THREAD_LOCAL   = new FastThreadLocal<>();
-    private static final FastThreadLocal<LocalContext> LOCAL_CONTEXT_THREAD_LOCAL = new FastThreadLocal<>();
-    private static final StaticFileHandler             STATIC_FILE_HANDLER        = new StaticFileHandler(WebContext.blade());
-    private static final RouteMethodHandler            ROUTE_METHOD_HANDLER       = new RouteMethodHandler();
-    private static final Set<String>                   NOT_STATIC_URI             = new HashSet<>(32);
-    private static final RouteMatcher                  ROUTE_MATCHER              = WebContext.blade().routeMatcher();
+    public static final FastThreadLocal<WebContext> WEB_CONTEXT_THREAD_LOCAL = new FastThreadLocal<>();
 
-    static final boolean ALLOW_COST =
-            WebContext.blade().environment().getBoolean(ENV_KEY_HTTP_REQUEST_COST, true);
+    private final boolean ALLOW_COST =
+            WebContext.blade().environment()
+                    .getBoolean(ENV_KEY_HTTP_REQUEST_COST, true);
 
     public static final boolean PERFORMANCE =
-            WebContext.blade().environment().getBoolean(ENV_KEY_PERFORMANCE, false);
+            WebContext.blade().environment()
+                    .getBoolean(ENV_KEY_PERFORMANCE, false);
 
-    private static final ExecutorService LOGIC_EXECUTOR =
-            Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2);
-
-    @Override
-    public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
-        super.channelUnregistered(ctx);
-        if (LOCAL_CONTEXT_THREAD_LOCAL.get() != null && LOCAL_CONTEXT_THREAD_LOCAL.get().hasDecoder()) {
-            LOCAL_CONTEXT_THREAD_LOCAL.get().decoder().cleanFiles();
-        }
-    }
+    private final StaticFileHandler  staticFileHandler = new StaticFileHandler(WebContext.blade());
+    private final RouteMethodHandler routeHandler      = new RouteMethodHandler();
+    private final Set<String>        notStaticUri      = new HashSet<>(32);
+    private final RouteMatcher       routeMatcher      = WebContext.blade().routeMatcher();
 
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx) {
@@ -87,62 +78,99 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<HttpObject> {
     }
 
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, HttpObject msg) {
-        String  remoteAddress = ctx.channel().remoteAddress().toString();
-        Request request       = HttpRequest.build(remoteAddress, msg);
-        if (null == request) {
-            return;
-        }
-        if (request.isPart()) {
-            this.executePart(ctx, request);
-            return;
-        }
+    protected void channelRead0(ChannelHandlerContext ctx, HttpRequest httpRequest) {
+        CompletableFuture<HttpRequest> future = CompletableFuture.completedFuture(httpRequest);
 
-        // content has not been read yet
-        if (!request.chunkIsEnd() &&
-                !request.readChunk()) {
-            return;
-        }
+        Executor executor = ctx.executor();
 
-        try {
-            LogicRunner asyncRunner = new LogicRunner(ROUTE_METHOD_HANDLER, WebContext.get());
-
-            CompletableFuture<Void> future = CompletableFuture.completedFuture(asyncRunner)
-                    .thenApplyAsync(LogicRunner::handle, LOGIC_EXECUTOR)
-                    .thenAcceptAsync(LogicRunner::finishWrite, LOGIC_EXECUTOR);
-
-            asyncRunner.setFuture(future);
-        } finally {
-            this.cleanContext();
-        }
+        future.thenApplyAsync(req -> buildWebContext(ctx, req), executor)
+                .thenApplyAsync(this::executeLogic, executor)
+                .thenApplyAsync(this::buildResponse, executor)
+                .exceptionally(this::handleException)
+                .thenAcceptAsync(msg -> writeResponse(ctx, future, msg), ctx.channel().eventLoop());
     }
 
-    private void executePart(ChannelHandlerContext ctx, Request request) {
-        Response response = new HttpResponse();
+    private WebContext buildWebContext(ChannelHandlerContext ctx,
+                                       HttpRequest req) {
 
-        // init web context
-        WebContext webContext = WebContext
-                .create(request, response, ctx, LOCAL_CONTEXT_THREAD_LOCAL.get());
+        String remoteAddress = ctx.channel().remoteAddress().toString();
+        req.init(remoteAddress);
+        return WebContext.create(req, new HttpResponse(), ctx);
+    }
 
-        String uri    = request.uri();
-        String method = request.method();
+    private void writeResponse(ChannelHandlerContext ctx, CompletableFuture<HttpRequest> future, FullHttpResponse msg) {
+        ctx.writeAndFlush(msg);
+        future.complete(null);
+    }
 
+    private FullHttpResponse handleException(Throwable e) {
+        Request  request  = WebContext.request();
+        Response response = WebContext.response();
+        String   method   = request.method();
+        String   uri      = request.uri();
+
+        Exception srcException = (Exception) e.getCause().getCause();
+        if (srcException instanceof BladeException) {
+        } else {
+            log500(log, method, uri);
+        }
+        if (null != WebContext.blade().exceptionHandler()) {
+            WebContext.blade().exceptionHandler().handle(srcException);
+        } else {
+            log.error("", srcException);
+        }
+
+        return routeHandler.handleResponse(
+                request, response, WebContext.get().getChannelHandlerContext()
+        );
+    }
+
+    private FullHttpResponse buildResponse(WebContext webContext) {
+        WebContext.set(webContext);
+        return routeHandler.handleResponse(
+                webContext.getRequest(), webContext.getResponse(),
+                webContext.getChannelHandlerContext()
+        );
+    }
+
+    private WebContext executeLogic(WebContext webContext) {
         try {
+            WebContext.set(webContext);
+            Request request = webContext.getRequest();
+            String  method  = request.method();
+            String  uri     = request.uri();
+            Instant start   = null;
+
+            if (ALLOW_COST && !PERFORMANCE) {
+                start = Instant.now();
+            }
+
             if (isStaticFile(method, uri)) {
-                STATIC_FILE_HANDLER.handle(webContext);
-                this.cleanContext();
+                staticFileHandler.handle(webContext);
             } else {
-                Route route = ROUTE_MATCHER.lookupRoute(method, uri);
+                Route route = routeMatcher.lookupRoute(method, uri);
                 if (null != route) {
                     webContext.setRoute(route);
                 } else {
                     throw new NotFoundException(uri);
                 }
+
+                routeHandler.handle(webContext);
+
+                if (PERFORMANCE) {
+                    return webContext;
+                }
+
+                if (ALLOW_COST) {
+                    long cost = log200AndCost(log, start, BladeCache.getPaddingMethod(method), uri);
+                    request.attribute(REQUEST_COST_TIME, cost);
+                } else {
+                    log200(log, BladeCache.getPaddingMethod(method), uri);
+                }
             }
+            return webContext;
         } catch (Exception e) {
-            ROUTE_METHOD_HANDLER.exceptionCaught(uri, method, e);
-            ROUTE_METHOD_HANDLER.finishWrite(webContext);
-            this.cleanContext();
+            throw BladeException.wrapper(e);
         }
     }
 
@@ -156,28 +184,18 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<HttpObject> {
     }
 
     private boolean isStaticFile(String method, String uri) {
-        if ("POST".equals(method) || NOT_STATIC_URI.contains(uri)) {
+        if ("POST".equals(method) || notStaticUri.contains(uri)) {
             return false;
         }
-        Optional<String> result = WebContext.blade().getStatics().stream().filter(s -> s.equals(uri) || uri.startsWith(s)).findFirst();
+
+        Optional<String> result = WebContext.blade().getStatics().stream()
+                .filter(s -> s.equals(uri) || uri.startsWith(s)).findFirst();
+
         if (!result.isPresent()) {
-            NOT_STATIC_URI.add(uri);
+            notStaticUri.add(uri);
             return false;
         }
         return true;
-    }
-
-    public static LocalContext getLocalContext() {
-        return LOCAL_CONTEXT_THREAD_LOCAL.get();
-    }
-
-    public static void setLocalContext(LocalContext localContext) {
-        LOCAL_CONTEXT_THREAD_LOCAL.set(localContext);
-    }
-
-    private void cleanContext() {
-        LOCAL_CONTEXT_THREAD_LOCAL.remove();
-        WEB_CONTEXT_THREAD_LOCAL.remove();
     }
 
 }

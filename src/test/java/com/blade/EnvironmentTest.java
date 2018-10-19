@@ -143,7 +143,7 @@ public class EnvironmentTest {
     public void testGetPrefix() {
         Environment         environment = Environment.of("application.properties");
         Map<String, Object> map         = environment.getPrefix("app");
-        assertEquals(6, map.size());
+        assertEquals(7, map.size());
         assertEquals("0.0.2", map.get("version"));
     }
 
@@ -156,7 +156,7 @@ public class EnvironmentTest {
     }
 
     @Test
-    public void testHasValue(){
+    public void testHasValue() {
         Environment environment = Environment.empty();
         assertEquals(Boolean.FALSE, environment.hasValue("hello"));
     }
@@ -194,7 +194,7 @@ public class EnvironmentTest {
     }
 
     @Test
-    public void testSet(){
+    public void testSet() {
         Environment environment = Environment.empty();
         environment.set("name", "biezhi");
 

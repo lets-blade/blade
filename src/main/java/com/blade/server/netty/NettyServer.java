@@ -51,14 +51,11 @@ import com.blade.task.cron.CronExpression;
 import com.blade.task.cron.CronThreadPoolExecutor;
 import com.blade.watcher.EnvironmentWatcher;
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelOption;
-import io.netty.channel.EventLoopGroup;
+import io.netty.channel.*;
 import io.netty.channel.epoll.EpollChannelOption;
+import io.netty.channel.nio.NioEventLoop;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.handler.logging.LogLevel;
-import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.util.ResourceLeakDetector;
@@ -67,9 +64,11 @@ import lombok.var;
 
 import java.io.File;
 import java.lang.reflect.Method;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
@@ -89,14 +88,13 @@ public class NettyServer implements Server {
     private Blade               blade;
     private Environment         environment;
     private EventLoopGroup      bossGroup;
+    private EventLoop           scheduleEventLoop;
     private EventLoopGroup      workerGroup;
     private Channel             channel;
     private RouteBuilder        routeBuilder;
     private List<BeanProcessor> processors;
     private List<BladeLoader>   loaders;
     private List<TaskStruct>    taskStruts = new ArrayList<>();
-
-    private final int padSize = 26;
 
     private volatile boolean isStop;
 
@@ -108,12 +106,18 @@ public class NettyServer implements Server {
         this.loaders = blade.loaders();
 
         long startMs = System.currentTimeMillis();
-        log.info("{} {}{}", StringKit.padRight("environment.jdk.version", padSize), getPrefixSymbol(), System.getProperty("java.version"));
-        log.info("{} {}{}", StringKit.padRight("environment.user.dir", padSize), getPrefixSymbol(), System.getProperty("user.dir"));
-        log.info("{} {}{}", StringKit.padRight("environment.java.io.tmpdir", padSize), getPrefixSymbol(), System.getProperty("java.io.tmpdir"));
-        log.info("{} {}{}", StringKit.padRight("environment.user.timezone", padSize), getPrefixSymbol(), System.getProperty("user.timezone"));
-        log.info("{} {}{}", StringKit.padRight("environment.file.encoding", padSize), getPrefixSymbol(), System.getProperty("file.encoding"));
-        log.info("{} {}{}", StringKit.padRight("environment.classpath", padSize), getPrefixSymbol(), CLASSPATH);
+
+        int padSize = 16;
+        log.info("{} {}{}", StringKit.padRight("app.env", padSize), getPrefixSymbol(), environment.get(ENV_KEY_APP_ENV, "default"));
+        log.info("{} {}{}", StringKit.padRight("app.pid", padSize), getPrefixSymbol(), BladeKit.getPID());
+        log.info("{} {}{}", StringKit.padRight("app.devMode", padSize), getPrefixSymbol(), blade.devMode());
+
+        log.info("{} {}{}", StringKit.padRight("jdk.version", padSize), getPrefixSymbol(), System.getProperty("java.version"));
+        log.info("{} {}{}", StringKit.padRight("user.dir", padSize), getPrefixSymbol(), System.getProperty("user.dir"));
+        log.info("{} {}{}", StringKit.padRight("java.io.tmpdir", padSize), getPrefixSymbol(), System.getProperty("java.io.tmpdir"));
+        log.info("{} {}{}", StringKit.padRight("user.timezone", padSize), getPrefixSymbol(), System.getProperty("user.timezone"));
+        log.info("{} {}{}", StringKit.padRight("file.encoding", padSize), getPrefixSymbol(), System.getProperty("file.encoding"));
+        log.info("{} {}{}", StringKit.padRight("app.classpath", padSize), getPrefixSymbol(), CLASSPATH);
 
         this.initConfig();
 
@@ -130,9 +134,9 @@ public class NettyServer implements Server {
 
     private void sessionCleaner() {
         if (null != blade.sessionManager()) {
-            Thread sessionCleanerThread = new Thread(new SessionCleaner(blade.sessionManager()));
-            sessionCleanerThread.setName("session-cleaner");
-            sessionCleanerThread.start();
+            scheduleEventLoop.
+                    scheduleWithFixedDelay(new SessionCleaner(blade.sessionManager()),
+                            1000, 1000, TimeUnit.MILLISECONDS);
         }
     }
 
@@ -191,13 +195,7 @@ public class NettyServer implements Server {
             sslCtx = SslContextBuilder.forServer(new File(certFilePath), new File(privateKeyPath), privateKeyPassword).build();
         }
 
-        // Configure the server.
-        int backlog = environment.getInt(ENV_KEY_NETTY_SO_BACKLOG, DEFAULT_SO_BACKLOG);
-
         var bootstrap = new ServerBootstrap();
-        bootstrap.option(ChannelOption.SO_BACKLOG, backlog);
-        bootstrap.option(ChannelOption.SO_REUSEADDR, true);
-        bootstrap.childOption(ChannelOption.SO_REUSEADDR, true);
 
         int acceptThreadCount = environment.getInt(ENC_KEY_NETTY_ACCEPT_THREAD_COUNT, DEFAULT_ACCEPT_THREAD_COUNT);
         int ioThreadCount     = environment.getInt(ENV_KEY_NETTY_IO_THREAD_COUNT, DEFAULT_IO_THREAD_COUNT);
@@ -215,12 +213,13 @@ public class NettyServer implements Server {
             log.info("{}Use NioEventLoopGroup", getStartedSymbol());
 
             this.bossGroup = new NioEventLoopGroup(acceptThreadCount, new NamedThreadFactory("boss@"));
-            this.workerGroup = new NioEventLoopGroup(ioThreadCount, new NamedThreadFactory("io@"));
+            this.workerGroup = new NioEventLoopGroup(ioThreadCount, new NamedThreadFactory("worker@"));
             bootstrap.group(bossGroup, workerGroup).channel(NioServerSocketChannel.class);
         }
 
-        bootstrap.handler(new LoggingHandler(LogLevel.DEBUG))
-                .childHandler(new HttpServerInitializer(sslCtx, blade, bossGroup.next()));
+        scheduleEventLoop = new DefaultEventLoop();
+
+        bootstrap.childHandler(new HttpServerInitializer(sslCtx, blade, scheduleEventLoop));
 
         String  address = environment.get(ENV_KEY_SERVER_ADDRESS, DEFAULT_SERVER_ADDRESS);
         Integer port    = environment.getInt(ENV_KEY_SERVER_PORT, DEFAULT_SERVER_PORT);
@@ -252,7 +251,7 @@ public class NettyServer implements Server {
         }
 
         var jobCount = new AtomicInteger();
-        for (var taskStruct: taskStruts) {
+        for (var taskStruct : taskStruts) {
             addTask(executorService, jobCount, taskStruct);
         }
     }
@@ -326,10 +325,10 @@ public class NettyServer implements Server {
     }
 
     private void watchEnv() {
-        boolean watchEnv = environment.getBoolean(ENV_KEY_APP_WATCH_ENV, true);
-        log.info("{}Watched environment: {}", getStartedSymbol(), watchEnv, getStartedSymbol());
+        boolean watchEnv = environment.getBoolean(ENV_KEY_APP_WATCH_ENV, false);
 
         if (watchEnv) {
+            log.info("{}Watched environment started", getStartedSymbol());
             var thread = new Thread(new EnvironmentWatcher());
             thread.setName("watch@thread");
             thread.start();

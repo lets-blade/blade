@@ -64,14 +64,14 @@ Run with `Maven`:
 <dependency>
     <groupId>com.bladejava</groupId>
     <artifactId>blade-mvc</artifactId>
-    <version>2.0.11.BETA</version>
+    <version>2.0.12.ALPHA</version>
 </dependency>
 ```
 
 or `Gradle`:
 
 ```sh
-compile 'com.bladejava:blade-mvc:2.0.11.BETA'
+compile 'com.bladejava:blade-mvc:2.0.12.ALPHA'
 ```
 
 Write the `main` method and the `Hello World`:

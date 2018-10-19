@@ -1,5 +1,7 @@
 package com.blade.mvc.http;
 
+import io.netty.handler.codec.http.FullHttpResponse;
+
 import java.io.InputStream;
 
 public class StreamBody implements Body {
@@ -15,8 +17,8 @@ public class StreamBody implements Body {
     }
 
     @Override
-    public void write(BodyWriter writer) {
+    public FullHttpResponse write(BodyWriter writer) {
 //        writer.onStream(content);
-        writer.onByteBuf(content);
+        return writer.onByteBuf(content);
     }
 }

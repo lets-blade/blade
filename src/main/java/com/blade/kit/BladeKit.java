@@ -36,6 +36,7 @@ import java.io.File;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.lang.invoke.SerializedLambda;
+import java.lang.management.ManagementFactory;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -364,4 +365,16 @@ public class BladeKit {
         }
         return argsMap;
     }
+
+    /**
+     * @return Get the process id of the current JVM process
+     */
+    public static Integer getPID() {
+        String mbean = ManagementFactory.getRuntimeMXBean().getName();
+        if (mbean.contains("@")) {
+            return Integer.valueOf(mbean.substring(0, mbean.indexOf("@")));
+        }
+        return -1;
+    }
+
 }

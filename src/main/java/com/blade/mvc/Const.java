@@ -31,7 +31,7 @@ public interface Const {
     int          DEFAULT_SERVER_PORT        = 9000;
     String       DEFAULT_SERVER_ADDRESS     = "0.0.0.0";
     String       LOCAL_IP_ADDRESS           = "127.0.0.1";
-    String       VERSION                    = "2.0.11.RELEASE";
+    String       VERSION                    = "2.0.12.ALPHA";
     String       WEB_JARS                   = "/webjars/";
     String       CLASSPATH                  = BladeKit.getCurrentClassPath();
     String       CONTENT_TYPE_HTML          = "text/html; charset=UTF-8";
@@ -44,6 +44,7 @@ public interface Const {
     List<String> DEFAULT_STATICS            = new ArrayList<>(
             Arrays.asList("/favicon.ico", "/robots.txt", "/static", "/upload", "/webjars/"));
 
+    @Deprecated
     String PROP_NAME0 = "classpath:app.properties";
     String PROP_NAME  = "classpath:application.properties";
 
@@ -76,13 +77,11 @@ public interface Const {
     String ENE_KEY_SSL_PRIVATE_KEY_PASS      = "server.ssl.private-key-pass";
     String ENC_KEY_NETTY_ACCEPT_THREAD_COUNT = "server.netty.accept-thread-count";
     String ENV_KEY_NETTY_IO_THREAD_COUNT     = "server.netty.io-thread-count";
-    String ENV_KEY_NETTY_SO_BACKLOG          = "server.netty.so-backlog";
 
     String ENV_KEY_BOOT_CONF        = "boot_conf";
     String ENV_KEY_AUTO_REFRESH_DIR = "app.auto.refresh.dir";
 
     // netty default config
-    int DEFAULT_SO_BACKLOG          = 1024;
     int DEFAULT_ACCEPT_THREAD_COUNT = 1;
     int DEFAULT_IO_THREAD_COUNT     = 0;
 
