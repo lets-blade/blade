@@ -162,7 +162,7 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<HttpRequest> 
                 if (null != route) {
                     webContext.setRoute(route);
                 } else {
-                    throw BladeException.wrapper(new NotFoundException(uri));
+                    throw new NotFoundException(uri);
                 }
             }
             return webContext;
