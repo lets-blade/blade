@@ -308,7 +308,7 @@ public class HttpRequest implements Request {
     }
 
     public void appendContent(HttpContent msg) {
-        this.contents.add(msg);
+        this.contents.add(msg.retain());
         if (msg instanceof LastHttpContent) {
             this.isEnd = true;
         }
