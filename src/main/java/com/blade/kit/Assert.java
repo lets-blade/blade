@@ -61,4 +61,10 @@ public final class Assert {
         }
     }
 
+    public static void packageNotEmpty(Class<?> clazz,String msg){
+        if (clazz.getPackage() == null) {
+            throw new IllegalArgumentException("[" + clazz.getName() + ".java] " + msg);
+        }
+    }
+
 }

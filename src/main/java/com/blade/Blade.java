@@ -857,6 +857,7 @@ public class Blade {
      */
     public Blade start(Class<?> bootClass, @NonNull String address, int port, String... args) {
         try {
+            Assert.packageNotEmpty(bootClass,"your main class is empty of package.");
             this.loadConfig(args);
             this.environment.set(ENV_KEY_SERVER_ADDRESS, address);
 
