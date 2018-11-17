@@ -144,8 +144,8 @@ public class StringKitTest {
     }
 
     class Bar {
-        String name;
-        int age;
+        private String name;
+        private int age;
 
         public String getName() {
             return name;
@@ -169,7 +169,7 @@ public class StringKitTest {
     }
 
     class Foo {
-        String name;
+        private String name;
 
         public String getName() {
             return name;
