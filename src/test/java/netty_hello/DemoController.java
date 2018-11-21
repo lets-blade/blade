@@ -18,10 +18,10 @@ import java.util.Map;
  * @author biezhi
  * @date 2018/4/18
  */
-@Path(singleton = false)
+@Path
 public class DemoController {
 
-    @Inject(singleton = false)
+    @Inject
     private UserService userService;
 
     @GetRoute("p")
