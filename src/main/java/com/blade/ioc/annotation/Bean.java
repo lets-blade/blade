@@ -15,6 +15,6 @@ public @interface Bean {
 
     String value() default "";
 
-    boolean prototype() default false;
+    boolean singleton() default true;
 
 }

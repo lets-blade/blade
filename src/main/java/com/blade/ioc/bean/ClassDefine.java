@@ -10,7 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public final class ClassDefine {
 
-    private static final ConcurrentHashMap<Class<?>, ClassDefine> pool = new ConcurrentHashMap<Class<?>, ClassDefine>(128);
+    private static final ConcurrentHashMap<Class<?>, ClassDefine> pool = new ConcurrentHashMap<>(128);
 
     private final Class<?> clazz;
 
@@ -54,13 +54,12 @@ public final class ClassDefine {
             return Collections.emptyList();
         }
         List<ClassDefine> results = new ArrayList<>(interfaces.length);
-        for (Class<?> intf : interfaces) {
-            results.add(ClassDefine.create(intf));
+        for (Class<?> interface_ : interfaces) {
+            results.add(ClassDefine.create(interface_));
         }
         return results;
     }
 
-    // ------------------------------------------------------------------
     public Annotation[] getAnnotations() {
         return clazz.getAnnotations();
     }
@@ -69,15 +68,10 @@ public final class ClassDefine {
         return clazz.getAnnotation(annotationClass);
     }
 
-    public <T extends Annotation> boolean isAnnotationPresent(Class<T> annotationClass) {
-        return clazz.isAnnotationPresent(annotationClass);
-    }
-
     public Field[] getDeclaredFields() {
         return clazz.getDeclaredFields();
     }
 
-    // ------------------------------------------------------------------
     public int getModifiers() {
         return clazz.getModifiers();
     }

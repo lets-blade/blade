@@ -8,9 +8,10 @@ package com.blade.ioc.bean;
  */
 public class BeanDefine {
 
-    private Object bean;
+    private Object   bean;
     private Class<?> type;
-    private boolean isPrototype;
+    private boolean  isSingleton;
+    private boolean  hasPrototypeField;
 
     public BeanDefine(Object bean) {
         this(bean, bean.getClass());
@@ -19,13 +20,13 @@ public class BeanDefine {
     public BeanDefine(Object bean, Class<?> type) {
         this.bean = bean;
         this.type = type;
-        this.isPrototype = true;
+        this.isSingleton = true;
     }
 
-    public BeanDefine(Object bean, Class<?> type, boolean isPrototype) {
+    public BeanDefine(Object bean, Class<?> type, boolean isSingleton) {
         this.bean = bean;
         this.type = type;
-        this.isPrototype = isPrototype;
+        this.isSingleton = isSingleton;
     }
 
     public Object getBean() {
@@ -44,12 +45,19 @@ public class BeanDefine {
         this.type = type;
     }
 
-    public boolean isPrototype() {
-        return isPrototype;
+    public boolean isSingleton() {
+        return isSingleton;
     }
 
-    public void setPrototype(boolean isPrototype) {
-        this.isPrototype = isPrototype;
+    public void setSingleton(boolean isSingleton) {
+        this.isSingleton = isSingleton;
     }
 
+    public boolean isHasPrototypeField() {
+        return hasPrototypeField;
+    }
+
+    public void setHasPrototypeField(boolean hasPrototypeField) {
+        this.hasPrototypeField = hasPrototypeField;
+    }
 }

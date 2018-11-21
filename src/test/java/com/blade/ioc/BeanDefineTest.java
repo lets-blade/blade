@@ -21,15 +21,15 @@ public class BeanDefineTest {
 
         Object bean = beanDefine.getBean();
         assertNotNull(bean);
-        assertEquals(true, beanDefine.isPrototype());
+        assertEquals(true, beanDefine.isSingleton());
 
-        beanDefine.setPrototype(true);
+        beanDefine.setSingleton(true);
         beanDefine.setType(BladeBeanDefineType.class);
         beanDefine.setBean(new BladeBeanDefineType());
 
         assertEquals(BladeBeanDefineType.class, type);
         assertNotNull(bean);
-        assertEquals(true, beanDefine.isPrototype());
+        assertEquals(true, beanDefine.isSingleton());
 
     }
 
@@ -40,7 +40,7 @@ public class BeanDefineTest {
 
         beanDefine = new BeanDefine(new BladeBeanDefineType(), BladeBeanDefineType.class, true);
         assertEquals(BladeBeanDefineType.class, beanDefine.getType());
-        assertEquals(true, beanDefine.isPrototype());
+        assertEquals(true, beanDefine.isSingleton());
     }
 
 }

@@ -2,6 +2,7 @@ package com.blade.ioc.bean;
 
 import com.blade.ioc.Injector;
 import com.blade.ioc.Ioc;
+import com.blade.kit.IocKit;
 
 import java.lang.reflect.Field;
 
@@ -19,6 +20,10 @@ public class FieldInjector implements Injector {
     public FieldInjector(Ioc ioc, Field field) {
         this.ioc = ioc;
         this.field = field;
+    }
+
+    public boolean isSingleton() {
+        return IocKit.isSingleton(field.getType());
     }
 
     @Override
