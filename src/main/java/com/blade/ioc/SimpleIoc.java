@@ -1,5 +1,6 @@
 package com.blade.ioc;
 
+import com.blade.ioc.annotation.Bean;
 import com.blade.ioc.bean.BeanDefine;
 import lombok.extern.slf4j.Slf4j;
 
@@ -59,7 +60,9 @@ public class SimpleIoc implements Ioc {
      */
     @Override
     public <T> T addBean(Class<T> type) {
-        Object bean = addBean(type, true);
+        Bean    beanAnnotation = type.getAnnotation(Bean.class);
+        boolean isSingleton    = null == beanAnnotation || beanAnnotation.prototype();
+        Object  bean           = addBean(type, isSingleton);
         return type.cast(bean);
     }
 
@@ -163,7 +166,7 @@ public class SimpleIoc implements Ioc {
             }
         }
 
-        return beanDefine.getBean();
+        return Objects.requireNonNull(beanDefine).getBean();
     }
 
     private BeanDefine getBeanDefine(Class<?> beanClass, boolean singleton) {
@@ -171,7 +174,7 @@ public class SimpleIoc implements Ioc {
             Object object = beanClass.newInstance();
             return new BeanDefine(object, beanClass, singleton);
         } catch (InstantiationException | IllegalAccessException e) {
-            e.printStackTrace();
+            log.error("get BeanDefine error", e);
         }
         return null;
     }

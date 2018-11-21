@@ -10,7 +10,7 @@ public class BeanDefine {
 
     private Object bean;
     private Class<?> type;
-    private boolean isSingle;
+    private boolean prototype;
 
     public BeanDefine(Object bean) {
         this(bean, bean.getClass());
@@ -19,13 +19,13 @@ public class BeanDefine {
     public BeanDefine(Object bean, Class<?> type) {
         this.bean = bean;
         this.type = type;
-        this.isSingle = true;
+        this.prototype = true;
     }
 
-    public BeanDefine(Object bean, Class<?> type, boolean isSingle) {
+    public BeanDefine(Object bean, Class<?> type, boolean prototype) {
         this.bean = bean;
         this.type = type;
-        this.isSingle = isSingle;
+        this.prototype = prototype;
     }
 
     public Object getBean() {
@@ -44,12 +44,11 @@ public class BeanDefine {
         this.type = type;
     }
 
-    public boolean isSingle() {
-        return isSingle;
+    public boolean isPrototype() {
+        return prototype;
     }
 
-    public void setSignle(boolean isSingle) {
-        this.isSingle = isSingle;
+    public void setPrototype(boolean prototype) {
+        this.prototype = prototype;
     }
-
 }
