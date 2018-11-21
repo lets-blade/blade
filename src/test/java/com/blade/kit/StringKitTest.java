@@ -30,6 +30,23 @@ public class StringKitTest {
         Assert.assertEquals(true,StringKit.isNotBlank("a","b","c"));
         Assert.assertEquals(true,StringKit.isNotBlank("abc","d ef","gh i"));
 
+        Bar bar =  new Bar();
+        StringKit.isNotBlankThen("barName", bar::setName);
+        Assert.assertEquals("barName", bar.getName());
+
+        StringKit.notBankAccept("1", Integer::parseInt, bar::setAge);
+        Assert.assertEquals(1, bar.getAge());
+
+        StringKit.notBankThen("bar", bar::doSameThing);
+
+        bar.setName("bar");
+        Foo foo = new Foo();
+        String name = StringKit.noNullElseGet(foo::getName, bar::getName);
+        Assert.assertEquals("bar", name);
+
+        foo.setName("foo");
+        String fooName = StringKit.noNullElseGet(foo::getName, bar::getName);
+        Assert.assertEquals("foo", fooName);
     }
 
     @Test
@@ -125,5 +142,43 @@ public class StringKitTest {
         Assert.assertEquals("UserName", StringKit.toCapitalizeCamelCase(a));
         Assert.assertEquals("UserNameAge", StringKit.toCapitalizeCamelCase(b));
     }
+
+    class Bar {
+        private String name;
+        private int age;
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public int getAge() {
+            return age;
+        }
+
+        public void setAge(int age) {
+            this.age = age;
+        }
+
+        public void doSameThing() {
+            System.out.println("do same thing");
+        }
+    }
+
+    class Foo {
+        private String name;
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+    }
+
 
 }
