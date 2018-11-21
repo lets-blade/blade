@@ -61,8 +61,8 @@ public class SimpleIoc implements Ioc {
     @Override
     public <T> T addBean(Class<T> type) {
         Bean    beanAnnotation = type.getAnnotation(Bean.class);
-        boolean isSingleton    = null == beanAnnotation || beanAnnotation.prototype();
-        Object  bean           = addBean(type, isSingleton);
+        boolean isPrototype    = null == beanAnnotation || beanAnnotation.prototype();
+        Object  bean           = addBean(type, isPrototype);
         return type.cast(bean);
     }
 
@@ -141,15 +141,15 @@ public class SimpleIoc implements Ioc {
     /**
      * Register @Bean marked objects
      */
-    private Object addBean(Class<?> type, boolean singleton) {
-        return addBean(type.getName(), type, singleton);
+    private Object addBean(Class<?> type, boolean isPrototype) {
+        return addBean(type.getName(), type, isPrototype);
     }
 
     /**
      * Register @Bean marked objects
      */
-    private Object addBean(String name, Class<?> beanClass, boolean singleton) {
-        BeanDefine beanDefine = this.getBeanDefine(beanClass, singleton);
+    private Object addBean(String name, Class<?> beanClass, boolean isPrototype) {
+        BeanDefine beanDefine = this.getBeanDefine(beanClass, isPrototype);
 
         if (pool.put(name, beanDefine) != null) {
             log.warn("Duplicated Bean: {}", name);
@@ -169,10 +169,10 @@ public class SimpleIoc implements Ioc {
         return Objects.requireNonNull(beanDefine).getBean();
     }
 
-    private BeanDefine getBeanDefine(Class<?> beanClass, boolean singleton) {
+    private BeanDefine getBeanDefine(Class<?> beanClass, boolean isPrototype) {
         try {
             Object object = beanClass.newInstance();
-            return new BeanDefine(object, beanClass, singleton);
+            return new BeanDefine(object, beanClass, isPrototype);
         } catch (InstantiationException | IllegalAccessException e) {
             log.error("get BeanDefine error", e);
         }

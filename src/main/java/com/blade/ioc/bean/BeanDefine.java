@@ -10,7 +10,7 @@ public class BeanDefine {
 
     private Object bean;
     private Class<?> type;
-    private boolean prototype;
+    private boolean isPrototype;
 
     public BeanDefine(Object bean) {
         this(bean, bean.getClass());
@@ -19,13 +19,13 @@ public class BeanDefine {
     public BeanDefine(Object bean, Class<?> type) {
         this.bean = bean;
         this.type = type;
-        this.prototype = true;
+        this.isPrototype = true;
     }
 
-    public BeanDefine(Object bean, Class<?> type, boolean prototype) {
+    public BeanDefine(Object bean, Class<?> type, boolean isPrototype) {
         this.bean = bean;
         this.type = type;
-        this.prototype = prototype;
+        this.isPrototype = isPrototype;
     }
 
     public Object getBean() {
@@ -45,10 +45,11 @@ public class BeanDefine {
     }
 
     public boolean isPrototype() {
-        return prototype;
+        return isPrototype;
     }
 
-    public void setPrototype(boolean prototype) {
-        this.prototype = prototype;
+    public void setPrototype(boolean isPrototype) {
+        this.isPrototype = isPrototype;
     }
+
 }
