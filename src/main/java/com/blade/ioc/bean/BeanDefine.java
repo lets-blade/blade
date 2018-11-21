@@ -11,7 +11,7 @@ public class BeanDefine {
     private Object   bean;
     private Class<?> type;
     private boolean  isSingleton;
-    private boolean  hasPrototypeField;
+    private boolean  fieldHasPrototype;
 
     public BeanDefine(Object bean) {
         this(bean, bean.getClass());
@@ -53,11 +53,11 @@ public class BeanDefine {
         this.isSingleton = isSingleton;
     }
 
-    public boolean isHasPrototypeField() {
-        return hasPrototypeField;
+    public boolean isFieldHasPrototype() {
+        return fieldHasPrototype;
     }
 
-    public void setHasPrototypeField(boolean hasPrototypeField) {
-        this.hasPrototypeField = hasPrototypeField;
+    public void setFieldHasPrototype(boolean fieldHasPrototype) {
+        this.fieldHasPrototype = fieldHasPrototype;
     }
 }

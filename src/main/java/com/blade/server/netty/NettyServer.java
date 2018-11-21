@@ -167,7 +167,7 @@ public class NettyServer implements Server {
 
         if (BladeKit.isNotEmpty(beanDefines)) {
             beanDefines.forEach(b -> {
-                IocKit.injection(ioc, b);
+                IocKit.initInjection(ioc, b);
                 IocKit.injectionValue(environment, b);
                 List<TaskStruct> cronExpressions = BladeKit.getTasks(b.getType());
                 if (null != cronExpressions) {

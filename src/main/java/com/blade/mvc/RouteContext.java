@@ -15,6 +15,7 @@
  */
 package com.blade.mvc;
 
+import com.blade.ioc.bean.BeanDefine;
 import com.blade.kit.IocKit;
 import com.blade.mvc.http.Body;
 import com.blade.mvc.http.Request;
@@ -527,8 +528,14 @@ public class RouteContext {
         boolean singleton = IocKit.isSingleton(route.getTargetType());
 
         if (singleton) {
-            Object target = WebContext.blade().ioc().getBean(route.getTargetType());
-            this.route.setTarget(target);
+            BeanDefine beanDefine = WebContext.blade().ioc().getBeanDefine(route.getTargetType());
+            if(beanDefine.isFieldHasPrototype()){
+                // reset initialize
+                IocKit.injection(WebContext.blade().ioc(), beanDefine);
+            } else {
+                Object target = WebContext.blade().ioc().getBean(route.getTargetType());
+                this.route.setTarget(target);
+            }
         } else {
             Object target = WebContext.blade().ioc().createBean(route.getTargetType());
             this.route.setTarget(target);

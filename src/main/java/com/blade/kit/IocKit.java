@@ -25,6 +25,7 @@ import com.blade.ioc.bean.BeanDefine;
 import com.blade.ioc.bean.ClassDefine;
 import com.blade.ioc.bean.FieldInjector;
 import com.blade.ioc.bean.ValueInjector;
+import com.blade.mvc.WebContext;
 import com.blade.mvc.annotation.Path;
 import lombok.experimental.UtilityClass;
 
@@ -51,7 +52,7 @@ public class IocKit {
      * @return return FieldInjector
      */
     private static List<FieldInjector> getInjectFields(Ioc ioc, ClassDefine classDefine) {
-        List<FieldInjector> injectors = new ArrayList<>(8);
+        List<FieldInjector> injectors = new ArrayList<>();
         for (Field field : classDefine.getDeclaredFields()) {
             if (null != field.getAnnotation(InjectWith.class) || null != field.getAnnotation(Inject.class)) {
                 injectors.add(new FieldInjector(ioc, field));
@@ -93,15 +94,32 @@ public class IocKit {
         List<FieldInjector> fieldInjectors = getInjectFields(ioc, classDefine);
 
         Object bean = beanDefine.getBean();
+        fieldInjectors.forEach(fieldInjector -> {
+            Object fieldInstance = ReflectKit.newInstance(fieldInjector.getType());
+            if (fieldInjector.hasInjectFields()) {
+                injection(ioc, new BeanDefine(fieldInstance));
+            }
+            fieldInjector.injection(bean, fieldInstance);
+        });
+    }
+
+    public static void initInjection(Ioc ioc, BeanDefine beanDefine) {
+        ClassDefine         classDefine    = ClassDefine.create(beanDefine.getType());
+        List<FieldInjector> fieldInjectors = getInjectFields(ioc, classDefine);
+
+        Object bean = beanDefine.getBean();
 
         AtomicBoolean hasPrototypeField = new AtomicBoolean(false);
 
-        fieldInjectors.stream().filter(FieldInjector::isSingleton).forEach(fieldInjector -> {
-            fieldInjector.injection(bean);
-            hasPrototypeField.set(true);
+        fieldInjectors.forEach(fieldInjector -> {
+            if (fieldInjector.isSingleton()) {
+                fieldInjector.injection(bean);
+            } else {
+                hasPrototypeField.set(true);
+            }
         });
 
-        beanDefine.setHasPrototypeField(hasPrototypeField.get());
+        beanDefine.setFieldHasPrototype(hasPrototypeField.get());
     }
 
     public static void injectionValue(Environment environment, BeanDefine beanDefine) {

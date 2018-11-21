@@ -74,7 +74,7 @@ public class SimpleIoc implements Ioc {
     @Override
     public Object createBean(Class<?> type) {
         BeanDefine beanDefine = createBeanDefine(type, true);
-        IocKit.injection(this, Objects.requireNonNull(beanDefine));
+        IocKit.initInjection(this, Objects.requireNonNull(beanDefine));
         IocKit.injectionValue(WebContext.blade().environment(), beanDefine);
         return beanDefine.getBean();
     }
