@@ -47,7 +47,11 @@ public class MergeRequestHandler extends SimpleChannelInboundHandler<HttpObject>
             httpRequest.appendContent((HttpContent) msg);
         }
         if (msg instanceof LastHttpContent) {
-            ctx.fireChannelRead(httpRequest);
+            if (null != httpRequest) {
+                ctx.fireChannelRead(httpRequest);
+            } else {
+                ctx.fireChannelRead(msg);
+            }
         }
     }
 
