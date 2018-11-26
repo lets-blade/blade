@@ -27,8 +27,6 @@ import com.blade.mvc.route.Route;
 import com.blade.server.netty.HttpConst;
 import com.blade.server.netty.HttpServerHandler;
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufAllocator;
-import io.netty.buffer.CompositeByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.handler.codec.http.*;
 import io.netty.handler.codec.http.cookie.ServerCookieDecoder;
@@ -56,8 +54,8 @@ import java.util.*;
 @NoArgsConstructor
 public class HttpRequest implements Request {
 
-    private static final HttpDataFactory factory =
-            new DefaultHttpDataFactory(DefaultHttpDataFactory.MINSIZE); // Disk if size exceed
+    private static final HttpDataFactory HTTP_DATA_FACTORY =
+            new DefaultHttpDataFactory(true); // Disk if size exceed
 
     private static final ByteBuf EMPTY_BUF = Unpooled.copiedBuffer("", CharsetUtil.UTF_8);
 
@@ -348,22 +346,22 @@ public class HttpRequest implements Request {
         }
 
         try {
-            HttpPostRequestDecoder decoder = new HttpPostRequestDecoder(factory, nettyRequest);
+            HttpPostRequestDecoder decoder = new HttpPostRequestDecoder(HTTP_DATA_FACTORY, nettyRequest);
             this.isMultipart = decoder.isMultipart();
 
-            List<ByteBuf> byteBufs = new ArrayList<>(this.contents.size());
+            List<ByteBuf> byteBuffs = new ArrayList<>(this.contents.size());
 
             for (HttpContent content : this.contents) {
                 if (!isMultipart) {
-                    byteBufs.add(content.content().copy());
+                    byteBuffs.add(content.content().copy());
                 }
 
                 decoder.offer(content);
                 this.readHttpDataChunkByChunk(decoder);
                 content.release();
             }
-            if (!byteBufs.isEmpty()) {
-                this.body = Unpooled.copiedBuffer(byteBufs.stream().toArray(ByteBuf[]::new));
+            if (!byteBuffs.isEmpty()) {
+                this.body = Unpooled.copiedBuffer(byteBuffs.toArray(new ByteBuf[0]));
             }
         } catch (Exception e) {
             throw new HttpParseException("build decoder fail", e);
