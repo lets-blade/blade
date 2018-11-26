@@ -10,10 +10,10 @@ import lombok.Data;
 @Value(name = "app")
 @Data
 public class AppInfo {
-    private String users;
-    private String maxMoney;
-    private String sex;
-    private String hits;
+    private int users;
+    private double maxMoney;
+    private boolean sex;
+    private Long hits;
     private String startDate;
-
+    private int age;
 }

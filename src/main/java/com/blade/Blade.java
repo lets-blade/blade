@@ -849,11 +849,11 @@ public class Blade {
      */
     public Blade start(Class<?> mainCls, String... args) {
         try {
-            Assert.packageNotEmpty(mainCls,"your main class is empty of package.");
             this.loadConfig(args);
 
             this.bootClass = mainCls;
             eventManager.fireEvent(EventType.SERVER_STARTING, new Event().attribute("blade", this));
+
             Thread thread = new Thread(() -> {
                 try {
                     server.start(Blade.this);

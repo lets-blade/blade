@@ -2,6 +2,8 @@ package com.blade.ioc.bean;
 
 import com.blade.Environment;
 import com.blade.ioc.Injector;
+import com.blade.kit.ReflectKit;
+import com.blade.kit.StringKit;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Field;
@@ -15,8 +17,8 @@ import java.util.*;
 @Slf4j
 public class ValueInjector implements Injector {
     private Environment environment;
-    private Field       target;
-    private String      key;
+    private Field target;
+    private String key;
 
     public ValueInjector(Environment environment, Field target, String key) {
         this.environment = environment;
@@ -30,32 +32,40 @@ public class ValueInjector implements Injector {
             if (!key.isEmpty()) {
                 Class<?> clazz = target.getType();
                 target.setAccessible(true);
-                Optional<String> value = environment.get(key);
-                if (!value.isPresent()) {
+                Optional<String> fieldValue = environment.get(key);
+                if (!fieldValue.isPresent()) {
                     log.warn("config is absent,so can't be injected:target is {}", bean.getClass().getName());
                     return;
                 }
-                if (value.get().isEmpty()) {
+
+                if (fieldValue.get().isEmpty()) {
                     log.warn("config is empty,so can't be injected:target is {}", bean.getClass().getName());
                     return;
                 }
-                //target field type is String
-                if (clazz.isAssignableFrom(String.class)) {
-                    target.set(bean, value.isPresent() ? value.get() : "");
-                    return;
+
+                Object value = null;
+
+                //target field type is Basic Type
+                if (ReflectKit.isBasicType(clazz)) {
+                    if (fieldValue.isPresent() && StringKit.isNotBlank(fieldValue.get())) {
+                        value = ReflectKit.convert(clazz, fieldValue.get());
+                    }
+                    if (null != value) {
+                        ReflectKit.setFieldValue(target, bean, value);
+                    }
                 }
 
                 //List and Map support,just support String element
-                String split    = environment.get("value.split", ",");
+                String split = environment.get("value.split", ",");
                 String mapSplit = environment.get("value.map.split", ":");
                 if (clazz.isAssignableFrom(List.class)) {
-                    target.set(bean, Arrays.asList(value.get().split(split)));
+                    target.set(bean, Arrays.asList(fieldValue.get().split(split)));
                     return;
                 }
-                Map<String, String> map = new HashMap(16);
+                Map<String, String> map = new HashMap<>(16);
                 if (clazz.isAssignableFrom(Map.class)) {
-                    Arrays.stream(value.get().split(split))
-                            .filter(d -> d.indexOf(mapSplit) != -1)
+                    Arrays.stream(fieldValue.get().split(split))
+                            .filter(d -> d.contains(mapSplit))
                             .map(d -> d.split(mapSplit))
                             .forEach(keyValue -> map.put(keyValue[0], keyValue[1]));
                     target.set(bean, map);
