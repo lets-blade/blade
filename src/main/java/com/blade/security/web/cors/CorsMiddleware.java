@@ -47,7 +47,7 @@ public class CorsMiddleware implements WebHook {
         }
 
         String heads = corsConfig.getAllowedHeaders().stream().collect(Collector.of(
-            () -> new StringJoiner(", "),
+            () -> new StringJoiner(","),
             (j, head) -> j.add(head),
             StringJoiner::merge,
             StringJoiner::toString
