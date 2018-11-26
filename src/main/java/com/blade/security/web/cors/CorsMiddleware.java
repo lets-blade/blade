@@ -98,7 +98,7 @@ public class CorsMiddleware implements WebHook {
                 CorsConfiger.DEFAULT_MAX_AGE.toString());
             return this;
         }
-        context.header(HttpHeaderNames.ACCESS_CONTROL_MAX_AGE.toString(), corsConfig.getMaxAge().toString());
+        context.header("Access-Control-Max-Age", corsConfig.getMaxAge().toString());
         return this;
     }
 
