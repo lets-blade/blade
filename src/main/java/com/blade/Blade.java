@@ -535,17 +535,17 @@ public class Blade {
      * @return blade
      */
     public Blade enableCors(boolean enableCors) {
-        this.enableCors(new CorsConfiger(), enableCors);
+        this.enableCors(enableCors, new CorsConfiger());
         return this;
     }
 
     /**
      * Set whether to config  cors
-     * @param corsConfig config cors
      * @param enableCors enable cors
+     * @param corsConfig config cors
      * @return blade
      */
-    public Blade enableCors(CorsConfiger corsConfig, boolean enableCors) {
+    public Blade enableCors(boolean enableCors, CorsConfiger corsConfig) {
         this.environment.set(ENV_KEY_CORS_ENABLE, enableCors);
         if (enableCors) {
             this.use(new CorsMiddleware(corsConfig));
