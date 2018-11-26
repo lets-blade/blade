@@ -2,9 +2,7 @@ package com.blade.security.web.cors;
 
 import com.blade.mvc.RouteContext;
 import com.blade.mvc.hook.WebHook;
-import com.blade.mvc.http.Request;
 import io.netty.handler.codec.http.HttpHeaderNames;
-import io.netty.util.internal.StringUtil;
 import java.util.StringJoiner;
 import java.util.stream.Collector;
 import lombok.extern.slf4j.Slf4j;
@@ -31,7 +29,7 @@ public class CorsMiddleware implements WebHook {
     public boolean before(RouteContext context) {
         this.allowCredentials(context)
             .allowMethods(context)
-            .allowOrigin(context)
+            .allowHeads(context)
             .setMaxAge(context)
             .allowCredentials(context);
         if ("OPTIONS".equals(context.method())) {
@@ -40,20 +38,30 @@ public class CorsMiddleware implements WebHook {
         return true;
     }
 
-    private CorsMiddleware allowOrigin(RouteContext context) {
-        Request request = context.request();
-        String originUrl = request.header(HttpHeaderNames.ORIGIN.toString());
-        if (StringUtil.isNullOrEmpty(originUrl)) {
-            originUrl = CorsConfiger.ALL;
+    private CorsMiddleware allowHeads(RouteContext context) {
+        boolean isDefaultAllowHeads = corsConfig == null || corsConfig.getAllowedHeaders() == null
+            || corsConfig.getAllowedHeaders().size() == 0;
+
+        if (isDefaultAllowHeads) {
+            context.response().header("Access-Control-Allow-Headers", CorsConfiger.ALL);
+            return this;
         }
-        context.header("Access-Control-Allow-Headers", originUrl);
+
+        String heads = corsConfig.getAllowedHeaders().stream().collect(Collector.of(
+            () -> new StringJoiner(", "),
+            (j, head) -> j.add(head.toUpperCase()),
+            StringJoiner::merge,
+            StringJoiner::toString
+        ));
+        context.response().header("Access-Control-Allow-Headers", heads);
         return this;
     }
 
     private CorsMiddleware allowMethods(RouteContext context) {
-        if (corsConfig == null || corsConfig.getAllowedMethods() == null
-            || corsConfig.getAllowedMethods().size() == 0) {
+        boolean isDefaultAllowMethods = corsConfig == null || corsConfig.getAllowedMethods() == null
+            || corsConfig.getAllowedMethods().size() == 0;
 
+        if (isDefaultAllowMethods) {
             context.header("Access-Control-Allow-Methods",
                 CorsConfiger.DEFAULT_ALLOWED_METHODS);
             return this;
@@ -65,12 +73,15 @@ public class CorsMiddleware implements WebHook {
             StringJoiner::merge,
             StringJoiner::toString
         ));
+
         context.response().header("Access-Control-Allow-Methods", methods);
         return this;
     }
 
     private CorsMiddleware allowCredentials(RouteContext context) {
-        if (corsConfig == null || corsConfig.getAllowCredentials() == null) {
+        boolean isDefaultAllowCredentials = corsConfig == null || corsConfig.getAllowCredentials() == null;
+
+        if (isDefaultAllowCredentials) {
             context.header("Access-Control-Allow-Credentials",
                 CorsConfiger.DEFAULT_ALLOW_CREDENTIALS);
             return this;
@@ -81,8 +92,8 @@ public class CorsMiddleware implements WebHook {
     }
 
     private CorsMiddleware setMaxAge(RouteContext context) {
-
-        if (corsConfig == null || corsConfig.getMaxAge() == null) {
+        boolean isDefaultMaxAge = corsConfig == null || corsConfig.getMaxAge() == null;
+        if (isDefaultMaxAge) {
             context.response().header("Access-Control-Max-Age",
                 CorsConfiger.DEFAULT_MAX_AGE.toString());
             return this;
