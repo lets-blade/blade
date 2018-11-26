@@ -2,7 +2,6 @@ package com.blade.security.web.cors;
 
 import com.blade.mvc.RouteContext;
 import com.blade.mvc.hook.WebHook;
-import io.netty.handler.codec.http.HttpHeaderNames;
 import java.util.StringJoiner;
 import java.util.stream.Collector;
 import lombok.extern.slf4j.Slf4j;
