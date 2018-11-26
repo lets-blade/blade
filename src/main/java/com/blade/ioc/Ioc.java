@@ -37,6 +37,8 @@ public interface Ioc {
      */
     <T> T addBean(Class<T> type);
 
+    Object createBean(Class<?> type);
+
     /**
      * Set bean, e.g aop proxy
      *

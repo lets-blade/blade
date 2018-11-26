@@ -1,5 +1,6 @@
 package netty_hello;
 
+import com.blade.ioc.annotation.Inject;
 import com.blade.mvc.annotation.*;
 import com.blade.mvc.http.Request;
 import com.blade.mvc.http.Response;
@@ -20,9 +21,13 @@ import java.util.Map;
 @Path
 public class DemoController {
 
+    @Inject
+    private UserService userService;
+
     @GetRoute("p")
     public void p(@Param String p1) {
         System.out.println(p1);
+        userService.sayHello();
     }
 
     @Route("hi/:a/:b/:c")

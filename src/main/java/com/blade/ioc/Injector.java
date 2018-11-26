@@ -15,4 +15,6 @@ public interface Injector {
      */
     void injection(Object bean);
 
+    void injection(Object bean, Object value);
+
 }

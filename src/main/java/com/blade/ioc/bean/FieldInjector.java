@@ -2,6 +2,7 @@ package com.blade.ioc.bean;
 
 import com.blade.ioc.Injector;
 import com.blade.ioc.Ioc;
+import com.blade.kit.IocKit;
 
 import java.lang.reflect.Field;
 
@@ -21,6 +22,14 @@ public class FieldInjector implements Injector {
         this.field = field;
     }
 
+    public Class<?> getType() {
+        return field.getType();
+    }
+
+    public boolean isSingleton() {
+        return IocKit.isSingleton(field.getType());
+    }
+
     @Override
     public void injection(Object bean) {
         try {
@@ -29,11 +38,24 @@ public class FieldInjector implements Injector {
             if (value == null) {
                 throw new IllegalStateException("Can't inject bean: " + fieldType.getName() + " for field: " + field);
             }
+            injection(bean, value);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void injection(Object bean, Object value) {
+        try {
             field.setAccessible(true);
             field.set(bean, value);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public boolean hasInjectFields() {
+        return field.getType().getDeclaredFields().length > 0;
     }
 
 }

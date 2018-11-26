@@ -849,6 +849,7 @@ public class Blade {
      */
     public Blade start(Class<?> mainCls, String... args) {
         try {
+            Assert.packageNotEmpty(mainCls,"your main class is empty of package.");
             this.loadConfig(args);
 
             this.bootClass = mainCls;
