@@ -1,6 +1,9 @@
 package com.blade.kit;
 
 import com.blade.mvc.multipart.MimeType;
+import java.util.function.Function;
+import java.util.function.Supplier;
+import lombok.NonNull;
 import lombok.experimental.UtilityClass;
 
 import java.util.Random;
@@ -72,9 +75,77 @@ public class StringKit {
      * @param consumer consumer
      */
     public static void isNotBlankThen(String str, Consumer<String> consumer) {
-        if (!isBlank(str)) {
+        notBankAccept(str, Function.identity(), consumer);
+    }
+
+    /**
+     * Execute consumer when the string is empty
+     *
+     * @param str      string value
+     * @param consumer consumer
+     */
+    public static void isBlankThen(String str, Consumer<String> consumer) {
+        if (isBlank(str)) {
             consumer.accept(str);
         }
+    }
+
+
+    /**
+     *
+     * we can replace
+     * `
+     * if（StringUtils.isNotBlank(str)） {
+     *      Integer i = Integer.parseInt (str)
+     *     demo.setAge(i)
+     * }
+     * `
+     * with
+     * `
+     *  notBankAccept ("2", Integer::parseInt, route::setSort)
+     * `
+     * @param str string value
+     * @param consumer consumer
+     * @param function format
+     */
+
+    public static <R> void notBankAccept(String str, Function<String, R> function, Consumer<R> consumer) {
+        if (isNotBlank(str)) {
+            R r = function.apply(str);
+            consumer.accept(r);
+        }
+    }
+
+    /**
+     * Execute action when String is not empty
+     * @param str String value
+     * @param action action
+     */
+    public static void notBankThen(String str, Runnable action) {
+        if (isNotBlank(str)) {
+            action.run();
+        }
+    }
+
+    /**
+     * we can replace
+     * if（doMethod1()!= null） {
+     *     return doMethod1()
+     * } else {
+     *      return doMethod2()
+     * }
+     * with
+     * return notBlankElse(bar::getName, bar::getNickName)
+     * @param s1 Supplier
+     * @param s2 Supplier
+     */
+
+    public static <T> T noNullElseGet(@NonNull Supplier<T> s1, @NonNull Supplier<T> s2) {
+        T t1 = s1.get();
+        if (t1 != null) {
+            return t1;
+        }
+        return s2.get();
     }
 
     /**
@@ -95,17 +166,6 @@ public class StringKit {
         return !isEmpty(str);
     }
 
-    /**
-     * Execute consumer when the string is empty
-     *
-     * @param str      string value
-     * @param consumer consumer
-     */
-    public static void isBlankThen(String str, Consumer<String> consumer) {
-        if (isBlank(str)) {
-            consumer.accept(str);
-        }
-    }
 
     /**
      * There is at least one null in the array of strings
@@ -152,6 +212,8 @@ public class StringKit {
             return s;
         return s + dup(c, width - length);
     }
+
+
 
     /**
      * Fill a certain number of special characters on the left side of the string

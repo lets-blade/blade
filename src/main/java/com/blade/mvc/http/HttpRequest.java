@@ -54,8 +54,8 @@ import java.util.*;
 @NoArgsConstructor
 public class HttpRequest implements Request {
 
-    private static final HttpDataFactory factory =
-            new DefaultHttpDataFactory(DefaultHttpDataFactory.MINSIZE); // Disk if size exceed
+    private static final HttpDataFactory HTTP_DATA_FACTORY =
+            new DefaultHttpDataFactory(true); // Disk if size exceed
 
     private static final ByteBuf EMPTY_BUF = Unpooled.copiedBuffer("", CharsetUtil.UTF_8);
 
@@ -69,11 +69,11 @@ public class HttpRequest implements Request {
     }
 
     private ByteBuf body = EMPTY_BUF;
-    private String  remoteAddress;
-    private String  uri;
-    private String  url;
-    private String  protocol;
-    private String  method;
+    private String remoteAddress;
+    private String uri;
+    private String url;
+    private String protocol;
+    private String method;
     private boolean keepAlive;
     private Session session;
 
@@ -87,16 +87,16 @@ public class HttpRequest implements Request {
     private HttpHeaders httpHeaders;
 
     private io.netty.handler.codec.http.HttpRequest nettyRequest;
-    private HttpPostRequestDecoder                  decoder;
+    private HttpPostRequestDecoder decoder;
 
     private Queue<HttpContent> contents = new LinkedList<>();
 
-    private Map<String, String>       headers    = null;
-    private Map<String, Object>       attributes = null;
-    private Map<String, String>       pathParams = null;
+    private Map<String, String> headers = null;
+    private Map<String, Object> attributes = null;
+    private Map<String, String> pathParams = null;
     private Map<String, List<String>> parameters = new HashMap<>(8);
-    private Map<String, Cookie>       cookies    = new HashMap<>(8);
-    private Map<String, FileItem>     fileItems  = new HashMap<>(8);
+    private Map<String, Cookie> cookies = new HashMap<>(8);
+    private Map<String, FileItem> fileItems = new HashMap<>(8);
 
     public HttpRequest(Request request) {
         this.pathParams = request.pathParams();
@@ -165,18 +165,20 @@ public class HttpRequest implements Request {
 
     @Override
     public Map<String, List<String>> parameters() {
-        if (!initQueryParam) {
-            initQueryParam = true;
-            if (!url.contains("?")) {
-                return this.parameters;
-            }
+        if (initQueryParam) {
+            return this.parameters;
+        }
 
-            var parameters =
-                    new QueryStringDecoder(url, CharsetUtil.UTF_8).parameters();
+        initQueryParam = true;
+        if (!url.contains("?")) {
+            return this.parameters;
+        }
 
-            if (null != parameters) {
-                this.parameters.putAll(parameters);
-            }
+        var parameters =
+                new QueryStringDecoder(url, CharsetUtil.UTF_8).parameters();
+
+        if (null != parameters) {
+            this.parameters.putAll(parameters);
         }
         return this.parameters;
     }
@@ -344,15 +346,22 @@ public class HttpRequest implements Request {
         }
 
         try {
-            HttpPostRequestDecoder decoder = new HttpPostRequestDecoder(factory, nettyRequest);
+            HttpPostRequestDecoder decoder = new HttpPostRequestDecoder(HTTP_DATA_FACTORY, nettyRequest);
             this.isMultipart = decoder.isMultipart();
+
+            List<ByteBuf> byteBuffs = new ArrayList<>(this.contents.size());
+
             for (HttpContent content : this.contents) {
-                if (!isMultipart && content instanceof LastHttpContent) {
-                    this.body = content.duplicate().content().copy();
+                if (!isMultipart) {
+                    byteBuffs.add(content.content().copy());
                 }
+
                 decoder.offer(content);
                 this.readHttpDataChunkByChunk(decoder);
                 content.release();
+            }
+            if (!byteBuffs.isEmpty()) {
+                this.body = Unpooled.copiedBuffer(byteBuffs.toArray(new ByteBuf[0]));
             }
         } catch (Exception e) {
             throw new HttpParseException("build decoder fail", e);
@@ -405,7 +414,7 @@ public class HttpRequest implements Request {
     }
 
     private void parseAttribute(Attribute attribute) throws IOException {
-        var name  = attribute.getName();
+        var name = attribute.getName();
         var value = attribute.getValue();
 
         List<String> values;
@@ -465,7 +474,4 @@ public class HttpRequest implements Request {
         this.cookies.put(cookie.name(), cookie);
     }
 
-    public HttpPostRequestDecoder getDecoder() {
-        return decoder;
-    }
 }

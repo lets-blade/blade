@@ -51,9 +51,11 @@ import com.blade.task.cron.CronExpression;
 import com.blade.task.cron.CronThreadPoolExecutor;
 import com.blade.watcher.EnvironmentWatcher;
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.*;
+import io.netty.channel.Channel;
+import io.netty.channel.DefaultEventLoop;
+import io.netty.channel.EventLoop;
+import io.netty.channel.EventLoopGroup;
 import io.netty.channel.epoll.EpollChannelOption;
-import io.netty.channel.nio.NioEventLoop;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.ssl.SslContext;
@@ -64,7 +66,6 @@ import lombok.var;
 
 import java.io.File;
 import java.lang.reflect.Method;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
@@ -150,7 +151,7 @@ public class NettyServer implements Server {
                 .flatMap(DynamicContext::recursionFindClasses)
                 .map(ClassInfo::getClazz)
                 .filter(ReflectKit::isNormalClass)
-                .forEach(this::parseCls);
+                .forEach(this::parseAndCreate);
 
         routeMatcher.register();
 
@@ -166,8 +167,8 @@ public class NettyServer implements Server {
 
         if (BladeKit.isNotEmpty(beanDefines)) {
             beanDefines.forEach(b -> {
-                BladeKit.injection(ioc, b);
-                BladeKit.injectionValue(environment, b);
+                IocKit.initInjection(ioc, b);
+                IocKit.injectionValue(environment, b);
                 List<TaskStruct> cronExpressions = BladeKit.getTasks(b.getType());
                 if (null != cronExpressions) {
                     taskStruts.addAll(cronExpressions);
@@ -285,25 +286,26 @@ public class NettyServer implements Server {
         }
     }
 
-    private void parseCls(Class<?> clazz) {
+    private void parseAndCreate(Class<?> clazz) {
         if (null != clazz.getAnnotation(Bean.class) || null != clazz.getAnnotation(Value.class)) {
             blade.register(clazz);
         }
         if (null != clazz.getAnnotation(Path.class)) {
-            if (null == blade.ioc().getBean(clazz)) {
+            Path path = clazz.getAnnotation(Path.class);
+            if (path.singleton() && null == blade.ioc().getBean(clazz)) {
                 blade.register(clazz);
             }
             Object controller = blade.ioc().getBean(clazz);
             routeBuilder.addRouter(clazz, controller);
         }
+
         if (ReflectKit.hasInterface(clazz, WebHook.class) && null != clazz.getAnnotation(Bean.class)) {
-            Object     hook       = blade.ioc().getBean(clazz);
             URLPattern URLPattern = clazz.getAnnotation(URLPattern.class);
             if (null == URLPattern) {
-                routeBuilder.addWebHook(clazz, "/.*", hook);
+                routeBuilder.addWebHook(clazz, "/.*");
             } else {
                 Stream.of(URLPattern.values())
-                        .forEach(pattern -> routeBuilder.addWebHook(clazz, pattern, hook));
+                        .forEach(pattern -> routeBuilder.addWebHook(clazz, pattern));
             }
         }
 

@@ -32,6 +32,12 @@ public @interface Path {
     boolean restful() default false;
 
     /**
+     * @return Whether to create a controller as a singleton, the default is.
+     * When false, a new controller instance is created for each request.
+     */
+    boolean singleton() default true;
+
+    /**
      * @return path description
      */
     String description() default "";

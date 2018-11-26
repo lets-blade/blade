@@ -35,6 +35,7 @@ import com.blade.mvc.http.session.SessionManager;
 import com.blade.mvc.route.RouteMatcher;
 import com.blade.mvc.ui.template.DefaultEngine;
 import com.blade.mvc.ui.template.TemplateEngine;
+import com.blade.security.web.cors.CorsConfiger;
 import com.blade.security.web.cors.CorsMiddleware;
 import com.blade.server.Server;
 import com.blade.server.netty.NettyServer;
@@ -534,9 +535,20 @@ public class Blade {
      * @return blade
      */
     public Blade enableCors(boolean enableCors) {
+        this.enableCors(enableCors, new CorsConfiger());
+        return this;
+    }
+
+    /**
+     * Set whether to config  cors
+     * @param enableCors enable cors
+     * @param corsConfig config cors
+     * @return blade
+     */
+    public Blade enableCors(boolean enableCors, CorsConfiger corsConfig) {
         this.environment.set(ENV_KEY_CORS_ENABLE, enableCors);
         if (enableCors) {
-            this.use(new CorsMiddleware());
+            this.use(new CorsMiddleware(corsConfig));
         }
         return this;
     }
@@ -841,6 +853,7 @@ public class Blade {
 
             this.bootClass = mainCls;
             eventManager.fireEvent(EventType.SERVER_STARTING, new Event().attribute("blade", this));
+
             Thread thread = new Thread(() -> {
                 try {
                     server.start(Blade.this);

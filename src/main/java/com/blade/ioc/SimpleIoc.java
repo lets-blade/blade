@@ -1,6 +1,9 @@
 package com.blade.ioc;
 
+import com.blade.ioc.annotation.Bean;
 import com.blade.ioc.bean.BeanDefine;
+import com.blade.kit.IocKit;
+import com.blade.mvc.WebContext;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
@@ -30,12 +33,12 @@ public class SimpleIoc implements Ioc {
     @Override
     public void addBean(String name, Object bean) {
         BeanDefine beanDefine = new BeanDefine(bean);
-        addBean(name, beanDefine);
-        // add interface
+        put(name, beanDefine);
+        // add interface、put to pool
         Class<?>[] interfaces = beanDefine.getType().getInterfaces();
         if (interfaces.length > 0) {
             for (Class<?> interfaceClazz : interfaces) {
-                this.addBean(interfaceClazz.getName(), beanDefine);
+                this.put(interfaceClazz.getName(), beanDefine);
             }
         }
     }
@@ -59,8 +62,21 @@ public class SimpleIoc implements Ioc {
      */
     @Override
     public <T> T addBean(Class<T> type) {
-        Object bean = addBean(type, true);
-        return type.cast(bean);
+        Bean    beanAnnotation = type.getAnnotation(Bean.class);
+        boolean isSingleton    = null == beanAnnotation || beanAnnotation.singleton();
+        if (isSingleton) {
+            Object bean = put(type, true);
+            return type.cast(bean);
+        }
+        return null;
+    }
+
+    @Override
+    public Object createBean(Class<?> type) {
+        BeanDefine beanDefine = createBeanDefine(type, true);
+        IocKit.initInjection(this, Objects.requireNonNull(beanDefine));
+        IocKit.injectionValue(WebContext.blade().environment(), beanDefine);
+        return beanDefine.getBean();
     }
 
     @Override
@@ -69,7 +85,7 @@ public class SimpleIoc implements Ioc {
         try {
             return type.cast(bean);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("get bean error", e);
         }
         return null;
     }
@@ -90,7 +106,7 @@ public class SimpleIoc implements Ioc {
 
     @Override
     public BeanDefine getBeanDefine(Class<?> type) {
-        return this.getBeanDefine(type, true);
+        return pool.get(type.getName());
     }
 
     @Override
@@ -129,7 +145,7 @@ public class SimpleIoc implements Ioc {
     /**
      * Add user-defined objects
      */
-    private void addBean(String name, BeanDefine beanDefine) {
+    private void put(String name, BeanDefine beanDefine) {
         if (pool.put(name, beanDefine) != null) {
             log.warn("Duplicated Bean: {}", name);
         }
@@ -138,40 +154,40 @@ public class SimpleIoc implements Ioc {
     /**
      * Register @Bean marked objects
      */
-    private Object addBean(Class<?> type, boolean singleton) {
-        return addBean(type.getName(), type, singleton);
+    private Object put(Class<?> type, boolean isSingleton) {
+        return put(type.getName(), type, isSingleton);
     }
 
     /**
      * Register @Bean marked objects
      */
-    private Object addBean(String name, Class<?> beanClass, boolean singleton) {
-        BeanDefine beanDefine = this.getBeanDefine(beanClass, singleton);
+    private Object put(String name, Class<?> beanClass, boolean isSingleton) {
+        BeanDefine beanDefine = this.createBeanDefine(beanClass, isSingleton);
 
         if (pool.put(name, beanDefine) != null) {
             log.warn("Duplicated Bean: {}", name);
         }
 
-        // add interface
+        // add interface、put to pool
         Class<?>[] interfaces = beanClass.getInterfaces();
         if (interfaces.length > 0) {
             for (Class<?> interfaceClazz : interfaces) {
                 if (null != this.getBean(interfaceClazz)) {
                     break;
                 }
-                this.addBean(interfaceClazz.getName(), beanDefine);
+                this.put(interfaceClazz.getName(), beanDefine);
             }
         }
 
-        return beanDefine.getBean();
+        return Objects.requireNonNull(beanDefine).getBean();
     }
 
-    private BeanDefine getBeanDefine(Class<?> beanClass, boolean singleton) {
+    private BeanDefine createBeanDefine(Class<?> beanClass, boolean isSingleton) {
         try {
             Object object = beanClass.newInstance();
-            return new BeanDefine(object, beanClass, singleton);
+            return new BeanDefine(object, beanClass, isSingleton);
         } catch (InstantiationException | IllegalAccessException e) {
-            e.printStackTrace();
+            log.error("get BeanDefine error", e);
         }
         return null;
     }

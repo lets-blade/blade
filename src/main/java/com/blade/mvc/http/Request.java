@@ -318,7 +318,7 @@ public interface Request {
      * @return Return current request is a AJAX request
      */
     default boolean isAjax() {
-        return "XMLHttpRequest".equals(header("x-requested-with"));
+        return "XMLHttpRequest".equals(header("X-Requested-With")) || "XMLHttpRequest".equals(header("x-requested-with"));
     }
 
     /**
