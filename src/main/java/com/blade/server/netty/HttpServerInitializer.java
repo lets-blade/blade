@@ -29,10 +29,9 @@ public class HttpServerInitializer extends ChannelInitializer<SocketChannel> {
     private final HttpServerHandler httpServerHandler;
 
     private final SslContext sslCtx;
-    private final Blade      blade;
-    private final boolean    enableCors;
-    private final boolean    isWebSocket;
-    private final boolean    useGZIP;
+    private final Blade blade;
+    private final boolean isWebSocket;
+    private final boolean useGZIP;
 
     public static volatile String date = DateKit.gmtDate(LocalDateTime.now());
 
@@ -41,7 +40,6 @@ public class HttpServerInitializer extends ChannelInitializer<SocketChannel> {
     public HttpServerInitializer(SslContext sslCtx, Blade blade, ScheduledExecutorService service) {
         this.sslCtx = sslCtx;
         this.blade = blade;
-        this.enableCors = blade.environment().getBoolean(Const.ENV_KEY_CORS_ENABLE, false);
         this.useGZIP = blade.environment().getBoolean(Const.ENV_KEY_GZIP_ENABLE, false);
         this.isWebSocket = StringKit.isNotEmpty(blade.webSocketPath());
 
@@ -67,10 +65,6 @@ public class HttpServerInitializer extends ChannelInitializer<SocketChannel> {
 
             if (useGZIP) {
                 pipeline.addLast(new HttpContentCompressor());
-            }
-
-            if (enableCors) {
-                pipeline.addLast(new CorsHandler(CorsConfigBuilder.forAnyOrigin().allowNullOrigin().allowCredentials().build()));
             }
 
             if (isWebSocket) {

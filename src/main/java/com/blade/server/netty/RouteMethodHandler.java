@@ -53,18 +53,18 @@ import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 @Slf4j
 public class RouteMethodHandler implements RequestHandler {
 
-    private final RouteMatcher routeMatcher  = WebContext.blade().routeMatcher();
-    private final boolean      hasMiddleware = routeMatcher.getMiddleware().size() > 0;
-    private final boolean      hasBeforeHook = routeMatcher.hasBeforeHook();
-    private final boolean      hasAfterHook  = routeMatcher.hasAfterHook();
+    private final RouteMatcher routeMatcher = WebContext.blade().routeMatcher();
+    private final boolean hasMiddleware = routeMatcher.getMiddleware().size() > 0;
+    private final boolean hasBeforeHook = routeMatcher.hasBeforeHook();
+    private final boolean hasAfterHook = routeMatcher.hasAfterHook();
 
     @Override
     public void handle(WebContext webContext) throws Exception {
         RouteContext context = new RouteContext(webContext.getRequest(), webContext.getResponse());
 
         // if execution returns false then execution is interrupted
-        String uri   = context.uri();
-        Route  route = webContext.getRoute();
+        String uri = context.uri();
+        Route route = webContext.getRoute();
         if (null == route) {
             throw new NotFoundException(context.uri());
         }
@@ -233,13 +233,13 @@ public class RouteMethodHandler implements RequestHandler {
             RouteHandler0 routeHandler = (RouteHandler0) target;
             routeHandler.handle(context.request(), context.response());
         } else {
-            Method   actionMethod = context.routeAction();
-            Class<?> returnType   = actionMethod.getReturnType();
+            Method actionMethod = context.routeAction();
+            Class<?> returnType = actionMethod.getReturnType();
 
             Path path = target.getClass().getAnnotation(Path.class);
             JSON JSON = actionMethod.getAnnotation(JSON.class);
 
-            boolean isRestful   = (null != JSON) || (null != path && path.restful());
+            boolean isRestful = (null != JSON) || (null != path && path.restful());
             boolean isSingleton = path.singleton();
 
             target = isSingleton ? target : WebContext.blade().ioc().createBean(target.getClass());
@@ -293,7 +293,7 @@ public class RouteMethodHandler implements RequestHandler {
      */
     private boolean invokeHook(RouteContext context, Route hookRoute) throws Exception {
         Method hookMethod = hookRoute.getAction();
-        Object target     = WebContext.blade().ioc().getBean(hookRoute.getTargetType());
+        Object target = WebContext.blade().ioc().getBean(hookRoute.getTargetType());
         if (null == target) {
             Class<?> clazz = hookRoute.getAction().getDeclaringClass();
             target = WebContext.blade().ioc().getBean(clazz);
@@ -330,15 +330,13 @@ public class RouteMethodHandler implements RequestHandler {
         return true;
     }
 
-    private boolean invokeMiddleware(List<Route> middleware,
-                                     RouteContext context) throws BladeException {
-
+    private boolean invokeMiddleware(List<Route> middleware, RouteContext context) throws BladeException {
         if (BladeKit.isEmpty(middleware)) {
             return true;
         }
         for (Route route : middleware) {
             WebHook webHook = (WebHook) WebContext.blade().ioc().getBean(route.getTargetType());
-            boolean flag    = webHook.before(context);
+            boolean flag = webHook.before(context);
             if (!flag) return false;
         }
         return true;

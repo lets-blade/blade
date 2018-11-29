@@ -16,6 +16,7 @@ import java.util.concurrent.TimeUnit;
  * 2017/6/5
  */
 public class Hello {
+
     private static final StringBody hello = StringBody.of("Hello World.");
 
     public static void main(String[] args) {
@@ -78,6 +79,7 @@ public class Hello {
                     }
 
                 })
+                .enableCors(true)
                 .event(EventType.ENVIRONMENT_CHANGED, new ConfigChanged())
                 .event(EventType.SESSION_DESTROY, e -> {
                     System.out.println("session 失效了");

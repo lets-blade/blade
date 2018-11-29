@@ -20,10 +20,7 @@ import com.blade.exception.NotFoundException;
 import com.blade.kit.BladeCache;
 import com.blade.mvc.WebContext;
 import com.blade.mvc.handler.ExceptionHandler;
-import com.blade.mvc.http.HttpRequest;
-import com.blade.mvc.http.HttpResponse;
-import com.blade.mvc.http.Request;
-import com.blade.mvc.http.Response;
+import com.blade.mvc.http.*;
 import com.blade.mvc.route.Route;
 import com.blade.mvc.route.RouteMatcher;
 import io.netty.channel.ChannelFutureListener;
@@ -67,10 +64,10 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<HttpRequest> 
             WebContext.blade().environment()
                     .getBoolean(ENV_KEY_PERFORMANCE, false);
 
-    private final StaticFileHandler  staticFileHandler = new StaticFileHandler(WebContext.blade());
-    private final RouteMethodHandler routeHandler      = new RouteMethodHandler();
-    private final Set<String>        notStaticUri      = new HashSet<>(32);
-    private final RouteMatcher       routeMatcher      = WebContext.blade().routeMatcher();
+    private final StaticFileHandler staticFileHandler = new StaticFileHandler(WebContext.blade());
+    private final RouteMethodHandler routeHandler = new RouteMethodHandler();
+    private final Set<String> notStaticUri = new HashSet<>(32);
+    private final RouteMatcher routeMatcher = WebContext.blade().routeMatcher();
 
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx) {
@@ -104,10 +101,10 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<HttpRequest> 
     }
 
     private FullHttpResponse handleException(Throwable e) {
-        Request  request  = WebContext.request();
+        Request request = WebContext.request();
         Response response = WebContext.response();
-        String   method   = request.method();
-        String   uri      = request.uri();
+        String method = request.method();
+        String uri = request.uri();
 
         Exception srcException = (Exception) e.getCause().getCause();
         if (srcException instanceof BladeException) {
@@ -137,9 +134,9 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<HttpRequest> 
         try {
             WebContext.set(webContext);
             Request request = webContext.getRequest();
-            String  method  = request.method();
-            String  uri     = request.uri();
-            Instant start   = null;
+            String method = request.method();
+            String uri = request.uri();
+            Instant start = null;
 
             if (ALLOW_COST && !PERFORMANCE) {
                 start = Instant.now();
@@ -148,14 +145,17 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<HttpRequest> 
             if (isStaticFile(method, uri)) {
                 staticFileHandler.handle(webContext);
             } else {
-                Route route = routeMatcher.lookupRoute(method, uri);
-                if (null != route) {
-                    webContext.setRoute(route);
+                if (HttpMethod.OPTIONS.name().equals(method) && null != WebContext.blade().corsMiddleware()) {
+                    WebContext.blade().corsMiddleware().execute(request, webContext.getResponse());
                 } else {
-                    throw new NotFoundException(uri);
+                    Route route = routeMatcher.lookupRoute(method, uri);
+                    if (null != route) {
+                        webContext.setRoute(route);
+                    } else {
+                        throw new NotFoundException(uri);
+                    }
+                    routeHandler.handle(webContext);
                 }
-
-                routeHandler.handle(webContext);
 
                 if (PERFORMANCE) {
                     return webContext;
@@ -184,7 +184,7 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<HttpRequest> 
     }
 
     private boolean isStaticFile(String method, String uri) {
-        if ("POST".equals(method) || notStaticUri.contains(uri)) {
+        if (HttpMethod.POST.name().equals(method) || notStaticUri.contains(uri)) {
             return false;
         }
 
