@@ -135,7 +135,7 @@ public class StaticFileHandler implements RequestHandler {
             // gradle resources path
             File resourcesDirectory = new File(new File(Const.class.getResource("/").getPath()).getParent() + "/resources");
             if (resourcesDirectory.isDirectory()) {
-                file = new File(resourcesDirectory.getPath() + "/resources/" + cleanUri.substring(1));
+              file = new File(resourcesDirectory.getPath() + "/" + cleanUri.substring(1));
                 if (file.isHidden() || !file.exists()) {
                     log404(log, method, uri);
                     throw new NotFoundException(uri);
