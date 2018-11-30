@@ -53,18 +53,18 @@ import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 @Slf4j
 public class RouteMethodHandler implements RequestHandler {
 
-    private final RouteMatcher routeMatcher = WebContext.blade().routeMatcher();
-    private final boolean hasMiddleware = routeMatcher.getMiddleware().size() > 0;
-    private final boolean hasBeforeHook = routeMatcher.hasBeforeHook();
-    private final boolean hasAfterHook = routeMatcher.hasAfterHook();
+    private final RouteMatcher routeMatcher  = WebContext.blade().routeMatcher();
+    private final boolean      hasMiddleware = routeMatcher.getMiddleware().size() > 0;
+    private final boolean      hasBeforeHook = routeMatcher.hasBeforeHook();
+    private final boolean      hasAfterHook  = routeMatcher.hasAfterHook();
 
     @Override
     public void handle(WebContext webContext) throws Exception {
         RouteContext context = new RouteContext(webContext.getRequest(), webContext.getResponse());
 
         // if execution returns false then execution is interrupted
-        String uri = context.uri();
-        Route route = webContext.getRoute();
+        String uri   = context.uri();
+        Route  route = webContext.getRoute();
         if (null == route) {
             throw new NotFoundException(context.uri());
         }
@@ -224,7 +224,6 @@ public class RouteMethodHandler implements RequestHandler {
         if (null == target) {
             Class<?> clazz = context.routeAction().getDeclaringClass();
             target = WebContext.blade().getBean(clazz);
-//            context.route().setTarget(target);
         }
         if (context.targetType() == RouteHandler.class) {
             RouteHandler routeHandler = (RouteHandler) target;
@@ -233,13 +232,13 @@ public class RouteMethodHandler implements RequestHandler {
             RouteHandler0 routeHandler = (RouteHandler0) target;
             routeHandler.handle(context.request(), context.response());
         } else {
-            Method actionMethod = context.routeAction();
-            Class<?> returnType = actionMethod.getReturnType();
+            Method   actionMethod = context.routeAction();
+            Class<?> returnType   = actionMethod.getReturnType();
 
             Path path = target.getClass().getAnnotation(Path.class);
             JSON JSON = actionMethod.getAnnotation(JSON.class);
 
-            boolean isRestful = (null != JSON) || (null != path && path.restful());
+            boolean isRestful   = (null != JSON) || (null != path && path.restful());
             boolean isSingleton = path.singleton();
 
             target = isSingleton ? target : WebContext.blade().ioc().createBean(target.getClass());
@@ -293,7 +292,7 @@ public class RouteMethodHandler implements RequestHandler {
      */
     private boolean invokeHook(RouteContext context, Route hookRoute) throws Exception {
         Method hookMethod = hookRoute.getAction();
-        Object target = WebContext.blade().ioc().getBean(hookRoute.getTargetType());
+        Object target     = WebContext.blade().ioc().getBean(hookRoute.getTargetType());
         if (null == target) {
             Class<?> clazz = hookRoute.getAction().getDeclaringClass();
             target = WebContext.blade().ioc().getBean(clazz);
@@ -336,7 +335,7 @@ public class RouteMethodHandler implements RequestHandler {
         }
         for (Route route : middleware) {
             WebHook webHook = (WebHook) WebContext.blade().ioc().getBean(route.getTargetType());
-            boolean flag = webHook.before(context);
+            boolean flag    = webHook.before(context);
             if (!flag) return false;
         }
         return true;
@@ -354,6 +353,9 @@ public class RouteMethodHandler implements RequestHandler {
             if (hook.getTargetType() == RouteHandler.class) {
                 RouteHandler routeHandler = (RouteHandler) hook.getTarget();
                 routeHandler.handle(context);
+                if (context.isAbort()) {
+                    return false;
+                }
             } else if (hook.getTargetType() == RouteHandler0.class) {
                 RouteHandler0 routeHandler = (RouteHandler0) hook.getTarget();
                 routeHandler.handle(context.request(), context.response());

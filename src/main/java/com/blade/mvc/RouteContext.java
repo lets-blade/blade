@@ -46,6 +46,7 @@ public class RouteContext {
     private Request  request;
     private Response response;
     private Object[] routeActionParameters;
+    private boolean  abort;
 
     private static final String LAMBDA_IDENTIFY = "$$Lambda$";
 
@@ -519,6 +520,14 @@ public class RouteContext {
      */
     public Object[] routeParameters() {
         return this.routeActionParameters;
+    }
+
+    public void abort() {
+        this.abort = true;
+    }
+
+    public boolean isAbort() {
+        return this.abort;
     }
 
     public void initRoute(Route route) {

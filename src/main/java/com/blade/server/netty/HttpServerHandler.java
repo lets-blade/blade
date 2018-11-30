@@ -18,6 +18,7 @@ package com.blade.server.netty;
 import com.blade.exception.BladeException;
 import com.blade.exception.NotFoundException;
 import com.blade.kit.BladeCache;
+import com.blade.mvc.RouteContext;
 import com.blade.mvc.WebContext;
 import com.blade.mvc.handler.ExceptionHandler;
 import com.blade.mvc.http.*;
@@ -146,7 +147,7 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<HttpRequest> 
                 staticFileHandler.handle(webContext);
             } else {
                 if (HttpMethod.OPTIONS.name().equals(method) && null != WebContext.blade().corsMiddleware()) {
-                    WebContext.blade().corsMiddleware().execute(request, webContext.getResponse());
+                    WebContext.blade().corsMiddleware().handle(new RouteContext(webContext.getRequest(), webContext.getResponse()));
                 } else {
                     Route route = routeMatcher.lookupRoute(method, uri);
                     if (null != route) {

@@ -1,6 +1,7 @@
 package com.blade.security.web.cors;
 
-import com.blade.mvc.http.Request;
+import com.blade.mvc.RouteContext;
+import com.blade.mvc.handler.RouteHandler;
 import com.blade.mvc.http.Response;
 import lombok.extern.slf4j.Slf4j;
 
@@ -11,13 +12,13 @@ import java.util.stream.Collector;
  * CorsMiddleware
  * <p>
  * This is a simple CORS policy,
- * you can also implement the {@link CorsMiddleware#execute} method of the class to perform custom filtering.
+ * you can also implement the {@link CorsMiddleware#handle} method of the class to perform custom filtering.
  *
  * @author biezhi
  * @date 2018/7/11
  */
 @Slf4j
-public class CorsMiddleware {
+public class CorsMiddleware implements RouteHandler  {
 
     private CorsConfiger corsConfig;
 
@@ -28,11 +29,12 @@ public class CorsMiddleware {
         this.corsConfig = corsConfiger;
     }
 
-    public void execute(Request request, Response response) {
-        response.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
-        response.header("Access-Control-Allow-Origin", "*");
-        response.header("Access-Control-Allow-Headers", CorsConfiger.ALL);
-        response.status(204);
+    @Override
+    public void handle(RouteContext context) {
+        context.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
+        context.header("Access-Control-Allow-Origin", "*");
+        context.header("Access-Control-Allow-Headers", CorsConfiger.ALL);
+        context.status(204);
     }
 
     private CorsMiddleware allowHeads(Response response) {
