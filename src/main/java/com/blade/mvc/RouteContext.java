@@ -524,12 +524,14 @@ public class RouteContext {
     public void initRoute(Route route) {
         this.request.initPathParams(route);
         this.route = route;
+        if (null != route.getTarget()) {
+            return;
+        }
 
         boolean singleton = IocKit.isSingleton(route.getTargetType());
-
         if (singleton) {
             BeanDefine beanDefine = WebContext.blade().ioc().getBeanDefine(route.getTargetType());
-            if(beanDefine.isFieldHasPrototype()){
+            if (beanDefine.isFieldHasPrototype()) {
                 // reset initialize
                 IocKit.injection(WebContext.blade().ioc(), beanDefine);
             } else {
