@@ -17,6 +17,7 @@ package com.blade.mvc;
 
 import com.blade.ioc.bean.BeanDefine;
 import com.blade.kit.IocKit;
+import com.blade.mvc.handler.RouteHandler;
 import com.blade.mvc.http.Body;
 import com.blade.mvc.http.Request;
 import com.blade.mvc.http.Response;
@@ -534,6 +535,11 @@ public class RouteContext {
         this.request.initPathParams(route);
         this.route = route;
         if (null != route.getTarget()) {
+            return;
+        }
+
+        boolean isRouteHandler = RouteHandler.class.getName().equals(route.getTargetType().getName());
+        if (isRouteHandler) {
             return;
         }
 
