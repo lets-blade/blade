@@ -17,6 +17,4 @@ public @interface Inject {
 
     String value() default "";
 
-    boolean singleton() default true;
-
 }

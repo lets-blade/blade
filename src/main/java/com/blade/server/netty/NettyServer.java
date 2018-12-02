@@ -291,8 +291,7 @@ public class NettyServer implements Server {
             blade.register(clazz);
         }
         if (null != clazz.getAnnotation(Path.class)) {
-            Path path = clazz.getAnnotation(Path.class);
-            if (path.singleton() && null == blade.ioc().getBean(clazz)) {
+            if (null == blade.ioc().getBean(clazz)) {
                 blade.register(clazz);
             }
             Object controller = blade.ioc().getBean(clazz);

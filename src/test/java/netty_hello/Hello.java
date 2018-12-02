@@ -25,6 +25,7 @@ public class Hello {
                     String[] chars = new String[]{"Here a special char \" that not escaped", "And Another \\ char"};
                     ctx.json(chars);
                 })
+                .get("/user/aa", ctx -> ctx.render("upload.html"))
                 .get("/up", ctx -> ctx.render("upload.html"))
                 .get("/d1", ctx -> {
                     File file = new File("/Users/biezhi/Pictures/rand/003.jpg");
@@ -79,6 +80,13 @@ public class Hello {
                     }
 
                 })
+                .before("/user/*", ctx ->
+                        {
+                            System.out.println("before: " + ctx.uri());
+                            ctx.text("Hello World");
+                            ctx.abort();
+                        }
+                )
                 .enableCors(true)
                 .event(EventType.ENVIRONMENT_CHANGED, new ConfigChanged())
                 .event(EventType.SESSION_DESTROY, e -> {

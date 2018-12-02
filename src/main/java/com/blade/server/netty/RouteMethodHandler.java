@@ -238,10 +238,7 @@ public class RouteMethodHandler implements RequestHandler {
             Path path = target.getClass().getAnnotation(Path.class);
             JSON JSON = actionMethod.getAnnotation(JSON.class);
 
-            boolean isRestful   = (null != JSON) || (null != path && path.restful());
-            boolean isSingleton = path.singleton();
-
-            target = isSingleton ? target : WebContext.blade().ioc().createBean(target.getClass());
+            boolean isRestful = (null != JSON) || (null != path && path.restful());
 
             // if request is restful and not InternetExplorer userAgent
             if (isRestful) {
