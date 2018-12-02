@@ -15,6 +15,7 @@ public @interface Bean {
 
     String value() default "";
 
+    @Deprecated
     boolean singleton() default true;
 
 }

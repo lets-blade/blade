@@ -153,6 +153,8 @@ public class Blade {
      */
     private ExceptionHandler exceptionHandler = new DefaultExceptionHandler();
 
+    private CorsMiddleware corsMiddleware;
+
     /**
      * Used to identify whether the web server has started
      */
@@ -548,9 +550,13 @@ public class Blade {
     public Blade enableCors(boolean enableCors, CorsConfiger corsConfig) {
         this.environment.set(ENV_KEY_CORS_ENABLE, enableCors);
         if (enableCors) {
-            this.use(new CorsMiddleware(corsConfig));
+            this.corsMiddleware = new CorsMiddleware(corsConfig);
         }
         return this;
+    }
+
+    public CorsMiddleware corsMiddleware() {
+        return corsMiddleware;
     }
 
     /**
@@ -1103,4 +1109,5 @@ public class Blade {
         }
 
     }
+
 }

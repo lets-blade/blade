@@ -17,6 +17,7 @@ package com.blade.mvc;
 
 import com.blade.ioc.bean.BeanDefine;
 import com.blade.kit.IocKit;
+import com.blade.mvc.handler.RouteHandler;
 import com.blade.mvc.http.Body;
 import com.blade.mvc.http.Request;
 import com.blade.mvc.http.Response;
@@ -46,6 +47,7 @@ public class RouteContext {
     private Request  request;
     private Response response;
     private Object[] routeActionParameters;
+    private boolean  abort;
 
     private static final String LAMBDA_IDENTIFY = "$$Lambda$";
 
@@ -521,25 +523,35 @@ public class RouteContext {
         return this.routeActionParameters;
     }
 
+    public void abort() {
+        this.abort = true;
+    }
+
+    public boolean isAbort() {
+        return this.abort;
+    }
+
     public void initRoute(Route route) {
         this.request.initPathParams(route);
         this.route = route;
-
-        boolean singleton = IocKit.isSingleton(route.getTargetType());
-
-        if (singleton) {
-            BeanDefine beanDefine = WebContext.blade().ioc().getBeanDefine(route.getTargetType());
-            if(beanDefine.isFieldHasPrototype()){
-                // reset initialize
-                IocKit.injection(WebContext.blade().ioc(), beanDefine);
-            } else {
-                Object target = WebContext.blade().ioc().getBean(route.getTargetType());
-                this.route.setTarget(target);
-            }
-        } else {
-            Object target = WebContext.blade().ioc().createBean(route.getTargetType());
-            this.route.setTarget(target);
-        }
+//        if (null != route.getTarget() && route.getTargetType().equals(RouteHandler.class)) {
+//            return;
+//        }
+//        boolean singleton = IocKit.isSingleton(route.getTargetType());
+//
+//        if (singleton) {
+//            BeanDefine beanDefine = WebContext.blade().ioc().getBeanDefine(route.getTargetType());
+//            if (beanDefine.isFieldHasPrototype()) {
+//                // reset initialize
+//                IocKit.injection(WebContext.blade().ioc(), beanDefine);
+//            } else {
+//                Object target = WebContext.blade().ioc().getBean(route.getTargetType());
+//                this.route.setTarget(target);
+//            }
+//        } else {
+//            Object target = WebContext.blade().ioc().createBean(route.getTargetType());
+//            this.route.setTarget(target);
+//        }
     }
 
     public void injectParameters() {
