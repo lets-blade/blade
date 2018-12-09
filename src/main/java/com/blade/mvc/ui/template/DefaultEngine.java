@@ -23,7 +23,7 @@ import java.util.Map;
 @Slf4j
 public class DefaultEngine implements TemplateEngine {
 
-    public  static final String TEMPLATE_PATH = "templates";
+    public  static       String TEMPLATE_PATH = "templates";
     private static final String PATH_SEPARATOR = "/";
 
     @Override
