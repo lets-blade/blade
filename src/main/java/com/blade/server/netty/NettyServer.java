@@ -33,8 +33,10 @@ import com.blade.mvc.Const;
 import com.blade.mvc.WebContext;
 import com.blade.mvc.annotation.Path;
 import com.blade.mvc.annotation.URLPattern;
+import com.blade.mvc.annotation.WebSocket;
 import com.blade.mvc.handler.DefaultExceptionHandler;
 import com.blade.mvc.handler.ExceptionHandler;
+import com.blade.mvc.handler.WebSocketHandler;
 import com.blade.mvc.hook.WebHook;
 import com.blade.mvc.http.session.SessionCleaner;
 import com.blade.mvc.route.RouteBuilder;
@@ -67,7 +69,10 @@ import lombok.var;
 import java.io.File;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -317,6 +322,17 @@ public class NettyServer implements Server {
         if (isExceptionHandler(clazz)) {
             ExceptionHandler exceptionHandler = (ExceptionHandler) blade.ioc().getBean(clazz);
             blade.exceptionHandler(exceptionHandler);
+        }
+        WebSocket webSocket;
+        if(ReflectKit.hasInterface(clazz, WebSocketHandler.class) && null != (webSocket = clazz.getAnnotation(WebSocket.class))) {
+            if (null == blade.ioc().getBean(clazz)) {
+                blade.register(clazz);
+            }
+            Set<String> wsPath = new HashSet<>();
+            wsPath.addAll(Arrays.asList(webSocket.path()));
+            wsPath.addAll(Arrays.asList(webSocket.value()));
+            WebSocketHandler websocketHandler = (WebSocketHandler) blade.ioc().getBean(clazz);
+            wsPath.forEach(path->blade.webSocket(path,websocketHandler));
         }
     }
 

@@ -2,7 +2,6 @@ package com.blade.server.netty;
 
 import com.blade.Blade;
 import com.blade.kit.DateKit;
-import com.blade.kit.StringKit;
 import com.blade.mvc.Const;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
@@ -37,7 +36,7 @@ public class HttpServerInitializer extends ChannelInitializer<SocketChannel> {
         this.sslCtx = sslCtx;
         this.blade = blade;
         this.useGZIP = blade.environment().getBoolean(Const.ENV_KEY_GZIP_ENABLE, false);
-        this.isWebSocket = StringKit.isNotEmpty(blade.webSocketPath());
+        this.isWebSocket = blade.routeMatcher().getWebSockets().size() > 0;
         this.httpServerHandler = new HttpServerHandler();
 
         service.scheduleWithFixedDelay(() -> date = DateKit.gmtDate(LocalDateTime.now()), 1000, 1000, TimeUnit.MILLISECONDS);
