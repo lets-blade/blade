@@ -11,9 +11,9 @@ import com.blade.mvc.websocket.WebSocketContext;
 public class WebSocketDemo {
 
     public static void main(String[] args) {
-        Blade.me()
-                .get("/hello", ctx -> {})
-                .webSocket("/webscoket", new WebSocketHandler() {
+        Blade.of()
+                .get("/hello", ctx -> ctx.text("get route"))
+                .webSocket("/websocket", new WebSocketHandler() {
                     @Override
                     public void onConnect(WebSocketContext ctx) {
                         System.out.println("客户端连接上了: " + ctx.getSession());
