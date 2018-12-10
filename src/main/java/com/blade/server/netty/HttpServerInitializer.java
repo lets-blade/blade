@@ -10,9 +10,6 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.http.HttpContentCompressor;
 import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.codec.http.HttpServerExpectContinueHandler;
-import io.netty.handler.codec.http.cors.CorsConfigBuilder;
-import io.netty.handler.codec.http.cors.CorsHandler;
-import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
 import io.netty.handler.ssl.SslContext;
 import lombok.extern.slf4j.Slf4j;
 
@@ -35,19 +32,13 @@ public class HttpServerInitializer extends ChannelInitializer<SocketChannel> {
 
     public static volatile String date = DateKit.gmtDate(LocalDateTime.now());
 
-    private static WebSocketHandler WEB_SOCKET_HANDLER;
 
     public HttpServerInitializer(SslContext sslCtx, Blade blade, ScheduledExecutorService service) {
         this.sslCtx = sslCtx;
         this.blade = blade;
         this.useGZIP = blade.environment().getBoolean(Const.ENV_KEY_GZIP_ENABLE, false);
         this.isWebSocket = StringKit.isNotEmpty(blade.webSocketPath());
-
-        if (isWebSocket) {
-            WEB_SOCKET_HANDLER = new WebSocketHandler(blade);
-        }
-
-        httpServerHandler = new HttpServerHandler();
+        this.httpServerHandler = new HttpServerHandler();
 
         service.scheduleWithFixedDelay(() -> date = DateKit.gmtDate(LocalDateTime.now()), 1000, 1000, TimeUnit.MILLISECONDS);
     }
@@ -68,8 +59,7 @@ public class HttpServerInitializer extends ChannelInitializer<SocketChannel> {
             }
 
             if (isWebSocket) {
-                pipeline.addLast(new WebSocketServerProtocolHandler(blade.webSocketPath(), null, true));
-                pipeline.addLast(WEB_SOCKET_HANDLER);
+                pipeline.addLast(new WebSocketHandler(blade));
             }
             pipeline.addLast(new MergeRequestHandler());
             pipeline.addLast(httpServerHandler);
