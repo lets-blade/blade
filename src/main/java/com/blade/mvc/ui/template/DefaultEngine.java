@@ -23,15 +23,20 @@ import java.util.Map;
 @Slf4j
 public class DefaultEngine implements TemplateEngine {
 
-    public static String TEMPLATE_PATH = "templates";
+    public  static       String TEMPLATE_PATH = "templates";
+    private static final String PATH_SEPARATOR = "/";
 
     @Override
     public void render(ModelAndView modelAndView, Writer writer) throws TemplateException {
         String view = modelAndView.getView();
         String body;
 
-        String viewPath = Const.CLASSPATH + File.separator + TEMPLATE_PATH + File.separator + view;
-        viewPath = viewPath.replace("//", "/");
+        String viewPath;
+        if (Const.CLASSPATH.endsWith(PATH_SEPARATOR)) {
+            viewPath = Const.CLASSPATH + TEMPLATE_PATH + PATH_SEPARATOR + view;
+        } else {
+            viewPath = Const.CLASSPATH + PATH_SEPARATOR + TEMPLATE_PATH + PATH_SEPARATOR + view;
+        }
 
         try {
             if (view.startsWith("jar:")) {
@@ -41,8 +46,8 @@ public class DefaultEngine implements TemplateEngine {
                 body = IOKit.readToString(reader);
             } else {
                 if (BladeKit.isInJar()) {
-                    viewPath = File.separator + TEMPLATE_PATH + File.separator + view;
-                    viewPath = viewPath.replace("//", "/");
+                    viewPath = PATH_SEPARATOR + TEMPLATE_PATH + PATH_SEPARATOR + view;
+
                     InputStream    in     = getClass().getResourceAsStream(viewPath);
                     BufferedReader reader = new BufferedReader(new InputStreamReader(in));
                     body = IOKit.readToString(reader);

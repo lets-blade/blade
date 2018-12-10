@@ -11,24 +11,24 @@ public class StringKitTest {
 
     @Test
     public void testIsBlank() {
-        Assert.assertEquals(true, StringKit.isBlank(""));
-        Assert.assertEquals(true, StringKit.isBlank(null));
+        Assert.assertTrue(StringKit.isBlank(""));
+        Assert.assertTrue(StringKit.isBlank(null));
 
-        Assert.assertEquals(false, StringKit.isBlank("a"));
-        Assert.assertEquals(false, StringKit.isBlank("null"));
+        Assert.assertFalse(StringKit.isBlank("a"));
+        Assert.assertFalse(StringKit.isBlank("null"));
 
-        Assert.assertEquals(true, StringKit.isNotBlank("a b"));
-        Assert.assertEquals(true, StringKit.isNotBlank("a"));
+        Assert.assertTrue(StringKit.isNotBlank("a b"));
+        Assert.assertTrue(StringKit.isNotBlank("a"));
 
-        Assert.assertEquals(false, StringKit.isNotBlank(""));
-        Assert.assertEquals(false, StringKit.isNotBlank(null));
+        Assert.assertFalse(StringKit.isNotBlank(""));
+        Assert.assertFalse(StringKit.isNotBlank(null));
 
 
-        Assert.assertEquals(false,StringKit.isNotBlank("a","b","  "));
-        Assert.assertEquals(false,StringKit.isNotBlank("a","b",null));
+        Assert.assertFalse(StringKit.isNotBlank("a", "b", "  "));
+        Assert.assertFalse(StringKit.isNotBlank("a", "b", null));
 
-        Assert.assertEquals(true,StringKit.isNotBlank("a","b","c"));
-        Assert.assertEquals(true,StringKit.isNotBlank("abc","d ef","gh i"));
+        Assert.assertTrue(StringKit.isNotBlank("a", "b", "c"));
+        Assert.assertTrue(StringKit.isNotBlank("abc", "d ef", "gh i"));
 
         Bar bar =  new Bar();
         StringKit.isNotBlankThen("barName", bar::setName);
@@ -56,17 +56,17 @@ public class StringKitTest {
 
         for (int i = 0; i < 100; i++) {
             int num = StringKit.rand(1, 10);
-            Assert.assertEquals(true, num < 11);
-            Assert.assertEquals(true, num > 0);
+            Assert.assertTrue(num < 11);
+            Assert.assertTrue(num > 0);
         }
     }
 
     @Test
     public void testIsNumber() {
-        Assert.assertEquals(true, StringKit.isNumber("20"));
-        Assert.assertEquals(true, StringKit.isNumber("20.1"));
-        Assert.assertEquals(false, StringKit.isNumber("abc"));
-        Assert.assertEquals(false, StringKit.isNumber("21w"));
+        Assert.assertTrue(StringKit.isNumber("20"));
+        Assert.assertTrue(StringKit.isNumber("20.1"));
+        Assert.assertFalse(StringKit.isNumber("abc"));
+        Assert.assertFalse(StringKit.isNumber("21w"));
     }
 
     @Test
@@ -105,8 +105,8 @@ public class StringKitTest {
 
     @Test
     public void testEquals(){
-        Assert.assertEquals(true, StringKit.equals("a", "a"));
-        Assert.assertEquals(false, StringKit.equals("a", "b"));
+        Assert.assertTrue(StringKit.equals("a", "a"));
+        Assert.assertFalse(StringKit.equals("a", "b"));
     }
 
     @Test
