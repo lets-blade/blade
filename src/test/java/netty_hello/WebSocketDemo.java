@@ -16,20 +16,37 @@ public class WebSocketDemo {
                 .webSocket("/websocket", new WebSocketHandler() {
                     @Override
                     public void onConnect(WebSocketContext ctx) {
-                        System.out.println("客户端连接上了: " + ctx.getSession());
+                        System.out.println("客户端连接上了ws1: " + ctx.getSession());
                     }
 
                     @Override
                     public void onText(WebSocketContext ctx) {
-                        System.out.println("收到:" + ctx.getReqText());
+                        System.out.println("ws1收到:" + ctx.getReqText());
                         ctx.message("发送: Hello");
                     }
 
                     @Override
                     public void onDisConnect(WebSocketContext ctx) {
-                        System.out.println("客户端关闭链接: " + ctx.getSession());
+                        System.out.println("ws1客户端关闭链接: " + ctx.getSession());
                     }
-                }).start();
+                })
+                .webSocket("/websocket2", new WebSocketHandler() {
+                    @Override
+                    public void onConnect(WebSocketContext ctx) {
+                        System.out.println("客户端连接上了ws2: " + ctx.getSession());
+                    }
+
+                    @Override
+                    public void onText(WebSocketContext ctx) {
+                        System.out.println("ws2收到:" + ctx.getReqText());
+                        ctx.message("发送: Hello");
+                    }
+
+                    @Override
+                    public void onDisConnect(WebSocketContext ctx) {
+                        System.out.println("ws2客户端关闭链接: " + ctx.getSession());
+                    }
+                }).start(WebSocketDemo.class);
     }
 
 }
