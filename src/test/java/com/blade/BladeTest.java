@@ -188,7 +188,6 @@ public class BladeTest extends BaseTestCase {
 
     @Test
     public void testWebSocket() {
-        Assert.assertNull(Blade.of().webSocketHandler());
         Blade blade = Blade.of().webSocket("/", new WebSocketHandler() {
             @Override
             public void onConnect(WebSocketContext ctx) {
@@ -205,7 +204,6 @@ public class BladeTest extends BaseTestCase {
                 System.out.println("on disconnect.");
             }
         });
-        Assert.assertNotNull(blade.webSocketHandler());
     }
 
     @Test

@@ -33,7 +33,7 @@
 * [x] 源码不到 `500kb`，学习也简单
 * [x] Restful风格路由设计
 * [x] 模板引擎支持，视图开发更灵活
-* [x] 高性能，100并发下qps 14w/s
+* [x] 高性能，100 并发下qps 20w/s
 * [x] 运行 `JAR` 包即可开启 web 服务
 * [x] 支持 `CSRF` 和 `XSS` 防御
 * [x] 支持 `BasicAuth` 和权限管理
@@ -61,7 +61,7 @@
 <dependency>
 	<groupId>com.bladejava</groupId>
 	<artifactId>blade-mvc</artifactId>
-	<version>2.0.13.ALPHA</version>
+	<version>2.0.13.BETA</version>
 </dependency>
 ```
 
@@ -70,7 +70,7 @@
 或者  `Gradle`:
 
 ```sh
-compile 'com.bladejava:blade-mvc:2.0.13.ALPHA'
+compile 'com.bladejava:blade-mvc:2.0.13.BETA'
 ```
 
 编写 `main` 函数写一个 `Hello World`：

@@ -8,8 +8,6 @@ import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.websocketx.*;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.Objects;
-
 /**
  * Http Server Handler
  *
@@ -20,6 +18,8 @@ import java.util.Objects;
 public class WebSocketHandler extends SimpleChannelInboundHandler<Object> {
 
     private WebSocketServerHandshaker handshaker;
+    private WebSocketContext context;
+    private com.blade.mvc.handler.WebSocketHandler handler;
     private Blade blade;
 
 
@@ -28,7 +28,7 @@ public class WebSocketHandler extends SimpleChannelInboundHandler<Object> {
     }
 
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, Object msg) throws Exception {
+    protected void channelRead0(ChannelHandlerContext ctx, Object msg) {
         if (msg instanceof HttpRequest) {
             handleHttpRequest(ctx, (HttpRequest) msg);
         } else if (msg instanceof WebSocketFrame) {
@@ -44,7 +44,7 @@ public class WebSocketHandler extends SimpleChannelInboundHandler<Object> {
     }
 
     private void handleHttpRequest(ChannelHandlerContext ctx, HttpRequest req) {
-        if (isWebSocketPath(req)) {
+        if (isWebSocketRequest(req)) {
             WebSocketServerHandshakerFactory wsFactory = new WebSocketServerHandshakerFactory(req.uri(), null, true);
             this.handshaker = wsFactory.newHandshaker(req);
             if (this.handshaker == null) {
@@ -52,7 +52,8 @@ public class WebSocketHandler extends SimpleChannelInboundHandler<Object> {
                 WebSocketServerHandshakerFactory.sendUnsupportedVersionResponse(ctx.channel());
             } else {
                 this.handshaker.handshake(ctx.channel(), req);
-                this.blade.webSocketHandler().onConnect(new WebSocketContext(ctx));
+                this.context = new WebSocketContext(ctx);
+                this.handler.onConnect(context);
             }
         } else {
             ctx.fireChannelRead(req);
@@ -67,7 +68,7 @@ public class WebSocketHandler extends SimpleChannelInboundHandler<Object> {
      */
     private void handleWebSocketFrame(ChannelHandlerContext ctx, WebSocketFrame frame) {
         if (frame instanceof CloseWebSocketFrame) {
-            this.blade.webSocketHandler().onDisConnect(new WebSocketContext(ctx));
+            this.handler.onDisConnect(this.context);
             this.handshaker.close(ctx.channel(), (CloseWebSocketFrame) frame.retain());
             return;
         }
@@ -79,15 +80,14 @@ public class WebSocketHandler extends SimpleChannelInboundHandler<Object> {
         if (!(frame instanceof TextWebSocketFrame)) {
             throw new UnsupportedOperationException("unsupported frame type: " + frame.getClass().getName());
         }
-        WebSocketContext wsCtx = new WebSocketContext(ctx);
-        wsCtx.setReqText(((TextWebSocketFrame) frame).text());
-        this.blade.webSocketHandler().onText(wsCtx);
+        this.context.setReqText(((TextWebSocketFrame) frame).text());
+        this.handler.onText(this.context);
     }
 
 
-    private boolean isWebSocketPath(HttpRequest req){
+    private boolean isWebSocketRequest(HttpRequest req){
         return req != null
-                && Objects.equals(req.uri(),blade.webSocketPath())
+                && (this.handler = this.blade.routeMatcher().getWebSocket(req.uri())) != null
                 && req.decoderResult().isSuccess()
                 && "websocket".equals(req.headers().get("Upgrade"));
     }
