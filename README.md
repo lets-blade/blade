@@ -34,7 +34,7 @@ If you think it's good, you can support it with a [star](https://github.com/biez
 * [x] Source is less than `500kb`, learning it is also simple
 * [x] RESTful-style routing design
 * [x] Template engine support, view development more flexible
-* [x] High performance, 100 concurrent qps 14w/s
+* [x] High performance, 100 concurrent qps 20w/s
 * [x] Run the `JAR` package to open the web service
 * [x] Streams-style API
 * [x] `CSRF` and `XSS` defense
@@ -64,14 +64,14 @@ Run with `Maven`:
 <dependency>
     <groupId>com.bladejava</groupId>
     <artifactId>blade-mvc</artifactId>
-    <version>2.0.13.ALPHA</version>
+    <version>2.0.13.BETA</version>
 </dependency>
 ```
 
 or `Gradle`:
 
 ```sh
-compile 'com.bladejava:blade-mvc:2.0.13.ALPHA'
+compile 'com.bladejava:blade-mvc:2.0.13.BETA'
 ```
 
 Write the `main` method and the `Hello World`:
@@ -83,7 +83,6 @@ public static void main(String[] args) {
 ```
 
 Open http://localhost:9000 in your browser to see your first `Blade` application!
-
 
 ## Contents
 
