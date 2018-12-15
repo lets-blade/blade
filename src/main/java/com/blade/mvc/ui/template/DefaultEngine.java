@@ -45,7 +45,7 @@ public class DefaultEngine implements TemplateEngine {
                 BufferedReader reader  = new BufferedReader(new InputStreamReader(input));
                 body = IOKit.readToString(reader);
             } else {
-                if (BladeKit.isInJar()) {
+                if (BladeKit.runtimeIsJAR()) {
                     viewPath = PATH_SEPARATOR + TEMPLATE_PATH + PATH_SEPARATOR + view;
 
                     InputStream    in     = getClass().getResourceAsStream(viewPath);
