@@ -138,7 +138,7 @@ public class BladeKit {
         }
     }
 
-    public static boolean isInJar() {
+    public static boolean runtimeIsJAR() {
         return Const.CLASSPATH.endsWith(".jar");
     }
 
