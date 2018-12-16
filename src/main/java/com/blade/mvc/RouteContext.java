@@ -15,9 +15,6 @@
  */
 package com.blade.mvc;
 
-import com.blade.ioc.bean.BeanDefine;
-import com.blade.kit.IocKit;
-import com.blade.mvc.handler.RouteHandler;
 import com.blade.mvc.http.Body;
 import com.blade.mvc.http.Request;
 import com.blade.mvc.http.Response;
@@ -126,14 +123,24 @@ public class RouteContext {
         return this;
     }
 
+    @Deprecated
+    public String fromString(String paramName) {
+        return this.request.query(paramName).orElse(null);
+    }
+
     /**
      * Get a request parameter
      *
      * @param paramName Parameter name
      * @return Return request parameter value
      */
-    public String fromString(String paramName) {
+    public String formString(String paramName) {
         return this.request.query(paramName).orElse(null);
+    }
+
+    @Deprecated
+    public String fromString(String paramName, String defaultValue) {
+        return this.request.query(paramName, defaultValue);
     }
 
     /**
@@ -143,8 +150,28 @@ public class RouteContext {
      * @param defaultValue default String value
      * @return Return request parameter values
      */
-    public String fromString(String paramName, String defaultValue) {
+    public String formString(String paramName, String defaultValue) {
         return this.request.query(paramName, defaultValue);
+    }
+
+    @Deprecated
+    public Integer fromInt(String paramName) {
+        return this.request.queryInt(paramName).orElse(null);
+    }
+
+    @Deprecated
+    public Integer fromInt(String paramName, Integer defaultValue) {
+        return this.request.queryInt(paramName, defaultValue);
+    }
+
+    @Deprecated
+    public Long fromLong(String paramName) {
+        return this.request.queryLong(paramName).orElse(null);
+    }
+
+    @Deprecated
+    public Long fromLong(String paramName, Long defaultValue) {
+        return this.request.queryLong(paramName, defaultValue);
     }
 
     /**
@@ -153,7 +180,7 @@ public class RouteContext {
      * @param paramName Parameter name
      * @return Return Int parameter values
      */
-    public Integer fromInt(String paramName) {
+    public Integer formInt(String paramName) {
         return this.request.queryInt(paramName).orElse(null);
     }
 
@@ -164,7 +191,7 @@ public class RouteContext {
      * @param defaultValue default int value
      * @return Return Int parameter values
      */
-    public Integer fromInt(String paramName, Integer defaultValue) {
+    public Integer formInt(String paramName, Integer defaultValue) {
         return this.request.queryInt(paramName, defaultValue);
     }
 
@@ -174,7 +201,7 @@ public class RouteContext {
      * @param paramName Parameter name
      * @return Return Long parameter values
      */
-    public Long fromLong(String paramName) {
+    public Long formLong(String paramName) {
         return this.request.queryLong(paramName).orElse(null);
     }
 
@@ -185,7 +212,7 @@ public class RouteContext {
      * @param defaultValue default long value
      * @return Return Long parameter values
      */
-    public Long fromLong(String paramName, Long defaultValue) {
+    public Long formLong(String paramName, Long defaultValue) {
         return this.request.queryLong(paramName, defaultValue);
     }
 
