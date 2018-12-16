@@ -128,29 +128,8 @@ public class RouteContext {
         return this.request.query(paramName).orElse(null);
     }
 
-    /**
-     * Get a request parameter
-     *
-     * @param paramName Parameter name
-     * @return Return request parameter value
-     */
-    public String formString(String paramName) {
-        return this.request.query(paramName).orElse(null);
-    }
-
     @Deprecated
     public String fromString(String paramName, String defaultValue) {
-        return this.request.query(paramName, defaultValue);
-    }
-
-    /**
-     * Get a request parameter, if NULL is returned to defaultValue
-     *
-     * @param paramName    parameter name
-     * @param defaultValue default String value
-     * @return Return request parameter values
-     */
-    public String formString(String paramName, String defaultValue) {
         return this.request.query(paramName, defaultValue);
     }
 
@@ -175,12 +154,33 @@ public class RouteContext {
     }
 
     /**
+     * Get a request parameter
+     *
+     * @param paramName Parameter name
+     * @return Return request parameter value
+     */
+    public String query(String paramName) {
+        return this.request.query(paramName).orElse(null);
+    }
+
+    /**
+     * Get a request parameter, if NULL is returned to defaultValue
+     *
+     * @param paramName    parameter name
+     * @param defaultValue default String value
+     * @return Return request parameter values
+     */
+    public String query(String paramName, String defaultValue) {
+        return this.request.query(paramName, defaultValue);
+    }
+
+    /**
      * Returns a request parameter for a Int type
      *
      * @param paramName Parameter name
      * @return Return Int parameter values
      */
-    public Integer formInt(String paramName) {
+    public Integer queryInt(String paramName) {
         return this.request.queryInt(paramName).orElse(null);
     }
 
@@ -191,7 +191,7 @@ public class RouteContext {
      * @param defaultValue default int value
      * @return Return Int parameter values
      */
-    public Integer formInt(String paramName, Integer defaultValue) {
+    public Integer queryInt(String paramName, Integer defaultValue) {
         return this.request.queryInt(paramName, defaultValue);
     }
 
@@ -201,7 +201,7 @@ public class RouteContext {
      * @param paramName Parameter name
      * @return Return Long parameter values
      */
-    public Long formLong(String paramName) {
+    public Long queryLong(String paramName) {
         return this.request.queryLong(paramName).orElse(null);
     }
 
@@ -212,8 +212,24 @@ public class RouteContext {
      * @param defaultValue default long value
      * @return Return Long parameter values
      */
-    public Long formLong(String paramName, Long defaultValue) {
+    public Long queryLong(String paramName, Long defaultValue) {
         return this.request.queryLong(paramName, defaultValue);
+    }
+
+    public Double queryDouble(String paramName) {
+        return this.request.queryDouble(paramName, null);
+    }
+
+    public Double queryDouble(String paramName, Double defaultValue) {
+        return this.request.queryDouble(paramName, defaultValue);
+    }
+
+    public Boolean queryBoolean(String paramName) {
+        return this.request.queryBoolean(paramName, null);
+    }
+
+    public Boolean queryBoolean(String paramName, Boolean defaultValue) {
+        return this.request.queryBoolean(paramName, defaultValue);
     }
 
     /**
