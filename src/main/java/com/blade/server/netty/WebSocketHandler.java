@@ -1,6 +1,7 @@
 package com.blade.server.netty;
 
 import com.blade.Blade;
+import com.blade.mvc.handler.WebSocketHandlerWrapper;
 import com.blade.mvc.websocket.WebSocketContext;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -20,6 +21,7 @@ public class WebSocketHandler extends SimpleChannelInboundHandler<Object> {
     private WebSocketServerHandshaker handshaker;
     private WebSocketContext context;
     private com.blade.mvc.handler.WebSocketHandler handler;
+    private String uri;
     private Blade blade;
 
 
@@ -32,6 +34,7 @@ public class WebSocketHandler extends SimpleChannelInboundHandler<Object> {
         if (msg instanceof HttpRequest) {
             handleHttpRequest(ctx, (HttpRequest) msg);
         } else if (msg instanceof WebSocketFrame) {
+            initHandlerWrapper();
             handleWebSocketFrame(ctx, (WebSocketFrame) msg);
         } else {
             ctx.fireChannelRead(msg);
@@ -53,7 +56,9 @@ public class WebSocketHandler extends SimpleChannelInboundHandler<Object> {
             } else {
                 this.handshaker.handshake(ctx.channel(), req);
                 this.context = new WebSocketContext(ctx);
-                this.handler.onConnect(context);
+                this.uri = req.uri();
+                initHandlerWrapper();
+                this.handler.onConnect(this.context);
             }
         } else {
             ctx.fireChannelRead(req);
@@ -90,6 +95,12 @@ public class WebSocketHandler extends SimpleChannelInboundHandler<Object> {
                 && (this.handler = this.blade.routeMatcher().getWebSocket(req.uri())) != null
                 && req.decoderResult().isSuccess()
                 && "websocket".equals(req.headers().get("Upgrade"));
+    }
+
+    private void initHandlerWrapper(){
+        if(this.handler != null && this.handler instanceof WebSocketHandlerWrapper){
+            ((WebSocketHandlerWrapper) this.handler).setPath(this.uri);
+        }
     }
 
 }
