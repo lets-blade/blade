@@ -7,6 +7,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.websocketx.*;
+import io.netty.util.ReferenceCountUtil;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -37,6 +38,7 @@ public class WebSocketHandler extends SimpleChannelInboundHandler<Object> {
             initHandlerWrapper();
             handleWebSocketFrame(ctx, (WebSocketFrame) msg);
         } else {
+            ReferenceCountUtil.retain(msg);
             ctx.fireChannelRead(msg);
         }
     }
@@ -61,6 +63,7 @@ public class WebSocketHandler extends SimpleChannelInboundHandler<Object> {
                 this.handler.onConnect(this.context);
             }
         } else {
+            ReferenceCountUtil.retain(req);
             ctx.fireChannelRead(req);
         }
     }
