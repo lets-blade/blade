@@ -13,6 +13,7 @@ public class WebSocketDemo {
     public static void main(String[] args) {
         Blade.of()
                 .get("/hello", ctx -> ctx.text("get route"))
+                .post("/post", ctx -> ctx.text(ctx.request().query("param","null")))
                 .webSocket("/websocket", new WebSocketHandler() {
                     @Override
                     public void onConnect(WebSocketContext ctx) {
