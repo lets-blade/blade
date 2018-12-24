@@ -17,15 +17,15 @@ import java.lang.annotation.Target;
 @Documented
 @Bean
 public @interface WebSocket {
-    /**
-     * alias for path
-     * @return
-     */
-    String[] value() default {};
 
     /**
-     * websocket path
-     * @return
+     * @return websocket path
      */
-    String[] path() default {};
+    String value() default "/websocket";
+
+
+    /**
+     * @return websocket description
+     */
+    String description() default "";
 }

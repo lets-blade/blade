@@ -53,17 +53,17 @@ public class IOKit {
     }
 
     public static String readToString(BufferedReader bufferedReader) {
-        return bufferedReader.lines().collect(Collectors.joining());
+        return bufferedReader.lines().collect(Collectors.joining(System.lineSeparator()));
     }
 
     public static String readToString(Path path) throws IOException {
         BufferedReader bufferedReader = Files.newBufferedReader(path);
-        return bufferedReader.lines().collect(Collectors.joining());
+        return bufferedReader.lines().collect(Collectors.joining(System.lineSeparator()));
     }
 
     public static String readToString(InputStream input) throws IOException {
         try (BufferedReader buffer = new BufferedReader(new InputStreamReader(input, "UTF-8"))) {
-            return buffer.lines().collect(Collectors.joining("\n"));
+            return buffer.lines().collect(Collectors.joining(System.lineSeparator()));
         }
     }
 
