@@ -18,16 +18,16 @@ public class CustomWebSocketHandler implements WebSocketHandler {
     @Override
     public void onConnect(WebSocketContext ctx) {
         cService.sayHello();
-        System.out.println("ws from implements interface:onConnect:"+ctx.getSession().getUuid());
+        System.out.println("ws from implements interface:onConnect:"+ctx.session().uuid());
     }
 
     @Override
     public void onText(WebSocketContext ctx) {
-        System.out.println("ws from implements interface:onText:"+ctx.getSession().getUuid() + " said:" + ctx.getReqText());
+        System.out.println("ws from implements interface:onText:"+ctx.session().uuid() + " said:" + ctx.message());
     }
 
     @Override
     public void onDisConnect(WebSocketContext ctx) {
-        System.out.println("ws from implements interface:onDisConnect:"+ctx.getSession().getUuid() + " disconnect");
+        System.out.println("ws from implements interface:onDisConnect:"+ctx.session().uuid() + " disconnect");
     }
 }

@@ -1,27 +1,47 @@
 package com.blade.mvc.websocket;
 
-import io.netty.channel.ChannelHandlerContext;
+import com.blade.mvc.handler.WebSocketHandler;
+import io.netty.channel.ChannelFutureListener;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
-import lombok.Data;
+import lombok.Getter;
+import lombok.experimental.Accessors;
 
 /**
- * @author biezhi
+ * @author biezhi,darren
  * @date 2017/10/30
  */
-@Data
+@Accessors(fluent = true)
 public class WebSocketContext {
 
-    private ChannelHandlerContext ctx;
+    @Getter
     private WebSocketSession      session;
-    private String                reqText;
+    @Getter
+    private String                message;
+    private WebSocketHandler      handler;
 
-    public WebSocketContext(ChannelHandlerContext ctx) {
-        this.ctx = ctx;
-        this.session = new WebSocketSession(ctx.channel());
+    public WebSocketContext(WebSocketSession session,WebSocketHandler handler) {
+        this.session = session;
+        this.handler = handler;
+    }
+    public WebSocketContext(WebSocketSession session,WebSocketHandler handler,String message) {
+        this(session,handler);
+        this.message = message;
     }
 
+    /**
+     * post a message
+     * @param value
+     */
     public void message(String value) {
-        ctx.writeAndFlush(new TextWebSocketFrame(value));
+        session.handlerContext().writeAndFlush(new TextWebSocketFrame(value));
+    }
+
+    /**
+     * Allows the user to disconnect the websocket
+     */
+    public void disconnect(){
+        session.handlerContext().disconnect().addListener(ChannelFutureListener.CLOSE);
+        handler.onDisConnect(this);
     }
 
 }

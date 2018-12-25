@@ -14,6 +14,6 @@ public class CustomWebSocketHandlerAnno extends BaseWebSocketHandler {
 
     @OnMessage
     public void OnMessage(WebSocketContext ctx) {
-        System.out.println("ws from annotation @OnMessage:" + ctx.getSession().getUuid() + " said:" + ctx.getReqText());
+        System.out.println("ws from annotation @OnMessage:" + ctx.session().uuid() + " said:" + ctx.message());
     }
 }

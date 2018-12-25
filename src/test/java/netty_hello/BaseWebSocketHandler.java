@@ -14,11 +14,11 @@ public abstract class BaseWebSocketHandler {
 
     @OnOpen
     public void OnOpen(WebSocketContext ctx) {
-        System.out.println("ws from annotation @OnOpen:" + ctx.getSession().getUuid());
+        System.out.println("ws from annotation @OnOpen:" + ctx.session().uuid());
     }
 
     @OnClose
     public void OnClose(WebSocketContext ctx) {
-        System.out.println("ws from annotation @OnClose:" + ctx.getSession().getUuid() + " disconnect");
+        System.out.println("ws from annotation @OnClose:" + ctx.session().uuid() + " disconnect");
     }
 }
