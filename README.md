@@ -659,7 +659,6 @@ public class GlobalExceptionHandler extends DefaultExceptionHandler {
 
 Besides looking easy, the features above are only the tip of the iceberg, and there are more surprises to see in the documentation and sample projects:
 
-+ [FirstBladeApp](https://github.com/lets-blade/first-blade-app)
 + [Blade Demos](https://github.com/lets-blade/blade-demos)
 + [Awesome Blade](https://github.com/lets-blade/awesome-blade)
 
@@ -671,17 +670,13 @@ Besides looking easy, the features above are only the tip of the iceberg, and th
 
 - Twitter: [biezhi](https://twitter.com/biezhii)
 - Mail: biezhi.me@gmail.com
+- [Telegram Group](https://t.me/letsblade)
 
 ## Contributors
 
 Thanks goes to these wonderful people
 
-<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
-<!-- prettier-ignore -->
-| [<img src="https://avatars2.githubusercontent.com/u/3849072?s=460&v=4" width="100px;"/><br /><sub><b>biezhi</b></sub>](https://twitter.com/biezhii) | [<img src="https://avatars2.githubusercontent.com/u/8097340?s=460&v=4" width="100px;"/><br /><sub><b>ydq</b></sub>](https://github.com/ydq) | [<img src="https://avatars2.githubusercontent.com/u/9401233?s=460&v=4" width="100px;"/><br /><sub><b>ccqy66</b></sub>](https://github.com/ccqy66) | [<img src="https://avatars0.githubusercontent.com/u/9024855?s=460&v=4" width="100px;"/><br /><sub><b>王晓辉(Eddie)</b></sub>](https://github.com/eddie-wang) | [<img src="https://avatars2.githubusercontent.com/u/2503423?s=460&v=4" width="100px;"/><br /><sub><b>代码家</b></sub>](https://github.com/daimajia) | [<img src="https://avatars2.githubusercontent.com/u/9032795?s=460&v=4" width="100px;"/><br /><sub><b>David Dong</b></sub>](https://github.com/dongm2ez) | [<img src="https://avatars1.githubusercontent.com/u/10883521?s=460&v=4" width="100px;"/><br /><sub><b>José Vieira Neto</b></sub>](https://github.com/NetoDevel) |
-| :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| [<img src="https://avatars1.githubusercontent.com/u/497803?s=460&v=4" width="100px;"/><br /><sub><b>Mohd Farid</b></sub>](https://github.com/mfarid) | [<img src="https://avatars3.githubusercontent.com/u/1326893?s=460&v=4" width="100px;"/><br /><sub><b>sumory</b></sub>](https://github.com/sumory) | [<img src="https://avatars3.githubusercontent.com/u/463602?s=460&v=4" width="100px;"/><br /><sub><b>Uday K</b></sub>](https://github.com/udaykadaboina) | [<img src="https://avatars0.githubusercontent.com/u/11169857?s=460&v=4" width="100px;"/><br /><sub><b>Antony Kwok</b></sub>](https://github.com/Awakens) | [<img src="https://avatars0.githubusercontent.com/u/59744?s=460&v=4" width="100px;"/><br /><sub><b>Schneeman</b></sub>](https://github.com/schneems) | &nbsp; | &nbsp; |
-<!-- ALL-CONTRIBUTORS-LIST:END -->
+![contributors.svg](https://opencollective.com/blade/contributors.svg?width=890&button=false)
 
 Contributions of any kind are welcome!
 
