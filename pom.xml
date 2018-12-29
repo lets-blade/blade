@@ -25,9 +25,9 @@
         </developer>
     </developers>
     <scm>
-        <connection>scm:git@github.com:biezhi/blade.git</connection>
-        <developerConnection>scm:git@github.com:biezhi/blade.git</developerConnection>
-        <url>git@github.com:biezhi/blade.git</url>
+        <connection>scm:git@github.com:lets-blade/blade.git</connection>
+        <developerConnection>scm:git@github.com:lets-blade/blade.git</developerConnection>
+        <url>git@github.com:lets-blade/blade.git</url>
     </scm>
 
     <properties>
