@@ -7,7 +7,7 @@ import com.blade.ioc.annotation.Inject;
  * @author biezhi
  * @date 2018-11-21
  */
-@Bean(singleton = false)
+@Bean
 public class UserService {
 
     @Inject

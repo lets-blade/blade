@@ -247,9 +247,19 @@ public interface Request {
      * @param defaultValue default double value
      * @return Return Double parameter values
      */
-    default double queryDouble(@NonNull String name, double defaultValue) {
+    default double queryDouble(@NonNull String name, Double defaultValue) {
         Optional<String> value = query(name);
         return value.map(Double::parseDouble).orElse(defaultValue);
+    }
+
+    default Optional<Boolean> queryBoolean(@NonNull String name) {
+        Optional<String> value = query(name);
+        return value.map(Boolean::valueOf);
+    }
+
+    default boolean queryBoolean(@NonNull String name, Boolean defaultValue) {
+        Optional<String> value = query(name);
+        return value.map(Boolean::valueOf).orElse(defaultValue);
     }
 
     /**

@@ -33,8 +33,11 @@ import com.blade.mvc.Const;
 import com.blade.mvc.WebContext;
 import com.blade.mvc.annotation.Path;
 import com.blade.mvc.annotation.URLPattern;
+import com.blade.mvc.annotation.WebSocket;
 import com.blade.mvc.handler.DefaultExceptionHandler;
 import com.blade.mvc.handler.ExceptionHandler;
+import com.blade.mvc.handler.WebSocketHandler;
+import com.blade.mvc.handler.WebSocketHandlerWrapper;
 import com.blade.mvc.hook.WebHook;
 import com.blade.mvc.http.session.SessionCleaner;
 import com.blade.mvc.route.RouteBuilder;
@@ -291,11 +294,10 @@ public class NettyServer implements Server {
             blade.register(clazz);
         }
         if (null != clazz.getAnnotation(Path.class)) {
-            Path path = clazz.getAnnotation(Path.class);
-            if (path.singleton() && null == blade.ioc().getBean(clazz)) {
+            if (null == blade.getBean(clazz)) {
                 blade.register(clazz);
             }
-            Object controller = blade.ioc().getBean(clazz);
+            Object controller = blade.getBean(clazz);
             routeBuilder.addRouter(clazz, controller);
         }
 
@@ -310,14 +312,32 @@ public class NettyServer implements Server {
         }
 
         if (ReflectKit.hasInterface(clazz, BladeLoader.class) && null != clazz.getAnnotation(Bean.class)) {
-            this.loaders.add((BladeLoader) blade.ioc().getBean(clazz));
+            this.loaders.add((BladeLoader) blade.getBean(clazz));
         }
         if (ReflectKit.hasInterface(clazz, BeanProcessor.class) && null != clazz.getAnnotation(Bean.class)) {
-            this.processors.add((BeanProcessor) blade.ioc().getBean(clazz));
+            this.processors.add((BeanProcessor) blade.getBean(clazz));
         }
         if (isExceptionHandler(clazz)) {
-            ExceptionHandler exceptionHandler = (ExceptionHandler) blade.ioc().getBean(clazz);
+            ExceptionHandler exceptionHandler = (ExceptionHandler) blade.getBean(clazz);
             blade.exceptionHandler(exceptionHandler);
+        }
+        WebSocket webSocket;
+        if(null != (webSocket = clazz.getAnnotation(WebSocket.class))) {
+            if (null == blade.getBean(clazz)) {
+                blade.register(clazz);
+            }
+            if(ReflectKit.hasInterface(clazz, WebSocketHandler.class)){
+                blade.webSocket(webSocket.value(),(WebSocketHandler)blade.getBean(clazz));
+            } else {
+                WebSocketHandlerWrapper wrapper = blade.getBean(WebSocketHandlerWrapper.class);
+                if(wrapper == null){
+                    wrapper = WebSocketHandlerWrapper.init(blade);
+                    blade.register(wrapper);
+                }
+                blade.webSocket(webSocket.value(),wrapper);
+                wrapper.wrapHandler(webSocket.value(),clazz);
+            }
+
         }
     }
 
