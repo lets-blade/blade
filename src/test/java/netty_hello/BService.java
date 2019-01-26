@@ -6,7 +6,7 @@ import com.blade.ioc.annotation.Bean;
  * @author biezhi
  * @date 2018-11-21
  */
-@Bean(singleton = false)
+@Bean
 public class BService {
 
     public void sayHello(){

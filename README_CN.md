@@ -33,7 +33,7 @@
 * [x] 源码不到 `500kb`，学习也简单
 * [x] Restful风格路由设计
 * [x] 模板引擎支持，视图开发更灵活
-* [x] 高性能，100并发下qps 14w/s
+* [x] 高性能，100 并发下qps 20w/s
 * [x] 运行 `JAR` 包即可开启 web 服务
 * [x] 支持 `CSRF` 和 `XSS` 防御
 * [x] 支持 `BasicAuth` 和权限管理
@@ -61,7 +61,7 @@
 <dependency>
 	<groupId>com.bladejava</groupId>
 	<artifactId>blade-mvc</artifactId>
-	<version>2.0.12.BETA</version>
+	<version>2.0.14.RELEASE</version>
 </dependency>
 ```
 
@@ -70,7 +70,7 @@
 或者  `Gradle`:
 
 ```sh
-compile 'com.bladejava:blade-mvc:2.0.12.BETA'
+compile 'com.bladejava:blade-mvc:2.0.14.RELEASE'
 ```
 
 编写 `main` 函数写一个 `Hello World`：
@@ -675,9 +675,9 @@ public class GolbalExceptionHandler extends DefaultExceptionHandler {
 
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
 <!-- prettier-ignore -->
-| [<img src="https://avatars2.githubusercontent.com/u/3849072?s=460&v=4" width="100px;"/><br /><sub><b>王爵nice</b></sub>](https://twitter.com/biezhii) | [<img src="https://avatars2.githubusercontent.com/u/9401233?s=460&v=4" width="100px;"/><br /><sub><b>ccqy66</b></sub>](https://github.com/ccqy66) | [<img src="https://avatars0.githubusercontent.com/u/9024855?s=460&v=4" width="100px;"/><br /><sub><b>王晓辉(Eddie)</b></sub>](https://github.com/eddie-wang) | [<img src="https://avatars2.githubusercontent.com/u/2503423?s=460&v=4" width="100px;"/><br /><sub><b>代码家</b></sub>](https://github.com/daimajia) | [<img src="https://avatars2.githubusercontent.com/u/9032795?s=460&v=4" width="100px;"/><br /><sub><b>David Dong</b></sub>](https://github.com/dongm2ez) | [<img src="https://avatars1.githubusercontent.com/u/10883521?s=460&v=4" width="100px;"/><br /><sub><b>José Vieira Neto</b></sub>](https://github.com/NetoDevel) | [<img src="https://avatars0.githubusercontent.com/u/59744?s=460&v=4" width="100px;"/><br /><sub><b>Schneeman</b></sub>](https://github.com/schneems) |
+| [<img src="https://avatars2.githubusercontent.com/u/3849072?s=460&v=4" width="100px;"/><br /><sub><b>biezhi</b></sub>](https://twitter.com/biezhii) | [<img src="https://avatars2.githubusercontent.com/u/8097340?s=460&v=4" width="100px;"/><br /><sub><b>ydq</b></sub>](https://github.com/ydq) | [<img src="https://avatars2.githubusercontent.com/u/9401233?s=460&v=4" width="100px;"/><br /><sub><b>ccqy66</b></sub>](https://github.com/ccqy66) | [<img src="https://avatars0.githubusercontent.com/u/9024855?s=460&v=4" width="100px;"/><br /><sub><b>王晓辉(Eddie)</b></sub>](https://github.com/eddie-wang) | [<img src="https://avatars2.githubusercontent.com/u/2503423?s=460&v=4" width="100px;"/><br /><sub><b>代码家</b></sub>](https://github.com/daimajia) | [<img src="https://avatars2.githubusercontent.com/u/9032795?s=460&v=4" width="100px;"/><br /><sub><b>David Dong</b></sub>](https://github.com/dongm2ez) | [<img src="https://avatars1.githubusercontent.com/u/10883521?s=460&v=4" width="100px;"/><br /><sub><b>José Vieira Neto</b></sub>](https://github.com/NetoDevel) |
 | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| [<img src="https://avatars1.githubusercontent.com/u/497803?s=460&v=4" width="100px;"/><br /><sub><b>Mohd Farid</b></sub>](https://github.com/mfarid) | [<img src="https://avatars3.githubusercontent.com/u/1326893?s=460&v=4" width="100px;"/><br /><sub><b>sumory</b></sub>](https://github.com/sumory) | [<img src="https://avatars3.githubusercontent.com/u/463602?s=460&v=4" width="100px;"/><br /><sub><b>Uday K</b></sub>](https://github.com/udaykadaboina) | [<img src="https://avatars0.githubusercontent.com/u/11169857?s=460&v=4" width="100px;"/><br /><sub><b>Antony Kwok</b></sub>](https://github.com/Awakens) | &nbsp; | &nbsp; | &nbsp; |
+| [<img src="https://avatars1.githubusercontent.com/u/497803?s=460&v=4" width="100px;"/><br /><sub><b>Mohd Farid</b></sub>](https://github.com/mfarid) | [<img src="https://avatars3.githubusercontent.com/u/1326893?s=460&v=4" width="100px;"/><br /><sub><b>sumory</b></sub>](https://github.com/sumory) | [<img src="https://avatars3.githubusercontent.com/u/463602?s=460&v=4" width="100px;"/><br /><sub><b>Uday K</b></sub>](https://github.com/udaykadaboina) | [<img src="https://avatars0.githubusercontent.com/u/11169857?s=460&v=4" width="100px;"/><br /><sub><b>Antony Kwok</b></sub>](https://github.com/Awakens) | [<img src="https://avatars0.githubusercontent.com/u/59744?s=460&v=4" width="100px;"/><br /><sub><b>Schneeman</b></sub>](https://github.com/schneems) | &nbsp; | &nbsp; |
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
 ## 开源协议

@@ -153,6 +153,8 @@ public class Blade {
      */
     private ExceptionHandler exceptionHandler = new DefaultExceptionHandler();
 
+    private CorsMiddleware corsMiddleware;
+
     /**
      * Used to identify whether the web server has started
      */
@@ -172,11 +174,6 @@ public class Blade {
     private Class<? extends Session> sessionImplType = HttpSession.class;
 
     /**
-     * WebSocket path
-     */
-    private String webSocketPath;
-
-    /**
      * Blade app start banner, default is Const.BANNER
      */
     private String bannerText;
@@ -185,11 +182,6 @@ public class Blade {
      * Blade app start thread name, default is Const.DEFAULT_THREAD_NAME
      */
     private String threadName;
-
-    /**
-     * WebSocket Handler
-     */
-    private WebSocketHandler webSocketHandler;
 
     /**
      * Give your blade instance, from then on will get the energy
@@ -548,9 +540,13 @@ public class Blade {
     public Blade enableCors(boolean enableCors, CorsConfiger corsConfig) {
         this.environment.set(ENV_KEY_CORS_ENABLE, enableCors);
         if (enableCors) {
-            this.use(new CorsMiddleware(corsConfig));
+            this.corsMiddleware = new CorsMiddleware(corsConfig);
         }
         return this;
+    }
+
+    public CorsMiddleware corsMiddleware() {
+        return corsMiddleware;
     }
 
     /**
@@ -957,22 +953,8 @@ public class Blade {
      * @return return blade instance
      */
     public Blade webSocket(@NonNull String path, @NonNull WebSocketHandler handler) {
-        if (null != this.webSocketHandler) {
-            throw new BladeException(500, "There is already a WebSocket path.");
-        }
-        this.webSocketPath = path;
-        this.webSocketHandler = handler;
-        this.routeMatcher.addWebSocket(path);
+        this.routeMatcher.addWebSocket(path,handler);
         return this;
-    }
-
-    /**
-     * Get webSocket path
-     *
-     * @return return websocket path
-     */
-    public String webSocketPath() {
-        return this.webSocketPath;
     }
 
     /**
@@ -1029,15 +1011,6 @@ public class Blade {
     public Blade contextPath(String contextPath) {
         this.environment.set(ENV_KEY_CONTEXT_PATH, contextPath);
         return this;
-    }
-
-    /**
-     * Get WebSocket Handler
-     *
-     * @return return websocket handler
-     */
-    public WebSocketHandler webSocketHandler() {
-        return this.webSocketHandler;
     }
 
     /**
@@ -1103,4 +1076,5 @@ public class Blade {
         }
 
     }
+
 }

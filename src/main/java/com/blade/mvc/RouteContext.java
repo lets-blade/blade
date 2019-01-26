@@ -15,8 +15,6 @@
  */
 package com.blade.mvc;
 
-import com.blade.ioc.bean.BeanDefine;
-import com.blade.kit.IocKit;
 import com.blade.mvc.http.Body;
 import com.blade.mvc.http.Request;
 import com.blade.mvc.http.Response;
@@ -46,6 +44,7 @@ public class RouteContext {
     private Request  request;
     private Response response;
     private Object[] routeActionParameters;
+    private boolean  abort;
 
     private static final String LAMBDA_IDENTIFY = "$$Lambda$";
 
@@ -124,13 +123,43 @@ public class RouteContext {
         return this;
     }
 
+    @Deprecated
+    public String fromString(String paramName) {
+        return this.request.query(paramName).orElse(null);
+    }
+
+    @Deprecated
+    public String fromString(String paramName, String defaultValue) {
+        return this.request.query(paramName, defaultValue);
+    }
+
+    @Deprecated
+    public Integer fromInt(String paramName) {
+        return this.request.queryInt(paramName).orElse(null);
+    }
+
+    @Deprecated
+    public Integer fromInt(String paramName, Integer defaultValue) {
+        return this.request.queryInt(paramName, defaultValue);
+    }
+
+    @Deprecated
+    public Long fromLong(String paramName) {
+        return this.request.queryLong(paramName).orElse(null);
+    }
+
+    @Deprecated
+    public Long fromLong(String paramName, Long defaultValue) {
+        return this.request.queryLong(paramName, defaultValue);
+    }
+
     /**
      * Get a request parameter
      *
      * @param paramName Parameter name
      * @return Return request parameter value
      */
-    public String fromString(String paramName) {
+    public String query(String paramName) {
         return this.request.query(paramName).orElse(null);
     }
 
@@ -141,7 +170,7 @@ public class RouteContext {
      * @param defaultValue default String value
      * @return Return request parameter values
      */
-    public String fromString(String paramName, String defaultValue) {
+    public String query(String paramName, String defaultValue) {
         return this.request.query(paramName, defaultValue);
     }
 
@@ -151,7 +180,7 @@ public class RouteContext {
      * @param paramName Parameter name
      * @return Return Int parameter values
      */
-    public Integer fromInt(String paramName) {
+    public Integer queryInt(String paramName) {
         return this.request.queryInt(paramName).orElse(null);
     }
 
@@ -162,7 +191,7 @@ public class RouteContext {
      * @param defaultValue default int value
      * @return Return Int parameter values
      */
-    public Integer fromInt(String paramName, Integer defaultValue) {
+    public Integer queryInt(String paramName, Integer defaultValue) {
         return this.request.queryInt(paramName, defaultValue);
     }
 
@@ -172,7 +201,7 @@ public class RouteContext {
      * @param paramName Parameter name
      * @return Return Long parameter values
      */
-    public Long fromLong(String paramName) {
+    public Long queryLong(String paramName) {
         return this.request.queryLong(paramName).orElse(null);
     }
 
@@ -183,8 +212,24 @@ public class RouteContext {
      * @param defaultValue default long value
      * @return Return Long parameter values
      */
-    public Long fromLong(String paramName, Long defaultValue) {
+    public Long queryLong(String paramName, Long defaultValue) {
         return this.request.queryLong(paramName, defaultValue);
+    }
+
+    public Double queryDouble(String paramName) {
+        return this.request.queryDouble(paramName, null);
+    }
+
+    public Double queryDouble(String paramName, Double defaultValue) {
+        return this.request.queryDouble(paramName, defaultValue);
+    }
+
+    public Boolean queryBoolean(String paramName) {
+        return this.request.queryBoolean(paramName, null);
+    }
+
+    public Boolean queryBoolean(String paramName, Boolean defaultValue) {
+        return this.request.queryBoolean(paramName, defaultValue);
     }
 
     /**
@@ -521,25 +566,35 @@ public class RouteContext {
         return this.routeActionParameters;
     }
 
+    public void abort() {
+        this.abort = true;
+    }
+
+    public boolean isAbort() {
+        return this.abort;
+    }
+
     public void initRoute(Route route) {
         this.request.initPathParams(route);
         this.route = route;
-
-        boolean singleton = IocKit.isSingleton(route.getTargetType());
-
-        if (singleton) {
-            BeanDefine beanDefine = WebContext.blade().ioc().getBeanDefine(route.getTargetType());
-            if(beanDefine.isFieldHasPrototype()){
-                // reset initialize
-                IocKit.injection(WebContext.blade().ioc(), beanDefine);
-            } else {
-                Object target = WebContext.blade().ioc().getBean(route.getTargetType());
-                this.route.setTarget(target);
-            }
-        } else {
-            Object target = WebContext.blade().ioc().createBean(route.getTargetType());
-            this.route.setTarget(target);
-        }
+//        if (null != route.getTarget() && route.getTargetType().equals(RouteHandler.class)) {
+//            return;
+//        }
+//        boolean singleton = IocKit.isSingleton(route.getTargetType());
+//
+//        if (singleton) {
+//            BeanDefine beanDefine = WebContext.blade().ioc().getBeanDefine(route.getTargetType());
+//            if (beanDefine.isFieldHasPrototype()) {
+//                // reset initialize
+//                IocKit.injection(WebContext.blade().ioc(), beanDefine);
+//            } else {
+//                Object target = WebContext.blade().ioc().getBean(route.getTargetType());
+//                this.route.setTarget(target);
+//            }
+//        } else {
+//            Object target = WebContext.blade().ioc().createBean(route.getTargetType());
+//            this.route.setTarget(target);
+//        }
     }
 
     public void injectParameters() {

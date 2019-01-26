@@ -17,7 +17,6 @@ package com.blade.kit;
 
 import com.blade.Environment;
 import com.blade.ioc.Ioc;
-import com.blade.ioc.annotation.Bean;
 import com.blade.ioc.annotation.Inject;
 import com.blade.ioc.annotation.InjectWith;
 import com.blade.ioc.annotation.Value;
@@ -25,8 +24,6 @@ import com.blade.ioc.bean.BeanDefine;
 import com.blade.ioc.bean.ClassDefine;
 import com.blade.ioc.bean.FieldInjector;
 import com.blade.ioc.bean.ValueInjector;
-import com.blade.mvc.WebContext;
-import com.blade.mvc.annotation.Path;
 import lombok.experimental.UtilityClass;
 
 import java.lang.reflect.Field;
@@ -132,18 +129,6 @@ public class IocKit {
     }
 
     public static boolean isSingleton(Class<?> type) {
-        Bean bean = type.getAnnotation(Bean.class);
-        if (null != bean) {
-            return bean.singleton();
-        }
-        Path path = type.getAnnotation(Path.class);
-        if (null != path) {
-            return path.singleton();
-        }
-        Inject inject = type.getAnnotation(Inject.class);
-        if (null != inject) {
-            return inject.singleton();
-        }
         return true;
     }
 

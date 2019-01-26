@@ -34,7 +34,7 @@ If you think it's good, you can support it with a [star](https://github.com/biez
 * [x] Source is less than `500kb`, learning it is also simple
 * [x] RESTful-style routing design
 * [x] Template engine support, view development more flexible
-* [x] High performance, 100 concurrent qps 14w/s
+* [x] High performance, 100 concurrent qps 20w/s
 * [x] Run the `JAR` package to open the web service
 * [x] Streams-style API
 * [x] `CSRF` and `XSS` defense
@@ -64,14 +64,14 @@ Run with `Maven`:
 <dependency>
     <groupId>com.bladejava</groupId>
     <artifactId>blade-mvc</artifactId>
-    <version>2.0.12.BETA</version>
+    <version>2.0.14.RELEASE</version>
 </dependency>
 ```
 
 or `Gradle`:
 
 ```sh
-compile 'com.bladejava:blade-mvc:2.0.12.BETA'
+compile 'com.bladejava:blade-mvc:2.0.14.RELEASE'
 ```
 
 Write the `main` method and the `Hello World`:
@@ -83,7 +83,6 @@ public static void main(String[] args) {
 ```
 
 Open http://localhost:9000 in your browser to see your first `Blade` application!
-
 
 ## Contents
 
@@ -679,9 +678,9 @@ Thanks goes to these wonderful people
 
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
 <!-- prettier-ignore -->
-| [<img src="https://avatars2.githubusercontent.com/u/3849072?s=460&v=4" width="100px;"/><br /><sub><b>王爵nice</b></sub>](https://twitter.com/biezhii) | [<img src="https://avatars2.githubusercontent.com/u/9401233?s=460&v=4" width="100px;"/><br /><sub><b>ccqy66</b></sub>](https://github.com/ccqy66) | [<img src="https://avatars0.githubusercontent.com/u/9024855?s=460&v=4" width="100px;"/><br /><sub><b>王晓辉(Eddie)</b></sub>](https://github.com/eddie-wang) | [<img src="https://avatars2.githubusercontent.com/u/2503423?s=460&v=4" width="100px;"/><br /><sub><b>代码家</b></sub>](https://github.com/daimajia) | [<img src="https://avatars2.githubusercontent.com/u/9032795?s=460&v=4" width="100px;"/><br /><sub><b>David Dong</b></sub>](https://github.com/dongm2ez) | [<img src="https://avatars1.githubusercontent.com/u/10883521?s=460&v=4" width="100px;"/><br /><sub><b>José Vieira Neto</b></sub>](https://github.com/NetoDevel) | [<img src="https://avatars0.githubusercontent.com/u/59744?s=460&v=4" width="100px;"/><br /><sub><b>Schneeman</b></sub>](https://github.com/schneems) |
+| [<img src="https://avatars2.githubusercontent.com/u/3849072?s=460&v=4" width="100px;"/><br /><sub><b>biezhi</b></sub>](https://twitter.com/biezhii) | [<img src="https://avatars2.githubusercontent.com/u/8097340?s=460&v=4" width="100px;"/><br /><sub><b>ydq</b></sub>](https://github.com/ydq) | [<img src="https://avatars2.githubusercontent.com/u/9401233?s=460&v=4" width="100px;"/><br /><sub><b>ccqy66</b></sub>](https://github.com/ccqy66) | [<img src="https://avatars0.githubusercontent.com/u/9024855?s=460&v=4" width="100px;"/><br /><sub><b>王晓辉(Eddie)</b></sub>](https://github.com/eddie-wang) | [<img src="https://avatars2.githubusercontent.com/u/2503423?s=460&v=4" width="100px;"/><br /><sub><b>代码家</b></sub>](https://github.com/daimajia) | [<img src="https://avatars2.githubusercontent.com/u/9032795?s=460&v=4" width="100px;"/><br /><sub><b>David Dong</b></sub>](https://github.com/dongm2ez) | [<img src="https://avatars1.githubusercontent.com/u/10883521?s=460&v=4" width="100px;"/><br /><sub><b>José Vieira Neto</b></sub>](https://github.com/NetoDevel) |
 | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| [<img src="https://avatars1.githubusercontent.com/u/497803?s=460&v=4" width="100px;"/><br /><sub><b>Mohd Farid</b></sub>](https://github.com/mfarid) | [<img src="https://avatars3.githubusercontent.com/u/1326893?s=460&v=4" width="100px;"/><br /><sub><b>sumory</b></sub>](https://github.com/sumory) | [<img src="https://avatars3.githubusercontent.com/u/463602?s=460&v=4" width="100px;"/><br /><sub><b>Uday K</b></sub>](https://github.com/udaykadaboina) | [<img src="https://avatars0.githubusercontent.com/u/11169857?s=460&v=4" width="100px;"/><br /><sub><b>Antony Kwok</b></sub>](https://github.com/Awakens) | &nbsp; | &nbsp; | &nbsp; |
+| [<img src="https://avatars1.githubusercontent.com/u/497803?s=460&v=4" width="100px;"/><br /><sub><b>Mohd Farid</b></sub>](https://github.com/mfarid) | [<img src="https://avatars3.githubusercontent.com/u/1326893?s=460&v=4" width="100px;"/><br /><sub><b>sumory</b></sub>](https://github.com/sumory) | [<img src="https://avatars3.githubusercontent.com/u/463602?s=460&v=4" width="100px;"/><br /><sub><b>Uday K</b></sub>](https://github.com/udaykadaboina) | [<img src="https://avatars0.githubusercontent.com/u/11169857?s=460&v=4" width="100px;"/><br /><sub><b>Antony Kwok</b></sub>](https://github.com/Awakens) | [<img src="https://avatars0.githubusercontent.com/u/59744?s=460&v=4" width="100px;"/><br /><sub><b>Schneeman</b></sub>](https://github.com/schneems) | &nbsp; | &nbsp; |
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
 Contributions of any kind are welcome!

@@ -1,11 +1,13 @@
 package com.blade.mvc.route;
 
+import com.blade.exception.BladeException;
 import com.blade.exception.MethodNotAllowedException;
 import com.blade.ioc.annotation.Order;
 import com.blade.kit.*;
 import com.blade.mvc.RouteContext;
 import com.blade.mvc.handler.RouteHandler;
 import com.blade.mvc.handler.RouteHandler0;
+import com.blade.mvc.handler.WebSocketHandler;
 import com.blade.mvc.hook.Signature;
 import com.blade.mvc.hook.WebHook;
 import com.blade.mvc.http.HttpMethod;
@@ -14,6 +16,7 @@ import com.blade.mvc.http.Response;
 import com.blade.mvc.route.mapping.FastRouteMappingInfo;
 import com.blade.mvc.route.mapping.RegexMapping;
 import com.blade.mvc.route.mapping.StaticMapping;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Method;
@@ -51,7 +54,10 @@ public class RouteMatcher {
     private RegexMapping  regexMapping  = new RegexMapping();
     private StaticMapping staticMapping = new StaticMapping();
 
-    private List<String> webSockets = new ArrayList<>(4);
+    /**
+     * WebSocket Handlers
+     */
+    private Map<String, WebSocketHandler> webSockets = new HashMap<>(4);
 
     @Deprecated
     private Route addRoute(HttpMethod httpMethod, String path, RouteHandler0 handler, String methodName) throws NoSuchMethodException {
@@ -345,7 +351,7 @@ public class RouteMatcher {
 
         regexMapping.register();
 
-        webSockets.forEach(path -> logWebSocket(log, path));
+        webSockets.keySet().forEach(path -> logWebSocket(log, path));
     }
 
     private void registerRoute(Route route) {
@@ -383,8 +389,12 @@ public class RouteMatcher {
         return routes;
     }
 
-    public List<String> getWebSockets() {
+    public Map<String,WebSocketHandler> getWebSockets() {
         return webSockets;
+    }
+
+    public WebSocketHandler getWebSocket(String path) {
+        return webSockets.get(path);
     }
 
     public Map<String, List<Route>> getHooks() {
@@ -411,8 +421,12 @@ public class RouteMatcher {
         }).collect(Collectors.toList());
     }
 
-    public void addWebSocket(String path) {
-        webSockets.add(path);
+    public RouteMatcher addWebSocket(@NonNull String path,@NonNull WebSocketHandler handler) {
+        if (null != this.webSockets.get(path)) {
+            throw new BladeException(500, "Duplicate WebSocket path [" + path + "]");
+        }
+        this.webSockets.put(path,handler);
+        return this;
     }
 
 }
