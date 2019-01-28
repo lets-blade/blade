@@ -6,7 +6,8 @@
 <p align="center">
     🐾 <a href="#quick-start" target="_blank">Quick Start</a> |
     🎬 <a href="https://www.youtube.com/playlist?list=PLK2w-tGRdrj5TV2lxHFj8hcg4mbmRmnWX" target="_blank">Video Tutorial</a> |
-    🌚 <a href="https://lets-blade.com" target="_blank">Document</a> |
+    🌚 <a href="https://lets-blade.com" target="_blank">Documentation</a> |
+    :green_book: <a href="https://www.baeldung.com/blade" target="_blank">Guidebook</a> |
     💰 <a href="https://lets-blade.com/donate" target="_blank">Donate</a> |
     🇨🇳 <a href="README_CN.md">简体中文</a>
 </p>
