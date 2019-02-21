@@ -16,6 +16,7 @@
 package com.blade.kit;
 
 import com.blade.Environment;
+import com.blade.exception.ValidatorException;
 import com.blade.mvc.Const;
 import com.blade.mvc.http.HttpMethod;
 import com.blade.mvc.route.Route;
@@ -102,12 +103,12 @@ public class BladeKit {
                                 String myCron = cronTemp.substring(2, cronTemp.length() - 1).trim();
                                 String myCronReal = environment.get(myCron).get();
                                 if(myCronReal == null || !CronExpression.isValidExpression(myCronReal) ){
-                                    throw new RuntimeException("WrongCronExpression:Place write the rigth cron expression!");
+                                    throw new ValidatorException("WrongCronExpression:Place write the rigth cron expression!");
                                 }
                                 scheduleValue.put("cron",myCronReal);
                             }
                         }else{
-                            throw new RuntimeException("NoCronExpression:Place write the cron expression!");
+                            throw new ValidatorException("NoCronExpression:Place write the cron expression!");
                         }
                     } catch (Exception e ) {
                         e.printStackTrace();
