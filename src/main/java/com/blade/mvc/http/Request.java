@@ -290,7 +290,7 @@ public interface Request {
     default String address() {
         String address = WebKit.ipAddress(this);
         if (StringKit.isBlank(address) || UNKNOWN_MAGIC.equalsIgnoreCase(address)) {
-            address = remoteAddress().split(":")[0].substring(1);
+            address = remoteAddress().split(":")[0];
         }
         if (StringKit.isBlank(address)) {
             address = "Unknown";
