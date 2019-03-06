@@ -15,11 +15,14 @@
  */
 package com.blade.kit;
 
+import com.blade.Environment;
+import com.blade.exception.ValidatorException;
 import com.blade.mvc.Const;
 import com.blade.mvc.http.HttpMethod;
 import com.blade.mvc.route.Route;
 import com.blade.task.TaskStruct;
 import com.blade.task.annotation.Schedule;
+import com.blade.task.cron.CronExpression;
 import lombok.experimental.UtilityClass;
 import org.slf4j.Logger;
 
@@ -28,8 +31,7 @@ import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.lang.invoke.SerializedLambda;
 import java.lang.management.ManagementFactory;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import java.lang.reflect.*;
 import java.net.URL;
 import java.time.Duration;
 import java.time.Instant;
@@ -82,12 +84,36 @@ public class BladeKit {
         return input.substring(0, 1).toLowerCase() + input.substring(1, input.length());
     }
 
-    public static List<TaskStruct> getTasks(Class<?> type) {
+    public static List<TaskStruct> getTasks(Class<?> type,Environment environment) {
         return Arrays.stream(type.getMethods())
                 .filter(m -> null != m.getAnnotation(Schedule.class))
                 .map(m -> {
                     TaskStruct taskStruct = new TaskStruct();
-                    taskStruct.setSchedule(m.getAnnotation(Schedule.class));
+                    Schedule schedule = m.getAnnotation(Schedule.class);
+                    String cronTemp = schedule.cron().trim();
+                    InvocationHandler invocationHandler = Proxy.getInvocationHandler(schedule);
+                    Field scheduleValueField = null;
+                    try {
+                        scheduleValueField = invocationHandler.getClass().getDeclaredField("memberValues");
+                        scheduleValueField.setAccessible(true);
+                        Map scheduleValue = (Map)scheduleValueField.get(invocationHandler);
+                        if(cronTemp != null && cronTemp.length() > 0){
+                            boolean isCronExpression = CronExpression.isValidExpression(cronTemp);
+                            if(!isCronExpression){
+                                String myCron = cronTemp.substring(2, cronTemp.length() - 1).trim();
+                                String myCronReal = environment.get(myCron).get();
+                                if(myCronReal == null || !CronExpression.isValidExpression(myCronReal) ){
+                                    throw new ValidatorException("WrongCronExpression:Place write the rigth cron expression!");
+                                }
+                                scheduleValue.put("cron",myCronReal);
+                            }
+                        }else{
+                            throw new ValidatorException("NoCronExpression:Place write the cron expression!");
+                        }
+                    } catch (Exception e ) {
+                        e.printStackTrace();
+                    }
+                    taskStruct.setSchedule(schedule);
                     taskStruct.setMethod(m);
                     taskStruct.setType(type);
                     return taskStruct;

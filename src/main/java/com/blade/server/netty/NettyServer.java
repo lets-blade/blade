@@ -172,7 +172,7 @@ public class NettyServer implements Server {
             beanDefines.forEach(b -> {
                 IocKit.initInjection(ioc, b);
                 IocKit.injectionValue(environment, b);
-                List<TaskStruct> cronExpressions = BladeKit.getTasks(b.getType());
+                List<TaskStruct> cronExpressions = BladeKit.getTasks(b.getType(),environment);
                 if (null != cronExpressions) {
                     taskStruts.addAll(cronExpressions);
                 }
