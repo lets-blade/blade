@@ -39,6 +39,8 @@ import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -51,6 +53,8 @@ import java.util.stream.Collectors;
 public class BladeKit {
 
     private static boolean isWindows;
+
+    private static final Pattern PLACEHOLDER_PATTERN = Pattern.compile("\\$\\{([^}]+)\\}");
 
     static {
         isWindows = System.getProperties().getProperty("os.name").toLowerCase().contains("win");
@@ -81,38 +85,24 @@ public class BladeKit {
     }
 
     public static String capitalize(String input) {
-        return input.substring(0, 1).toLowerCase() + input.substring(1, input.length());
+        return input.substring(0, 1).toLowerCase() + input.substring(1);
     }
 
-    public static List<TaskStruct> getTasks(Class<?> type,Environment environment) {
+    public static List<TaskStruct> getTasks(Class<?> type, Environment environment) {
         return Arrays.stream(type.getMethods())
                 .filter(m -> null != m.getAnnotation(Schedule.class))
                 .map(m -> {
                     TaskStruct taskStruct = new TaskStruct();
-                    Schedule schedule = m.getAnnotation(Schedule.class);
-                    String cronTemp = schedule.cron().trim();
-                    InvocationHandler invocationHandler = Proxy.getInvocationHandler(schedule);
-                    Field scheduleValueField = null;
-                    try {
-                        scheduleValueField = invocationHandler.getClass().getDeclaredField("memberValues");
-                        scheduleValueField.setAccessible(true);
-                        Map scheduleValue = (Map)scheduleValueField.get(invocationHandler);
-                        if(cronTemp != null && cronTemp.length() > 0){
-                            boolean isCronExpression = CronExpression.isValidExpression(cronTemp);
-                            if(!isCronExpression){
-                                String myCron = cronTemp.substring(2, cronTemp.length() - 1).trim();
-                                String myCronReal = environment.get(myCron).get();
-                                if(myCronReal == null || !CronExpression.isValidExpression(myCronReal) ){
-                                    throw new ValidatorException("WrongCronExpression:Place write the rigth cron expression!");
-                                }
-                                scheduleValue.put("cron",myCronReal);
-                            }
-                        }else{
-                            throw new ValidatorException("NoCronExpression:Place write the cron expression!");
-                        }
-                    } catch (Exception e ) {
-                        e.printStackTrace();
+                    Schedule   schedule   = m.getAnnotation(Schedule.class);
+                    String     cron       = schedule.cron().trim();
+
+                    Matcher matcher = PLACEHOLDER_PATTERN.matcher(cron);
+                    if (matcher.matches()) {
+                        String key = matcher.group(1);
+                        cron = environment.getOrNull(key);
                     }
+
+                    taskStruct.setCron(cron);
                     taskStruct.setSchedule(schedule);
                     taskStruct.setMethod(m);
                     taskStruct.setType(type);

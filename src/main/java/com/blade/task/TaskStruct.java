@@ -32,6 +32,7 @@ import java.lang.reflect.Method;
 public class TaskStruct {
 
     private Schedule schedule;
+    private String   cron;
     private Method   method;
     private Class<?> type;
 

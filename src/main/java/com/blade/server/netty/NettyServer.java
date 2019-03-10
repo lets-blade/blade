@@ -172,7 +172,7 @@ public class NettyServer implements Server {
             beanDefines.forEach(b -> {
                 IocKit.initInjection(ioc, b);
                 IocKit.injectionValue(environment, b);
-                List<TaskStruct> cronExpressions = BladeKit.getTasks(b.getType(),environment);
+                List<TaskStruct> cronExpressions = BladeKit.getTasks(b.getType(), environment);
                 if (null != cronExpressions) {
                     taskStruts.addAll(cronExpressions);
                 }
@@ -255,16 +255,17 @@ public class NettyServer implements Server {
         }
 
         var jobCount = new AtomicInteger();
-        for (var taskStruct : taskStruts) {
-            addTask(executorService, jobCount, taskStruct);
+        for (var taskStrut : taskStruts) {
+            addTask(executorService, jobCount, taskStrut);
         }
     }
 
     private void addTask(CronExecutorService executorService, AtomicInteger jobCount, TaskStruct taskStruct) {
         try {
             Schedule    schedule    = taskStruct.getSchedule();
+            String      cron        = taskStruct.getCron();
             String      jobName     = StringKit.isBlank(schedule.name()) ? "task-" + jobCount.getAndIncrement() : schedule.name();
-            Task        task        = new Task(jobName, new CronExpression(schedule.cron()), schedule.delay());
+            Task        task        = new Task(jobName, new CronExpression(cron), schedule.delay());
             TaskContext taskContext = new TaskContext(task);
 
             task.setTask(() -> {
@@ -322,20 +323,20 @@ public class NettyServer implements Server {
             blade.exceptionHandler(exceptionHandler);
         }
         WebSocket webSocket;
-        if(null != (webSocket = clazz.getAnnotation(WebSocket.class))) {
+        if (null != (webSocket = clazz.getAnnotation(WebSocket.class))) {
             if (null == blade.getBean(clazz)) {
                 blade.register(clazz);
             }
-            if(ReflectKit.hasInterface(clazz, WebSocketHandler.class)){
-                blade.webSocket(webSocket.value(),(WebSocketHandler)blade.getBean(clazz));
+            if (ReflectKit.hasInterface(clazz, WebSocketHandler.class)) {
+                blade.webSocket(webSocket.value(), (WebSocketHandler) blade.getBean(clazz));
             } else {
                 WebSocketHandlerWrapper wrapper = blade.getBean(WebSocketHandlerWrapper.class);
-                if(wrapper == null){
+                if (wrapper == null) {
                     wrapper = WebSocketHandlerWrapper.init(blade);
                     blade.register(wrapper);
                 }
-                blade.webSocket(webSocket.value(),wrapper);
-                wrapper.wrapHandler(webSocket.value(),clazz);
+                blade.webSocket(webSocket.value(), wrapper);
+                wrapper.wrapHandler(webSocket.value(), clazz);
             }
 
         }
