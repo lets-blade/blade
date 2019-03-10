@@ -6,6 +6,7 @@ import com.blade.mvc.annotation.OnClose;
 import com.blade.mvc.annotation.OnMessage;
 import com.blade.mvc.annotation.OnOpen;
 import com.blade.mvc.websocket.WebSocketContext;
+import io.netty.util.concurrent.FastThreadLocal;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.annotation.Annotation;
@@ -27,7 +28,7 @@ public final class WebSocketHandlerWrapper implements WebSocketHandler {
 
     private final Map<String,Class<?>> handlers = new HashMap<>(4);
     private final Map<String, Map<Class<? extends Annotation>, Method>> methodCache = new HashMap<>(4);
-    private final ThreadLocal<String> path = ThreadLocal.withInitial(() -> null);
+    private final FastThreadLocal<String> path = new FastThreadLocal<>();
     private final Blade blade;
 
     public static WebSocketHandlerWrapper init(Blade blade) {

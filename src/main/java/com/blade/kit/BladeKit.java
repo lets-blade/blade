@@ -15,11 +15,14 @@
  */
 package com.blade.kit;
 
+import com.blade.Environment;
+import com.blade.exception.ValidatorException;
 import com.blade.mvc.Const;
 import com.blade.mvc.http.HttpMethod;
 import com.blade.mvc.route.Route;
 import com.blade.task.TaskStruct;
 import com.blade.task.annotation.Schedule;
+import com.blade.task.cron.CronExpression;
 import lombok.experimental.UtilityClass;
 import org.slf4j.Logger;
 
@@ -28,8 +31,7 @@ import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.lang.invoke.SerializedLambda;
 import java.lang.management.ManagementFactory;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import java.lang.reflect.*;
 import java.net.URL;
 import java.time.Duration;
 import java.time.Instant;
@@ -37,6 +39,8 @@ import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -49,6 +53,8 @@ import java.util.stream.Collectors;
 public class BladeKit {
 
     private static boolean isWindows;
+
+    private static final Pattern PLACEHOLDER_PATTERN = Pattern.compile("\\$\\{([^}]+)\\}");
 
     static {
         isWindows = System.getProperties().getProperty("os.name").toLowerCase().contains("win");
@@ -79,15 +85,25 @@ public class BladeKit {
     }
 
     public static String capitalize(String input) {
-        return input.substring(0, 1).toLowerCase() + input.substring(1, input.length());
+        return input.substring(0, 1).toLowerCase() + input.substring(1);
     }
 
-    public static List<TaskStruct> getTasks(Class<?> type) {
+    public static List<TaskStruct> getTasks(Class<?> type, Environment environment) {
         return Arrays.stream(type.getMethods())
                 .filter(m -> null != m.getAnnotation(Schedule.class))
                 .map(m -> {
                     TaskStruct taskStruct = new TaskStruct();
-                    taskStruct.setSchedule(m.getAnnotation(Schedule.class));
+                    Schedule   schedule   = m.getAnnotation(Schedule.class);
+                    String     cron       = schedule.cron().trim();
+
+                    Matcher matcher = PLACEHOLDER_PATTERN.matcher(cron);
+                    if (matcher.matches()) {
+                        String key = matcher.group(1);
+                        cron = environment.getOrNull(key);
+                    }
+
+                    taskStruct.setCron(cron);
+                    taskStruct.setSchedule(schedule);
                     taskStruct.setMethod(m);
                     taskStruct.setType(type);
                     return taskStruct;

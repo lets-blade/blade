@@ -4,6 +4,8 @@ import com.blade.Blade;
 import com.blade.mvc.handler.WebSocketHandler;
 import com.blade.mvc.websocket.WebSocketContext;
 
+import java.util.concurrent.TimeUnit;
+
 /**
  * @author biezhi
  * @date 2017/10/30
@@ -17,18 +19,23 @@ public class WebSocketDemo {
                 .webSocket("/websocket", new WebSocketHandler() {
                     @Override
                     public void onConnect(WebSocketContext ctx) {
-                        System.out.println("客户端连接上了ws1: " + ctx.getSession());
+                        System.out.println(ctx.session().uuid()+":open");
+                        ctx.message(ctx.session().uuid()+":open");
                     }
 
                     @Override
                     public void onText(WebSocketContext ctx) {
-                        System.out.println("ws1收到:" + ctx.getReqText());
-                        ctx.message("发送: Hello");
+                        if("close".equals(ctx.message())){
+                            ctx.disconnect();
+                        } else {
+                            System.out.println(ctx.session().uuid()+":"+ctx.message());
+                            ctx.message(ctx.message());
+                        }
                     }
 
                     @Override
                     public void onDisConnect(WebSocketContext ctx) {
-                        System.out.println("ws1客户端关闭链接: " + ctx.getSession());
+                        System.out.println(ctx.session().uuid()+":close:" + ctx.session());
                     }
                 }).start(WebSocketDemo.class);
     }

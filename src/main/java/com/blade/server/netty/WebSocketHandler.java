@@ -3,12 +3,15 @@ package com.blade.server.netty;
 import com.blade.Blade;
 import com.blade.mvc.handler.WebSocketHandlerWrapper;
 import com.blade.mvc.websocket.WebSocketContext;
+import com.blade.mvc.websocket.WebSocketSession;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.websocketx.*;
 import io.netty.util.ReferenceCountUtil;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.concurrent.CompletableFuture;
 
 /**
  * Http Server Handler
@@ -20,7 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 public class WebSocketHandler extends SimpleChannelInboundHandler<Object> {
 
     private WebSocketServerHandshaker handshaker;
-    private WebSocketContext context;
+    private WebSocketSession session;
     private com.blade.mvc.handler.WebSocketHandler handler;
     private String uri;
     private Blade blade;
@@ -57,10 +60,12 @@ public class WebSocketHandler extends SimpleChannelInboundHandler<Object> {
                 WebSocketServerHandshakerFactory.sendUnsupportedVersionResponse(ctx.channel());
             } else {
                 this.handshaker.handshake(ctx.channel(), req);
-                this.context = new WebSocketContext(ctx);
+                this.session = new WebSocketSession(ctx);
                 this.uri = req.uri();
                 initHandlerWrapper();
-                this.handler.onConnect(this.context);
+                //Allows the user to send messages in the event of onConnect
+                CompletableFuture.completedFuture(new WebSocketContext(this.session,this.handler))
+                        .thenAcceptAsync(this.handler::onConnect,ctx.executor());
             }
         } else {
             ReferenceCountUtil.retain(req);
@@ -76,8 +81,9 @@ public class WebSocketHandler extends SimpleChannelInboundHandler<Object> {
      */
     private void handleWebSocketFrame(ChannelHandlerContext ctx, WebSocketFrame frame) {
         if (frame instanceof CloseWebSocketFrame) {
-            this.handler.onDisConnect(this.context);
             this.handshaker.close(ctx.channel(), (CloseWebSocketFrame) frame.retain());
+            CompletableFuture.completedFuture(new WebSocketContext(this.session,this.handler))
+                    .thenAcceptAsync(this.handler::onDisConnect);
             return;
         }
         if (frame instanceof PingWebSocketFrame) {
@@ -88,8 +94,8 @@ public class WebSocketHandler extends SimpleChannelInboundHandler<Object> {
         if (!(frame instanceof TextWebSocketFrame)) {
             throw new UnsupportedOperationException("unsupported frame type: " + frame.getClass().getName());
         }
-        this.context.setReqText(((TextWebSocketFrame) frame).text());
-        this.handler.onText(this.context);
+        CompletableFuture.completedFuture(new WebSocketContext(this.session,this.handler,((TextWebSocketFrame) frame).text()))
+                .thenAcceptAsync(this.handler::onText,ctx.executor());
     }
 
 
