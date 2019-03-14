@@ -41,7 +41,7 @@ import static com.blade.kit.BladeKit.logWebSocket;
 @Slf4j
 public class RouteMatcher {
 
-    private static final Pattern PATH_VARIABLE_PATTERN = Pattern.compile("/(([^:/]*):([^/]+))|(\\.\\*)");
+    private static final Pattern PATH_VARIABLE_PATTERN = Pattern.compile("/(?:([^:/]*):([^/]+))|(\\.\\*)");
     private static final String  METHOD_NAME           = "handle";
 
     // Storage URL and route
