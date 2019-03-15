@@ -1,5 +1,5 @@
 ---
-name: General question
+name: 🍻 General Question
 about: Template for asking question
 
 ---
