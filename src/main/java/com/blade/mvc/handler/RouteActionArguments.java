@@ -166,7 +166,7 @@ public final class RouteActionArguments {
 
         if (ReflectKit.isBasicType(argType) || argType.equals(Date.class)
                 || argType.equals(BigDecimal.class) || argType.equals(LocalDate.class)
-                || argType.equals(LocalDateTime.class)) {
+                || argType.equals(LocalDateTime.class) || (argType instanceof Class && ((Class) argType).isEnum())) {
 
             String value = request.query(name).orElseGet(() -> getDefaultValue(param.defaultValue(), argType));
 
