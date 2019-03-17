@@ -42,8 +42,9 @@ public class BeanSerializer {
         }
 
         if (bean instanceof Map) {
-            Map map = new HashMap(((Map) bean).size());
-            ((Map) bean).forEach((Object key, Object value) -> {
+            Map beanMap = (Map) bean;
+            Map map = new HashMap(beanMap.size());
+            beanMap.forEach((Object key, Object value) -> {
                 try {
                     map.put(key, serialize(serializeMapping, value));
                 } catch (Exception e) {
