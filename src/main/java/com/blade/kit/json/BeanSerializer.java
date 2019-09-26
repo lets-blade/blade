@@ -25,6 +25,10 @@ public class BeanSerializer {
             return bean.toString().replaceAll("\"", "\\\\\"");
         }
 
+        if (bean instanceof Enum){
+            return bean.toString();
+        }
+
         if (ReflectKit.isBasicType(bean.getClass()) || bean instanceof Number || bean instanceof Date
                 || bean instanceof LocalDate || bean instanceof LocalDateTime) {
             return bean;
@@ -42,8 +46,9 @@ public class BeanSerializer {
         }
 
         if (bean instanceof Map) {
-            Map map = (Map) bean;
-            map.forEach((Object key, Object value) -> {
+            Map beanMap = (Map) bean;
+            Map map = new HashMap(beanMap.size());
+            beanMap.forEach((Object key, Object value) -> {
                 try {
                     map.put(key, serialize(serializeMapping, value));
                 } catch (Exception e) {
@@ -337,6 +342,8 @@ public class BeanSerializer {
             }
             if (ReflectKit.isBasicType(object)) {
                 return (T) ReflectKit.convert(klass, object.toString());
+            } else if (klass.isEnum()){
+                return (T) Enum.valueOf((Class<? extends Enum>) klass,object.toString());
             } else if (object instanceof Map) {
                 if (Map.class.isAssignableFrom(klass)) {
                     return klass.cast(object);

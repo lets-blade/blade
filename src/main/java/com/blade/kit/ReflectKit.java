@@ -147,6 +147,8 @@ public class ReflectKit {
             return DateKit.toLocalDate(value, "yyyy-MM-dd");
         } else if (type.equals(LocalDateTime.class)) {
             return DateKit.toLocalDateTime(value, "yyyy-MM-dd HH:mm:ss");
+        } else if (type instanceof Class && ((Class) type).isEnum()){
+            return Enum.valueOf((Class)type,value);
         }
         return value;
     }

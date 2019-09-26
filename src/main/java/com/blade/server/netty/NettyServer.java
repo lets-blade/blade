@@ -23,6 +23,7 @@ import com.blade.event.EventType;
 import com.blade.ioc.DynamicContext;
 import com.blade.ioc.Ioc;
 import com.blade.ioc.annotation.Bean;
+import com.blade.ioc.annotation.Configuration;
 import com.blade.ioc.annotation.Value;
 import com.blade.ioc.bean.BeanDefine;
 import com.blade.ioc.bean.ClassInfo;
@@ -70,6 +71,7 @@ import lombok.var;
 import java.io.File;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -301,7 +303,18 @@ public class NettyServer implements Server {
             Object controller = blade.getBean(clazz);
             routeBuilder.addRouter(clazz, controller);
         }
-
+        if (null != clazz.getAnnotation(Configuration.class) && clazz.getMethods().length > 0) {
+            Object config = ReflectKit.newInstance(clazz);
+            Arrays.stream(clazz.getMethods())
+                    .filter(m -> m.getAnnotation(Bean.class) != null)
+                    .forEach(n -> {
+                        try {
+                            blade.register(n.invoke(config));
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    });
+        }
         if (ReflectKit.hasInterface(clazz, WebHook.class) && null != clazz.getAnnotation(Bean.class)) {
             URLPattern URLPattern = clazz.getAnnotation(URLPattern.class);
             if (null == URLPattern) {
