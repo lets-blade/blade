@@ -577,24 +577,6 @@ public class RouteContext {
     public void initRoute(Route route) {
         this.request.initPathParams(route);
         this.route = route;
-//        if (null != route.getTarget() && route.getTargetType().equals(RouteHandler.class)) {
-//            return;
-//        }
-//        boolean singleton = IocKit.isSingleton(route.getTargetType());
-//
-//        if (singleton) {
-//            BeanDefine beanDefine = WebContext.blade().ioc().getBeanDefine(route.getTargetType());
-//            if (beanDefine.isFieldHasPrototype()) {
-//                // reset initialize
-//                IocKit.injection(WebContext.blade().ioc(), beanDefine);
-//            } else {
-//                Object target = WebContext.blade().ioc().getBean(route.getTargetType());
-//                this.route.setTarget(target);
-//            }
-//        } else {
-//            Object target = WebContext.blade().ioc().createBean(route.getTargetType());
-//            this.route.setTarget(target);
-//        }
     }
 
     public void injectParameters() {
