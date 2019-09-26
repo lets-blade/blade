@@ -19,12 +19,10 @@ import com.blade.task.cron.CronExecutorService;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lombok.var;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import static com.blade.kit.BladeKit.getStartedSymbol;
 
@@ -41,6 +39,9 @@ import static com.blade.kit.BladeKit.getStartedSymbol;
 public final class TaskManager {
 
     private final static Map<String, Task> TASK_MAP = new HashMap<>(8);
+    private final static ReentrantReadWriteLock rrw = new ReentrantReadWriteLock();
+    private final static Lock readLock = rrw.readLock();
+    private final static Lock writeLock = rrw.writeLock();
 
     private static CronExecutorService cronExecutorService;
 
@@ -57,21 +58,45 @@ public final class TaskManager {
     }
 
     public static void addTask(Task task) {
-        TASK_MAP.put(task.getName(), task);
+        writeLock.lock();
+        try {
+            TASK_MAP.put(task.getName(), task);
+        } finally {
+            writeLock.unlock();
+        }
         log.info("{}Add task [{}]", getStartedSymbol(), task.getName());
     }
 
     public static List<Task> getTasks() {
-        return new ArrayList<>(TASK_MAP.values());
+        Collection<Task> values;
+        readLock.lock();
+        try {
+            values = Optional.ofNullable(TASK_MAP.values()).orElse(Collections.EMPTY_LIST);
+        } finally {
+            readLock.unlock();
+        }
+        return new ArrayList<>(values);
     }
 
     public static Task getTask(String name) {
-        return TASK_MAP.get(name);
+        readLock.lock();
+        try {
+            return TASK_MAP.get(name);
+        } finally {
+            readLock.unlock();
+        }
+
     }
 
     public static boolean stopTask(String name) {
-        var task = TASK_MAP.get(name);
-        return task.stop();
+        Task task;
+        readLock.lock();
+        try {
+            task = TASK_MAP.get(name);
+        } finally {
+            readLock.unlock();
+        }
+        return task == null ? Boolean.FALSE : task.stop();
     }
 
 }
