@@ -1,22 +1,24 @@
 package com.blade.mvc;
 
 import com.blade.BaseTestCase;
+import com.blade.kit.CaseInsensitiveHashMap;
 import com.blade.mvc.http.Cookie;
 import com.blade.mvc.http.HttpMethod;
 import com.blade.mvc.http.HttpRequest;
 import com.blade.mvc.http.Request;
 import com.blade.mvc.multipart.FileItem;
-import com.mashape.unirest.http.Unirest;
-import com.mashape.unirest.http.exceptions.UnirestException;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import static junit.framework.TestCase.assertNotNull;
 import static junit.framework.TestCase.assertNull;
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
@@ -256,16 +258,19 @@ public class HttpRequestTest extends BaseTestCase {
     @Test
     public void testHeaders() {
         Request             mockRequest = mockHttpRequest("GET");
-        Map<String, String> headers     = new HashMap<>();
+        Map<String, String> headers     = new CaseInsensitiveHashMap<>();
         headers.put("h1", "a1");
-        headers.put("h2", "a2");
+        headers.put("H2", "a2");
 
         when(mockRequest.headers()).thenReturn(headers);
 
         Request request = new HttpRequest(mockRequest);
 
         assertEquals("a1", request.header("h1"));
+        assertEquals("a1", request.header("H1"));
         assertEquals("a2", request.header("h2"));
+        assertEquals("a2", request.header("H2"));
+        request.headers().forEach((key,val)-> System.out.println(key+"\t=\t"+val));
     }
 
     @Test
