@@ -73,6 +73,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -373,9 +374,10 @@ public class NettyServer implements Server {
 
     private void initConfig() {
 
-        if (null != blade.bootClass()) {
-            blade.scanPackages(blade.bootClass().getPackage().getName());
-        }
+        Optional.ofNullable(blade.bootClass())
+                .map(Class::getPackage)
+                .map(Package::getName)
+                .ifPresent(blade::scanPackages);
 
         // print banner text
         this.printBanner();
