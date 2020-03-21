@@ -25,7 +25,7 @@ public class BeanSerializer {
             return bean.toString().replaceAll("\"", "\\\\\"");
         }
 
-        if (bean instanceof Enum){
+        if (bean instanceof Enum) {
             return bean.toString();
         }
 
@@ -38,8 +38,8 @@ public class BeanSerializer {
             return serialize(serializeMapping, ((Collection) bean).toArray());
 
         if (bean.getClass().isArray()) {
-            int               length = Array.getLength(bean);
-            ArrayList<Object> array  = new ArrayList<>(length);
+            int length = Array.getLength(bean);
+            ArrayList<Object> array = new ArrayList<>(length);
             for (int i = 0; i < length; ++i)
                 array.add(serialize(serializeMapping, Array.get(bean, i)));
             return array;
@@ -58,12 +58,14 @@ public class BeanSerializer {
             return map;
         }
         ArrayList<Integer> indexes = new ArrayList<>();
-        ArrayList<Object>  values  = new ArrayList<>();
-        ArrayList<String>  keys    = new ArrayList<>();
-        int                pos     = 0;
-        for (Field field : bean.getClass().getDeclaredFields()) {
+        ArrayList<Object> values = new ArrayList<>();
+        ArrayList<String> keys = new ArrayList<>();
+        int pos = 0;
+        Map<String, Field> fields = declaredFields(bean.getClass());
+        for (Map.Entry<String, Field> entry : fields.entrySet()) {
+            String key = entry.getKey();
+            Field field = entry.getValue();
             Object value;
-            String key = field.getName();
             if ("this$0".equals(key) || "serialVersionUID".equals(key)) {
                 continue;
             }
@@ -73,7 +75,7 @@ public class BeanSerializer {
                 continue;
             }
             JsonProperty jsonProperty = field.getAnnotation(JsonProperty.class);
-            JsonFormat   jsonFormat   = field.getAnnotation(JsonFormat.class);
+            JsonFormat jsonFormat = field.getAnnotation(JsonFormat.class);
             SerializeMapping temp = SerializeMapping.builder()
                     .bigDecimalKeep(serializeMapping.getBigDecimalKeep())
                     .datePatten(serializeMapping.getDatePatten())
@@ -154,8 +156,8 @@ public class BeanSerializer {
                     if (name.isEmpty())
                         name = field.getName();
                     value = map.get(name);
-                    Object tmp   = field.get(template);
-                    Class  clazz = field.getType();
+                    Object tmp = field.get(template);
+                    Class clazz = field.getType();
 
                     if (Collection.class.isAssignableFrom(clazz)) {
                         Class genericType = Object.class;
@@ -204,12 +206,12 @@ public class BeanSerializer {
         if (template.getClass().isArray()) {
             if (!object.getClass().isArray())
                 return null;
-            int     desLength     = Array.getLength(template);
-            int     srcLength     = Array.getLength(object);
-            boolean isAppend      = desLength == 0;
-            Class   componentType = template.getClass().getComponentType();
-            int     length        = desLength > srcLength ? srcLength : desLength;
-            Object  array         = Array.newInstance(componentType, length);
+            int desLength = Array.getLength(template);
+            int srcLength = Array.getLength(object);
+            boolean isAppend = desLength == 0;
+            Class componentType = template.getClass().getComponentType();
+            int length = desLength > srcLength ? srcLength : desLength;
+            Object array = Array.newInstance(componentType, length);
             for (int i = 0; i < length; ++i)
                 if (isAppend)
                     Array.set(array, i, deserialize(componentType, Array.get(object, i)));
@@ -220,8 +222,8 @@ public class BeanSerializer {
 
         if (object instanceof Map) {
             if (template instanceof Map) {
-                Map     des      = (Map) template;
-                Map     src      = (Map) object;
+                Map des = (Map) template;
+                Map src = (Map) object;
                 boolean isAppend = des.isEmpty();
                 for (Object key : src.keySet()) {
                     if (isAppend) {
@@ -240,7 +242,10 @@ public class BeanSerializer {
 
     public static <T> T deserialize(Class<T> klass, Map map) throws Exception {
         Object bean = klass.newInstance();
-        for (Field field : klass.getDeclaredFields()) {
+        Map<String, Field> fields = declaredFields(klass);
+        for (Map.Entry<String, Field> entry : fields.entrySet()) {
+            String name = entry.getKey();
+            Field field = entry.getValue();
             Object value = null;
             try {
                 field.setAccessible(true);
@@ -249,7 +254,6 @@ public class BeanSerializer {
                     continue;
                 }
                 JsonProperty jsonProperty = field.getAnnotation(JsonProperty.class);
-                String       name         = field.getName();
                 if (jsonProperty != null) {
                     if (StringKit.isNotBlank(jsonProperty.value())) {
                         name = jsonProperty.value();
@@ -342,8 +346,8 @@ public class BeanSerializer {
             }
             if (ReflectKit.isBasicType(object)) {
                 return (T) ReflectKit.convert(klass, object.toString());
-            } else if (klass.isEnum()){
-                return (T) Enum.valueOf((Class<? extends Enum>) klass,object.toString());
+            } else if (klass.isEnum()) {
+                return (T) Enum.valueOf((Class<? extends Enum>) klass, object.toString());
             } else if (object instanceof Map) {
                 if (Map.class.isAssignableFrom(klass)) {
                     return klass.cast(object);
@@ -368,5 +372,15 @@ public class BeanSerializer {
             log.error("json deserialize error", e);
             return null;
         }
+    }
+
+    private static Map<String, Field> declaredFields(Class<?> klass) {
+        Map<String, Field> fields = new HashMap<>();
+        for (Class<?> cls = klass; cls != Object.class; cls = cls.getSuperclass()) {
+            for (Field field : cls.getDeclaredFields()) {
+                fields.putIfAbsent(field.getName(), field);
+            }
+        }
+        return fields;
     }
 }

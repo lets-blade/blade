@@ -1,5 +1,6 @@
 package com.blade.kit;
 
+import com.blade.model.ChildBean;
 import com.blade.model.TestBean;
 import org.junit.Test;
 
@@ -52,6 +53,19 @@ public class JsonKitTest {
         TestBean testBean = new TestBean();
         testBean.setName("\"hello\"_world");
         System.out.println(JsonKit.toString(testBean));
+    }
+
+    @Test
+    public void test4(){
+        ChildBean childBean = new ChildBean();
+        childBean.setSuperField("super");
+        childBean.setChildField("child");
+        childBean.setRepeatField("sss");
+        String json = JsonKit.toString(childBean);
+
+        System.out.println(json);
+        ChildBean formJson = JsonKit.formJson(json, ChildBean.class);
+        System.out.println(formJson);
     }
 
 }
