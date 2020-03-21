@@ -1,5 +1,6 @@
 package com.blade.kit;
 
+import com.blade.model.ChildBean;
 import com.blade.model.TestBean;
 import org.junit.Test;
 
@@ -11,7 +12,7 @@ import java.util.Map;
 
 /**
  * @author biezhi
- *         2017/6/6
+ * 2017/6/6
  */
 public class JsonKitTest {
 
@@ -32,15 +33,15 @@ public class JsonKitTest {
     }
 
     @Test
-    public void test2(){
+    public void test2() {
         TestBean testBean = new TestBean();
         testBean.setDateTime(LocalDateTime.now());
         System.out.println(JsonKit.toString(testBean));
     }
 
     @Test
-    public void testLocal(){
-        Map<String,Object> result = new HashMap<>(8);
+    public void testLocal() {
+        Map<String, Object> result = new HashMap<>(8);
         result.put("date1", new Date());
         result.put("date2", LocalDate.now());
         result.put("date3", LocalDateTime.now());
@@ -48,10 +49,23 @@ public class JsonKitTest {
     }
 
     @Test
-    public void test3(){
+    public void test3() {
         TestBean testBean = new TestBean();
         testBean.setName("\"hello\"_world");
         System.out.println(JsonKit.toString(testBean));
+    }
+
+    @Test
+    public void test4() {
+        ChildBean childBean = new ChildBean();
+        childBean.setSuperField("super");
+        childBean.setChildField("child");
+        childBean.setRepeatField("sss");
+        String json = JsonKit.toString(childBean);
+
+        System.out.println(json);
+        ChildBean formJson = JsonKit.formJson(json, ChildBean.class);
+        System.out.println(formJson);
     }
 
 }

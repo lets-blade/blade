@@ -25,7 +25,7 @@ public class BeanSerializer {
             return bean.toString().replaceAll("\"", "\\\\\"");
         }
 
-        if (bean instanceof Enum){
+        if (bean instanceof Enum) {
             return bean.toString();
         }
 
@@ -47,7 +47,7 @@ public class BeanSerializer {
 
         if (bean instanceof Map) {
             Map beanMap = (Map) bean;
-            Map map = new HashMap(beanMap.size());
+            Map map     = new HashMap(beanMap.size());
             beanMap.forEach((Object key, Object value) -> {
                 try {
                     map.put(key, serialize(serializeMapping, value));
@@ -61,9 +61,11 @@ public class BeanSerializer {
         ArrayList<Object>  values  = new ArrayList<>();
         ArrayList<String>  keys    = new ArrayList<>();
         int                pos     = 0;
-        for (Field field : bean.getClass().getDeclaredFields()) {
+        Map<String, Field> fields  = declaredFields(bean.getClass());
+        for (Map.Entry<String, Field> entry : fields.entrySet()) {
+            String key   = entry.getKey();
+            Field  field = entry.getValue();
             Object value;
-            String key = field.getName();
             if ("this$0".equals(key) || "serialVersionUID".equals(key)) {
                 continue;
             }
@@ -239,8 +241,11 @@ public class BeanSerializer {
 
 
     public static <T> T deserialize(Class<T> klass, Map map) throws Exception {
-        Object bean = klass.newInstance();
-        for (Field field : klass.getDeclaredFields()) {
+        Object             bean   = klass.newInstance();
+        Map<String, Field> fields = declaredFields(klass);
+        for (Map.Entry<String, Field> entry : fields.entrySet()) {
+            String name  = entry.getKey();
+            Field  field = entry.getValue();
             Object value = null;
             try {
                 field.setAccessible(true);
@@ -249,7 +254,6 @@ public class BeanSerializer {
                     continue;
                 }
                 JsonProperty jsonProperty = field.getAnnotation(JsonProperty.class);
-                String       name         = field.getName();
                 if (jsonProperty != null) {
                     if (StringKit.isNotBlank(jsonProperty.value())) {
                         name = jsonProperty.value();
@@ -342,8 +346,8 @@ public class BeanSerializer {
             }
             if (ReflectKit.isBasicType(object)) {
                 return (T) ReflectKit.convert(klass, object.toString());
-            } else if (klass.isEnum()){
-                return (T) Enum.valueOf((Class<? extends Enum>) klass,object.toString());
+            } else if (klass.isEnum()) {
+                return (T) Enum.valueOf((Class<? extends Enum>) klass, object.toString());
             } else if (object instanceof Map) {
                 if (Map.class.isAssignableFrom(klass)) {
                     return klass.cast(object);
@@ -368,5 +372,15 @@ public class BeanSerializer {
             log.error("json deserialize error", e);
             return null;
         }
+    }
+
+    private static Map<String, Field> declaredFields(Class<?> klass) {
+        Map<String, Field> fields = new HashMap<>();
+        for (Class<?> cls = klass; cls != Object.class; cls = cls.getSuperclass()) {
+            for (Field field : cls.getDeclaredFields()) {
+                fields.putIfAbsent(field.getName(), field);
+            }
+        }
+        return fields;
     }
 }
