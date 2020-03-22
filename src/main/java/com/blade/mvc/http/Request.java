@@ -423,13 +423,7 @@ public interface Request {
      * @return Return header information
      */
     default String header(@NonNull String name) {
-        String header = "";
-        if (headers().containsKey(name)) {
-            header = headers().get(name);
-        } else if (headers().containsKey(name.toLowerCase())) {
-            header = headers().get(name.toLowerCase());
-        }
-        return header;
+        return headers().getOrDefault(name,"");
     }
 
     /**

@@ -652,7 +652,7 @@ public class Blade {
      * @return blade
      */
     public Blade listen(int port) {
-        Assert.greaterThan(port, 0, "server port not is negative number.");
+        Assert.greaterThan(port, 0, "server port is not negative number.");
         this.environment.set(ENV_KEY_SERVER_PORT, port);
         return this;
     }
@@ -666,7 +666,7 @@ public class Blade {
      * @return blade
      */
     public Blade listen(@NonNull String address, int port) {
-        Assert.greaterThan(port, 0, "server port not is negative number.");
+        Assert.greaterThan(port, 0, "server port is not negative number.");
         this.environment.set(ENV_KEY_SERVER_ADDRESS, address);
         this.environment.set(ENV_KEY_SERVER_PORT, port);
         return this;
