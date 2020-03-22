@@ -27,7 +27,7 @@ def nettyVersion = '4.1.48.Final'
 
 repositories {
     maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
-    maven { url "http://repo.maven.apache.org/maven2" }
+    maven { url "https://repo.maven.apache.org/maven2" }
     mavenCentral()
 }
 
