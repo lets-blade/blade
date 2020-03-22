@@ -18,6 +18,7 @@ package com.blade.server.netty;
 import com.blade.exception.BladeException;
 import com.blade.exception.NotFoundException;
 import com.blade.kit.BladeCache;
+import com.blade.kit.LRUSet;
 import com.blade.mvc.RouteContext;
 import com.blade.mvc.WebContext;
 import com.blade.mvc.handler.ExceptionHandler;
@@ -67,7 +68,7 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<HttpRequest> 
 
     private final StaticFileHandler staticFileHandler = new StaticFileHandler(WebContext.blade());
     private final RouteMethodHandler routeHandler = new RouteMethodHandler();
-    private final Set<String> notStaticUri = new HashSet<>(32);
+    private final Set<String> notStaticUri = new LRUSet<>(128);
     private final RouteMatcher routeMatcher = WebContext.blade().routeMatcher();
 
     @Override
@@ -189,10 +190,7 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<HttpRequest> 
             return false;
         }
 
-        Optional<String> result = WebContext.blade().getStatics().stream()
-                .filter(s -> s.equals(uri) || uri.startsWith(s)).findFirst();
-
-        if (!result.isPresent()) {
+        if (WebContext.blade().getStatics().stream().noneMatch(s -> s.equals(uri) || uri.startsWith(s))) {
             notStaticUri.add(uri);
             return false;
         }
