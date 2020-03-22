@@ -17,7 +17,7 @@ import java.util.*;
 @Slf4j
 public class SimpleIoc implements Ioc {
 
-    private final Map<String, BeanDefine> pool = new HashMap<>(32);
+    private final Map<String, BeanDefine> pool = new ConcurrentHashMap<>(32);
 
     /**
      * Add user-defined objects
