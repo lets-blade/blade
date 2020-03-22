@@ -16,6 +16,7 @@
 package com.blade.mvc.http;
 
 import com.blade.exception.HttpParseException;
+import com.blade.kit.CaseInsensitiveHashMap;
 import com.blade.kit.PathKit;
 import com.blade.kit.StringKit;
 import com.blade.mvc.Const;
@@ -28,9 +29,21 @@ import com.blade.server.netty.HttpConst;
 import com.blade.server.netty.HttpServerHandler;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import io.netty.handler.codec.http.*;
+import io.netty.handler.codec.http.HttpContent;
+import io.netty.handler.codec.http.HttpHeaders;
+import io.netty.handler.codec.http.HttpUtil;
+import io.netty.handler.codec.http.LastHttpContent;
+import io.netty.handler.codec.http.QueryStringDecoder;
 import io.netty.handler.codec.http.cookie.ServerCookieDecoder;
-import io.netty.handler.codec.http.multipart.*;
+import io.netty.handler.codec.http.multipart.Attribute;
+import io.netty.handler.codec.http.multipart.DefaultHttpDataFactory;
+import io.netty.handler.codec.http.multipart.DiskAttribute;
+import io.netty.handler.codec.http.multipart.DiskFileUpload;
+import io.netty.handler.codec.http.multipart.FileUpload;
+import io.netty.handler.codec.http.multipart.HttpData;
+import io.netty.handler.codec.http.multipart.HttpDataFactory;
+import io.netty.handler.codec.http.multipart.HttpPostRequestDecoder;
+import io.netty.handler.codec.http.multipart.InterfaceHttpData;
 import io.netty.util.CharsetUtil;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
@@ -42,7 +55,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Queue;
+import java.util.Set;
 
 /**
  * Http Request Impl
@@ -262,11 +281,9 @@ public class HttpRequest implements Request {
     @Override
     public Map<String, String> headers() {
         if (null == headers) {
-            headers = new HashMap<>(httpHeaders.size());
-            Iterator<Map.Entry<String, String>> entryIterator = httpHeaders.iteratorAsString();
-            while (entryIterator.hasNext()) {
-                Map.Entry<String, String> next = entryIterator.next();
-                headers.put(next.getKey(), next.getValue());
+            headers = new CaseInsensitiveHashMap<>(httpHeaders.size());
+            for (Map.Entry<String, String> header : httpHeaders) {
+                headers.put(header.getKey(), header.getValue());
             }
         }
         return this.headers;

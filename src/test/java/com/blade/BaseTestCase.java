@@ -1,5 +1,6 @@
 package com.blade;
 
+import com.blade.mvc.WebContext;
 import com.blade.mvc.http.HttpMethod;
 import com.blade.mvc.http.Response;
 import com.mashape.unirest.http.Unirest;
@@ -23,6 +24,7 @@ public class BaseTestCase {
     protected String firefoxUA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:53.0) Gecko/20100101 Firefox/53.0";
 
     protected com.blade.mvc.http.HttpRequest mockHttpRequest(String methodName) {
+        WebContext.init(Blade.of(),"/");
         com.blade.mvc.http.HttpRequest request = mock(com.blade.mvc.http.HttpRequest.class);
         when(request.method()).thenReturn(methodName);
         when(request.url()).thenReturn("/");
