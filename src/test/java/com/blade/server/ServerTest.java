@@ -13,7 +13,7 @@ public class ServerTest {
     @Test
     public void testCreateServer() throws Exception {
         Server server = new NettyServer();
-        server.start(Blade.me().listen(10086));
+        server.start(Blade.of().listen(10086));
         server.stop();
     }
 

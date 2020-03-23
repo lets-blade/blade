@@ -16,7 +16,7 @@ public class ValueDefineTest {
 
     @Before
     public void before() {
-        app = Blade.me();
+        app = Blade.of();
         app.scanPackages("com.blade.model","com.blade.ioc");
         app.listen(10087).start().await();
     }

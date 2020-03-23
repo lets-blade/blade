@@ -16,29 +16,17 @@ import static org.mockito.Mockito.verify;
  */
 public class MiddlewareTest extends BaseTestCase {
 
-    @Test
-    public void testMiddleware() throws Exception {
-        WebHook middleware = mock(WebHook.class);
-        Signature signature = mock(Signature.class);
-
-        middleware.before(signature.routeContext());
-        middleware.after(signature.routeContext());
-
-        verify(middleware).before(signature.routeContext());
-        verify(middleware).after(signature.routeContext());
-    }
-
-    @Test
-    public void testAuthMiddleware() throws Exception {
-
-        BasicAuthMiddleware basicAuthMiddleware = mock(BasicAuthMiddleware.class);
-
-        Signature signature = mock(Signature.class);
-
-        basicAuthMiddleware.before(signature.routeContext());
-        basicAuthMiddleware.after(signature.routeContext());
-
-        verify(basicAuthMiddleware).before(signature.routeContext());
-        verify(basicAuthMiddleware).after(signature.routeContext());
-    }
+//    @Test
+//    public void testAuthMiddleware() throws Exception {
+//
+//        BasicAuthMiddleware basicAuthMiddleware = mock(BasicAuthMiddleware.class);
+//
+//        Signature signature = mock(Signature.class);
+//
+//        basicAuthMiddleware.before(signature.routeContext());
+//        basicAuthMiddleware.after(signature.routeContext());
+//
+//        verify(basicAuthMiddleware).before(signature.routeContext());
+//        verify(basicAuthMiddleware).after(signature.routeContext());
+//    }
 }
