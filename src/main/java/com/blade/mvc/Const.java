@@ -44,8 +44,6 @@ public interface Const {
     List<String> DEFAULT_STATICS            = new ArrayList<>(
             Arrays.asList("/favicon.ico", "/robots.txt", "/static", "/upload", "/webjars/"));
 
-    @Deprecated
-    String PROP_NAME0 = "classpath:app.properties";
     String PROP_NAME  = "classpath:application.properties";
 
     // Env key

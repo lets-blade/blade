@@ -81,11 +81,6 @@ public class Blade {
     private List<WebHook> middleware = new ArrayList<>();
 
     /**
-     * BeanProcessor list, which stores all the actions that were performed before the project was started
-     */
-    private List<BeanProcessor> processors = new ArrayList<>();
-
-    /**
      * Blade loader list, which stores all the actions that were performed before the project was started
      */
     private List<BladeLoader> loaders = new ArrayList<>();
@@ -756,18 +751,6 @@ public class Blade {
     }
 
     /**
-     * Event on started
-     *
-     * @param processor bean processor
-     * @return return blade instance
-     */
-    @Deprecated
-    public Blade onStarted(@NonNull BeanProcessor processor) {
-        this.processors.add(processor);
-        return this;
-    }
-
-    /**
      * Add blade loader
      *
      * @param loader
@@ -776,16 +759,6 @@ public class Blade {
     public Blade addLoader(@NonNull BladeLoader loader) {
         this.loaders.add(loader);
         return this;
-    }
-
-    /**
-     * Get processors
-     *
-     * @return return processors
-     */
-    @Deprecated
-    public List<BeanProcessor> processors() {
-        return this.processors;
     }
 
     public List<BladeLoader> loaders() {
@@ -1030,10 +1003,6 @@ public class Blade {
         Environment bootEnv  = Environment.of(bootConf);
         String      envName  = "default";
 
-        if (null == bootEnv || bootEnv.isEmpty()) {
-            bootEnv = Environment.of(PROP_NAME0);
-        }
-
         if (!Objects.requireNonNull(bootEnv).isEmpty()) {
             Map<String, String>            bootEnvMap = bootEnv.toMap();
             Set<Map.Entry<String, String>> entrySet   = bootEnvMap.entrySet();
@@ -1041,7 +1010,7 @@ public class Blade {
         }
 
         Map<String, String> argsMap = BladeKit.parseArgs(args);
-        if (null != argsMap && !argsMap.isEmpty()) {
+        if (!argsMap.isEmpty()) {
             log.info(" command line args: {}", JsonKit.toString(argsMap));
         }
 
@@ -1057,9 +1026,7 @@ public class Blade {
                 customEnv = Environment.of(evnFileName);
 
                 if (customEnv != null && !customEnv.isEmpty()) {
-                    Iterator<Map.Entry<Object, Object>> iterator = customEnv.props().entrySet().iterator();
-                    while (iterator.hasNext()) {
-                        Map.Entry<Object, Object> next = iterator.next();
+                    for (Map.Entry<Object, Object> next : customEnv.props().entrySet()) {
                         this.environment.set(next.getKey().toString(), next.getValue());
                     }
                 }

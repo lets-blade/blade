@@ -171,7 +171,7 @@ public class BladeTest extends BaseTestCase {
 
     @Test
     public void testOnStarted() {
-        Blade.of().onStarted(blade -> System.out.println("On started.."));
+        Blade.of().addLoader(blade -> System.out.println("On started.."));
     }
 
     @Test
