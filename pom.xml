@@ -43,7 +43,7 @@
         <bootstrap.version>4.1.0</bootstrap.version>
         <mockito.version>1.10.19</mockito.version>
         <unirest-java.version>1.4.9</unirest-java.version>
-        <lombok.version>1.16.22</lombok.version>
+        <lombok.version>1.18.12</lombok.version>
     </properties>
 
     <dependencies>

@@ -17,7 +17,6 @@ package com.blade.server.netty;
 
 import com.blade.Blade;
 import com.blade.Environment;
-import com.blade.event.BeanProcessor;
 import com.blade.event.Event;
 import com.blade.event.EventType;
 import com.blade.ioc.DynamicContext;
@@ -92,16 +91,15 @@ import static com.blade.mvc.Const.*;
 @Slf4j
 public class NettyServer implements Server {
 
-    private Blade               blade;
-    private Environment         environment;
-    private EventLoopGroup      bossGroup;
-    private EventLoop           scheduleEventLoop;
-    private EventLoopGroup      workerGroup;
-    private Channel             channel;
-    private RouteBuilder        routeBuilder;
-    private List<BeanProcessor> processors;
-    private List<BladeLoader>   loaders;
-    private List<TaskStruct>    taskStruts = new ArrayList<>();
+    private Blade blade;
+    private Environment environment;
+    private EventLoopGroup bossGroup;
+    private EventLoop scheduleEventLoop;
+    private EventLoopGroup workerGroup;
+    private Channel channel;
+    private RouteBuilder routeBuilder;
+    private List<BladeLoader> loaders;
+    private List<TaskStruct> taskStruts = new ArrayList<>();
 
     private volatile boolean isStop;
 
@@ -109,7 +107,6 @@ public class NettyServer implements Server {
     public void start(Blade blade) throws Exception {
         this.blade = blade;
         this.environment = blade.environment();
-        this.processors = blade.processors();
         this.loaders = blade.loaders();
 
         long startMs = System.currentTimeMillis();
@@ -162,7 +159,6 @@ public class NettyServer implements Server {
         routeMatcher.register();
 
         this.loaders.stream().sorted(new OrderComparator<>()).forEach(b -> b.preLoad(blade));
-        this.processors.stream().sorted(new OrderComparator<>()).forEach(b -> b.preHandle(blade));
 
         Ioc ioc = blade.ioc();
         if (BladeKit.isNotEmpty(ioc.getBeans())) {
@@ -182,7 +178,6 @@ public class NettyServer implements Server {
             });
         }
         this.loaders.stream().sorted(new OrderComparator<>()).forEach(b -> b.load(blade));
-        this.processors.stream().sorted(new OrderComparator<>()).forEach(b -> b.processor(blade));
     }
 
     private void startServer(long startMs) throws Exception {
@@ -193,8 +188,8 @@ public class NettyServer implements Server {
         // Configure SSL.
         SslContext sslCtx = null;
         if (SSL) {
-            String certFilePath       = environment.get(ENV_KEY_SSL_CERT, null);
-            String privateKeyPath     = environment.get(ENE_KEY_SSL_PRIVATE_KEY, null);
+            String certFilePath = environment.get(ENV_KEY_SSL_CERT, null);
+            String privateKeyPath = environment.get(ENE_KEY_SSL_PRIVATE_KEY, null);
             String privateKeyPassword = environment.get(ENE_KEY_SSL_PRIVATE_KEY_PASS, null);
 
             log.info("{}SSL CertChainFile  Path: {}", getStartedSymbol(), certFilePath);
@@ -205,7 +200,7 @@ public class NettyServer implements Server {
         var bootstrap = new ServerBootstrap();
 
         int acceptThreadCount = environment.getInt(ENC_KEY_NETTY_ACCEPT_THREAD_COUNT, DEFAULT_ACCEPT_THREAD_COUNT);
-        int ioThreadCount     = environment.getInt(ENV_KEY_NETTY_IO_THREAD_COUNT, DEFAULT_IO_THREAD_COUNT);
+        int ioThreadCount = environment.getInt(ENV_KEY_NETTY_IO_THREAD_COUNT, DEFAULT_IO_THREAD_COUNT);
 
         // enable epoll
         if (BladeKit.epollIsAvailable()) {
@@ -228,13 +223,13 @@ public class NettyServer implements Server {
 
         bootstrap.childHandler(new HttpServerInitializer(sslCtx, blade, scheduleEventLoop));
 
-        String  address = environment.get(ENV_KEY_SERVER_ADDRESS, DEFAULT_SERVER_ADDRESS);
-        Integer port    = environment.getInt(ENV_KEY_SERVER_PORT, DEFAULT_SERVER_PORT);
+        String address = environment.get(ENV_KEY_SERVER_ADDRESS, DEFAULT_SERVER_ADDRESS);
+        Integer port = environment.getInt(ENV_KEY_SERVER_PORT, DEFAULT_SERVER_PORT);
 
         channel = bootstrap.bind(address, port).sync().channel();
 
-        String appName  = environment.get(ENV_KEY_APP_NAME, "Blade");
-        String url      = Ansi.BgRed.and(Ansi.Black).format(" %s:%d ", address, port);
+        String appName = environment.get(ENV_KEY_APP_NAME, "Blade");
+        String url = Ansi.BgRed.and(Ansi.Black).format(" %s:%d ", address, port);
         String protocol = SSL ? "https" : "http";
 
         log.info("{}{} initialize successfully, Time elapsed: {} ms", getStartedSymbol(), appName, (System.currentTimeMillis() - startMs));
@@ -265,10 +260,10 @@ public class NettyServer implements Server {
 
     private void addTask(CronExecutorService executorService, AtomicInteger jobCount, TaskStruct taskStruct) {
         try {
-            Schedule    schedule    = taskStruct.getSchedule();
-            String      cron        = taskStruct.getCron();
-            String      jobName     = StringKit.isBlank(schedule.name()) ? "task-" + jobCount.getAndIncrement() : schedule.name();
-            Task        task        = new Task(jobName, new CronExpression(cron), schedule.delay());
+            Schedule schedule = taskStruct.getSchedule();
+            String cron = taskStruct.getCron();
+            String jobName = StringKit.isBlank(schedule.name()) ? "task-" + jobCount.getAndIncrement() : schedule.name();
+            Task task = new Task(jobName, new CronExpression(cron), schedule.delay());
             TaskContext taskContext = new TaskContext(task);
 
             task.setTask(() -> {
@@ -328,9 +323,6 @@ public class NettyServer implements Server {
 
         if (ReflectKit.hasInterface(clazz, BladeLoader.class) && null != clazz.getAnnotation(Bean.class)) {
             this.loaders.add((BladeLoader) blade.getBean(clazz));
-        }
-        if (ReflectKit.hasInterface(clazz, BeanProcessor.class) && null != clazz.getAnnotation(Bean.class)) {
-            this.processors.add((BeanProcessor) blade.getBean(clazz));
         }
         if (isExceptionHandler(clazz)) {
             ExceptionHandler exceptionHandler = (ExceptionHandler) blade.getBean(clazz);
