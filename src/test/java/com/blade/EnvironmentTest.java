@@ -5,7 +5,6 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.URL;
 import java.util.*;
 
@@ -40,10 +39,10 @@ public class EnvironmentTest {
         properties.setProperty("name", "jack");
         Environment environment = Environment.of(properties);
 
-        String name    = environment.get("name", "rose");
-        String age     = environment.get("age", "20");
-        int    version = environment.getInt("app.version", 1001);
-        long   base    = environment.getLong("app.BANNER_PADDING", 1002);
+        String name = environment.get("name", "rose");
+        String age = environment.get("age", "20");
+        int version = environment.getInt("app.version", 1001);
+        long base = environment.getLong("app.BANNER_PADDING", 1002);
 
         Assert.assertEquals("jack", name);
         Assert.assertEquals("20", age);
@@ -56,37 +55,38 @@ public class EnvironmentTest {
         Map<String, String> map = new HashMap<>();
         map.put("name", "mapJack");
         Environment environment = Environment.of(map);
-        Assert.assertEquals("mapJack", environment.get("name").get());
+        Assert.assertEquals("mapJack", environment.getOrNull("name"));
     }
 
     @Test
     public void testEnvByUrl() {
-        URL         url         = EnvironmentTest.class.getResource("/application.properties");
+        URL url = EnvironmentTest.class.getResource("/application.properties");
         Environment environment = Environment.of(url);
-        Assert.assertEquals("0.0.2", environment.get("app.version").get());
+        Assert.assertEquals("0.0.2", Objects.requireNonNull(environment)
+                .getOrNull("app.version"));
     }
 
     @Test
     public void testEnvByFile() {
-        File        file        = new File(EnvironmentTest.class.getResource("/").getPath() + "application.properties");
+        File file = new File(EnvironmentTest.class.getResource("/").getPath() + "application.properties");
         Environment environment = Environment.of(file);
         Assert.assertEquals("0.0.2", environment.get("app.version").get());
     }
 
     @Test
     public void testOf() {
-        Environment      environment = Environment.of("application.properties");
-        Optional<String> version     = environment.get("app.version");
-        String           lang        = environment.get("app.lang", "cn");
+        Environment environment = Environment.of("application.properties");
+        Optional<String> version = Objects.requireNonNull(environment).get("app.version");
+        String lang = environment.get("app.lang", "cn");
 
-        assertEquals("0.0.2", version.get());
+        assertEquals("0.0.2", version.orElse(""));
         assertEquals("cn", lang);
 
         environment = Environment.of("classpath:application.properties");
-        version = environment.get("app.version");
+        version = Objects.requireNonNull(environment).get("app.version");
         lang = environment.get("app.lang", "cn");
 
-        assertEquals("0.0.2", version.get());
+        assertEquals("0.0.2", version.orElse(""));
         assertEquals("cn", lang);
     }
 
@@ -120,7 +120,7 @@ public class EnvironmentTest {
     public void testGetValueOrNull() {
         Environment environment = Environment.of("application.properties");
 
-        String abcd = environment.getOrNull("app.abcd");
+        String abcd = Objects.requireNonNull(environment).getOrNull("app.abcd");
         Assert.assertNull(abcd);
 
         Integer intVal = environment.getIntOrNull("app.abcd");
@@ -141,8 +141,8 @@ public class EnvironmentTest {
 
     @Test
     public void testGetPrefix() {
-        Environment         environment = Environment.of("application.properties");
-        Map<String, Object> map         = environment.getPrefix("app");
+        Environment environment = Environment.of("application.properties");
+        Map<String, Object> map = environment.getPrefix("app");
         assertEquals(7, map.size());
         assertEquals("0.0.2", map.get("version"));
     }

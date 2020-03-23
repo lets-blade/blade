@@ -240,16 +240,6 @@ public interface Response {
     void download(String fileName, File file) throws Exception;
 
     /**
-     * create temp file outputStream
-     *
-     * @return return OutputStreamWrapper
-     * @throws IOException throw IOException
-     * @since 2.0.1-alpha3
-     */
-    @Deprecated
-    OutputStreamWrapper outputStream() throws IOException;
-
-    /**
      * Render view, can be modified after WebHook
      *
      * @param view view page

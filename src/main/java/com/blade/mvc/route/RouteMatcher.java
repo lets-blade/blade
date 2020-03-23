@@ -6,9 +6,7 @@ import com.blade.ioc.annotation.Order;
 import com.blade.kit.*;
 import com.blade.mvc.RouteContext;
 import com.blade.mvc.handler.RouteHandler;
-import com.blade.mvc.handler.RouteHandler0;
 import com.blade.mvc.handler.WebSocketHandler;
-import com.blade.mvc.hook.Signature;
 import com.blade.mvc.hook.WebHook;
 import com.blade.mvc.http.HttpMethod;
 import com.blade.mvc.http.Request;
@@ -59,13 +57,6 @@ public class RouteMatcher {
      */
     private Map<String, WebSocketHandler> webSockets = new HashMap<>(4);
 
-    @Deprecated
-    private Route addRoute(HttpMethod httpMethod, String path, RouteHandler0 handler, String methodName) throws NoSuchMethodException {
-        Class<?> handleType = handler.getClass();
-        Method   method     = handleType.getMethod(methodName, Request.class, Response.class);
-        return addRoute(httpMethod, path, handler, RouteHandler0.class, method);
-    }
-
     private Route addRoute(HttpMethod httpMethod, String path, RouteHandler handler, String methodName) throws NoSuchMethodException {
         Class<?> handleType = handler.getClass();
         Method   method     = handleType.getMethod(methodName, RouteContext.class);
@@ -111,16 +102,6 @@ public class RouteMatcher {
             this.routes.put(key, route);
         }
         return route;
-    }
-
-    @Deprecated
-    public Route addRoute(String path, RouteHandler0 handler, HttpMethod httpMethod) {
-        try {
-            return addRoute(httpMethod, path, handler, METHOD_NAME);
-        } catch (Exception e) {
-            log.error("", e);
-        }
-        return null;
     }
 
     public Route addRoute(String path, RouteHandler handler, HttpMethod httpMethod) {
@@ -416,7 +397,7 @@ public class RouteMatcher {
 
     public void initMiddleware(List<WebHook> hooks) {
         this.middleware = hooks.stream().map(webHook -> {
-            Method method = ReflectKit.getMethod(WebHook.class, "before", Signature.class);
+            Method method = ReflectKit.getMethod(WebHook.class, "before", RouteContext.class);
             return new Route(HttpMethod.BEFORE, "/.*", webHook, WebHook.class, method);
         }).collect(Collectors.toList());
     }

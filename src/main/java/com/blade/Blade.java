@@ -183,17 +183,6 @@ public class Blade {
      * Give your blade instance, from then on will get the energy
      *
      * @return return blade instance
-     * {@link #of }
-     */
-    @Deprecated
-    public static Blade me() {
-        return Blade.of();
-    }
-
-    /**
-     * Give your blade instance, from then on will get the energy
-     *
-     * @return return blade instance
      */
     public static Blade of() {
         return new Blade();
@@ -218,37 +207,9 @@ public class Blade {
      * @param path    your route path
      * @param handler route implement
      * @return return blade instance
-     * @see #get(String, RouteHandler)
-     */
-    @Deprecated
-    public Blade get(@NonNull String path, @NonNull RouteHandler0 handler) {
-        this.routeMatcher.addRoute(path, handler, HttpMethod.GET);
-        return this;
-    }
-
-    /**
-     * Add a get route to routes
-     *
-     * @param path    your route path
-     * @param handler route implement
-     * @return return blade instance
      */
     public Blade get(@NonNull String path, @NonNull RouteHandler handler) {
         this.routeMatcher.addRoute(path, handler, HttpMethod.GET);
-        return this;
-    }
-
-    /**
-     * Add a post route to routes
-     *
-     * @param path    your route path
-     * @param handler route implement
-     * @return return blade instance
-     * @see #post(String, RouteHandler)
-     */
-    @Deprecated
-    public Blade post(@NonNull String path, @NonNull RouteHandler0 handler) {
-        this.routeMatcher.addRoute(path, handler, HttpMethod.POST);
         return this;
     }
 
@@ -270,37 +231,9 @@ public class Blade {
      * @param path    your route path
      * @param handler route implement
      * @return return blade instance
-     * @see #put(String, RouteHandler)
-     */
-    @Deprecated
-    public Blade put(@NonNull String path, @NonNull RouteHandler0 handler) {
-        this.routeMatcher.addRoute(path, handler, HttpMethod.PUT);
-        return this;
-    }
-
-    /**
-     * Add a put route to routes
-     *
-     * @param path    your route path
-     * @param handler route implement
-     * @return return blade instance
      */
     public Blade put(@NonNull String path, @NonNull RouteHandler handler) {
         this.routeMatcher.addRoute(path, handler, HttpMethod.PUT);
-        return this;
-    }
-
-    /**
-     * Add a delete route to routes
-     *
-     * @param path    your route path
-     * @param handler route implement
-     * @return return blade instance
-     * @see #delete(String, RouteHandler)
-     */
-    @Deprecated
-    public Blade delete(@NonNull String path, @NonNull RouteHandler0 handler) {
-        this.routeMatcher.addRoute(path, handler, HttpMethod.DELETE);
         return this;
     }
 
@@ -322,37 +255,9 @@ public class Blade {
      * @param path    your route path
      * @param handler route implement
      * @return return blade instance
-     * @see #before(String, RouteHandler)
-     */
-    @Deprecated
-    public Blade before(@NonNull String path, @NonNull RouteHandler0 handler) {
-        this.routeMatcher.addRoute(path, handler, HttpMethod.BEFORE);
-        return this;
-    }
-
-    /**
-     * Add a before route to routes, the before route will be executed before matching route
-     *
-     * @param path    your route path
-     * @param handler route implement
-     * @return return blade instance
      */
     public Blade before(@NonNull String path, @NonNull RouteHandler handler) {
         this.routeMatcher.addRoute(path, handler, HttpMethod.BEFORE);
-        return this;
-    }
-
-    /**
-     * Add a after route to routes, the before route will be executed after matching route
-     *
-     * @param path    your route path
-     * @param handler route implement
-     * @return return blade instance
-     * @see #after(String, RouteHandler)
-     */
-    @Deprecated
-    public Blade after(@NonNull String path, @NonNull RouteHandler0 handler) {
-        this.routeMatcher.addRoute(path, handler, HttpMethod.AFTER);
         return this;
     }
 
@@ -590,33 +495,12 @@ public class Blade {
     }
 
     /**
-     * Set the environment variable for global use here
-     * <p>
-     * {@link #env(String, String)}
-     *
-     * @param key   environment key
-     * @param value environment value
-     * @return blade
-     */
-    @Deprecated
-    public Blade environment(@NonNull String key, @NonNull Object value) {
-        this.environment.set(key, value);
-        return this;
-    }
-
-    /**
      * Return the application's environment configuration information.
      *
      * @return Environment
      */
     public Environment environment() {
         return this.environment;
-    }
-
-    @Deprecated
-    public Blade environment(Environment environment) {
-        this.environment = environment;
-        return this;
     }
 
     /**
@@ -753,8 +637,8 @@ public class Blade {
     /**
      * Add blade loader
      *
-     * @param loader
-     * @return
+     * @param loader see {@link BladeLoader}
+     * @return Blade
      */
     public Blade addLoader(@NonNull BladeLoader loader) {
         this.loaders.add(loader);
@@ -807,7 +691,7 @@ public class Blade {
      * @return return blade instance
      */
     public Blade start(String... args) {
-        Class caller = Arrays.stream(Thread.currentThread().getStackTrace())
+        Class<?> caller = Arrays.stream(Thread.currentThread().getStackTrace())
                 .filter(st -> "main".equals(st.getMethodName()))
                 .findFirst()
                 .map(StackTraceElement::getClassName)
@@ -880,20 +764,6 @@ public class Blade {
         }
         return this;
 
-    }
-
-    /**
-     * Start the blade web server
-     *
-     * @param bootClass Start the boot class, used to scan the class in all of the packages
-     * @param address   web server bind ip address
-     * @param port      web server bind port
-     * @param args      launch parameters
-     * @return blade
-     */
-    @Deprecated
-    public Blade start(Class<?> bootClass, @NonNull String address, int port, String... args) {
-        return this;
     }
 
     /**

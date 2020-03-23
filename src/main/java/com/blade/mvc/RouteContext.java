@@ -123,36 +123,6 @@ public class RouteContext {
         return this;
     }
 
-    @Deprecated
-    public String fromString(String paramName) {
-        return this.request.query(paramName).orElse(null);
-    }
-
-    @Deprecated
-    public String fromString(String paramName, String defaultValue) {
-        return this.request.query(paramName, defaultValue);
-    }
-
-    @Deprecated
-    public Integer fromInt(String paramName) {
-        return this.request.queryInt(paramName).orElse(null);
-    }
-
-    @Deprecated
-    public Integer fromInt(String paramName, Integer defaultValue) {
-        return this.request.queryInt(paramName, defaultValue);
-    }
-
-    @Deprecated
-    public Long fromLong(String paramName) {
-        return this.request.queryLong(paramName).orElse(null);
-    }
-
-    @Deprecated
-    public Long fromLong(String paramName, Long defaultValue) {
-        return this.request.queryLong(paramName, defaultValue);
-    }
-
     /**
      * Get a request parameter
      *
