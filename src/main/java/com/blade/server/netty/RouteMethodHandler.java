@@ -227,9 +227,6 @@ public class RouteMethodHandler implements RequestHandler {
         if (context.targetType() == RouteHandler.class) {
             RouteHandler routeHandler = (RouteHandler) target;
             routeHandler.handle(context);
-        } else if (context.targetType() == RouteHandler0.class) {
-            RouteHandler0 routeHandler = (RouteHandler0) target;
-            routeHandler.handle(context.request(), context.response());
         } else {
             Method   actionMethod = context.routeAction();
             Class<?> returnType   = actionMethod.getReturnType();
@@ -352,9 +349,6 @@ public class RouteMethodHandler implements RequestHandler {
                 if (context.isAbort()) {
                     return false;
                 }
-            } else if (hook.getTargetType() == RouteHandler0.class) {
-                RouteHandler0 routeHandler = (RouteHandler0) hook.getTarget();
-                routeHandler.handle(context.request(), context.response());
             } else {
                 boolean flag = this.invokeHook(context, hook);
                 if (!flag) return false;

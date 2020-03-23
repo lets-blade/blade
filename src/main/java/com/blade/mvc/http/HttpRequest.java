@@ -224,7 +224,6 @@ public class HttpRequest implements Request {
 
     @Override
     public boolean useGZIP() {
-
         boolean useGZIP = WebContext.blade().environment()
                 .getBoolean(Const.ENV_KEY_GZIP_ENABLE, false);
 

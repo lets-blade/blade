@@ -503,6 +503,11 @@ public class Blade {
         return this.environment;
     }
 
+    public Blade environment(Environment environment) {
+        this.environment = environment;
+        return this;
+    }
+
     /**
      * Get application environment information.
      *

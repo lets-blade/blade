@@ -62,13 +62,8 @@ public class SimpleIoc implements Ioc {
      */
     @Override
     public <T> T addBean(Class<T> type) {
-        Bean    beanAnnotation = type.getAnnotation(Bean.class);
-        boolean isSingleton    = null == beanAnnotation || beanAnnotation.singleton();
-        if (isSingleton) {
-            Object bean = put(type, true);
-            return type.cast(bean);
-        }
-        return null;
+        Object bean = put(type, true);
+        return type.cast(bean);
     }
 
     @Override
