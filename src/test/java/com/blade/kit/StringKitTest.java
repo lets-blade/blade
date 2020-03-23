@@ -21,7 +21,7 @@ public class StringKitTest {
         Assert.assertTrue(StringKit.isNotBlank("a"));
 
         Assert.assertFalse(StringKit.isNotBlank(""));
-        Assert.assertFalse(StringKit.isNotBlank(null));
+        Assert.assertFalse(StringKit.isNotBlank());
 
 
         Assert.assertFalse(StringKit.isNotBlank("a", "b", "  "));
