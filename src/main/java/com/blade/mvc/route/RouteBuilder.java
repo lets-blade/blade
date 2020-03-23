@@ -4,7 +4,6 @@ import com.blade.kit.BladeKit;
 import com.blade.kit.ReflectKit;
 import com.blade.mvc.RouteContext;
 import com.blade.mvc.annotation.*;
-import com.blade.mvc.hook.Signature;
 import com.blade.mvc.http.HttpMethod;
 import lombok.extern.slf4j.Slf4j;
 

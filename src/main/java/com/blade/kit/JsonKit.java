@@ -35,11 +35,6 @@ public class JsonKit {
 
     private JsonSupport jsonSupport = defaultJsonSupport;
 
-    @Deprecated
-    public void jsonSupprt(JsonSupport jsonSupport) {
-        JsonKit.jsonSupport = jsonSupport;
-    }
-
     public void jsonSupport(JsonSupport jsonSupport){
         JsonKit.jsonSupport = jsonSupport;
     }

@@ -1,7 +1,6 @@
 package com.blade.mvc;
 
 import com.blade.BaseTestCase;
-import com.blade.mvc.hook.Signature;
 import com.blade.mvc.hook.WebHook;
 import com.blade.security.web.auth.BasicAuthMiddleware;
 import org.junit.Test;
