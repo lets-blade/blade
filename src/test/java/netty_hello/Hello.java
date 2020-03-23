@@ -72,13 +72,12 @@ public class Hello {
                 })
                 .get("/rand", ctx -> {
                     try {
-                        int timeout = ctx.fromInt("timeout", new Random().nextInt(1000));
+                        int timeout = ctx.queryInt("timeout", new Random().nextInt(1000));
                         TimeUnit.SECONDS.sleep(timeout);
                         ctx.text("sleep " + timeout + "s");
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-
                 })
                 .before("/user/*", ctx ->
                         {

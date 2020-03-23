@@ -11,6 +11,7 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.*;
 
@@ -144,17 +145,10 @@ public class HttpResponse implements Response {
             throw new NotFoundException("Not found file: " + file.getPath());
         }
         String contentType = StringKit.mimeType(file.getName());
-        headers.put("Content-Disposition", "attachment; filename=" + new String(fileName.getBytes("UTF-8"), "ISO8859_1"));
+        headers.put("Content-Disposition", "attachment; filename=" + new String(fileName.getBytes(StandardCharsets.UTF_8), "ISO8859_1"));
         headers.put(HttpConst.CONTENT_LENGTH.toString(), String.valueOf(file.length()));
         headers.put(HttpConst.CONTENT_TYPE_STRING, contentType);
         this.body = new StreamBody(new FileInputStream(file));
-    }
-
-    @Override
-    public OutputStreamWrapper outputStream() throws IOException {
-        File         file         = Files.createTempFile("blade", ".temp").toFile();
-        OutputStream outputStream = new FileOutputStream(file);
-        return new OutputStreamWrapper(outputStream, file);
     }
 
     @Override
