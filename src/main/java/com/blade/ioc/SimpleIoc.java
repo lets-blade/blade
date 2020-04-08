@@ -65,7 +65,7 @@ public class SimpleIoc implements Ioc {
         Bean    beanAnnotation = type.getAnnotation(Bean.class);
         boolean isSingleton    = null == beanAnnotation || beanAnnotation.singleton();
         if (isSingleton) {
-            Object bean = put(type, true);
+            Object bean = put(type, isSingleton);
             return type.cast(bean);
         }
         return null;
