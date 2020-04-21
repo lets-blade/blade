@@ -131,7 +131,9 @@ public class Environment {
             return loadClasspath(location);
         } else if (location.startsWith(PREFIX_FILE)) {
             location = location.substring(PREFIX_FILE.length());
-            return of(new File(location));
+            File properties = new File(location);
+            if (!properties.exists()) throw new IllegalStateException("resources/application.properties not found");
+            return of(properties);
         } else if (location.startsWith(PREFIX_URL)) {
             location = location.substring(PREFIX_URL.length());
             try {

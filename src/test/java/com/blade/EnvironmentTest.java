@@ -68,7 +68,7 @@ public class EnvironmentTest {
 
     @Test
     public void testEnvByFile() {
-        File        file        = new File(EnvironmentTest.class.getResource("/").getPath() + "application.properties");
+        File        file        = new File("src/test/resources/application.properties");
         Environment environment = Environment.of(file);
         Assert.assertEquals("0.0.2", environment.get("app.version").get());
     }
@@ -171,7 +171,7 @@ public class EnvironmentTest {
         Environment.of(new File("a123.properties"));
     }
 
-    @Test
+    @Test(expected = IllegalStateException.class)
     public void testNoEnvByFileString() {
         String path = Const.CLASSPATH + "/application.properties";
         Environment.of("file:" + path);
