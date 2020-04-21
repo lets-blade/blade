@@ -15,16 +15,12 @@
  */
 package com.blade;
 
-import com.blade.event.*;
 import com.blade.event.EventListener;
-import com.blade.exception.BladeException;
+import com.blade.event.*;
+import com.blade.health.HealthResource;
 import com.blade.ioc.Ioc;
 import com.blade.ioc.SimpleIoc;
-import com.blade.kit.Assert;
-import com.blade.kit.BladeKit;
-import com.blade.kit.JsonKit;
-import com.blade.kit.StringKit;
-import com.blade.kit.UncheckedFnKit;
+import com.blade.kit.*;
 import com.blade.kit.reload.FileChangeDetector;
 import com.blade.loader.BladeLoader;
 import com.blade.mvc.handler.*;
@@ -183,6 +179,11 @@ public class Blade {
      * Blade app start thread name, default is Const.DEFAULT_THREAD_NAME
      */
     private String threadName;
+
+    /**
+     * Provides an endpoint for health check of application
+     */
+    private HealthResource healthResource;
 
     /**
      * Give your blade instance, from then on will get the energy
@@ -534,6 +535,7 @@ public class Blade {
 
     /**
      * Set whether to config  cors
+     *
      * @param enableCors enable cors
      * @param corsConfig config cors
      * @return blade
@@ -853,6 +855,7 @@ public class Blade {
     public Blade start(Class<?> mainCls, String... args) {
         try {
             this.loadConfig(args);
+            this.addHealthCheck(this.environment, this);
 
             this.bootClass = mainCls;
             eventManager.fireEvent(EventType.SERVER_STARTING, new Event().attribute("blade", this));
@@ -909,6 +912,11 @@ public class Blade {
 
     }
 
+    private void addHealthCheck(Environment env, Blade blade) {
+        this.healthResource = new HealthResource(env, blade);
+        this.healthResource.addHealthEndpoint();
+    }
+
     /**
      * Start the blade web server
      *
@@ -960,7 +968,7 @@ public class Blade {
      * @return return blade instance
      */
     public Blade webSocket(@NonNull String path, @NonNull WebSocketHandler handler) {
-        this.routeMatcher.addWebSocket(path,handler);
+        this.routeMatcher.addWebSocket(path, handler);
         return this;
     }
 
@@ -1026,17 +1034,17 @@ public class Blade {
      * @param args command line parameters
      */
     private void loadConfig(String[] args) {
-        String      bootConf = environment().get(ENV_KEY_BOOT_CONF, PROP_NAME);
-        Environment bootEnv  = Environment.of(bootConf);
-        String      envName  = "default";
+        String bootConf = environment().get(ENV_KEY_BOOT_CONF, PROP_NAME);
+        Environment bootEnv = Environment.of(bootConf);
+        String envName = "default";
 
         if (null == bootEnv || bootEnv.isEmpty()) {
             bootEnv = Environment.of(PROP_NAME0);
         }
 
         if (!Objects.requireNonNull(bootEnv).isEmpty()) {
-            Map<String, String>            bootEnvMap = bootEnv.toMap();
-            Set<Map.Entry<String, String>> entrySet   = bootEnvMap.entrySet();
+            Map<String, String> bootEnvMap = bootEnv.toMap();
+            Set<Map.Entry<String, String>> entrySet = bootEnvMap.entrySet();
             entrySet.forEach(entry -> environment.set(entry.getKey(), entry.getValue()));
         }
 
@@ -1047,8 +1055,8 @@ public class Blade {
 
         if (StringKit.isNotEmpty(argsMap.get(ENV_KEY_APP_ENV))) {
             envName = argsMap.get(ENV_KEY_APP_ENV);
-            String      evnFileName = "application-" + envName + ".properties";
-            Environment customEnv   = Environment.of(evnFileName);
+            String evnFileName = "application-" + envName + ".properties";
+            Environment customEnv = Environment.of(evnFileName);
             if (customEnv != null && !customEnv.isEmpty()) {
                 customEnv.props().forEach((key, value) -> this.environment.set(key.toString(), value));
             } else {

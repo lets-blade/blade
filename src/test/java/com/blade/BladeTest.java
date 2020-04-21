@@ -8,7 +8,6 @@ import com.blade.mvc.handler.RouteHandler;
 import com.blade.mvc.handler.WebSocketHandler;
 import com.blade.mvc.hook.WebHook;
 import com.blade.mvc.http.HttpSession;
-import com.blade.mvc.route.Route;
 import com.blade.mvc.ui.template.TemplateEngine;
 import com.blade.mvc.websocket.WebSocketContext;
 import com.blade.security.web.csrf.CsrfMiddleware;
@@ -87,14 +86,14 @@ public class BladeTest extends BaseTestCase {
 
     @Test
     public void testStart() {
-        String[] args  = null;
-        Blade    start = Blade.of().start(Hello.class, args);
+        String[] args = null;
+        Blade start = Blade.of().start(Hello.class, args);
         start.stop();
     }
 
     @Test
     public void testAppName() {
-        Blade  blade     = Blade.of();
+        Blade blade = Blade.of();
         String anyString = StringKit.rand(10);
         blade.appName(anyString);
         assertEquals(anyString, blade.environment().getOrNull(ENV_KEY_APP_NAME));
@@ -102,14 +101,14 @@ public class BladeTest extends BaseTestCase {
 
     @Test
     public void testStartedEvent() {
-        Blade         blade    = Blade.of();
+        Blade blade = Blade.of();
         EventListener listener = e1 -> System.out.println("Server started.");
         blade.event(EventType.SERVER_STARTED, listener);
     }
 
     @Test
     public void testTemplate() {
-        Blade          blade          = Blade.of();
+        Blade blade = Blade.of();
         TemplateEngine templateEngine = mock(TemplateEngine.class);
         blade.templateEngine(templateEngine);
         assertEquals(templateEngine, blade.templateEngine());
@@ -117,7 +116,7 @@ public class BladeTest extends BaseTestCase {
 
     @Test
     public void testRegister() {
-        Blade                blade  = Blade.of();
+        Blade blade = Blade.of();
         BladeClassDefineType object = new BladeClassDefineType();
         blade.register(object);
         assertEquals(object, blade.ioc().getBean(BladeClassDefineType.class));
@@ -157,7 +156,7 @@ public class BladeTest extends BaseTestCase {
 
     @Test
     public void testUse() {
-        Blade         blade      = Blade.of().use(new CsrfMiddleware());
+        Blade blade = Blade.of().use(new CsrfMiddleware());
         List<WebHook> middleware = blade.middleware();
         Assert.assertNotNull(middleware);
         assertEquals(1, middleware.size());
@@ -250,7 +249,7 @@ public class BladeTest extends BaseTestCase {
 
     @Test
     public void testExceptionHandler() {
-        Blade            blade            = Blade.of();
+        Blade blade = Blade.of();
         ExceptionHandler exceptionHandler = mock(ExceptionHandler.class);
 
         blade.exceptionHandler(exceptionHandler);
@@ -265,5 +264,26 @@ public class BladeTest extends BaseTestCase {
         assertEquals(Boolean.FALSE, blade.devMode());
     }
 
+    @Test
+    public void testRouteHealthCheck() {
+        Blade blade = Blade.of().environment("blade.health.active", "true");
+        blade.listen(9001).start().await();
+        try {
+            Assert.assertNotNull(blade.routeMatcher().lookupRoute("GET", "/health"));
+        } finally {
+            blade.stop();
+        }
+    }
+
+    @Test
+    public void testNoRouteHealthCheck() {
+        Blade blade = Blade.of().environment("blade.health.active", "false");
+        blade.listen(9001).start().await();
+        try {
+            Assert.assertNull(blade.routeMatcher().lookupRoute("GET", "/health"));
+        } finally {
+            blade.stop();
+        }
+    }
 
 }
