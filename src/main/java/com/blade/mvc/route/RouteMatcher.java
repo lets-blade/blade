@@ -9,10 +9,7 @@ import com.blade.mvc.handler.RouteHandler;
 import com.blade.mvc.handler.WebSocketHandler;
 import com.blade.mvc.hook.WebHook;
 import com.blade.mvc.http.HttpMethod;
-import com.blade.mvc.http.Request;
-import com.blade.mvc.http.Response;
-import com.blade.mvc.route.mapping.FastRouteMappingInfo;
-import com.blade.mvc.route.mapping.RegexMapping;
+import com.blade.mvc.route.mapping.dynamic.RegexMapping;
 import com.blade.mvc.route.mapping.StaticMapping;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -49,7 +46,7 @@ public class RouteMatcher {
     private Map<String, Method[]>    classMethodPool = new ConcurrentHashMap<>();
     private Map<Class<?>, Object>    controllerPool  = new ConcurrentHashMap<>();
 
-    private RegexMapping  regexMapping  = new RegexMapping();
+    private DynamicMapping  regexMapping  = new RegexMapping();
     private StaticMapping staticMapping = new StaticMapping();
 
     /**
@@ -165,59 +162,7 @@ public class RouteMatcher {
             }
         }
 
-        Map<String, String> uriVariables = new LinkedHashMap<>();
-
-        HttpMethod requestMethod = HttpMethod.valueOf(httpMethod);
-        try {
-            Pattern pattern = regexMapping.findPattern(requestMethod);
-            if (null == pattern) {
-                pattern = regexMapping.findPattern(HttpMethod.ALL);
-                if (null != pattern) {
-                    requestMethod = HttpMethod.ALL;
-                }
-            }
-            if (null == pattern) {
-                return null;
-            }
-            Matcher matcher = null;
-            if (path != null) {
-                matcher = pattern.matcher(path);
-            }
-            boolean matched = false;
-            if (matcher != null) {
-                matched = matcher.matches();
-            }
-            if (!matched) {
-                requestMethod = HttpMethod.ALL;
-                pattern = regexMapping.findPattern(requestMethod);
-                if (null == pattern) {
-                    return null;
-                }
-                if (path != null) {
-                    matcher = pattern.matcher(path);
-                }
-                matched = matcher != null && matcher.matches();
-            }
-            if (matched) {
-                int i;
-                for (i = 1; matcher.group(i) == null; i++) ;
-                FastRouteMappingInfo mappingInfo = regexMapping.findMappingInfo(requestMethod, i);
-                route = mappingInfo.getRoute();
-
-                // find path variable
-                String uriVariable;
-                int    j = 0;
-                while (++i <= matcher.groupCount() && (uriVariable = matcher.group(i)) != null) {
-                    String pathVariable = cleanPathVariable(mappingInfo.getVariableNames().get(j++));
-                    uriVariables.put(pathVariable, uriVariable);
-                }
-                route.setPathParams(uriVariables);
-                log.trace("lookup path: " + path + " uri variables: " + uriVariables);
-            }
-            return route;
-        } catch (Exception e) {
-            throw e;
-        }
+        return regexMapping.findRoute(httpMethod, path);
     }
 
     private String cleanPathVariable(String pathVariable) {
