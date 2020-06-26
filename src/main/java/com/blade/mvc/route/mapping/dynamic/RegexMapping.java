@@ -33,7 +33,8 @@ public class RegexMapping implements DynamicMapping {
     private Map<HttpMethod, StringBuilder>                      patternBuilders    = new HashMap<>();
 
     @Override
-    public void addRoute(String path, HttpMethod httpMethod, Route route, List<String> uriVariableNames) {
+    public void addRoute(HttpMethod httpMethod, Route route, List<String> uriVariableNames) {
+        String path = route.getPath();
         if (regexRoutes.get(httpMethod) == null) {
             regexRoutes.put(httpMethod, new HashMap<>());
             patternBuilders.put(httpMethod, new StringBuilder("^"));
@@ -41,7 +42,7 @@ public class RegexMapping implements DynamicMapping {
         }
         int i = indexes.get(httpMethod);
         regexRoutes.get(httpMethod).put(i, new FastRouteMappingInfo(route, uriVariableNames));
-        indexes.put(httpMethod, i + 1);
+        indexes.put(httpMethod, i + uriVariableNames.size() + 1);
         patternBuilders.get(httpMethod).append(new PathRegexBuilder().parsePath(path));
     }
 
@@ -93,7 +94,7 @@ public class RegexMapping implements DynamicMapping {
                 int i;
                 for (i = 1; matcher.group(i) == null; i++) ;
                 FastRouteMappingInfo mappingInfo = findMappingInfo(requestMethod, i);
-                route = mappingInfo.getRoute();
+                route = new Route(mappingInfo.getRoute());
 
                 // find path variable
                 String uriVariable;

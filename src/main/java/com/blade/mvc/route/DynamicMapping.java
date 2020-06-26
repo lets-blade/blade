@@ -11,7 +11,7 @@ import java.util.List;
  */
 public interface DynamicMapping {
 
-    void addRoute(String path, HttpMethod httpMethod, Route route, List<String> uriVariableNames);
+    void addRoute(HttpMethod httpMethod, Route route, List<String> uriVariableNames);
 
     void register();
 

@@ -8,8 +8,12 @@ public class PkgNpeTest {
 
     public static void main(String[] args) {
         Blade.of()
-                .get("/*/uuu", ctx -> ctx.text("hhh"))
-                .get("/:bbb/bbb", ctx -> ctx.text(ctx.pathString("bbb")))
+                .get("/aaa/*/ccc", ctx -> ctx.text("popopo"))
+                .get("/cde/uuu", ctx -> ctx.text("efef"))
+                .get("/mmm/:id/:name", ctx -> ctx.text(ctx.pathString("id") +
+                        "-" + ctx.pathString("name")))
+                .post("/bbb/:id/:name", ctx -> ctx.text(ctx.pathString("id") +
+                        ":" + ctx.pathString("name")))
                 .start();
     }
 }

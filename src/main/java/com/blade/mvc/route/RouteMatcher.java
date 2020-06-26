@@ -9,8 +9,9 @@ import com.blade.mvc.handler.RouteHandler;
 import com.blade.mvc.handler.WebSocketHandler;
 import com.blade.mvc.hook.WebHook;
 import com.blade.mvc.http.HttpMethod;
-import com.blade.mvc.route.mapping.dynamic.RegexMapping;
 import com.blade.mvc.route.mapping.StaticMapping;
+import com.blade.mvc.route.mapping.dynamic.RegexMapping;
+import com.blade.mvc.route.mapping.dynamic.TrieMapping;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
@@ -46,7 +47,7 @@ public class RouteMatcher {
     private Map<String, Method[]>    classMethodPool = new ConcurrentHashMap<>();
     private Map<Class<?>, Object>    controllerPool  = new ConcurrentHashMap<>();
 
-    private DynamicMapping  regexMapping  = new RegexMapping();
+    private DynamicMapping dynamicMapping = new RegexMapping();
     private StaticMapping staticMapping = new StaticMapping();
 
     /**
@@ -70,6 +71,7 @@ public class RouteMatcher {
     }
 
     private Route addRoute(HttpMethod httpMethod, String path, Object controller, Class<?> controllerType, Method method) {
+        String originalPath = path;
 
         // [/** | /*]
         path = "*".equals(path) ? "/.*" : path;
@@ -82,7 +84,7 @@ public class RouteMatcher {
             log.warn("\tRoute {} -> {} has exist", path, httpMethod.toString());
         }
 
-        Route route = new Route(httpMethod, path, controller, controllerType, method);
+        Route route = new Route(httpMethod, originalPath, path, controller, controllerType, method);
         if (BladeKit.isWebHook(httpMethod)) {
             Order order = controllerType.getAnnotation(Order.class);
             if (null != order) {
@@ -162,7 +164,7 @@ public class RouteMatcher {
             }
         }
 
-        return regexMapping.findRoute(httpMethod, path);
+        return dynamicMapping.findRoute(httpMethod, path);
     }
 
     private String cleanPathVariable(String pathVariable) {
@@ -275,7 +277,7 @@ public class RouteMatcher {
         Stream.of(routes.values(), hooks.values().stream().findAny().orElse(new ArrayList<>()))
                 .flatMap(Collection::stream).forEach(this::registerRoute);
 
-        regexMapping.register();
+        dynamicMapping.register();
 
         webSockets.keySet().forEach(path -> logWebSocket(log, path));
     }
@@ -295,6 +297,11 @@ public class RouteMatcher {
             String regexName  = matcher.group(1);
             String regexValue = matcher.group(2);
 
+            // when /.* is matched, there is no param
+            if (regexName == null && regexValue == null) {
+                continue;
+            }
+
             // just a simple path param
             if (StringKit.isBlank(regexName)) {
                 uriVariableNames.add(regexValue);
@@ -305,7 +312,7 @@ public class RouteMatcher {
         }
         HttpMethod httpMethod = route.getHttpMethod();
         if (find || BladeKit.isWebHook(httpMethod)) {
-            regexMapping.addRoute(path, httpMethod, route, uriVariableNames);
+            dynamicMapping.addRoute(httpMethod, route, uriVariableNames);
         } else {
             staticMapping.addRoute(path, httpMethod, route);
         }
@@ -337,13 +344,13 @@ public class RouteMatcher {
         this.classMethodPool.clear();
         this.controllerPool.clear();
         this.staticMapping.clear();
-        this.regexMapping.clear();
+        this.dynamicMapping.clear();
     }
 
     public void initMiddleware(List<WebHook> hooks) {
         this.middleware = hooks.stream().map(webHook -> {
             Method method = ReflectKit.getMethod(WebHook.class, "before", RouteContext.class);
-            return new Route(HttpMethod.BEFORE, "/.*", webHook, WebHook.class, method);
+            return new Route(HttpMethod.BEFORE, "/*", "/.*", webHook, WebHook.class, method);
         }).collect(Collectors.toList());
     }
 
@@ -353,6 +360,10 @@ public class RouteMatcher {
         }
         this.webSockets.put(path,handler);
         return this;
+    }
+
+    public void setDynamicMapping(DynamicMapping dynamicMapping) {
+        this.dynamicMapping = dynamicMapping;
     }
 
 }
