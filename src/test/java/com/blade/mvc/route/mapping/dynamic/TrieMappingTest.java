@@ -5,14 +5,10 @@ import com.blade.mvc.route.Route;
 import lombok.Value;
 import org.junit.Test;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 
 /**
  * @author: dqyuan
@@ -45,6 +41,26 @@ public class TrieMappingTest {
         trieMapping.addRoute(httpMethod,
                 new Route(null, path,
                         null, null, null, null), Collections.emptyList());
+    }
+
+    @Test
+    public void testPartIter() {
+        TrieMapping trieMapping = new TrieMapping();
+        Iterator<String> partIter = trieMapping.partIter("/ef/sgsg/rgrg");
+        Iterator<String> expected = Arrays.asList("ef", "sgsg", "rgrg").iterator();
+        while (expected.hasNext()) {
+            assertTrue(partIter.hasNext());
+            assertEquals(expected.next(), partIter.next());
+        }
+
+        Iterator<String> partIter1 = trieMapping.partIter("/ooo/p");
+        Iterator<String> expected1 = Arrays.asList("ooo", "p").iterator();
+        while (expected1.hasNext()) {
+            assertTrue(partIter1.hasNext());
+            assertEquals(expected1.next(), partIter1.next());
+        }
+
+
     }
 
     private TrieMapping initMapping(List<MethodAndPath> methodAndPaths) {
@@ -104,15 +120,31 @@ public class TrieMappingTest {
     }
 
     @Test
-    public void testSuffix() {
+    public void testCatchAll() {
         TrieMapping trieMapping = initMapping(Arrays.asList(
-                MethodAndPath.of(HttpMethod.GET, "/child/*"))
+                MethodAndPath.of(HttpMethod.GET, "/child/*"),
+                MethodAndPath.of(HttpMethod.GET, "/ooo/*"))
         );
 
         assertEquals("/child/*",
                 trieMapping.findRoute("GET", "/child/pp").getOriginalPath());
         assertEquals("/child/*",
                 trieMapping.findRoute("GET", "/child/pp/ooo").getOriginalPath());
+        assertEquals("/ooo/*",
+                trieMapping.findRoute("GET", "/ooo/p").getOriginalPath());
+    }
+
+    @Test
+    public void testShareDynamicNode() {
+        TrieMapping trieMapping = initMapping(Arrays.asList(
+                MethodAndPath.of(HttpMethod.GET, "/child/:id/ccc"),
+                MethodAndPath.of(HttpMethod.GET, "/child/:id/ddd"))
+        );
+
+        assertEquals("/child/:id/ccc",
+                trieMapping.findRoute("GET", "/child/iocs/ccc").getOriginalPath());
+        assertEquals("/child/:id/ddd",
+                trieMapping.findRoute("GET", "/child/oooccc/ddd").getOriginalPath());
     }
 
     @Test(expected = IllegalStateException.class)
@@ -121,6 +153,49 @@ public class TrieMappingTest {
                 MethodAndPath.of(HttpMethod.GET, "/child/*"),
                 MethodAndPath.of(HttpMethod.GET, "/child/:pp")
         ));
+    }
+
+    @Test
+    public void testAddTwoMethodOfOneUrl() {
+        TrieMapping trieMapping = initMapping(Arrays.asList(
+                MethodAndPath.of(HttpMethod.GET, "/child/ccc"),
+                MethodAndPath.of(HttpMethod.POST, "/child/ccc"),
+                MethodAndPath.of(HttpMethod.GET, "/child/mm/:po"),
+                MethodAndPath.of(HttpMethod.POST, "/child/mm/:po"))
+        );
+
+        assertEquals("/child/ccc",
+                trieMapping.findRoute("GET", "/child/ccc").getOriginalPath());
+        assertEquals("/child/ccc",
+                trieMapping.findRoute("POST", "/child/ccc").getOriginalPath());
+        assertEquals("/child/mm/:po",
+                trieMapping.findRoute("GET", "/child/mm/cdcr").getOriginalPath());
+        assertEquals("/child/mm/:po",
+                trieMapping.findRoute("POST", "/child/mm/lala").getOriginalPath());
+        assertNull(trieMapping.findRoute("PUT", "/child/mm/lala"));
+    }
+
+    @Test
+    public void testStaticEnd() {
+        TrieMapping trieMapping = initMapping(Arrays.asList(
+                MethodAndPath.of(HttpMethod.GET, "/child/ccc/:id/number"),
+                MethodAndPath.of(HttpMethod.GET, "/child/ccc/trunk"),
+                MethodAndPath.of(HttpMethod.GET, "/child/ccc/box"),
+                MethodAndPath.of(HttpMethod.GET, "/adm/yonghu/new"),
+                MethodAndPath.of(HttpMethod.GET, "/adm/yonghu/:yonghuId/yonghu")
+                )
+        );
+
+        assertEquals("/child/ccc/box",
+                trieMapping.findRoute("GET", "/child/ccc/box").getOriginalPath());
+        assertEquals("/child/ccc/trunk",
+                trieMapping.findRoute("GET", "/child/ccc/trunk").getOriginalPath());
+        assertEquals("/child/ccc/:id/number",
+                trieMapping.findRoute("GET", "/child/ccc/234/number").getOriginalPath());
+        assertEquals("/adm/yonghu/new",
+                trieMapping.findRoute("GET", "/adm/yonghu/new").getOriginalPath());
+        assertEquals("/adm/yonghu/:yonghuId/yonghu",
+                trieMapping.findRoute("GET", "/adm/yonghu/afaefeaf/yonghu").getOriginalPath());
     }
 
 }

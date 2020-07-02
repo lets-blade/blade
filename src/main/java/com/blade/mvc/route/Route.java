@@ -213,7 +213,7 @@ public class Route {
      */
     @Override
     public String toString() {
-        return httpMethod + "\t" + path;
+        return httpMethod + "\t" + originalPath + "\t" + path;
     }
 
 }

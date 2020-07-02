@@ -5,7 +5,7 @@ import com.blade.mvc.http.HttpMethod;
 import java.util.List;
 
 /**
- * map url with wildcard
+ * map url with wildcardq
  * @author: dqyuan
  * @date: 2020/06/25
  */

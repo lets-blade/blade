@@ -31,7 +31,7 @@ public class RouteMatcherTest {
         routeMatcher.register();
 
         Route route = routeMatcher.lookupRoute("GET", "/");
-        Assert.assertEquals("GET\t/", route.toString());
+        Assert.assertEquals("GET\t/\t/", route.toString());
 
         List<Route> routes = routeMatcher.getBefore("/");
         Assert.assertEquals(1, routes.size());
@@ -63,7 +63,7 @@ public class RouteMatcherTest {
         routeMatcher.register();
 
         Route saveRoute = routeMatcher.lookupRoute("POST", "/save");
-        Assert.assertEquals("POST\t/save", saveRoute.toString());
+        Assert.assertEquals("POST\t/save\t/save", saveRoute.toString());
 
     }
 
@@ -76,10 +76,10 @@ public class RouteMatcherTest {
         routeMatcher.register();
 
         Route route = routeMatcher.lookupRoute("GET", "/index");
-        Assert.assertEquals("ALL\t/index", route.toString());
+        Assert.assertEquals("ALL\t/index\t/index", route.toString());
 
         Route removeRoute = routeMatcher.lookupRoute("DELETE", "/remove");
-        Assert.assertEquals("DELETE\t/remove", removeRoute.toString());
+        Assert.assertEquals("DELETE\t/remove\t/remove", removeRoute.toString());
 
     }
 

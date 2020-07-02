@@ -8,9 +8,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Trie tree based url route
@@ -61,7 +59,9 @@ public class TrieMapping implements DynamicMapping {
         private final Map<HttpMethod, Route> routeMap = new LinkedHashMap<>();
 
         /**
-         * in staticChildren and dynamicChild, only one is valid
+         * in staticChildren and dynamicChild, only one is real children, according to ChildType
+         * when in dynamic ChildType, staticChildren is used to store static end node, which is last node
+         * with static text.
          */
         private final Map<String, Node> staticChildren = new LinkedHashMap<>();
 
@@ -74,7 +74,7 @@ public class TrieMapping implements DynamicMapping {
             return null;
         }
 
-        public Node putChildIfAbsent(Node child) {
+        public Node putChildIfAbsent(Node child, boolean isEnd) {
             switch (childType()) {
                 case NONCHILD:
                     if (child.getType() == NodeType.NORMAL) {
@@ -85,13 +85,27 @@ public class TrieMapping implements DynamicMapping {
                     return child;
                 case STATIC:
                     if (child.getType() != NodeType.NORMAL) {
-                        throw new IllegalStateException(
-                                String.format("%s conflict with path %s", child.getPart(),
-                                        anyStaticChild().getPart())
-                        );
+                        boolean canDynamic = staticChildren.values()
+                                .stream()
+                                .allMatch(Node::isEnd);
+                        if (!canDynamic) {
+                            throw new IllegalStateException(
+                                    String.format("%s conflict with path %s", child.getPart(),
+                                            anyStaticChild().getPart())
+                            );
+                        }
+                        // convert to Dynamic ChildType
+                        dynamicChild = child;
+                        return dynamicChild;
                     }
                     return staticChildren.computeIfAbsent(child.getPart(), ignore -> child);
                 case DYNAMIC:
+                    if (Objects.equals(dynamicChild.getPart(), child.getPart())) {
+                        return dynamicChild;
+                    }
+                    if (isEnd && child.getType() == NodeType.NORMAL) {
+                        return staticChildren.computeIfAbsent(child.getPart(), ignore -> child);
+                    }
                     throw new IllegalStateException(
                       String.format("%s conflict with path %s", child.getPart(),
                               dynamicChild.getPart())
@@ -118,10 +132,10 @@ public class TrieMapping implements DynamicMapping {
         public ChildType childType() {
             if (staticChildren.isEmpty() && dynamicChild == null) {
                 return ChildType.NONCHILD;
-            } else if (!staticChildren.isEmpty()) {
-                return ChildType.STATIC;
-            } else {
+            } else if (dynamicChild != null) {
                 return ChildType.DYNAMIC;
+            } else {
+                return ChildType.STATIC;
             }
         }
 
@@ -139,7 +153,7 @@ public class TrieMapping implements DynamicMapping {
             }
             boolean isEnd = i == parts.length - 1;
 
-            prev = prev.putChildIfAbsent(getNodeByPart(part));
+            prev = prev.putChildIfAbsent(getNodeByPart(part), isEnd);
             if (isEnd) {
                 prev.getRouteMap().put(httpMethod, route);
             }
@@ -164,13 +178,13 @@ public class TrieMapping implements DynamicMapping {
     public Route findRoute(String httpMethod, String path) {
         HttpMethod requestMethod = HttpMethod.valueOf(httpMethod);
         Map<String, String> uriVariables = new LinkedHashMap<>();
-        String[] parts = path.split("/");
+        Iterator<String> partIter = partIter(path);
         Node prev = root;
-        int i = 0;
         walk:
-        for (; i < parts.length; i++) {
-            String part = parts[i];
+        for (; partIter.hasNext(); ) {
+            String part = partIter.next();
             if (StringKit.isBlank(part)) continue;
+            boolean isEnd = !partIter.hasNext();
             switch (prev.childType()) {
                 case STATIC:
                     Node child = prev.getStaticChildren().get(part);
@@ -180,6 +194,13 @@ public class TrieMapping implements DynamicMapping {
                     prev = child;
                     break;
                 case DYNAMIC:
+                    if (isEnd) {
+                        Node staticEnd = prev.getStaticChildren().get(part);
+                        if (staticEnd != null) {
+                            prev = staticEnd;
+                            break;
+                        }
+                    }
                     prev = prev.getDynamicChild();
                     if (prev.getType() == NodeType.PARAM) {
                         uriVariables.put(prev.getPart().substring(1), part);
@@ -192,13 +213,40 @@ public class TrieMapping implements DynamicMapping {
         }
 
         if (prev.isEnd() &&
-                (i == parts.length || prev.getType() == NodeType.WILD)) {
-            Route route = new Route(prev.selectRoute(requestMethod));
+                (!partIter.hasNext() || prev.getType() == NodeType.WILD)) {
+            Route selectedRoute = prev.selectRoute(requestMethod);
+            if (selectedRoute == null) {
+                return null;
+            }
+            Route route = new Route(selectedRoute);
             route.setPathParams(uriVariables);
             return route;
         }
 
         return null;
+    }
+
+    protected Iterator<String> partIter(String path) {
+        return new Iterator<String>() {
+            private int start = 1;
+            private int end = start + 1;
+
+            @Override
+            public boolean hasNext() {
+                return end <= path.length();
+            }
+
+            @Override
+            public String next() {
+                while (end < path.length() && path.charAt(end) != '/') {
+                    end++;
+                }
+                String part = path.substring(start, end);
+                start = end + 1;
+                end = start + 1;
+                return part;
+            }
+        };
     }
 
     @Override

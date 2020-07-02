@@ -11,7 +11,6 @@ import com.blade.mvc.hook.WebHook;
 import com.blade.mvc.http.HttpMethod;
 import com.blade.mvc.route.mapping.StaticMapping;
 import com.blade.mvc.route.mapping.dynamic.RegexMapping;
-import com.blade.mvc.route.mapping.dynamic.TrieMapping;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
