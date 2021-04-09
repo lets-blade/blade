@@ -5,7 +5,6 @@ import com.blade.mvc.http.HttpMethod;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -56,6 +55,7 @@ public class Route {
     /**
      * Url path params
      */
+    @Builder.Default
     private Map<String, String> pathParams = new HashMap<>(8);
 
     public Route() {
