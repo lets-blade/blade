@@ -175,7 +175,7 @@ public static void main(String[] args) {
 ```java
 @PostRoute("/save")
 public void savePerson(@Param String username, @Param Integer age){
-  System.out.println("username is:" + username + ", age is:" + age)
+  System.out.println("username is:" + username + ", age is:" + age);
 }
 ```
 
@@ -220,7 +220,7 @@ public static void main(String[] args) {
 ```java
 @GetRoute("/users/:username/:page")
 public void userTopics(@PathParam String username, @PathParam Integer page){
-  System.out.println("username is:" + usernam + ", page is:" + page)
+  System.out.println("username is:" + username + ", page is:" + page);
 }
 ```
 
