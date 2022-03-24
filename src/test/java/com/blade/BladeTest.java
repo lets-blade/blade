@@ -36,6 +36,13 @@ public class BladeTest extends BaseTestCase {
 
     private Blade blade = Blade.of();
 
+
+    @Test
+    public void tempTest(){
+         System.out.println(1 << 2);
+    }
+
+
     @Test
     public void testRouteCode() {
         RouteHandler routeHandler = mock(RouteHandler.class);

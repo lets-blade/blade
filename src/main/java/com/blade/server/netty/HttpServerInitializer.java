@@ -9,6 +9,10 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.http.HttpContentCompressor;
 import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.codec.http.HttpServerExpectContinueHandler;
+import io.netty.handler.codec.http2.Http2ConnectionHandler;
+import io.netty.handler.codec.http2.Http2ConnectionHandlerBuilder;
+import io.netty.handler.codec.http2.Http2FrameAdapter;
+import io.netty.handler.codec.http2.Http2FrameCodecBuilder;
 import io.netty.handler.ssl.SslContext;
 import lombok.extern.slf4j.Slf4j;
 
@@ -49,8 +53,9 @@ public class HttpServerInitializer extends ChannelInitializer<SocketChannel> {
             if (sslCtx != null) {
                 pipeline.addLast(sslCtx.newHandler(ch.alloc()));
             }
-
-            pipeline.addLast(new HttpServerCodec());
+//            Http2ConnectionHandler http2ConnectionHandler = (new Http2ConnectionHandlerBuilder().frameListener(new Http2FrameAdapter())).build();
+//            pipeline.addLast(http2ConnectionHandler);
+            pipeline.addLast(Http2FrameCodecBuilder.forServer().build());
             pipeline.addLast(new HttpServerExpectContinueHandler());
 
             if (useGZIP) {
