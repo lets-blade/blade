@@ -16,8 +16,8 @@
     <a href="http://search.maven.org/#search%7Cga%7C1%7Cblade-mvc"><img src="https://img.shields.io/maven-central/v/com.bladejava/blade-mvc.svg?style=flat-square"></a>
     <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache%202-4EB1BA.svg?style=flat-square"></a>
     <a class="badge-align" href="https://www.codacy.com/app/lets-blade/blade"><img src="https://api.codacy.com/project/badge/Grade/5f5fb55f38614f04823372db3a3c1d1b"/></a>
-    <a href="https://gitter.im/biezhi/blade"><img src="https://badges.gitter.im/biezhi/blade.svg?style=flat-square"></a>
-    <a href="https://www.codetriage.com/biezhi/blade"><img src="https://www.codetriage.com/biezhi/blade/badges/users.svg"></a>
+    <a href="https://gitter.im/lets-blade/blade"><img src="https://badges.gitter.im/hellokaton/blade.svg?style=flat-square"></a>
+    <a href="https://www.codetriage.com/lets-blade/blade"><img src="https://www.codetriage.com/hellokaton/blade/badges/users.svg"></a>
 </p>
 
 ***
@@ -26,7 +26,7 @@
 
 `Blade` is a pursuit of simple, efficient Web framework, so that `JavaWeb` development becomes even more powerful, both in performance and flexibility.
 If you like to try something interesting, I believe you will love it.
-If you think it's good, you can support it with a [star](https://github.com/biezhi/blade/stargazers) or by [donating](https://lets-blade.com/donate) :blush:
+If you think it's good, you can support it with a [star](https://github.com/lets-blade/blade/stargazers) or by [donating](https://lets-blade.com/donate) :blush:
 
 ## Features
 
@@ -228,7 +228,7 @@ public void userTopics(@PathParam String username, @PathParam Integer page){
 Test it with sample data from the terminal
 
 ```bash
-curl -X GET http://127.0.0.1:9000/users/biezhi/2
+curl -X GET http://127.0.0.1:9000/users/hellokaton/2
 ```
 
 ### Body Parameters
@@ -244,7 +244,7 @@ public static void main(String[] args) {
 Test it with sample data from the terminal
 
 ```bash
-curl -X POST http://127.0.0.1:9000/body -d '{"username":"biezhi","age":22}'
+curl -X POST http://127.0.0.1:9000/body -d '{"username":"hellokaton","age":22}'
 ```
 
 ### Parse To Model
@@ -300,7 +300,7 @@ public void getUser(@BodyParam User user){
 Test it with sample data from the terminal
 
 ```bash
-curl -X POST http://127.0.0.1:9000/body -d '{"username":"biezhi","age":22}'
+curl -X POST http://127.0.0.1:9000/body -d '{"username":"hellokaton","age":22}'
 ```
 
 ## Get Environment
@@ -411,7 +411,7 @@ public void login(Session session){
 ```java
 @GetRoute("users/json")
 public void printJSON(RouteContext ctx){
-    User user = new User("biezhi", 18);
+    User user = new User("hellokaton", 18);
     ctx.json(user);
 }
 ```
@@ -424,7 +424,7 @@ This form looks more concise 😶
 @GetRoute("users/json")
 @JSON
 public User printJSON(){
-    return new User("biezhi", 18);
+    return new User("hellokaton", 18);
 }
 ```
 
@@ -457,7 +457,7 @@ By default, Blade uses the built-in template engine, which is very simple. In a 
 ```java
 public static void main(String[] args) {
     Blade.of().get("/hello", ctx -> {
-        ctx.attribute("name", "biezhi");
+        ctx.attribute("name", "hellokaton");
         ctx.render("hello.html");
     }).start(Hello.class, args);
 }
@@ -503,7 +503,7 @@ Write some data for the template engine to render
 ```java
 public static void main(String[] args) {
     Blade.of().get("/hello", ctx -> {
-        User user = new User("biezhi", 50);
+        User user = new User("hellokaton", 50);
         ctx.attribute("user", user);
         ctx.render("hello.html");
     }).start(Hello.class, args);
@@ -540,7 +540,7 @@ The `hello.html` template
 ```java
 @GetRoute("redirect")
 public void redirectToGithub(RouteContext ctx){
-    ctx.redirect("https://github.com/biezhi");
+    ctx.redirect("https://github.com/hellokaton");
 }
 ```
 
@@ -669,9 +669,8 @@ Besides looking easy, the features above are only the tip of the iceberg, and th
 
 ## Contact
 
-- Twitter: [biezhi](https://twitter.com/biezhii)
+- Twitter: [hellokaton](https://twitter.com/hellokaton)
 - Mail: hellokaton@gmail.com
-- [Telegram Group](https://t.me/letsblade)
 
 ## Contributors
 

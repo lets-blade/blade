@@ -15,7 +15,7 @@
     <a href="http://search.maven.org/#search%7Cga%7C1%7Cblade-mvc"><img src="https://img.shields.io/maven-central/v/com.bladejava/blade-mvc.svg?style=flat-square"></a>
     <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache%202-4EB1BA.svg?style=flat-square"></a>
     <a class="badge-align" href="https://www.codacy.com/app/lets-blade/blade"><img src="https://api.codacy.com/project/badge/Grade/5f5fb55f38614f04823372db3a3c1d1b"/></a>
-    <a href="https://gitter.im/biezhi/blade"><img src="https://badges.gitter.im/biezhi/blade.svg?style=flat-square"></a>
+    <a href="https://gitter.im/hellokaton/blade"><img src="https://badges.gitter.im/hellokaton/blade.svg?style=flat-square"></a>
 </p>
 
 ***
@@ -24,7 +24,7 @@
 
 `Blade` 是一款追求简约、高效的 Web 框架，让 `JavaWeb` 开发如虎添翼，在性能与灵活性上同时兼顾。
 如果你喜欢尝试有趣的事物，相信你会爱上它。
-如果觉得这个项目不错可以 [star](https://github.com/biezhi/blade/stargazers) 支持或者 [捐赠](https://lets-blade.com/donate) 它 :blush:
+如果觉得这个项目不错可以 [star](https://github.com/hellokaton/blade/stargazers) 支持或者 [捐赠](https://lets-blade.com/donate) 它 :blush:
 
 ## 功能特性
 
@@ -227,7 +227,7 @@ public void userTopics(@PathParam String username, @PathParam Integer page){
 在终端下发送数据测试
 
 ```bash
-curl -X GET http://127.0.0.1:9000/users/biezhi/2
+curl -X GET http://127.0.0.1:9000/users/hellokaton/2
 ```
 
 ### Body 参数
@@ -243,7 +243,7 @@ public static void main(String[] args) {
 在终端下发送数据测试
 
 ```bash
-curl -X POST http://127.0.0.1:9000/body -d '{"username":"biezhi","age":22}'
+curl -X POST http://127.0.0.1:9000/body -d '{"username":"hellokaton","age":22}'
 ```
 
 ### 参数转为对象
@@ -299,7 +299,7 @@ public void getUser(@BodyParam User user){
 在终端下发送数据测试
 
 ```bash
-curl -X POST http://127.0.0.1:9000/body -d '{"username":"biezhi","age":22}'
+curl -X POST http://127.0.0.1:9000/body -d '{"username":"hellokaton","age":22}'
 ```
 
 ## 获取环境配置
@@ -410,7 +410,7 @@ public void login(Session session){
 ```java
 @GetRoute("users/json")
 public void printJSON(RouteContext ctx){
-    User user = new User("biezhi", 18);
+    User user = new User("hellokaton", 18);
     ctx.json(user);
 }
 ```
@@ -423,7 +423,7 @@ public void printJSON(RouteContext ctx){
 @GetRoute("users/json")
 @JSON
 public User printJSON(){
-  return new User("biezhi", 18);
+  return new User("hellokaton", 18);
 }
 ```
 
@@ -456,7 +456,7 @@ public void printHtml(RouteContext ctx){
 ```java
 public static void main(String[] args) {
     Blade.of().get("/hello", ctx -> {
-        ctx.attribute("name", "biezhi");
+        ctx.attribute("name", "hellokaton");
         ctx.render("hello.html");
     }).start(Hello.class, args);
 }
@@ -502,7 +502,7 @@ public class TemplateConfig implements BladeLoader {
 ```java
 public static void main(String[] args) {
     Blade.of().get("/hello", ctx -> {
-        User user = new User("biezhi", 50);
+        User user = new User("hellokaton", 50);
         ctx.attribute("user", user);
         ctx.render("hello.html");
     }).start(Hello.class, args);
@@ -539,7 +539,7 @@ public static void main(String[] args) {
 ```java
 @GetRoute("redirect")
 public void redirectToGithub(RouteContext ctx){
-    ctx.redirect("https://github.com/biezhi");
+    ctx.redirect("https://github.com/hellokaton");
 }
 ```
 
@@ -664,9 +664,8 @@ public class GolbalExceptionHandler extends DefaultExceptionHandler {
 
 ## 联系我们
 
-- Twitter: [biezhi](https://twitter.com/biezhii)
-- Mail: biezhi.me#gmail.com
-- [TG 交流群](https://t.me/letsblade)
+- Twitter: [hellokaton](https://twitter.com/hellokaton)
+- Mail: hellokaton@gmail.com
 
 ## 贡献者们
 
