@@ -6,6 +6,7 @@ import java.util.Arrays;
 
 import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 /**
  * @author biezhi
@@ -75,6 +76,46 @@ public class ConvertKitTest {
     }
 
     @Test
+    public void byte2FitMemoryStringLessThanZero() {
+        assertEquals(
+                "shouldn\'t be less than zero!",
+                ConvertKit.byte2FitMemoryString(-1024)
+        );
+    }
+
+    @Test
+    public void byte2FitMemoryStringGB() {
+        assertEquals(
+                "1 GB",
+                ConvertKit.byte2FitMemoryString(1024 * 1024 * 1024)
+        );
+    }
+
+    @Test
+    public void byte2FitMemoryStringMB() {
+        assertEquals(
+                "1 MB",
+                ConvertKit.byte2FitMemoryString(1024 * 1024)
+        );
+    }
+
+    @Test
+    public void byte2FitMemoryStringKB() {
+        assertEquals(
+                "1 KB",
+                ConvertKit.byte2FitMemoryString(1024)
+        );
+    }
+
+    @Test
+    public void byte2FitMemoryStringB() {
+        assertEquals(
+                "1 B",
+                ConvertKit.byte2FitMemoryString(1)
+        );
+    }
+
+    @Test
     public void bytes2Bits_bits2Bytes() throws Exception {
         assertEquals(
                 "0111111111111010",
@@ -103,6 +144,36 @@ public class ConvertKitTest {
         assertEquals(
                 string,
                 ConvertKit.inputStream2String(ConvertKit.string2InputStream(string, "UTF-8"), "UTF-8")
+        );
+    }
+
+    @Test
+    public void memorySize2ByteInputNegativeZeroOutputNegative() {
+        assertEquals(
+                -1L,
+                ConvertKit.memorySize2Byte(-9_223_372_036_854_775_807L, 0)
+        );
+    }
+
+    @Test
+    public void memorySize2ByteInputZeroOutputZero() {
+        assertEquals(
+                0L,
+                ConvertKit.memorySize2Byte(0L, 0)
+        );
+    }
+
+    @Test
+    public void string2OutputStreamInputQuestionsReturnNull() {
+        assertNull(
+                ConvertKit.string2OutputStream("\u0000\u0000\u0000???????????????????", "")
+        );
+    }
+
+    @Test
+    public void string2OutputStreamInputUnicodeReturnNewline() {
+        assertNull(
+                ConvertKit.string2OutputStream("\u0000\u0000", "\n")
         );
     }
 

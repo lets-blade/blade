@@ -201,7 +201,7 @@ public class Blade {
      */
     public Ioc ioc() {
         return this.ioc;
-        }
+    }
 
     /**
      * set url router, default is {@link RegexMapping}

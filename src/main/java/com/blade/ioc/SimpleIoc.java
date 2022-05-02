@@ -1,12 +1,12 @@
 package com.blade.ioc;
 
-import com.blade.ioc.annotation.Bean;
 import com.blade.ioc.bean.BeanDefine;
 import com.blade.kit.IocKit;
 import com.blade.mvc.WebContext;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * The default IOC container implementation
@@ -17,7 +17,7 @@ import java.util.*;
 @Slf4j
 public class SimpleIoc implements Ioc {
 
-    private final Map<String, BeanDefine> pool = new HashMap<>(32);
+    private final Map<String, BeanDefine> pool = new ConcurrentHashMap<>(32);
 
     /**
      * Add user-defined objects
