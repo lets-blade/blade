@@ -101,7 +101,7 @@ Open http://localhost:9000 in your browser to see your first `Blade` application
 - [**`Static Resource`**](#static-resource)
 - [**`Upload File`**](#upload-file)
 - [**`Set Session`**](#set-session)
-- [**`Render To Browser`**](#render-to-broser)
+- [**`Render To Browser`**](#render-to-browser)
     - [**`Render JSON`**](#render-json)
     - [**`Render Text`**](#render-text)
     - [**`Render Html`**](#render-html)

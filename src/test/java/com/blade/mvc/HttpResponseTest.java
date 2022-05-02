@@ -3,6 +3,7 @@ package com.blade.mvc;
 import com.blade.BaseTestCase;
 import com.blade.mvc.http.HttpResponse;
 import com.blade.mvc.http.Response;
+import io.netty.handler.codec.http.HttpResponseStatus;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -23,40 +24,40 @@ public class HttpResponseTest extends BaseTestCase {
 
     @Test
     public void testStatus() {
-        Response mockResponse = mockHttpResponse(666);
-        assertEquals(666, mockResponse.statusCode());
+        Response mockResponse = mockHttpResponse(HttpResponseStatus.OK.code());
+        assertEquals(HttpResponseStatus.OK.code(), mockResponse.statusCode());
     }
 
     @Test
     public void testBadRequest() {
-        Response mockResponse = mockHttpResponse(200);
+        Response mockResponse = mockHttpResponse(HttpResponseStatus.OK.code());
         Response response = new HttpResponse(mockResponse);
         response.badRequest();
 
-        assertEquals(400, response.statusCode());
+        assertEquals(HttpResponseStatus.BAD_REQUEST.code(), response.statusCode());
     }
 
     @Test
     public void testUnauthorized() {
-        Response mockResponse = mockHttpResponse(200);
+        Response mockResponse = mockHttpResponse(HttpResponseStatus.OK.code());
         Response response = new HttpResponse(mockResponse);
         response.unauthorized();
 
-        assertEquals(401, response.statusCode());
+        assertEquals(HttpResponseStatus.UNAUTHORIZED.code(), response.statusCode());
     }
 
     @Test
     public void testNotFound() {
-        Response mockResponse = mockHttpResponse(200);
+        Response mockResponse = mockHttpResponse(HttpResponseStatus.OK.code());
         Response response = new HttpResponse(mockResponse);
         response.notFound();
 
-        assertEquals(404, response.statusCode());
+        assertEquals(HttpResponseStatus.NOT_FOUND.code(), response.statusCode());
     }
 
     @Test
     public void testContentType() {
-        Response mockResponse = mockHttpResponse(200);
+        Response mockResponse = mockHttpResponse(HttpResponseStatus.OK.code());
 
         Response response = new HttpResponse(mockResponse);
         response.contentType(Const.CONTENT_TYPE_HTML);
@@ -69,7 +70,7 @@ public class HttpResponseTest extends BaseTestCase {
 
     @Test
     public void testHeaders() {
-        Response mockResponse = mockHttpResponse(200);
+        Response mockResponse = mockHttpResponse(HttpResponseStatus.OK.code());
 
         when(mockResponse.headers()).thenReturn(new HashMap<>());
 
@@ -83,7 +84,7 @@ public class HttpResponseTest extends BaseTestCase {
     @Test
     public void testHeader() {
 
-        Response mockResponse = mockHttpResponse(200);
+        Response mockResponse = mockHttpResponse(HttpResponseStatus.OK.code());
 
         when(mockResponse.headers()).thenReturn(Collections.singletonMap("Server", "Nginx"));
 
@@ -95,7 +96,7 @@ public class HttpResponseTest extends BaseTestCase {
     @Test
     public void testCookie() {
 
-        Response mockResponse = mockHttpResponse(200);
+        Response mockResponse = mockHttpResponse(HttpResponseStatus.OK.code());
 
         when(mockResponse.cookies()).thenReturn(Collections.singletonMap("c1", "value1"));
 
