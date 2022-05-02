@@ -9,7 +9,7 @@ import java.util.regex.Pattern;
  * <p>
  * Provide verification email, phone number, phone number, id number, number, etc.
  *
- * @author <a href="mailto:hellokaton@gmail.com" target="_blank">biezhi</a>
+ * @author <a href="mailto:hellokaton@gmail.com" target="_blank">hellokaton</a>
  * @since 1.0
  */
 @UtilityClass

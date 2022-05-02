@@ -1,6 +1,6 @@
 package com.blade.mvc.handler;
 
-import com.blade.mvc.annotation.*;
+import com.blade.annotation.request.*;
 import com.blade.mvc.http.Request;
 import lombok.Builder;
 
@@ -9,12 +9,12 @@ import java.lang.reflect.Type;
 @Builder
 class ParamStruct {
 
-    Param param;
+    Query query;
     PathParam pathParam;
-    BodyParam bodyParam;
-    HeaderParam headerParam;
-    CookieParam cookieParam;
-    MultipartParam multipartParam;
+    Body body;
+    Header header;
+    Cookie cookie;
+    Multipart multipart;
     Type argType;
     String paramName;
     Request request;

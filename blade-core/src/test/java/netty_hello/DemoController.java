@@ -1,7 +1,11 @@
 package netty_hello;
 
+import com.blade.annotation.request.*;
+import com.blade.annotation.response.JSON;
+import com.blade.annotation.route.GET;
+import com.blade.annotation.route.POST;
+import com.blade.annotation.route.ANY;
 import com.blade.ioc.annotation.Inject;
-import com.blade.mvc.annotation.*;
 import com.blade.mvc.http.Request;
 import com.blade.mvc.http.Response;
 import com.blade.mvc.multipart.FileItem;
@@ -24,67 +28,67 @@ public class DemoController {
     @Inject
     private UserService userService;
 
-    @GetRoute("p")
-    public void p(@Param String p1) {
+    @GET("p")
+    public void p(@Query String p1) {
         System.out.println(p1);
         userService.sayHello();
     }
 
-    @Route("hi/:a/:b/:c")
+    @ANY("hi/:a/:b/:c")
     public void pathParam(Request request) {
         System.out.println(request.pathString("a"));
         System.out.println(request.pathString("b"));
         System.out.println(request.pathString("c"));
     }
 
-    @PostRoute("ck")
-    public void postCk(@Param(name = "ck") List<String> a, String[] ck, Integer[] ids) {
+    @POST("ck")
+    public void postCk(@Query(name = "ck") List<String> a, String[] ck, Integer[] ids) {
         System.out.println("a: " + a);
         System.out.println("ck: " + Arrays.toString(ck));
         System.out.println("ids: " + Arrays.toString(ids));
     }
 
-    @PostRoute("def")
-    public void postCk(@Param String hello, @Param Integer aa, @Param int bb) {
+    @POST("def")
+    public void postCk(@Query String hello, @Query Integer aa, @Query int bb) {
         System.out.println("hello:" + hello);
         System.out.println("aa:" + aa);
         System.out.println("bb:" + bb);
     }
 
     @JSON
-    @PostRoute("api_test/:size")
+    @POST("api_test/:size")
     public RestResponse<Integer> api_portal(@PathParam Integer size) {
         return RestResponse.ok(size);
     }
 
-    @GetRoute("csrf")
+    @GET("csrf")
     public void getCsrfToken(Request request, Response response) {
         response.text("token: " + request.attribute("_csrf_token"));
     }
 
-    @GetRoute("exp")
+    @GET("exp")
     public String validatorException() {
         return "exp.html";
     }
 
-    @PostRoute("exp")
+    @POST("exp")
     public void validatorException(Request request, Response response) {
         String name = request.query("name", "");
         Validators.notEmpty().test(name).throwIfInvalid("名称");
         System.out.println("继续执行");
     }
 
-    @PostRoute("upload")
+    @POST("upload")
     @JSON
-    public RestResponse upload(@MultipartParam FileItem fileItem) throws IOException {
+    public RestResponse upload(@Multipart FileItem fileItem) throws IOException {
         System.out.println(fileItem);
         fileItem.moveTo(new File(fileItem.getFileName()));
         return RestResponse.ok();
     }
 
-    @PostRoute("save")
+    @POST("save")
     @JSON
-    public RestResponse savePerson(@BodyParam Map<String, Object> person) {
+    public RestResponse savePerson(@Body Map<String, Object> person) {
         return RestResponse.ok(person);
     }
 

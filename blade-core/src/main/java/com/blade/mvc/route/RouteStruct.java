@@ -1,10 +1,10 @@
 package com.blade.mvc.route;
 
-import com.blade.mvc.annotation.DeleteRoute;
-import com.blade.mvc.annotation.GetRoute;
-import com.blade.mvc.annotation.PostRoute;
-import com.blade.mvc.annotation.PutRoute;
-import com.blade.mvc.annotation.Route;
+import com.blade.annotation.route.DELETE;
+import com.blade.annotation.route.GET;
+import com.blade.annotation.route.POST;
+import com.blade.annotation.route.PUT;
+import com.blade.annotation.route.ANY;
 import com.blade.mvc.http.HttpMethod;
 import lombok.Builder;
 
@@ -19,11 +19,11 @@ import java.lang.reflect.Method;
 @Builder
 public class RouteStruct {
 
-    Route mapping;
-    GetRoute getRoute;
-    PostRoute postRoute;
-    PutRoute putRoute;
-    DeleteRoute deleteRoute;
+    ANY ANY;
+    GET GET;
+    POST POST;
+    PUT PUT;
+    DELETE DELETE;
     String      nameSpace;
     String      suffix;
     Class<?>    routeType;
@@ -33,39 +33,39 @@ public class RouteStruct {
     private static final String[] DEFAULT_PATHS = new String[]{};
 
     public HttpMethod getMethod() {
-        if (null != mapping) {
-            return mapping.method();
+        if (null != ANY) {
+            return ANY.method();
         }
-        if (null != getRoute) {
+        if (null != GET) {
             return HttpMethod.GET;
         }
-        if (null != postRoute) {
+        if (null != POST) {
             return HttpMethod.POST;
         }
-        if (null != putRoute) {
+        if (null != PUT) {
             return HttpMethod.PUT;
         }
-        if (null != deleteRoute) {
+        if (null != DELETE) {
             return HttpMethod.DELETE;
         }
         return HttpMethod.ALL;
     }
 
     public String[] getPaths() {
-        if (null != mapping) {
-            return mapping.value();
+        if (null != ANY) {
+            return ANY.value();
         }
-        if (null != getRoute) {
-            return getRoute.value();
+        if (null != GET) {
+            return GET.value();
         }
-        if (null != postRoute) {
-            return postRoute.value();
+        if (null != POST) {
+            return POST.value();
         }
-        if (null != putRoute) {
-            return putRoute.value();
+        if (null != PUT) {
+            return PUT.value();
         }
-        if (null != deleteRoute) {
-            return deleteRoute.value();
+        if (null != DELETE) {
+            return DELETE.value();
         }
         return DEFAULT_PATHS;
     }

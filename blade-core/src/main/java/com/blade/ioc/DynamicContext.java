@@ -16,7 +16,7 @@ import java.util.stream.Stream;
 /**
  * Get ClassReader by JAR or folder
  *
- * @author <a href="mailto:hellokaton@gmail.com" target="_blank">biezhi</a>
+ * @author <a href="mailto:hellokaton@gmail.com" target="_blank">hellokaton</a>
  * @since 1.6.6
  */
 @Slf4j

@@ -1,17 +1,14 @@
 package com.blade.mvc.route;
 
-import com.blade.exception.BladeException;
 import com.blade.exception.MethodNotAllowedException;
 import com.blade.ioc.annotation.Order;
 import com.blade.kit.*;
 import com.blade.mvc.RouteContext;
 import com.blade.mvc.handler.RouteHandler;
-import com.blade.mvc.handler.WebSocketHandler;
 import com.blade.mvc.hook.WebHook;
 import com.blade.mvc.http.HttpMethod;
 import com.blade.mvc.route.mapping.StaticMapping;
 import com.blade.mvc.route.mapping.dynamic.RegexMapping;
-import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Method;
@@ -25,12 +22,11 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.blade.kit.BladeKit.logAddRoute;
-import static com.blade.kit.BladeKit.logWebSocket;
 
 /**
  * Default Route Matcher
  *
- * @author <a href="mailto:hellokaton@gmail.com" target="_blank">biezhi</a>
+ * @author <a href="mailto:hellokaton@gmail.com" target="_blank">hellokaton</a>
  * @since 1.7.1-release
  */
 @Slf4j
@@ -48,11 +44,6 @@ public class RouteMatcher {
 
     private DynamicMapping dynamicMapping = new RegexMapping();
     private StaticMapping staticMapping = new StaticMapping();
-
-    /**
-     * WebSocket Handlers
-     */
-    private Map<String, WebSocketHandler> webSockets = new HashMap<>(4);
 
     private Route addRoute(HttpMethod httpMethod, String path, RouteHandler handler, String methodName) throws NoSuchMethodException {
         Class<?> handleType = handler.getClass();
@@ -278,7 +269,7 @@ public class RouteMatcher {
 
         dynamicMapping.register();
 
-        webSockets.keySet().forEach(path -> logWebSocket(log, path));
+//        webSockets.keySet().forEach(path -> logWebSocket(log, path));
     }
 
     private void registerRoute(Route route) {
@@ -321,13 +312,13 @@ public class RouteMatcher {
         return routes;
     }
 
-    public Map<String,WebSocketHandler> getWebSockets() {
-        return webSockets;
-    }
-
-    public WebSocketHandler getWebSocket(String path) {
-        return webSockets.get(path);
-    }
+//    public Map<String,WebSocketHandler> getWebSockets() {
+//        return webSockets;
+//    }
+//
+//    public WebSocketHandler getWebSocket(String path) {
+//        return webSockets.get(path);
+//    }
 
     public Map<String, List<Route>> getHooks() {
         return hooks;
@@ -353,13 +344,13 @@ public class RouteMatcher {
         }).collect(Collectors.toList());
     }
 
-    public RouteMatcher addWebSocket(@NonNull String path,@NonNull WebSocketHandler handler) {
-        if (null != this.webSockets.get(path)) {
-            throw new BladeException(500, "Duplicate WebSocket path [" + path + "]");
-        }
-        this.webSockets.put(path,handler);
-        return this;
-    }
+//    public RouteMatcher addWebSocket(@NonNull String path,@NonNull WebSocketHandler handler) {
+//        if (null != this.webSockets.get(path)) {
+//            throw new BladeException(500, "Duplicate WebSocket path [" + path + "]");
+//        }
+//        this.webSockets.put(path,handler);
+//        return this;
+//    }
 
     public void setDynamicMapping(DynamicMapping dynamicMapping) {
         this.dynamicMapping = dynamicMapping;

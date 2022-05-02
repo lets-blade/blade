@@ -8,7 +8,7 @@ import java.io.Writer;
 /**
  * TemplateEngine Interface, For view layer to display data
  *
- * @author <a href="mailto:hellokaton@gmail.com" target="_blank">biezhi</a>
+ * @author <a href="mailto:hellokaton@gmail.com" target="_blank">hellokaton</a>
  * @since 1.5
  */
 public interface TemplateEngine {

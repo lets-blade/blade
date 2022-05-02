@@ -16,6 +16,7 @@
         <module>blade-core</module>
         <module>blade-kit</module>
         <module>blade-security</module>
+        <module>blade-websocket</module>
     </modules>
 
     <licenses>

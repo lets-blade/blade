@@ -1,9 +1,10 @@
 package com.blade.mvc.route;
 
+import com.blade.annotation.request.Path;
+import com.blade.annotation.route.*;
 import com.blade.kit.BladeKit;
 import com.blade.kit.ReflectKit;
 import com.blade.mvc.RouteContext;
-import com.blade.mvc.annotation.*;
 import com.blade.mvc.http.HttpMethod;
 import lombok.extern.slf4j.Slf4j;
 
@@ -12,13 +13,13 @@ import java.lang.reflect.Method;
 /**
  * Route builder
  *
- * @author <a href="mailto:hellokaton@gmail.com" target="_blank">biezhi</a>
+ * @author <a href="mailto:hellokaton@gmail.com" target="_blank">hellokaton</a>
  * @since 1.5
  */
 @Slf4j
 public class RouteBuilder {
 
-    private RouteMatcher routeMatcher;
+    private final RouteMatcher routeMatcher;
 
     public RouteBuilder(RouteMatcher routeMatcher) {
         this.routeMatcher = routeMatcher;
@@ -69,15 +70,15 @@ public class RouteBuilder {
 
         for (Method method : methods) {
 
-            com.blade.mvc.annotation.Route mapping = method.getAnnotation(com.blade.mvc.annotation.Route.class);
-            GetRoute getRoute = method.getAnnotation(GetRoute.class);
-            PostRoute postRoute = method.getAnnotation(PostRoute.class);
-            PutRoute putRoute = method.getAnnotation(PutRoute.class);
-            DeleteRoute deleteRoute = method.getAnnotation(DeleteRoute.class);
+            ANY ANY = method.getAnnotation(ANY.class);
+            GET GET = method.getAnnotation(GET.class);
+            POST POST = method.getAnnotation(POST.class);
+            PUT PUT = method.getAnnotation(PUT.class);
+            DELETE DELETE = method.getAnnotation(DELETE.class);
 
-            this.parseRoute(RouteStruct.builder().mapping(mapping)
-                    .getRoute(getRoute).postRoute(postRoute)
-                    .putRoute(putRoute).deleteRoute(deleteRoute)
+            this.parseRoute(RouteStruct.builder().ANY(ANY)
+                    .GET(GET).POST(POST)
+                    .PUT(PUT).DELETE(DELETE)
                     .nameSpace(nameSpace)
                     .suffix(suffix).routeType(routeType)
                     .controller(controller).method(method)

@@ -9,7 +9,7 @@ import java.util.Set;
 /**
  * 一个类读取器的接口
  *
- * @author <a href="mailto:hellokaton@gmail.com" target="_blank">biezhi</a>
+ * @author <a href="mailto:hellokaton@gmail.com" target="_blank">hellokaton</a>
  * @since 1.0
  */
 public interface ClassReader {

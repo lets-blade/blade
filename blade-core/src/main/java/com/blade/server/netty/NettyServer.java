@@ -17,6 +17,8 @@ package com.blade.server.netty;
 
 import com.blade.Blade;
 import com.blade.Environment;
+import com.blade.annotation.URLPattern;
+import com.blade.annotation.request.Path;
 import com.blade.event.Event;
 import com.blade.event.EventType;
 import com.blade.ioc.DynamicContext;
@@ -31,12 +33,8 @@ import com.blade.kit.*;
 import com.blade.loader.BladeLoader;
 import com.blade.mvc.Const;
 import com.blade.mvc.WebContext;
-import com.blade.mvc.annotation.Path;
-import com.blade.mvc.annotation.URLPattern;
-import com.blade.mvc.annotation.WebSocket;
 import com.blade.mvc.handler.DefaultExceptionHandler;
 import com.blade.mvc.handler.ExceptionHandler;
-import com.blade.mvc.handler.WebSocketHandlerWrapper;
 import com.blade.mvc.hook.WebHook;
 import com.blade.mvc.http.session.SessionCleaner;
 import com.blade.mvc.route.RouteBuilder;
@@ -327,24 +325,23 @@ public class NettyServer implements Server {
             ExceptionHandler exceptionHandler = (ExceptionHandler) blade.getBean(clazz);
             blade.exceptionHandler(exceptionHandler);
         }
-        WebSocket webSocket;
-        if (null != (webSocket = clazz.getAnnotation(WebSocket.class))) {
-            if (null == blade.getBean(clazz)) {
-                blade.register(clazz);
-            }
-            if (ReflectKit.hasInterface(clazz, com.blade.server.netty.WebSocketHandler.class)) {
-                blade.webSocket(webSocket.value(), (com.blade.mvc.handler.WebSocketHandler) blade.getBean(clazz));
-            } else {
-                WebSocketHandlerWrapper wrapper = blade.getBean(WebSocketHandlerWrapper.class);
-                if (wrapper == null) {
-                    wrapper = WebSocketHandlerWrapper.init(blade);
-                    blade.register(wrapper);
-                }
-                blade.webSocket(webSocket.value(), wrapper);
-                wrapper.wrapHandler(webSocket.value(), clazz);
-            }
-
-        }
+//        WebSocket webSocket;
+//        if (null != (webSocket = clazz.getAnnotation(WebSocket.class))) {
+//            if (null == blade.getBean(clazz)) {
+//                blade.register(clazz);
+//            }
+//            if (ReflectKit.hasInterface(clazz, com.blade.websocket.netty.WebSocketHandler.class)) {
+//                blade.webSocket(webSocket.value(), (com.blade.mvc.handler.WebSocketHandler) blade.getBean(clazz));
+//            } else {
+//                WebSocketHandlerWrapper wrapper = blade.getBean(WebSocketHandlerWrapper.class);
+//                if (wrapper == null) {
+//                    wrapper = WebSocketHandlerWrapper.init(blade);
+//                    blade.register(wrapper);
+//                }
+//                blade.webSocket(webSocket.value(), wrapper);
+//                wrapper.wrapHandler(webSocket.value(), clazz);
+//            }
+//        }
     }
 
     private boolean isExceptionHandler(Class<?> clazz) {

@@ -26,7 +26,6 @@ import com.blade.loader.BladeLoader;
 import com.blade.mvc.handler.DefaultExceptionHandler;
 import com.blade.mvc.handler.ExceptionHandler;
 import com.blade.mvc.handler.RouteHandler;
-import com.blade.mvc.handler.WebSocketHandler;
 import com.blade.mvc.hook.WebHook;
 import com.blade.mvc.http.HttpMethod;
 import com.blade.mvc.http.HttpSession;
@@ -781,18 +780,6 @@ public class Blade {
         this.eventManager.fireEvent(EventType.SERVER_STOPPING, new Event().attribute("blade", this));
         this.server.stopAndWait();
         this.eventManager.fireEvent(EventType.SERVER_STOPPED, new Event().attribute("blade", this));
-    }
-
-    /**
-     * Register WebSocket path
-     *
-     * @param path    websocket path
-     * @param handler websocket handler
-     * @return return blade instance
-     */
-    public Blade webSocket(@NonNull String path, @NonNull WebSocketHandler handler) {
-        this.routeMatcher.addWebSocket(path, handler);
-        return this;
     }
 
     /**

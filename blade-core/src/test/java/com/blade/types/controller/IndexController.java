@@ -1,9 +1,9 @@
 package com.blade.types.controller;
 
-import com.blade.mvc.annotation.BodyParam;
-import com.blade.mvc.annotation.Param;
-import com.blade.mvc.annotation.Path;
-import com.blade.mvc.annotation.PathParam;
+import com.blade.annotation.request.Body;
+import com.blade.annotation.request.Query;
+import com.blade.annotation.request.Path;
+import com.blade.annotation.request.PathParam;
 import com.blade.types.NotifyType;
 
 /**
@@ -17,11 +17,11 @@ public class IndexController {
 
     }
 
-    public void users(@Param String name) {
+    public void users(@Query String name) {
 
     }
 
-    public void notify(@BodyParam NotifyType notifyType) {
+    public void notify(@Body NotifyType notifyType) {
 
     }
 

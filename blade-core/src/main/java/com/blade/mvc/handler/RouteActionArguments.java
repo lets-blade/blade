@@ -1,11 +1,11 @@
 package com.blade.mvc.handler;
 
+import com.blade.annotation.request.*;
 import com.blade.exception.BladeException;
 import com.blade.kit.JsonKit;
 import com.blade.kit.ReflectKit;
 import com.blade.kit.StringKit;
 import com.blade.mvc.RouteContext;
-import com.blade.mvc.annotation.*;
 import com.blade.mvc.http.HttpSession;
 import com.blade.mvc.http.Request;
 import com.blade.mvc.http.Response;
@@ -57,11 +57,11 @@ public final class RouteActionArguments {
 
     private static boolean containsAnnotation(Parameter parameter) {
         return parameter.getAnnotation(PathParam.class) != null ||
-                parameter.getAnnotation(Param.class) != null ||
-                parameter.getAnnotation(HeaderParam.class) != null ||
-                parameter.getAnnotation(BodyParam.class) != null ||
-                parameter.getAnnotation(CookieParam.class) != null ||
-                parameter.getAnnotation(MultipartParam.class) != null;
+                parameter.getAnnotation(Query.class) != null ||
+                parameter.getAnnotation(Header.class) != null ||
+                parameter.getAnnotation(Body.class) != null ||
+                parameter.getAnnotation(Cookie.class) != null ||
+                parameter.getAnnotation(Multipart.class) != null;
     }
 
     private static Object getCustomType(Parameter parameter, String paramName, RouteContext context) {
@@ -107,35 +107,35 @@ public final class RouteActionArguments {
 
     private static Object getAnnotationParam(Parameter parameter, String paramName, Request request) {
         Type  argType = parameter.getParameterizedType();
-        Param param   = parameter.getAnnotation(Param.class);
+        Query query = parameter.getAnnotation(Query.class);
 
         ParamStruct.ParamStructBuilder structBuilder = ParamStruct.builder().argType(argType).request(request);
 
-        if (null != param) {
-            ParamStruct paramStruct = structBuilder.param(param).paramName(paramName).build();
+        if (null != query) {
+            ParamStruct paramStruct = structBuilder.query(query).paramName(paramName).build();
             return getQueryParam(paramStruct);
         }
-        BodyParam bodyParam = parameter.getAnnotation(BodyParam.class);
-        if (null != bodyParam) {
+        Body body = parameter.getAnnotation(Body.class);
+        if (null != body) {
             return getBodyParam(structBuilder.build());
         }
         PathParam pathParam = parameter.getAnnotation(PathParam.class);
         if (null != pathParam) {
             return getPathParam(structBuilder.pathParam(pathParam).paramName(paramName).build());
         }
-        HeaderParam headerParam = parameter.getAnnotation(HeaderParam.class);
-        if (null != headerParam) {
-            return getHeader(structBuilder.headerParam(headerParam).paramName(paramName).build());
+        Header header = parameter.getAnnotation(Header.class);
+        if (null != header) {
+            return getHeader(structBuilder.header(header).paramName(paramName).build());
         }
         // cookie param
-        CookieParam cookieParam = parameter.getAnnotation(CookieParam.class);
-        if (null != cookieParam) {
-            return getCookie(structBuilder.cookieParam(cookieParam).paramName(paramName).build());
+        Cookie cookie = parameter.getAnnotation(Cookie.class);
+        if (null != cookie) {
+            return getCookie(structBuilder.cookie(cookie).paramName(paramName).build());
         }
         // form multipart
-        MultipartParam multipartParam = parameter.getAnnotation(MultipartParam.class);
-        if (null != multipartParam && argType == FileItem.class) {
-            String name = StringKit.isBlank(multipartParam.value()) ? paramName : multipartParam.value();
+        Multipart multipart = parameter.getAnnotation(Multipart.class);
+        if (null != multipart && argType == FileItem.class) {
+            String name = StringKit.isBlank(multipart.value()) ? paramName : multipart.value();
             return request.fileItem(name).orElse(null);
         }
         return null;
@@ -154,30 +154,30 @@ public final class RouteActionArguments {
     }
 
     private static Object getQueryParam(ParamStruct paramStruct) {
-        Param   param     = paramStruct.param;
+        Query query = paramStruct.query;
         String  paramName = paramStruct.paramName;
         Type    argType   = paramStruct.argType;
         Request request   = paramStruct.request;
-        if (null == param) {
+        if (null == query) {
             return null;
         }
 
-        String name = StringKit.isBlank(param.name()) ? paramName : param.name();
+        String name = StringKit.isBlank(query.name()) ? paramName : query.name();
 
         if (ReflectKit.isBasicType(argType) || argType.equals(Date.class)
                 || argType.equals(BigDecimal.class) || argType.equals(LocalDate.class)
                 || argType.equals(LocalDateTime.class) || (argType instanceof Class && ((Class) argType).isEnum())) {
 
-            String value = request.query(name).orElseGet(() -> getDefaultValue(param.defaultValue(), argType));
+            String value = request.query(name).orElseGet(() -> getDefaultValue(query.defaultValue(), argType));
 
             return ReflectKit.convert(argType, value);
         } else {
             if (ParameterizedType.class.isInstance(argType)) {
 
-                List<String> values = request.parameters().get(param.name());
+                List<String> values = request.parameters().get(query.name());
                 return getParameterizedTypeValues(values, argType);
             }
-            return parseModel(ReflectKit.typeToClass(argType), request, param.name());
+            return parseModel(ReflectKit.typeToClass(argType), request, query.name());
         }
     }
 
@@ -207,28 +207,28 @@ public final class RouteActionArguments {
 
     private static Object getCookie(ParamStruct paramStruct) throws BladeException {
         Type        argType     = paramStruct.argType;
-        CookieParam cookieParam = paramStruct.cookieParam;
+        Cookie cookie = paramStruct.cookie;
         String      paramName   = paramStruct.paramName;
         Request     request     = paramStruct.request;
 
-        String cookieName = StringKit.isEmpty(cookieParam.value()) ? paramName : cookieParam.value();
+        String cookieName = StringKit.isEmpty(cookie.value()) ? paramName : cookie.value();
         String val        = request.cookie(cookieName);
         if (null == val) {
-            val = cookieParam.defaultValue();
+            val = cookie.defaultValue();
         }
         return ReflectKit.convert(argType, val);
     }
 
     private static Object getHeader(ParamStruct paramStruct) throws BladeException {
         Type        argType     = paramStruct.argType;
-        HeaderParam headerParam = paramStruct.headerParam;
+        Header header = paramStruct.header;
         String      paramName   = paramStruct.paramName;
         Request     request     = paramStruct.request;
 
-        String key = StringKit.isEmpty(headerParam.value()) ? paramName : headerParam.value();
+        String key = StringKit.isEmpty(header.value()) ? paramName : header.value();
         String val = request.header(key);
         if (StringKit.isBlank(val)) {
-            val = headerParam.defaultValue();
+            val = header.defaultValue();
         }
         return ReflectKit.convert(argType, val);
     }

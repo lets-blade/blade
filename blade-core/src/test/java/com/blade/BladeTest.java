@@ -5,10 +5,8 @@ import com.blade.event.EventType;
 import com.blade.kit.StringKit;
 import com.blade.mvc.handler.ExceptionHandler;
 import com.blade.mvc.handler.RouteHandler;
-import com.blade.mvc.handler.WebSocketHandler;
 import com.blade.mvc.http.HttpSession;
 import com.blade.mvc.ui.template.TemplateEngine;
-import com.blade.mvc.websocket.WebSocketContext;
 import com.blade.types.BladeClassDefineType;
 import com.mashape.unirest.http.Unirest;
 import netty_hello.Hello;
@@ -180,26 +178,6 @@ public class BladeTest extends BaseTestCase {
     public void testWatchEnvChange() {
         Environment environment = Blade.of().watchEnvChange(false).environment();
         assertEquals(Boolean.FALSE, environment.getBooleanOrNull(ENV_KEY_APP_WATCH_ENV));
-    }
-
-    @Test
-    public void testWebSocket() {
-        Blade blade = Blade.of().webSocket("/", new WebSocketHandler() {
-            @Override
-            public void onConnect(WebSocketContext ctx) {
-                System.out.println("on connect.");
-            }
-
-            @Override
-            public void onText(WebSocketContext ctx) {
-                System.out.println("on text");
-            }
-
-            @Override
-            public void onDisConnect(WebSocketContext ctx) {
-                System.out.println("on disconnect.");
-            }
-        });
     }
 
     @Test

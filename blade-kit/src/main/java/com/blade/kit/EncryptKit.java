@@ -31,7 +31,7 @@ import static com.blade.kit.ConvertKit.hex2Dec;
 /**
  * 加解密类
  *
- * @author <a href="mailto:hellokaton@gmail.com" target="_blank">biezhi</a>
+ * @author <a href="mailto:hellokaton@gmail.com" target="_blank">hellokaton</a>
  * @since 1.0
  */
 @UtilityClass

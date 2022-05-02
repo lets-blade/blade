@@ -3,7 +3,7 @@ package com.blade.ioc;
 import com.blade.ioc.bean.ClassInfo;
 import com.blade.ioc.bean.Scanner;
 import com.blade.ioc.reader.ClassPathClassReader;
-import com.blade.mvc.annotation.Path;
+import com.blade.annotation.request.Path;
 import com.blade.types.controller.IndexController;
 import com.blade.types.controller.UserService;
 import org.junit.Test;

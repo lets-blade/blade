@@ -36,7 +36,8 @@ public class HttpServerInitializer extends ChannelInitializer<SocketChannel> {
         this.sslCtx = sslCtx;
         this.blade = blade;
         this.useGZIP = blade.environment().getBoolean(Const.ENV_KEY_GZIP_ENABLE, false);
-        this.isWebSocket = blade.routeMatcher().getWebSockets().size() > 0;
+//        this.isWebSocket = blade.routeMatcher().getWebSockets().size() > 0;
+        this.isWebSocket = false;
         this.httpServerHandler = new HttpServerHandler();
 
         service.scheduleWithFixedDelay(() -> date = DateKit.gmtDate(LocalDateTime.now()), 1000, 1000, TimeUnit.MILLISECONDS);
@@ -58,7 +59,7 @@ public class HttpServerInitializer extends ChannelInitializer<SocketChannel> {
             }
 
             if (isWebSocket) {
-                pipeline.addLast(new WebSocketHandler(blade));
+                //pipeline.addLast(new WebSocketHandler(blade));
             }
             pipeline.addLast(new MergeRequestHandler());
             pipeline.addLast(httpServerHandler);

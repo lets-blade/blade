@@ -5,7 +5,7 @@ import java.lang.annotation.*;
 /**
  * Bean annotations can be injected
  *
- * @author <a href="mailto:hellokaton@gmail.com" target="_blank">biezhi</a>
+ * @author <a href="mailto:hellokaton@gmail.com" target="_blank">hellokaton</a>
  * @since 1.5
  */
 @Target({ElementType.TYPE, ElementType.METHOD})
