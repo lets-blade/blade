@@ -2,7 +2,7 @@ package com.blade.types.controller;
 
 import com.blade.annotation.request.Body;
 import com.blade.annotation.request.Query;
-import com.blade.annotation.request.Path;
+import com.blade.annotation.Path;
 import com.blade.annotation.request.PathParam;
 import com.blade.types.NotifyType;
 

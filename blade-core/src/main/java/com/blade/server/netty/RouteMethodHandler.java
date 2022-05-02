@@ -10,7 +10,7 @@ import com.blade.mvc.Const;
 import com.blade.mvc.RouteContext;
 import com.blade.mvc.WebContext;
 import com.blade.annotation.response.JSON;
-import com.blade.annotation.request.Path;
+import com.blade.annotation.Path;
 import com.blade.mvc.handler.RequestHandler;
 import com.blade.mvc.handler.RouteHandler;
 import com.blade.mvc.hook.WebHook;
@@ -234,7 +234,7 @@ public class RouteMethodHandler implements RequestHandler {
             Path path = target.getClass().getAnnotation(Path.class);
             JSON JSON = actionMethod.getAnnotation(JSON.class);
 
-            boolean isRestful = (null != JSON) || (null != path && path.restful());
+            boolean isRestful = (null != JSON) || (null != path && path.responseJson());
 
             // if request is restful and not InternetExplorer userAgent
             if (isRestful) {

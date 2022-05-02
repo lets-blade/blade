@@ -1,7 +1,7 @@
 package com.blade.mvc.route;
 
 import com.blade.annotation.route.GET;
-import com.blade.annotation.request.Path;
+import com.blade.annotation.Path;
 import com.blade.mvc.hook.WebHook;
 import com.blade.mvc.http.Response;
 import org.junit.Assert;

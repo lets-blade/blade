@@ -18,7 +18,7 @@ package com.blade.server.netty;
 import com.blade.Blade;
 import com.blade.Environment;
 import com.blade.annotation.URLPattern;
-import com.blade.annotation.request.Path;
+import com.blade.annotation.Path;
 import com.blade.event.Event;
 import com.blade.event.EventType;
 import com.blade.ioc.DynamicContext;

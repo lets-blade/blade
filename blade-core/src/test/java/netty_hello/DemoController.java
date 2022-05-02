@@ -1,5 +1,6 @@
 package netty_hello;
 
+import com.blade.annotation.Path;
 import com.blade.annotation.request.*;
 import com.blade.annotation.response.JSON;
 import com.blade.annotation.route.GET;

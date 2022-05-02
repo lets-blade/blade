@@ -17,6 +17,7 @@
         <module>blade-kit</module>
         <module>blade-security</module>
         <module>blade-websocket</module>
+        <module>blade-examples</module>
     </modules>
 
     <licenses>
@@ -48,6 +49,7 @@
         <blade-asm.version>0.0.4</blade-asm.version>
         <blade-log.version>0.1.6</blade-log.version>
         <blade-kit.version>${parent.version}</blade-kit.version>
+        <blade-core.version>${parent.version}</blade-core.version>
         <gson.version>2.9.0</gson.version>
         <bootstrap.version>4.1.0</bootstrap.version>
         <mockito.version>1.10.19</mockito.version>
@@ -79,6 +81,12 @@
                 <groupId>com.bladejava</groupId>
                 <artifactId>blade-kit</artifactId>
                 <version>${blade-kit.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.bladejava</groupId>
+                <artifactId>blade-core</artifactId>
+                <version>${blade-core.version}</version>
             </dependency>
 
             <dependency>

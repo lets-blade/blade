@@ -15,7 +15,6 @@
         <dependency>
             <groupId>com.bladejava</groupId>
             <artifactId>blade-core</artifactId>
-            <version>2.1.0-BETA</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

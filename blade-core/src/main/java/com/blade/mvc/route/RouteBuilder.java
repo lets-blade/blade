@@ -1,6 +1,6 @@
 package com.blade.mvc.route;
 
-import com.blade.annotation.request.Path;
+import com.blade.annotation.Path;
 import com.blade.annotation.route.*;
 import com.blade.kit.BladeKit;
 import com.blade.kit.ReflectKit;

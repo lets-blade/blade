@@ -514,6 +514,15 @@ public class Blade {
     /**
      * Set to start the web server to monitor port, the default is 9000
      *
+     * @return blade
+     */
+    public Blade listen() {
+        return listen(DEFAULT_SERVER_PORT);
+    }
+
+    /**
+     * Set to start the web server to monitor port, the default is 9000
+     *
      * @param port web server port, default is 9000
      * @return blade
      */

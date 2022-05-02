@@ -1,4 +1,4 @@
-package com.blade.annotation.request;
+package com.blade.annotation;
 
 import com.blade.ioc.annotation.Bean;
 
@@ -29,7 +29,7 @@ public @interface Path {
     /**
      * @return is restful api
      */
-    boolean restful() default false;
+    boolean responseJson() default false;
 
     /**
      * @return path description
