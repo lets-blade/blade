@@ -59,7 +59,7 @@ public class StringKit {
      * @return return any one in this list of string is not blank
      */
     public static boolean isNotBlank(String... str) {
-        if (str == null) return false;
+        if (str == null || str.length == 0) return false;
         for (String s : str) {
             if (isBlank(s)) {
                 return false;

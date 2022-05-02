@@ -33,7 +33,9 @@ import com.blade.mvc.http.HttpMethod;
 import com.blade.mvc.http.HttpSession;
 import com.blade.mvc.http.Session;
 import com.blade.mvc.http.session.SessionManager;
+import com.blade.mvc.route.DynamicMapping;
 import com.blade.mvc.route.RouteMatcher;
+import com.blade.mvc.route.mapping.dynamic.RegexMapping;
 import com.blade.mvc.ui.template.DefaultEngine;
 import com.blade.mvc.ui.template.TemplateEngine;
 import com.blade.security.web.cors.CorsConfiger;
@@ -199,6 +201,19 @@ public class Blade {
      */
     public Ioc ioc() {
         return this.ioc;
+    }
+
+    /**
+     * set url router, default is {@link RegexMapping}
+     * if you want a faster router, you can set {@link com.blade.mvc.route.mapping.dynamic.TrieMapping}
+     * for example :
+     *     {@code routerMapping(new TrieMapping())}
+     * @param dynamicMapping
+     * @return
+     */
+    public Blade routerMapping(DynamicMapping dynamicMapping) {
+        routeMatcher.setDynamicMapping(dynamicMapping);
+        return this;
     }
 
     /**

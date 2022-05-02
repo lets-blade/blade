@@ -50,6 +50,8 @@ public class Route {
      */
     private Method action;
 
+    private String originalPath;
+
     private int sort;
 
     /**
@@ -71,14 +73,34 @@ public class Route {
         this.sort = Integer.MAX_VALUE;
     }
 
-    public Route(HttpMethod httpMethod, String path, Object target, Class<?> targetType, Method action) {
+    public Route(HttpMethod httpMethod, String originalPath, String path, Object target, Class<?> targetType, Method action) {
         super();
         this.httpMethod = httpMethod;
+        this.originalPath = originalPath;
         this.path = PathKit.fixPath(path);
         this.target = target;
         this.targetType = targetType;
         this.action = action;
         sort = Integer.MAX_VALUE;
+    }
+
+    public Route(Route route) {
+        this.httpMethod = route.httpMethod;
+        this.path = route.path;
+        this.originalPath = route.originalPath;
+        this.target = route.target;
+        this.targetType = route.targetType;
+        this.action = route.action;
+        this.sort = route.sort;
+    }
+
+    /**
+     * Return original path
+     *
+     * @return
+     */
+    public String getOriginalPath() {
+        return originalPath;
     }
 
     /**
@@ -191,7 +213,7 @@ public class Route {
      */
     @Override
     public String toString() {
-        return httpMethod + "\t" + path;
+        return httpMethod + "\t" + originalPath + "\t" + path;
     }
 
 }

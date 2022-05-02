@@ -1,0 +1,128 @@
+# Benchmark Routes
+
+#Runtime
+GET /yemian/:yemianId yemianId
+* /tuiguang/:tuiguangId tuiguangId
+GET /jilu/:jiluId jiluId
+GET /toupiao
+GET /tandcdialog
+* /weixinyingyong/:yingyongId yingyongId
+* /zhuangzai/yingyong/:yingyongId yingyongId
+POST /tuiguang/:tuiguangId/x tuiguangId
+POST /tuiguang/:tuiguangId/vote tuiguangId
+POST /yemian/:yemianId/fasongyoujian yemianId
+POST /shangchuang
+
+GET /ziyuan2/:id id
+GET /ziyuan/:id id
+GET /ziyuan/:id/:mingzi id,mingzi
+GET /dynacss
+
+GET /tutu123
+
+GET /ushangchuanger
+
+GET /tutu123/token
+
+# Ziyuan Guanliyuan
+GET /z
+GET /cm
+GET /dn/new
+POST /dn/new
+POST /dn/shangchuangicon
+POST /dn/editicon
+
+GET /dn/fangwenicon/:fileMingzi fileMingzi
+
+GET /tupianji
+GET /tupianji/:tuiguangId tuiguangId
+
+# Kuhu Guanliyuan
+GET /ziliao
+POST /ziliao
+GET /ziliao/fuwu
+GET /ziliao/yonghu
+GET /ziliao/fukuan
+GET /ziliao/me
+
+
+# Payments
+GET /p/acr
+
+# Zhuye
+GET /
+GET /pendingApps
+GET /tuiguang
+GET /fuwu
+GET /zhanghu
+GET /yonghus
+GET /yonghu/:id id
+GET /tuiguangs/:id id
+
+GET /resetpass
+
+# data
+GET /shuju/tuiguang/:id/mubiao/:mubiao id,mubiao
+GET /shuju/tuiguang/:id/mubiaoTabs id
+GET /shuju/tuiguang/:id id
+GET /shuju/tuiguang/:id/hasEntryShuju id
+GET /shuju/tuiguang/:id/downloadEntries id
+GET /shuju/yemian/:yemianId/attribute/:key yemianId,key
+POST /shuju/tuiguang/:id/ziliao id
+POST /shuju/tuiguang/:id/mubiao/:mubiao/tianjiaPage id,mubiao
+POST /shuju/tuiguang/:id/mubiao/:mubiao/yemian/:yemianIndex/remove id,mubiao,yemianIndex
+POST /shuju/tuiguang/:id/delete id
+POST /shuju/yemian/:yemianId/component/:componentId yemianId,componentId
+
+#File Upload
+POST /shuju/shangchuang/saveShareImage
+POST /shuju/shangchuang/saveImage
+POST /shuju/shangchuang/saveFile
+POST /shuju/shangchuang/saveCsv
+POST /shuju/shangchuang/carousel
+
+GET /shuju/yonghu/liebiao
+GET /shuju/yonghu/jianchaXinMingzi
+GET /shuju/yonghu/jianchaUpdateMingzi
+GET /shuju/yonghu/fuwus
+
+POST /shuju/yonghu/new
+POST /shuju/yonghu/ziliao/mingzi
+POST /shuju/yonghu/gengxinMingzi
+POST /shuju/yonghu/gengxinActive
+POST /shuju/yonghu/guanliYonghu/shanchu
+POST /shuju/yonghu/guanliYonghu/tianjia
+POST /shuju/yonghu/tianjiaXinUser
+
+POST /shuju/fuwu/xin
+POST /shuju/fuwu/fensiyeId
+POST /shuju/fuwu/kaishi
+POST /shuju/fuwu/jiesu
+
+GET /xui/yonghu/:id id
+
+GET /xui/my/fuwu/:id id
+
+GET /baobiao
+
+# notifiers
+POST /password/forgot/:yonghuming yonghuming
+
+# ZiDongWanCheng service
+GET /shuju/zidongwancheng/weixinPermissions
+
+# chaojiyonghu luyou
+GET /adm/denglu
+GET /adm
+GET /adm/yonghu
+GET /adm/yonghu/:yonghuId/yonghu yonghuId
+GET /adm/yonghu/:yonghuId/bill yonghuId
+GET /adm/yonghu/:yonghuId/fuwu yonghuId
+GET /adm/tuiguang
+GET /adm/tuiguang/:id id
+GET /adm/weixinyingyong
+GET /adm/weixinyingyong/new
+
+* /ceshi
+* /ceshi2
+* /ceshi3
