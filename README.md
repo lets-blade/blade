@@ -533,7 +533,7 @@ The `hello.html` template
 </html>
 ```
 
-[Render API](http://static.javadoc.io/com.bladejava/blade-mvc/2.0.3/com/blade/mvc/http/Response.html#render-com.blade.mvc.ui.ModelAndView-)
+[Render API](http://static.javadoc.io/com.bladejava/blade-mvc/2.0.3/com/blade/mvc/http/Response.html#render-com.ModelAndView-)
 
 ## Redirects
 
@@ -670,7 +670,7 @@ Besides looking easy, the features above are only the tip of the iceberg, and th
 ## Contact
 
 - Twitter: [biezhi](https://twitter.com/biezhii)
-- Mail: biezhi.me@gmail.com
+- Mail: hellokaton@gmail.com
 - [Telegram Group](https://t.me/letsblade)
 
 ## Contributors

@@ -532,7 +532,7 @@ public static void main(String[] args) {
 </html>
 ```
 
-[Render API](http://static.javadoc.io/com.bladejava/blade-mvc/2.0.3/com/blade/mvc/http/Response.html#render-com.blade.mvc.ui.ModelAndView-)
+[Render API](http://static.javadoc.io/com.bladejava/blade-mvc/2.0.3/com/blade/mvc/http/Response.html#render-com.ModelAndView-)
 
 ## 重定向
 
