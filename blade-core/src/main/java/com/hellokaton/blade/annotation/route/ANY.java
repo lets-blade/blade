@@ -1,6 +1,7 @@
 package com.hellokaton.blade.annotation.route;
 
 import com.hellokaton.blade.mvc.http.HttpMethod;
+import com.hellokaton.blade.mvc.ui.ResponseType;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -35,6 +36,8 @@ public @interface ANY {
      * @return Request url
      */
     String[] value() default "/";
+
+    ResponseType responseType() default ResponseType.EMPTY;
 
     /**
      * @return Request HttpMethod

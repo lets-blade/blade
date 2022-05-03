@@ -1,5 +1,6 @@
 package com.hellokaton.blade.server;
 
+import com.blade.reflectasm.MethodAccess;
 import com.hellokaton.blade.annotation.Path;
 import com.hellokaton.blade.exception.BladeException;
 import com.hellokaton.blade.exception.InternalErrorException;
@@ -18,7 +19,7 @@ import com.hellokaton.blade.mvc.http.*;
 import com.hellokaton.blade.mvc.route.Route;
 import com.hellokaton.blade.mvc.route.RouteMatcher;
 import com.hellokaton.blade.mvc.ui.ModelAndView;
-import com.blade.reflectasm.MethodAccess;
+import com.hellokaton.blade.mvc.ui.ResponseType;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFuture;
@@ -226,18 +227,8 @@ public class RouteMethodHandler implements RequestHandler {
             Class<?> returnType = actionMethod.getReturnType();
 
             Path path = target.getClass().getAnnotation(Path.class);
-            com.hellokaton.blade.annotation.response.Response response = actionMethod.getAnnotation(com.hellokaton.blade.annotation.response.Response.class);
 
-            boolean responseJson = (null != response && response.contentType().toLowerCase().contains("json")) || (null != path && path.responseJson());
-            if (responseJson) {
-                if (!context.isIE()) {
-                    context.contentType(HttpConst.CONTENT_TYPE_JSON);
-                } else {
-                    context.contentType(HttpConst.CONTENT_TYPE_HTML);
-                }
-            } else if (null != response) {
-                context.contentType(response.contentType());
-            }
+            boolean responseJson = this.setResponseType(context, path);
 
             int len = actionMethod.getParameterTypes().length;
 
@@ -267,6 +258,28 @@ public class RouteMethodHandler implements RequestHandler {
                 );
             }
         }
+    }
+
+    private boolean setResponseType(RouteContext context, Path path) {
+        ResponseType responseType = ResponseType.EMPTY;
+        if (null != path && !ResponseType.EMPTY.equals(path.responseType())) {
+            responseType = path.responseType();
+        }
+        ResponseType routeResponseType = context.route().getResponseType();
+        if (null != routeResponseType && !ResponseType.EMPTY.equals(routeResponseType)) {
+            responseType = routeResponseType;
+        }
+        boolean responseJson = ResponseType.JSON.equals(responseType);
+        if (responseJson) {
+            if (!context.isIE()) {
+                context.contentType(HttpConst.CONTENT_TYPE_JSON);
+            } else {
+                context.contentType(HttpConst.CONTENT_TYPE_HTML);
+            }
+        } else if (null != routeResponseType && !ResponseType.EMPTY.equals(routeResponseType)) {
+            context.contentType(routeResponseType.contentType());
+        }
+        return responseJson;
     }
 
     /**

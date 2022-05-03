@@ -1,6 +1,7 @@
 package com.hellokaton.blade.annotation;
 
 import com.hellokaton.blade.ioc.annotation.Bean;
+import com.hellokaton.blade.mvc.ui.ResponseType;
 
 import java.lang.annotation.*;
 
@@ -26,10 +27,7 @@ public @interface Path {
      */
     String suffix() default "";
 
-    /**
-     * @return is restful api
-     */
-    boolean responseJson() default false;
+    ResponseType responseType() default ResponseType.EMPTY;
 
     /**
      * @return path description

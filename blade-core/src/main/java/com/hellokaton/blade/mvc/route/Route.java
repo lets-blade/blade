@@ -2,6 +2,7 @@ package com.hellokaton.blade.mvc.route;
 
 import com.hellokaton.blade.kit.PathKit;
 import com.hellokaton.blade.mvc.http.HttpMethod;
+import com.hellokaton.blade.mvc.ui.ResponseType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -49,6 +50,8 @@ public class Route {
      * Implementation logic controller method
      */
     private Method action;
+
+    private ResponseType responseType;
 
     private String originalPath;
 
@@ -204,6 +207,10 @@ public class Route {
 
     public String getAllPath() {
         return this.path + "#" + this.httpMethod.name();
+    }
+
+    public ResponseType getResponseType() {
+        return this.responseType;
     }
 
     /**

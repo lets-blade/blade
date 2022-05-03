@@ -1,11 +1,8 @@
 package com.hellokaton.blade.mvc.route;
 
-import com.hellokaton.blade.annotation.route.DELETE;
-import com.hellokaton.blade.annotation.route.GET;
-import com.hellokaton.blade.annotation.route.POST;
-import com.hellokaton.blade.annotation.route.PUT;
-import com.hellokaton.blade.annotation.route.ANY;
+import com.hellokaton.blade.annotation.route.*;
 import com.hellokaton.blade.mvc.http.HttpMethod;
+import com.hellokaton.blade.mvc.ui.ResponseType;
 import lombok.Builder;
 
 import java.lang.reflect.Method;
@@ -19,54 +16,74 @@ import java.lang.reflect.Method;
 @Builder
 public class RouteStruct {
 
-    ANY ANY;
-    GET GET;
-    POST POST;
-    PUT PUT;
-    DELETE DELETE;
-    String      nameSpace;
-    String      suffix;
-    Class<?>    routeType;
-    Object      controller;
-    Method      method;
+    ANY any;
+    GET get;
+    POST post;
+    PUT put;
+    DELETE delete;
+    String nameSpace;
+    String suffix;
+    Class<?> routeType;
+    Object controller;
+    Method method;
 
     private static final String[] DEFAULT_PATHS = new String[]{};
 
     public HttpMethod getMethod() {
-        if (null != ANY) {
-            return ANY.method();
+        if (null != any) {
+            return any.method();
         }
-        if (null != GET) {
+        if (null != get) {
             return HttpMethod.GET;
         }
-        if (null != POST) {
+        if (null != post) {
             return HttpMethod.POST;
         }
-        if (null != PUT) {
+        if (null != put) {
             return HttpMethod.PUT;
         }
-        if (null != DELETE) {
+        if (null != delete) {
             return HttpMethod.DELETE;
         }
         return HttpMethod.ALL;
     }
 
     public String[] getPaths() {
-        if (null != ANY) {
-            return ANY.value();
+        if (null != any) {
+            return any.value();
         }
-        if (null != GET) {
-            return GET.value();
+        if (null != get) {
+            return get.value();
         }
-        if (null != POST) {
-            return POST.value();
+        if (null != post) {
+            return post.value();
         }
-        if (null != PUT) {
-            return PUT.value();
+        if (null != put) {
+            return put.value();
         }
-        if (null != DELETE) {
-            return DELETE.value();
+        if (null != delete) {
+            return delete.value();
         }
         return DEFAULT_PATHS;
     }
+
+    public ResponseType getResponseType() {
+        if (null != any) {
+            return any.responseType();
+        }
+        if (null != get) {
+            return get.responseType();
+        }
+        if (null != post) {
+            return post.responseType();
+        }
+        if (null != put) {
+            return put.responseType();
+        }
+        if (null != delete) {
+            return delete.responseType();
+        }
+        return ResponseType.EMPTY;
+    }
+
 }

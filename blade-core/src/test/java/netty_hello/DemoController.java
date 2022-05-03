@@ -5,13 +5,13 @@ import com.hellokaton.blade.annotation.request.Body;
 import com.hellokaton.blade.annotation.request.Multipart;
 import com.hellokaton.blade.annotation.request.PathParam;
 import com.hellokaton.blade.annotation.request.Query;
-import com.hellokaton.blade.annotation.response.Response;
 import com.hellokaton.blade.annotation.route.ANY;
 import com.hellokaton.blade.annotation.route.GET;
 import com.hellokaton.blade.annotation.route.POST;
 import com.hellokaton.blade.ioc.annotation.Inject;
 import com.hellokaton.blade.mvc.http.Request;
 import com.hellokaton.blade.mvc.multipart.FileItem;
+import com.hellokaton.blade.mvc.ui.ResponseType;
 import com.hellokaton.blade.mvc.ui.RestResponse;
 import com.hellokaton.blade.validator.Validators;
 
@@ -58,8 +58,7 @@ public class DemoController {
         System.out.println("bb:" + bb);
     }
 
-    @Response
-    @POST("api_test/:size")
+    @POST(value = "api_test/:size", responseType = ResponseType.JSON)
     public RestResponse<Integer> api_portal(@PathParam Integer size) {
         return RestResponse.ok(size);
     }
@@ -81,17 +80,15 @@ public class DemoController {
         System.out.println("继续执行");
     }
 
-    @POST("upload")
-    @Response
-    public RestResponse upload(@Multipart FileItem fileItem) throws IOException {
+    @POST(value = "upload", responseType = ResponseType.JSON)
+    public RestResponse<?> upload(@Multipart FileItem fileItem) throws IOException {
         System.out.println(fileItem);
         fileItem.moveTo(new File(fileItem.getFileName()));
         return RestResponse.ok();
     }
 
-    @POST("save")
-    @Response
-    public RestResponse savePerson(@Body Map<String, Object> person) {
+    @POST(value = "save", responseType = ResponseType.JSON)
+    public RestResponse<?> savePerson(@Body Map<String, Object> person) {
         return RestResponse.ok(person);
     }
 

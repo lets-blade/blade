@@ -6,15 +6,13 @@ import com.hellokaton.blade.annotation.request.Body;
 import com.hellokaton.blade.annotation.request.Form;
 import com.hellokaton.blade.annotation.request.Multipart;
 import com.hellokaton.blade.annotation.request.PathParam;
-import com.hellokaton.blade.annotation.response.Response;
 import com.hellokaton.blade.annotation.route.DELETE;
 import com.hellokaton.blade.annotation.route.GET;
 import com.hellokaton.blade.annotation.route.POST;
-import com.hellokaton.blade.mvc.HttpConst;
 import com.hellokaton.blade.mvc.http.Request;
 import com.hellokaton.blade.mvc.multipart.FileItem;
+import com.hellokaton.blade.mvc.ui.ResponseType;
 import com.hellokaton.blade.options.CorsOptions;
-import com.hellokaton.blade.options.HttpOptions;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
@@ -24,7 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 @Slf4j
-@Path(responseJson = true)
+@Path(responseType = ResponseType.JSON)
 public class Application {
 
     @GET("/hello")
@@ -57,8 +55,7 @@ public class Application {
         return Result.success(uid);
     }
 
-    @POST("/upload")
-    @Response(contentType = HttpConst.CONTENT_TYPE_TEXT)
+    @POST(value = "/upload", responseType = ResponseType.TEXT)
     public String upload(@Multipart FileItem fileItem) throws IOException {
         log.info("读取到 fileItem = {}", fileItem);
         fileItem.moveTo(new File(fileItem.getFileName()));

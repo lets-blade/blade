@@ -1,5 +1,7 @@
 package com.hellokaton.blade.annotation.route;
 
+import com.hellokaton.blade.mvc.ui.ResponseType;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -10,6 +12,8 @@ import java.lang.annotation.Target;
 public @interface DELETE {
 
     String[] value() default "/";
+
+    ResponseType responseType() default ResponseType.EMPTY;
 
     /**
      * @return route description

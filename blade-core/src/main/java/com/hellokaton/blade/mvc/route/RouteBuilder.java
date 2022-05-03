@@ -6,6 +6,7 @@ import com.hellokaton.blade.kit.BladeKit;
 import com.hellokaton.blade.kit.ReflectKit;
 import com.hellokaton.blade.mvc.RouteContext;
 import com.hellokaton.blade.mvc.http.HttpMethod;
+import com.hellokaton.blade.mvc.ui.ResponseType;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Method;
@@ -70,15 +71,15 @@ public class RouteBuilder {
 
         for (Method method : methods) {
 
-            ANY ANY = method.getAnnotation(ANY.class);
-            GET GET = method.getAnnotation(GET.class);
-            POST POST = method.getAnnotation(POST.class);
-            PUT PUT = method.getAnnotation(PUT.class);
-            DELETE DELETE = method.getAnnotation(DELETE.class);
+            ANY any = method.getAnnotation(ANY.class);
+            GET get = method.getAnnotation(GET.class);
+            POST post = method.getAnnotation(POST.class);
+            PUT put = method.getAnnotation(PUT.class);
+            DELETE delete = method.getAnnotation(DELETE.class);
 
-            this.parseRoute(RouteStruct.builder().ANY(ANY)
-                    .GET(GET).POST(POST)
-                    .PUT(PUT).DELETE(DELETE)
+            this.parseRoute(RouteStruct.builder().any(any)
+                    .get(get).post(post)
+                    .put(put).delete(delete)
                     .nameSpace(nameSpace)
                     .suffix(suffix).routeType(routeType)
                     .controller(controller).method(method)
@@ -89,19 +90,22 @@ public class RouteBuilder {
     private void parseRoute(RouteStruct routeStruct) {
         // build multiple route
         HttpMethod methodType = routeStruct.getMethod();
+        ResponseType responseType = routeStruct.getResponseType();
         String[] paths = routeStruct.getPaths();
-        if (paths.length > 0) {
-            for (String path : paths) {
-                String pathV = getRoutePath(path, routeStruct.nameSpace, routeStruct.suffix);
+        if (paths.length <= 0) {
+            return;
+        }
+        for (String path : paths) {
+            String pathV = getRoutePath(path, routeStruct.nameSpace, routeStruct.suffix);
 
-                routeMatcher.addRoute(com.hellokaton.blade.mvc.route.Route.builder()
-                        .target(routeStruct.controller)
-                        .targetType(routeStruct.routeType)
-                        .action(routeStruct.method)
-                        .path(pathV)
-                        .httpMethod(methodType)
-                        .build());
-            }
+            routeMatcher.addRoute(com.hellokaton.blade.mvc.route.Route.builder()
+                    .target(routeStruct.controller)
+                    .targetType(routeStruct.routeType)
+                    .action(routeStruct.method)
+                    .path(pathV)
+                    .httpMethod(methodType)
+                    .responseType(responseType)
+                    .build());
         }
     }
 
