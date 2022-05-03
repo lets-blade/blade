@@ -1,13 +1,12 @@
 <p align="center">
-    <a href="https://lets-blade.com"><img src="https://i.loli.net/2018/09/18/5ba0cd93c710e.png" width="650"/></a>
+    <a href="https://lets-blade.github.io/"><img src="https://i.loli.net/2018/09/18/5ba0cd93c710e.png" width="650"/></a>
 </p>
 <p align="center">基于 <code>Java8</code> + <code>Netty4</code> 创造的轻量级、高性能、简洁优雅的Web框架 😋</p>
-<p align="center">花 <b>1小时</b> 学会它做点有趣的项目，一款除了Spring系框架的不二之选。</p>
+<p align="center">花 <b>1小时</b> 学会它做点有趣的项目，一款除了 Spring 系框架的不二之选。</p>
 <p align="center">
     🐾 <a href="#quick-start" target="_blank">快速开始</a> | 
-    🎬 <a href="https://www.bilibili.com/video/av15572599" target="_blank">视频教程</a> | 
-    🌚 <a href="https://lets-blade.com" target="_blank">官方文档</a> | 
-    💰 <a href="https://lets-blade.com/donate.html" target="_blank">捐赠我们</a> |
+    🌚 <a href="https://lets-blade.github.io/" target="_blank">官方文档</a> | 
+    💰 <a href="https://lets-blade.github.io/donate.html" target="_blank">捐赠我们</a> |
     🌾 <a href="README.md">English</a>
 </p>
 <p align="center">
