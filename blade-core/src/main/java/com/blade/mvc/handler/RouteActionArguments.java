@@ -79,7 +79,7 @@ public final class RouteActionArguments {
         } else if (argType == ModelAndView.class) {
             return new ModelAndView();
         } else if (argType == Map.class) {
-            return context.request().parameters();
+            return context.request().formParams();
         } else if (argType == Optional.class) {
             ParameterizedType firstParam           = (ParameterizedType) parameter.getParameterizedType();
             Type              paramsOfFirstGeneric = firstParam.getActualTypeArguments()[0];
@@ -87,10 +87,10 @@ public final class RouteActionArguments {
             return Optional.ofNullable(parseModel(modelType, context.request(), null));
         } else if (ParameterizedType.class.isInstance(argType)) {
             String       name   = parameter.getName();
-            List<String> values = context.request().parameters().get(name);
+            List<String> values = context.request().formParams().get(name);
             return getParameterizedTypeValues(values, argType);
         } else if (ReflectKit.isArray(argType)) {
-            List<String> values = context.request().parameters().get(paramName);
+            List<String> values = context.request().formParams().get(paramName);
             if (null == values) {
                 return null;
             }
@@ -174,7 +174,7 @@ public final class RouteActionArguments {
         } else {
             if (ParameterizedType.class.isInstance(argType)) {
 
-                List<String> values = request.parameters().get(query.name());
+                List<String> values = request.formParams().get(query.name());
                 return getParameterizedTypeValues(values, argType);
             }
             return parseModel(ReflectKit.typeToClass(argType), request, query.name());

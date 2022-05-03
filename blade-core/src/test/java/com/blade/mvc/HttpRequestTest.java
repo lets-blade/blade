@@ -177,7 +177,7 @@ public class HttpRequestTest extends BaseTestCase {
         parameters.put("age", Collections.singletonList("25"));
         parameters.put("id", Collections.singletonList("220291"));
 
-        when(mockRequest.parameters()).thenReturn(parameters);
+        when(mockRequest.formParams()).thenReturn(parameters);
 
         Request request = new HttpRequest(mockRequest);
 
@@ -199,12 +199,12 @@ public class HttpRequestTest extends BaseTestCase {
     public void testContentType() {
 
         Request mockRequest = mockHttpRequest("GET");
-        when(mockRequest.contentType()).thenReturn(Const.CONTENT_TYPE_HTML);
+        when(mockRequest.contentType()).thenReturn(HttpConst.CONTENT_TYPE_HTML);
 
-        assertEquals(Const.CONTENT_TYPE_HTML, mockRequest.contentType());
+        assertEquals(HttpConst.CONTENT_TYPE_HTML, mockRequest.contentType());
 
-        when(mockRequest.contentType()).thenReturn(Const.CONTENT_TYPE_JSON);
-        assertEquals(Const.CONTENT_TYPE_JSON, mockRequest.contentType());
+        when(mockRequest.contentType()).thenReturn(HttpConst.CONTENT_TYPE_JSON);
+        assertEquals(HttpConst.CONTENT_TYPE_JSON, mockRequest.contentType());
     }
 
     @Test

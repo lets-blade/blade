@@ -44,7 +44,10 @@ public class FileItem {
      */
     private long length;
 
+    private boolean inMemory;
+
     private transient File file;
+    private transient byte[] data;
 
     public String extName() {
         return fileName.substring(fileName.lastIndexOf("."));
@@ -55,7 +58,7 @@ public class FileItem {
         long kb = length / 1024;
         return "FileItem(" +
                 "name='" + name + '\'' +
-                "fileName='" + fileName + '\'' +
+                ", fileName='" + fileName + '\'' +
                 ", path='" + path + '\'' +
                 ", contentType='" + contentType + '\'' +
                 ", size=" + (kb < 1 ? 1 : kb) + "KB)";
@@ -66,17 +69,24 @@ public class FileItem {
     }
 
     public void moveTo(Path newFile) throws IOException {
-        Files.move(Paths.get(file.getPath()), newFile, StandardCopyOption.REPLACE_EXISTING);
+        if (null != file) {
+            Path tmpPath = Paths.get(file.getPath());
+            Files.move(tmpPath, newFile, StandardCopyOption.REPLACE_EXISTING);
+        } else {
+            Files.write(newFile, this.getData());
+        }
     }
 
-    public byte[] getData() {
-        byte[] fileContent;
+    public byte[] byteArray() {
+        if (null != this.data) {
+            return this.data;
+        }
         try {
-            fileContent = Files.readAllBytes(file.toPath());
+            this.data = Files.readAllBytes(file.toPath());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        return fileContent;
+        return this.data;
     }
 
 }

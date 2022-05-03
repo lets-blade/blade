@@ -1,4 +1,4 @@
-package com.blade.server.netty;
+package com.blade.server;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;

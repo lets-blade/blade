@@ -1,4 +1,4 @@
-package com.blade.server.netty;
+package com.blade.server;
 
 import com.blade.mvc.Const;
 import io.netty.util.AsciiString;
@@ -12,7 +12,7 @@ import java.util.Map;
  * @author biezhi
  * @date 2017/10/16
  */
-public interface HttpConst {
+public interface NettyHttpConst {
 
     String VERSION = "blade-" + Const.VERSION;
 
@@ -20,7 +20,6 @@ public interface HttpConst {
     String USER_AGENT          = "User-Agent";
     String CONTENT_TYPE_STRING = "Content-Type";
     String ACCEPT_ENCODING     = "Accept-Encoding";
-    String COOKIE_STRING       = "Cookie";
     String METHOD_GET          = "GET";
     String DEFAULT_SESSION_KEY = "SESSION";
     String SLASH               = "/";

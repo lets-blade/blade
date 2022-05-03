@@ -1,7 +1,6 @@
 package com.blade.server;
 
 import com.blade.Blade;
-import com.blade.server.netty.NettyServer;
 import org.junit.Test;
 
 /**

@@ -1,21 +1,20 @@
-package com.blade.server.netty;
+package com.blade.server;
 
+import com.blade.annotation.Path;
 import com.blade.exception.BladeException;
 import com.blade.exception.InternalErrorException;
 import com.blade.exception.NotFoundException;
 import com.blade.kit.BladeCache;
 import com.blade.kit.BladeKit;
 import com.blade.kit.ReflectKit;
-import com.blade.mvc.Const;
+import com.blade.mvc.HttpConst;
 import com.blade.mvc.RouteContext;
 import com.blade.mvc.WebContext;
-import com.blade.annotation.response.JSON;
-import com.blade.annotation.Path;
 import com.blade.mvc.handler.RequestHandler;
 import com.blade.mvc.handler.RouteHandler;
 import com.blade.mvc.hook.WebHook;
-import com.blade.mvc.http.*;
 import com.blade.mvc.http.Cookie;
+import com.blade.mvc.http.*;
 import com.blade.mvc.route.Route;
 import com.blade.mvc.route.RouteMatcher;
 import com.blade.mvc.ui.ModelAndView;
@@ -38,8 +37,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
-import static com.blade.server.netty.HttpConst.CONTENT_LENGTH;
-import static com.blade.server.netty.HttpConst.KEEP_ALIVE;
+import static com.blade.server.NettyHttpConst.CONTENT_LENGTH;
+import static com.blade.server.NettyHttpConst.KEEP_ALIVE;
 import static io.netty.handler.codec.http.HttpHeaderNames.TRANSFER_ENCODING;
 import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
@@ -52,18 +51,18 @@ import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 @Slf4j
 public class RouteMethodHandler implements RequestHandler {
 
-    private final RouteMatcher routeMatcher  = WebContext.blade().routeMatcher();
-    private final boolean      hasMiddleware = routeMatcher.getMiddleware().size() > 0;
-    private final boolean      hasBeforeHook = routeMatcher.hasBeforeHook();
-    private final boolean      hasAfterHook  = routeMatcher.hasAfterHook();
+    private final RouteMatcher routeMatcher = WebContext.blade().routeMatcher();
+    private final boolean hasMiddleware = routeMatcher.getMiddleware().size() > 0;
+    private final boolean hasBeforeHook = routeMatcher.hasBeforeHook();
+    private final boolean hasAfterHook = routeMatcher.hasAfterHook();
 
     @Override
     public void handle(WebContext webContext) throws Exception {
         RouteContext context = new RouteContext(webContext.getRequest(), webContext.getResponse());
 
         // if execution returns false then execution is interrupted
-        String uri   = context.uri();
-        Route  route = webContext.getRoute();
+        String uri = context.uri();
+        Route route = webContext.getRoute();
         if (null == route) {
             throw new NotFoundException(context.uri());
         }
@@ -91,7 +90,7 @@ public class RouteMethodHandler implements RequestHandler {
         }
     }
 
-    public FullHttpResponse handleResponse(Request request, Response response, ChannelHandlerContext context) {
+    public FullHttpResponse handleResponse(Request request, com.blade.mvc.http.Response response, ChannelHandlerContext context) {
         Session session = request.session();
         if (null != session) {
             Cookie cookie = new Cookie();
@@ -119,7 +118,7 @@ public class RouteMethodHandler implements RequestHandler {
                 try {
                     var sw = new StringWriter();
                     WebContext.blade().templateEngine().render(body.modelAndView(), sw);
-                    WebContext.response().contentType(Const.CONTENT_TYPE_HTML);
+                    WebContext.response().contentType(HttpConst.CONTENT_TYPE_HTML);
                     return this.onByteBuf(Unpooled.copiedBuffer(sw.toString().getBytes(StandardCharsets.UTF_8)));
                 } catch (Exception e) {
                     log.error("Render view error", e);
@@ -142,7 +141,7 @@ public class RouteMethodHandler implements RequestHandler {
 
                 // Write the initial line and the header.
                 if (request.keepAlive()) {
-                    httpResponse.headers().set(HttpConst.CONNECTION, KEEP_ALIVE);
+                    httpResponse.headers().set(NettyHttpConst.CONNECTION, KEEP_ALIVE);
                 }
                 context.write(httpResponse, context.voidPromise());
 
@@ -155,17 +154,17 @@ public class RouteMethodHandler implements RequestHandler {
 
         });
         if (request.keepAlive()) {
-            fullHttpResponse.headers().set(HttpConst.CONNECTION, KEEP_ALIVE);
+            fullHttpResponse.headers().set(NettyHttpConst.CONNECTION, KEEP_ALIVE);
         }
         return fullHttpResponse;
     }
 
     private void setDefaultHeaders(HttpHeaders headers) {
-        headers.set(HttpConst.DATE, HttpServerInitializer.date);
-        headers.set(HttpConst.X_POWER_BY, HttpConst.HEADER_VERSION);
+        headers.set(NettyHttpConst.DATE, HttpServerInitializer.date);
+        headers.set(NettyHttpConst.X_POWER_BY, NettyHttpConst.HEADER_VERSION);
     }
 
-    public Void handleStreamResponse(Response response, InputStream body,
+    public Void handleStreamResponse(com.blade.mvc.http.Response response, InputStream body,
                                      ChannelHandlerContext context, boolean keepAlive) {
 
         var httpResponse = new DefaultHttpResponse(HTTP_1_1, HttpResponseStatus.valueOf(response.statusCode()));
@@ -187,7 +186,7 @@ public class RouteMethodHandler implements RequestHandler {
         return null;
     }
 
-    private FullHttpResponse createResponseByByteBuf(Response response, ByteBuf byteBuf) {
+    private FullHttpResponse createResponseByByteBuf(com.blade.mvc.http.Response response, ByteBuf byteBuf) {
 
         Map<String, String> headers = response.headers();
 
@@ -201,14 +200,14 @@ public class RouteMethodHandler implements RequestHandler {
         }
 
         for (Map.Entry<String, String> next : headers.entrySet()) {
-            httpResponse.headers().set(HttpConst.getAsciiString(next.getKey()), next.getValue());
+            httpResponse.headers().set(NettyHttpConst.getAsciiString(next.getKey()), next.getValue());
         }
         return httpResponse;
     }
 
-    private void appendCookie(Response response, DefaultFullHttpResponse httpResponse) {
+    private void appendCookie(com.blade.mvc.http.Response response, DefaultFullHttpResponse httpResponse) {
         for (io.netty.handler.codec.http.cookie.Cookie next : response.cookiesRaw()) {
-            httpResponse.headers().add(HttpConst.SET_COOKIE,
+            httpResponse.headers().add(NettyHttpConst.SET_COOKIE,
                     io.netty.handler.codec.http.cookie.ServerCookieEncoder.LAX.encode(next));
         }
     }
@@ -228,21 +227,21 @@ public class RouteMethodHandler implements RequestHandler {
             RouteHandler routeHandler = (RouteHandler) target;
             routeHandler.handle(context);
         } else {
-            Method   actionMethod = context.routeAction();
-            Class<?> returnType   = actionMethod.getReturnType();
+            Method actionMethod = context.routeAction();
+            Class<?> returnType = actionMethod.getReturnType();
 
             Path path = target.getClass().getAnnotation(Path.class);
-            JSON JSON = actionMethod.getAnnotation(JSON.class);
+            com.blade.annotation.response.Response response = actionMethod.getAnnotation(com.blade.annotation.response.Response.class);
 
-            boolean isRestful = (null != JSON) || (null != path && path.responseJson());
-
-            // if request is restful and not InternetExplorer userAgent
-            if (isRestful) {
+            boolean responseJson = (null != response && response.contentType().toLowerCase().contains("json")) || (null != path && path.responseJson());
+            if (responseJson) {
                 if (!context.isIE()) {
-                    context.contentType(Const.CONTENT_TYPE_JSON);
+                    context.contentType(HttpConst.CONTENT_TYPE_JSON);
                 } else {
-                    context.contentType(Const.CONTENT_TYPE_HTML);
+                    context.contentType(HttpConst.CONTENT_TYPE_HTML);
                 }
+            } else if (null != response) {
+                context.contentType(response.contentType());
             }
 
             int len = actionMethod.getParameterTypes().length;
@@ -257,7 +256,7 @@ public class RouteMethodHandler implements RequestHandler {
                 return;
             }
 
-            if (isRestful) {
+            if (responseJson) {
                 context.json(returnParam);
                 return;
             }
@@ -285,7 +284,7 @@ public class RouteMethodHandler implements RequestHandler {
      */
     private boolean invokeHook(RouteContext context, Route hookRoute) throws Exception {
         Method hookMethod = hookRoute.getAction();
-        Object target     = WebContext.blade().ioc().getBean(hookRoute.getTargetType());
+        Object target = WebContext.blade().ioc().getBean(hookRoute.getTargetType());
         if (null == target) {
             Class<?> clazz = hookRoute.getAction().getDeclaringClass();
             target = WebContext.blade().ioc().getBean(clazz);
@@ -328,7 +327,7 @@ public class RouteMethodHandler implements RequestHandler {
         }
         for (Route route : middleware) {
             WebHook webHook = (WebHook) WebContext.blade().ioc().getBean(route.getTargetType());
-            boolean flag    = webHook.before(context);
+            boolean flag = webHook.before(context);
             if (!flag) return false;
         }
         return true;

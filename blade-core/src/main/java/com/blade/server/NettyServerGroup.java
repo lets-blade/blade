@@ -1,4 +1,4 @@
-package com.blade.server.netty;
+package com.blade.server;
 
 import io.netty.channel.MultithreadEventLoopGroup;
 import io.netty.channel.socket.ServerSocketChannel;
@@ -15,7 +15,7 @@ import lombok.Getter;
 @Getter
 public class NettyServerGroup {
 
-    private Class<? extends ServerSocketChannel> socketChannel;
-    private MultithreadEventLoopGroup            boosGroup;
-    private MultithreadEventLoopGroup            workerGroup;
+    private final Class<? extends ServerSocketChannel> socketChannel;
+    private final MultithreadEventLoopGroup            boosGroup;
+    private final MultithreadEventLoopGroup            workerGroup;
 }

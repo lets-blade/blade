@@ -3,7 +3,7 @@ package com.blade.mvc.http;
 import com.blade.exception.NotFoundException;
 import com.blade.kit.MimeTypeKit;
 import com.blade.mvc.ui.ModelAndView;
-import com.blade.server.netty.HttpConst;
+import com.blade.server.NettyHttpConst;
 import io.netty.handler.codec.http.cookie.Cookie;
 import io.netty.handler.codec.http.cookie.DefaultCookie;
 import lombok.NonNull;
@@ -145,8 +145,8 @@ public class HttpResponse implements Response {
         }
         String contentType = MimeTypeKit.parse(file.getName());
         headers.put("Content-Disposition", "attachment; filename=" + new String(fileName.getBytes(StandardCharsets.UTF_8), "ISO8859_1"));
-        headers.put(HttpConst.CONTENT_LENGTH.toString(), String.valueOf(file.length()));
-        headers.put(HttpConst.CONTENT_TYPE_STRING, contentType);
+        headers.put(NettyHttpConst.CONTENT_LENGTH.toString(), String.valueOf(file.length()));
+        headers.put(NettyHttpConst.CONTENT_TYPE_STRING, contentType);
         this.body = new StreamBody(new FileInputStream(file));
     }
 
@@ -157,7 +157,7 @@ public class HttpResponse implements Response {
 
     @Override
     public void redirect(@NonNull String newUri) {
-        headers.put(HttpConst.LOCATION.toString(), newUri);
+        headers.put(NettyHttpConst.LOCATION.toString(), newUri);
         this.status(302);
     }
 

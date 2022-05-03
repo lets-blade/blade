@@ -18,7 +18,7 @@ package com.blade.mvc.wrapper;
 import com.blade.kit.DateKit;
 import com.blade.mvc.Const;
 import com.blade.mvc.WebContext;
-import com.blade.server.netty.HttpConst;
+import com.blade.server.NettyHttpConst;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.DefaultFileRegion;
 import io.netty.handler.codec.http.*;
@@ -76,13 +76,13 @@ public class OutputStreamWrapper implements Closeable, Flushable {
             long        fileLength = file.size();
 
             HttpResponse httpResponse = new DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
-            httpResponse.headers().set(HttpConst.CONTENT_LENGTH, fileLength);
-            httpResponse.headers().set(HttpConst.DATE, DateKit.gmtDate());
-            httpResponse.headers().set(HttpConst.SERVER, "blade/" + Const.VERSION);
+            httpResponse.headers().set(NettyHttpConst.CONTENT_LENGTH, fileLength);
+            httpResponse.headers().set(NettyHttpConst.DATE, DateKit.gmtDate());
+            httpResponse.headers().set(NettyHttpConst.SERVER, "blade/" + Const.VERSION);
 
             boolean keepAlive = WebContext.request().keepAlive();
             if (keepAlive) {
-                httpResponse.headers().set(HttpConst.CONNECTION, HttpConst.KEEP_ALIVE);
+                httpResponse.headers().set(NettyHttpConst.CONNECTION, NettyHttpConst.KEEP_ALIVE);
             }
 
             // Write the initial line and the header.

@@ -15,10 +15,7 @@
  */
 package com.blade.mvc;
 
-import com.blade.mvc.http.Body;
-import com.blade.mvc.http.Request;
-import com.blade.mvc.http.Response;
-import com.blade.mvc.http.Session;
+import com.blade.mvc.http.*;
 import com.blade.mvc.route.Route;
 import com.blade.mvc.ui.ModelAndView;
 import lombok.var;
@@ -284,7 +281,7 @@ public class RouteContext {
      * @return Return request query Map
      */
     public Map<String, List<String>> parameters() {
-        return this.request.parameters();
+        return this.request.formParams();
     }
 
     /**
@@ -545,7 +542,7 @@ public class RouteContext {
     }
 
     public void initRoute(Route route) {
-        this.request.initPathParams(route);
+        this.request.initPathParams(route.getPathParams());
         this.route = route;
     }
 

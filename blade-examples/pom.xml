@@ -16,6 +16,11 @@
             <groupId>com.bladejava</groupId>
             <artifactId>blade-core</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 
 </project>

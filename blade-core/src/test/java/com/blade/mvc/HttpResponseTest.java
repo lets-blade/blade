@@ -60,9 +60,9 @@ public class HttpResponseTest extends BaseTestCase {
         Response mockResponse = mockHttpResponse(HttpResponseStatus.OK.code());
 
         Response response = new HttpResponse(mockResponse);
-        response.contentType(Const.CONTENT_TYPE_HTML);
+        response.contentType(HttpConst.CONTENT_TYPE_HTML);
 
-        assertEquals(Const.CONTENT_TYPE_HTML, response.contentType());
+        assertEquals(HttpConst.CONTENT_TYPE_HTML, response.contentType());
 
         response.contentType("hello.world");
         assertEquals("hello.world", response.contentType());

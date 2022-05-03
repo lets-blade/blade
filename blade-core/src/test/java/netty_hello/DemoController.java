@@ -2,13 +2,12 @@ package netty_hello;
 
 import com.blade.annotation.Path;
 import com.blade.annotation.request.*;
-import com.blade.annotation.response.JSON;
+import com.blade.annotation.response.Response;
 import com.blade.annotation.route.GET;
 import com.blade.annotation.route.POST;
 import com.blade.annotation.route.ANY;
 import com.blade.ioc.annotation.Inject;
 import com.blade.mvc.http.Request;
-import com.blade.mvc.http.Response;
 import com.blade.mvc.multipart.FileItem;
 import com.blade.mvc.ui.RestResponse;
 import com.blade.validator.Validators;
@@ -56,14 +55,14 @@ public class DemoController {
         System.out.println("bb:" + bb);
     }
 
-    @JSON
+    @Response
     @POST("api_test/:size")
     public RestResponse<Integer> api_portal(@PathParam Integer size) {
         return RestResponse.ok(size);
     }
 
     @GET("csrf")
-    public void getCsrfToken(Request request, Response response) {
+    public void getCsrfToken(Request request, com.blade.mvc.http.Response response) {
         response.text("token: " + request.attribute("_csrf_token"));
     }
 
@@ -73,14 +72,14 @@ public class DemoController {
     }
 
     @POST("exp")
-    public void validatorException(Request request, Response response) {
+    public void validatorException(Request request, com.blade.mvc.http.Response response) {
         String name = request.query("name", "");
         Validators.notEmpty().test(name).throwIfInvalid("名称");
         System.out.println("继续执行");
     }
 
     @POST("upload")
-    @JSON
+    @Response
     public RestResponse upload(@Multipart FileItem fileItem) throws IOException {
         System.out.println(fileItem);
         fileItem.moveTo(new File(fileItem.getFileName()));
@@ -88,7 +87,7 @@ public class DemoController {
     }
 
     @POST("save")
-    @JSON
+    @Response
     public RestResponse savePerson(@Body Map<String, Object> person) {
         return RestResponse.ok(person);
     }

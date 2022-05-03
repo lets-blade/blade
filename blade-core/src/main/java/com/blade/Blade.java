@@ -38,7 +38,7 @@ import com.blade.mvc.route.mapping.dynamic.TrieMapping;
 import com.blade.mvc.ui.template.DefaultEngine;
 import com.blade.mvc.ui.template.TemplateEngine;
 import com.blade.server.Server;
-import com.blade.server.netty.NettyServer;
+import com.blade.server.NettyServer;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;

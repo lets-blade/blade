@@ -13,13 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.blade.server.netty;
+package com.blade.server;
 
 import com.blade.Blade;
 import com.blade.exception.ForbiddenException;
 import com.blade.exception.NotFoundException;
 import com.blade.kit.*;
 import com.blade.mvc.Const;
+import com.blade.mvc.HttpConst;
 import com.blade.mvc.WebContext;
 import com.blade.mvc.handler.RequestHandler;
 import com.blade.mvc.http.Request;
@@ -49,9 +50,7 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.regex.Pattern;
 
-import static com.blade.kit.BladeKit.log200AndCost;
-import static com.blade.kit.BladeKit.log304;
-import static com.blade.kit.BladeKit.log403;
+import static com.blade.kit.BladeKit.*;
 import static io.netty.handler.codec.http.HttpResponseStatus.*;
 import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 import static java.util.stream.Collectors.toList;
@@ -95,15 +94,15 @@ public class StaticFileHandler implements RequestHandler {
 
         ChannelHandlerContext ctx = webContext.getChannelHandlerContext();
 
-        if (!HttpConst.METHOD_GET.equals(request.method())) {
+        if (!NettyHttpConst.METHOD_GET.equals(request.method())) {
             sendError(ctx, METHOD_NOT_ALLOWED);
             return;
         }
 
         Instant start = Instant.now();
 
-        String uri      = URLDecoder.decode(request.uri(), "UTF-8");
-        String method   = StringKit.padRight(request.method(), 6);
+        String uri = URLDecoder.decode(request.uri(), "UTF-8");
+        String method = StringKit.padRight(request.method(), 6);
         String cleanURL = getCleanURL(request, uri);
 
         // webjars
@@ -178,9 +177,9 @@ public class StaticFileHandler implements RequestHandler {
 
         long fileLength = raf.length();
 
-        httpResponse.headers().set(HttpConst.CONTENT_LENGTH, fileLength);
+        httpResponse.headers().set(NettyHttpConst.CONTENT_LENGTH, fileLength);
         if (request.keepAlive()) {
-            httpResponse.headers().set(HttpConst.CONNECTION, HttpConst.KEEP_ALIVE);
+            httpResponse.headers().set(NettyHttpConst.CONNECTION, NettyHttpConst.KEEP_ALIVE);
         }
 
         // Write the initial line and the header.
@@ -273,12 +272,12 @@ public class StaticFileHandler implements RequestHandler {
             setDateAndCacheHeaders(httpResponse, null);
             String contentType = MimeTypeKit.parse(cleanUri);
             if (null != contentType) {
-                httpResponse.headers().set(HttpConst.CONTENT_TYPE, contentType);
+                httpResponse.headers().set(NettyHttpConst.CONTENT_TYPE, contentType);
             }
-            httpResponse.headers().set(HttpConst.CONTENT_LENGTH, size);
+            httpResponse.headers().set(NettyHttpConst.CONTENT_LENGTH, size);
 
             if (request.keepAlive()) {
-                httpResponse.headers().set(HttpConst.CONNECTION, HttpConst.KEEP_ALIVE);
+                httpResponse.headers().set(NettyHttpConst.CONNECTION, NettyHttpConst.KEEP_ALIVE);
             }
             // Write the initial line and the header.
             ctx.writeAndFlush(httpResponse);
@@ -300,7 +299,7 @@ public class StaticFileHandler implements RequestHandler {
     }
 
     private boolean isHttp304(ChannelHandlerContext ctx, Request request, long size, long lastModified) {
-        String ifModifiedSince = request.header(HttpConst.IF_MODIFIED_SINCE);
+        String ifModifiedSince = request.header(NettyHttpConst.IF_MODIFIED_SINCE);
 
         if (StringKit.isNotEmpty(ifModifiedSince) && httpCacheSeconds > 0) {
 
@@ -315,13 +314,13 @@ public class StaticFileHandler implements RequestHandler {
 
                 String contentType = MimeTypeKit.parse(request.uri());
                 if (null != contentType) {
-                    response.headers().set(HttpConst.CONTENT_TYPE, contentType);
+                    response.headers().set(NettyHttpConst.CONTENT_TYPE, contentType);
                 }
 
-                response.headers().set(HttpConst.DATE, DateKit.gmtDate());
-                response.headers().set(HttpConst.CONTENT_LENGTH, size);
+                response.headers().set(NettyHttpConst.DATE, DateKit.gmtDate());
+                response.headers().set(NettyHttpConst.CONTENT_LENGTH, size);
                 if (request.keepAlive()) {
-                    response.headers().set(HttpConst.CONNECTION, HttpConst.KEEP_ALIVE);
+                    response.headers().set(NettyHttpConst.CONNECTION, NettyHttpConst.KEEP_ALIVE);
                 }
                 // Close the connection as soon as the error message is sent.
                 ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
@@ -332,9 +331,9 @@ public class StaticFileHandler implements RequestHandler {
     }
 
     public Date format(String date, String pattern) {
-        DateTimeFormatter fmt       = DateTimeFormatter.ofPattern(pattern, Locale.US);
-        LocalDateTime     formatted = LocalDateTime.parse(date, fmt);
-        Instant           instant   = formatted.atZone(ZoneId.systemDefault()).toInstant();
+        DateTimeFormatter fmt = DateTimeFormatter.ofPattern(pattern, Locale.US);
+        LocalDateTime formatted = LocalDateTime.parse(date, fmt);
+        Instant instant = formatted.atZone(ZoneId.systemDefault()).toInstant();
         return Date.from(instant);
     }
 
@@ -345,15 +344,15 @@ public class StaticFileHandler implements RequestHandler {
      * @param fileToCache file to extract content type
      */
     private void setDateAndCacheHeaders(HttpResponse response, File fileToCache) {
-        response.headers().set(HttpConst.DATE, DateKit.gmtDate());
+        response.headers().set(NettyHttpConst.DATE, DateKit.gmtDate());
         // Add cache headers
         if (httpCacheSeconds > 0) {
-            response.headers().set(HttpConst.EXPIRES, DateKit.gmtDate(LocalDateTime.now().plusSeconds(httpCacheSeconds)));
-            response.headers().set(HttpConst.CACHE_CONTROL, "private, max-age=" + httpCacheSeconds);
+            response.headers().set(NettyHttpConst.EXPIRES, DateKit.gmtDate(LocalDateTime.now().plusSeconds(httpCacheSeconds)));
+            response.headers().set(NettyHttpConst.CACHE_CONTROL, "private, max-age=" + httpCacheSeconds);
             if (null != fileToCache) {
-                response.headers().set(HttpConst.LAST_MODIFIED, DateKit.gmtDate(new Date(fileToCache.lastModified())));
+                response.headers().set(NettyHttpConst.LAST_MODIFIED, DateKit.gmtDate(new Date(fileToCache.lastModified())));
             } else {
-                response.headers().set(HttpConst.LAST_MODIFIED, DateKit.gmtDate(LocalDateTime.now().plusDays(-1)));
+                response.headers().set(NettyHttpConst.LAST_MODIFIED, DateKit.gmtDate(LocalDateTime.now().plusDays(-1)));
             }
         }
     }
@@ -369,7 +368,7 @@ public class StaticFileHandler implements RequestHandler {
         Enumeration<JarEntry> entries = CACHE_JAR_FILE.entries();
         while (entries.hasMoreElements()) {
             JarEntry jarEntry = entries.nextElement();
-            String   name     = jarEntry.getName();
+            String name = jarEntry.getName();
             if (!name.startsWith(path) || name.equals(path + "/")) {
                 continue;
             }
@@ -386,8 +385,8 @@ public class StaticFileHandler implements RequestHandler {
 
     static class FileMeta {
         boolean isDirectory;
-        String  name;
-        long    length;
+        String name;
+        long length;
 
 //        static FileMeta buildByJarEntry(JarEntry jarEntry) {
 //            FileMeta fileMeta = new FileMeta();
@@ -413,7 +412,7 @@ public class StaticFileHandler implements RequestHandler {
 
     private static void sendListing(ChannelHandlerContext ctx, String uri, List<FileMeta> listFiles, String dirPath) {
         var response = new DefaultFullHttpResponse(HTTP_1_1, OK);
-        response.headers().set(HttpConst.CONTENT_TYPE, "text/html; charset=UTF-8");
+        response.headers().set(NettyHttpConst.CONTENT_TYPE, "text/html; charset=UTF-8");
         StringBuilder buf = new StringBuilder()
                 .append("<!DOCTYPE html>\r\n")
                 .append("<html><head>")
@@ -486,7 +485,7 @@ public class StaticFileHandler implements RequestHandler {
         var response = new DefaultFullHttpResponse(HTTP_1_1, status,
                 Unpooled.copiedBuffer("Failure: " + status + "\r\n", CharsetUtil.UTF_8));
 
-        response.headers().set(HttpConst.CONTENT_TYPE, Const.CONTENT_TYPE_TEXT);
+        response.headers().set(NettyHttpConst.CONTENT_TYPE, HttpConst.CONTENT_TYPE_TEXT);
         // Close the connection as soon as the error message is sent.
         ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
     }
@@ -494,14 +493,14 @@ public class StaticFileHandler implements RequestHandler {
     private static final Pattern INSECURE_URI = Pattern.compile(".*[<>&\"].*");
 
     private static String sanitizeUri(String uri) {
-        if (uri.isEmpty() || uri.charAt(0) != HttpConst.CHAR_SLASH) {
+        if (uri.isEmpty() || uri.charAt(0) != NettyHttpConst.CHAR_SLASH) {
             return null;
         }
         // Convert file separators.
-        uri = uri.replace(HttpConst.CHAR_SLASH, File.separatorChar);
+        uri = uri.replace(NettyHttpConst.CHAR_SLASH, File.separatorChar);
         // Simplistic dumb security check.
         // You will have to do something serious in the production environment.
-        if (uri.contains(File.separator + HttpConst.CHAR_POINT) ||
+        if (uri.contains(File.separator + NettyHttpConst.CHAR_POINT) ||
                 uri.contains('.' + File.separator) ||
                 uri.charAt(0) == '.' || uri.charAt(uri.length() - 1) == '.' ||
                 INSECURE_URI.matcher(uri).matches()) {
@@ -523,11 +522,11 @@ public class StaticFileHandler implements RequestHandler {
         if (null == contentType) {
             contentType = URLConnection.guessContentTypeFromName(file.getName());
         }
-        response.headers().set(HttpConst.CONTENT_TYPE, contentType);
+        response.headers().set(NettyHttpConst.CONTENT_TYPE, contentType);
     }
 
     private void setGzip(HttpResponse response) {
-        response.headers().set(HttpConst.CONTENT_ENCODING, "gzip");
+        response.headers().set(NettyHttpConst.CONTENT_ENCODING, "gzip");
     }
 
 }

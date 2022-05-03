@@ -27,8 +27,8 @@ import lombok.var;
 import java.util.Optional;
 
 import static com.blade.mvc.Const.ENV_KEY_SESSION_KEY;
-import static com.blade.server.netty.HttpConst.DEFAULT_SESSION_KEY;
-import static com.blade.server.netty.HttpServerHandler.WEB_CONTEXT_THREAD_LOCAL;
+import static com.blade.server.NettyHttpConst.DEFAULT_SESSION_KEY;
+import static com.blade.server.HttpServerHandler.WEB_CONTEXT_THREAD_LOCAL;
 
 /**
  * Blade Web Context

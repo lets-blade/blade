@@ -1,4 +1,4 @@
-package com.blade.server.netty;
+package com.blade.server;
 
 import com.blade.Blade;
 import com.blade.kit.DateKit;
@@ -7,9 +7,11 @@ import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.http.HttpContentCompressor;
+import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.codec.http.HttpServerExpectContinueHandler;
 import io.netty.handler.ssl.SslContext;
+import io.netty.handler.stream.ChunkedWriteHandler;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
@@ -25,8 +27,6 @@ public class HttpServerInitializer extends ChannelInitializer<SocketChannel> {
     private final HttpServerHandler httpServerHandler;
 
     private final SslContext sslCtx;
-    private final Blade blade;
-    private final boolean isWebSocket;
     private final boolean useGZIP;
 
     public static volatile String date = DateKit.gmtDate(LocalDateTime.now());
@@ -34,10 +34,7 @@ public class HttpServerInitializer extends ChannelInitializer<SocketChannel> {
 
     public HttpServerInitializer(SslContext sslCtx, Blade blade, ScheduledExecutorService service) {
         this.sslCtx = sslCtx;
-        this.blade = blade;
         this.useGZIP = blade.environment().getBoolean(Const.ENV_KEY_GZIP_ENABLE, false);
-//        this.isWebSocket = blade.routeMatcher().getWebSockets().size() > 0;
-        this.isWebSocket = false;
         this.httpServerHandler = new HttpServerHandler();
 
         service.scheduleWithFixedDelay(() -> date = DateKit.gmtDate(LocalDateTime.now()), 1000, 1000, TimeUnit.MILLISECONDS);
@@ -52,16 +49,14 @@ public class HttpServerInitializer extends ChannelInitializer<SocketChannel> {
             }
 
             pipeline.addLast(new HttpServerCodec());
+            pipeline.addLast(new HttpObjectAggregator(1024 * 1024));
             pipeline.addLast(new HttpServerExpectContinueHandler());
 
             if (useGZIP) {
                 pipeline.addLast(new HttpContentCompressor());
             }
-
-            if (isWebSocket) {
-                //pipeline.addLast(new WebSocketHandler(blade));
-            }
-            pipeline.addLast(new MergeRequestHandler());
+//            pipeline.addLast(new ChunkedWriteHandler());
+            pipeline.addLast(new FullHttpRequestDecode());
             pipeline.addLast(httpServerHandler);
         } catch (Exception e) {
             log.error("Add channel pipeline error", e);

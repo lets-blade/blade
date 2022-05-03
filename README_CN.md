@@ -144,7 +144,7 @@ public class IndexController {
     }
     
     @PostRoute("signin")
-    @JSON
+    @Response
     public RestResponse doSignin(RouteContext ctx){
         // do something
         return RestResponse.ok();
@@ -421,7 +421,7 @@ public void printJSON(RouteContext ctx){
 
 ```java
 @GetRoute("users/json")
-@JSON
+@Response
 public User printJSON(){
   return new User("hellokaton", 18);
 }

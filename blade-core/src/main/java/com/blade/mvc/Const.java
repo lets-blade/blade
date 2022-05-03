@@ -31,12 +31,9 @@ public interface Const {
     int          DEFAULT_SERVER_PORT        = 9000;
     String       DEFAULT_SERVER_ADDRESS     = "0.0.0.0";
     String       LOCAL_IP_ADDRESS           = "127.0.0.1";
-    String       VERSION                    = "2.0.15.RELEASE";
+    String       VERSION                    = "2.1.0.RELEASE";
     String       WEB_JARS                   = "/webjars/";
     String       CLASSPATH                  = BladeKit.getCurrentClassPath();
-    String       CONTENT_TYPE_HTML          = "text/html; charset=UTF-8";
-    String       CONTENT_TYPE_JSON          = "application/json; charset=UTF-8";
-    String       CONTENT_TYPE_TEXT          = "text/plain; charset=UTF-8";
     String       HTTP_DATE_FORMAT           = "EEE, dd MMM yyyy HH:mm:ss zzz";
     String       INTERNAL_SERVER_ERROR_HTML = "<center><h1>500 Internal Server Error</h1><hr/></center>";
     String       DEFAULT_THREAD_NAME        = "_(:3」∠)_";

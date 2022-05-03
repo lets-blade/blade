@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.blade.server.netty;
+package com.blade.server;
 
 import com.blade.Blade;
 import com.blade.Environment;
@@ -40,7 +40,6 @@ import com.blade.mvc.http.session.SessionCleaner;
 import com.blade.mvc.route.RouteBuilder;
 import com.blade.mvc.route.RouteMatcher;
 import com.blade.mvc.ui.template.DefaultEngine;
-import com.blade.server.Server;
 import com.blade.task.Task;
 import com.blade.task.TaskContext;
 import com.blade.task.TaskManager;
@@ -376,10 +375,10 @@ public class NettyServer implements Server {
         }
 
         String templatePath = environment.get(ENV_KEY_TEMPLATE_PATH, "templates");
-        if (templatePath.charAt(0) == HttpConst.CHAR_SLASH) {
+        if (templatePath.charAt(0) == NettyHttpConst.CHAR_SLASH) {
             templatePath = templatePath.substring(1);
         }
-        if (templatePath.endsWith(HttpConst.SLASH)) {
+        if (templatePath.endsWith(NettyHttpConst.SLASH)) {
             templatePath = templatePath.substring(0, templatePath.length() - 1);
         }
         DefaultEngine.TEMPLATE_PATH = templatePath;

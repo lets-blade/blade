@@ -20,30 +20,20 @@ import com.blade.kit.CaseInsensitiveHashMap;
 import com.blade.kit.PathKit;
 import com.blade.kit.StringKit;
 import com.blade.mvc.Const;
+import com.blade.mvc.HttpConst;
 import com.blade.mvc.WebContext;
 import com.blade.mvc.handler.SessionHandler;
 import com.blade.mvc.http.session.SessionManager;
 import com.blade.mvc.multipart.FileItem;
-import com.blade.mvc.route.Route;
-import com.blade.server.netty.HttpConst;
-import com.blade.server.netty.HttpServerHandler;
+import com.blade.server.NettyHttpConst;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import io.netty.handler.codec.http.HttpContent;
+import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpUtil;
-import io.netty.handler.codec.http.LastHttpContent;
 import io.netty.handler.codec.http.QueryStringDecoder;
 import io.netty.handler.codec.http.cookie.ServerCookieDecoder;
-import io.netty.handler.codec.http.multipart.Attribute;
-import io.netty.handler.codec.http.multipart.DefaultHttpDataFactory;
-import io.netty.handler.codec.http.multipart.DiskAttribute;
-import io.netty.handler.codec.http.multipart.DiskFileUpload;
-import io.netty.handler.codec.http.multipart.FileUpload;
-import io.netty.handler.codec.http.multipart.HttpData;
-import io.netty.handler.codec.http.multipart.HttpDataFactory;
-import io.netty.handler.codec.http.multipart.HttpPostRequestDecoder;
-import io.netty.handler.codec.http.multipart.InterfaceHttpData;
+import io.netty.handler.codec.http.multipart.*;
 import io.netty.util.CharsetUtil;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
@@ -51,17 +41,10 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.var;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Queue;
-import java.util.Set;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
+
+import static com.blade.mvc.Const.ENV_KEY_PERFORMANCE;
 
 /**
  * Http Request Impl
@@ -74,7 +57,7 @@ import java.util.Set;
 public class HttpRequest implements Request {
 
     private static final HttpDataFactory HTTP_DATA_FACTORY =
-            new DefaultHttpDataFactory(true); // Disk if size exceed
+            new DefaultHttpDataFactory(DefaultHttpDataFactory.MINSIZE); // Disk if size exceed
 
     private static final ByteBuf EMPTY_BUF = Unpooled.copiedBuffer("", CharsetUtil.UTF_8);
 
@@ -93,29 +76,21 @@ public class HttpRequest implements Request {
     private String url;
     private String protocol;
     private String method;
+    private String contentType;
     private boolean keepAlive;
     private Session session;
 
     private boolean isMultipart;
-    private boolean isEnd;
-    private boolean initCookie;
-    private boolean initQueryParam;
-
-    private HttpData partialContent;
 
     private HttpHeaders httpHeaders;
 
-    private io.netty.handler.codec.http.HttpRequest nettyRequest;
-    private HttpPostRequestDecoder decoder;
-
-    private Queue<HttpContent> contents = new LinkedList<>();
-
-    private Map<String, String> headers = null;
-    private Map<String, Object> attributes = null;
-    private Map<String, String> pathParams = null;
-    private Map<String, List<String>> parameters = new HashMap<>(8);
-    private Map<String, Cookie> cookies = new HashMap<>(8);
-    private Map<String, FileItem> fileItems = new HashMap<>(8);
+    private Map<String, String> headers = Collections.emptyMap();
+    private Map<String, Object> attributes = Collections.emptyMap();
+    private Map<String, String> pathParams = Collections.emptyMap();
+    private Map<String, List<String>> queries = Collections.emptyMap();
+    private Map<String, List<String>> formParams = Collections.emptyMap();
+    private Map<String, Cookie> cookies = Collections.emptyMap();
+    private Map<String, FileItem> fileItems = Collections.emptyMap();
 
     public HttpRequest(Request request) {
         this.pathParams = request.pathParams();
@@ -133,14 +108,14 @@ public class HttpRequest implements Request {
             this.uri = pathEndPos < 0 ? this.url : this.url.substring(0, pathEndPos);
         }
 
-        this.parameters = request.parameters();
+        this.formParams = request.formParams();
         this.protocol = request.protocol();
     }
 
     @Override
-    public Request initPathParams(@NonNull Route route) {
-        if (null != route.getPathParams())
-            this.pathParams = route.getPathParams();
+    public Request initPathParams(Map<String, String> pathParams) {
+        if (null != pathParams)
+            this.pathParams = pathParams;
         return this;
     }
 
@@ -183,33 +158,23 @@ public class HttpRequest implements Request {
     }
 
     @Override
-    public Map<String, List<String>> parameters() {
-        if (initQueryParam) {
-            return this.parameters;
-        }
+    public Map<String, List<String>> queries() {
+        return this.queries;
+    }
 
-        initQueryParam = true;
-        if (!url.contains("?")) {
-            return this.parameters;
-        }
-
-        var parameters =
-                new QueryStringDecoder(url, CharsetUtil.UTF_8).parameters();
-
-        if (null != parameters) {
-            this.parameters.putAll(parameters);
-        }
-        return this.parameters;
+    @Override
+    public Map<String, List<String>> formParams() {
+        return this.formParams;
     }
 
     @Override
     public Set<String> parameterNames() {
-        return this.parameters.keySet();
+        return this.formParams.keySet();
     }
 
     @Override
-    public List<String> parameterValues(String paramName) {
-        return this.parameters.get(paramName);
+    public List<String> formValue(String paramName) {
+        return this.formParams.get(paramName);
     }
 
     @Override
@@ -231,7 +196,7 @@ public class HttpRequest implements Request {
             return false;
         }
 
-        String acceptEncoding = this.header(HttpConst.ACCEPT_ENCODING);
+        String acceptEncoding = this.header(NettyHttpConst.ACCEPT_ENCODING);
         if (StringKit.isEmpty(acceptEncoding)) {
             return false;
         }
@@ -256,13 +221,6 @@ public class HttpRequest implements Request {
 
     @Override
     public Map<String, Cookie> cookies() {
-        if (!initCookie) {
-            initCookie = true;
-            String cookie = header(HttpConst.COOKIE_STRING);
-            if (StringKit.isNotEmpty(cookie)) {
-                ServerCookieDecoder.LAX.decode(cookie).forEach(this::parseCookie);
-            }
-        }
         return this.cookies;
     }
 
@@ -295,7 +253,7 @@ public class HttpRequest implements Request {
 
     @Override
     public Map<String, Object> attributes() {
-        if (null == this.attributes) {
+        if (null == this.attributes || this.attributes.isEmpty()) {
             this.attributes = new HashMap<>(4);
         }
         return this.attributes;
@@ -312,35 +270,19 @@ public class HttpRequest implements Request {
     }
 
     @Override
-    public boolean chunkIsEnd() {
-        return this.isEnd;
-    }
-
-    @Override
     public boolean isMultipart() {
         return isMultipart;
     }
 
-    public void setNettyRequest(io.netty.handler.codec.http.HttpRequest nettyRequest) {
-        this.nettyRequest = nettyRequest;
-    }
-
-    public void appendContent(HttpContent msg) {
-        this.contents.add(msg.retain());
-        if (msg instanceof LastHttpContent) {
-            this.isEnd = true;
-        }
-    }
-
-    public void init(String remoteAddress) {
+    public void init(String remoteAddress, FullHttpRequest fullHttpRequest) {
         this.remoteAddress = remoteAddress.substring(1);
-        this.keepAlive = HttpUtil.isKeepAlive(nettyRequest);
-        this.url = nettyRequest.uri();
+        this.keepAlive = HttpUtil.isKeepAlive(fullHttpRequest);
+        this.url = fullHttpRequest.uri();
 
         int pathEndPos = this.url().indexOf('?');
         this.uri = pathEndPos < 0 ? this.url() : this.url().substring(0, pathEndPos);
-        this.protocol = nettyRequest.protocolVersion().text();
-        this.method = nettyRequest.method().name();
+        this.protocol = fullHttpRequest.protocolVersion().text();
+        this.method = fullHttpRequest.method().name();
 
         String cleanUri = this.uri;
         if (!"/".equals(this.contextPath())) {
@@ -348,13 +290,22 @@ public class HttpRequest implements Request {
             this.uri = cleanUri;
         }
 
-        this.httpHeaders = nettyRequest.headers();
+        this.httpHeaders = fullHttpRequest.headers();
+        this.parseContentType();
+        this.parseCookie();
 
-        if (!HttpServerHandler.PERFORMANCE) {
+        if (!WebContext.blade().environment()
+                .getBoolean(ENV_KEY_PERFORMANCE, false)) {
             SessionManager sessionManager = WebContext.blade().sessionManager();
             if (null != sessionManager) {
                 this.session = SESSION_HANDLER.createSession(this);
             }
+        }
+
+        QueryStringDecoder queryDecoder = new QueryStringDecoder(this.url, StandardCharsets.UTF_8);
+        Map<String, List<String>> query = queryDecoder.parameters();
+        if (null != query) {
+            this.queries = query;
         }
 
         if ("GET".equals(this.method())) {
@@ -362,70 +313,69 @@ public class HttpRequest implements Request {
         }
 
         try {
-            HttpPostRequestDecoder decoder = new HttpPostRequestDecoder(HTTP_DATA_FACTORY, nettyRequest);
-            this.isMultipart = decoder.isMultipart();
+            this.body = fullHttpRequest.content().copy();
 
-            List<ByteBuf> byteBuffs = new ArrayList<>(this.contents.size());
-
-            for (HttpContent content : this.contents) {
-                if (!isMultipart) {
-                    byteBuffs.add(content.content().copy());
+            if (HttpConst.CONTENT_TYPE_MULTIPART.equals(this.contentType)) {
+                this.isMultipart = true;
+                this.formParams = new HashMap<>(8);
+                this.fileItems = new HashMap<>(8);
+                HttpPostMultipartRequestDecoder decoder = new HttpPostMultipartRequestDecoder(HTTP_DATA_FACTORY, fullHttpRequest);
+                while (decoder.hasNext()) {
+                    InterfaceHttpData httpData = decoder.next();
+                    this.writeHttpData(httpData);
                 }
-
-                decoder.offer(content);
-                this.readHttpDataChunkByChunk(decoder);
-                content.release();
-            }
-            if (!byteBuffs.isEmpty()) {
-                this.body = Unpooled.copiedBuffer(byteBuffs.toArray(new ByteBuf[0]));
+            } else {
+                String paramString = fullHttpRequest.content().toString(StandardCharsets.UTF_8);
+                queryDecoder = new QueryStringDecoder(paramString, false);
+                Map<String, List<String>> uriAttributes = queryDecoder.parameters();
+                if (null != uriAttributes) {
+                    this.formParams = uriAttributes;
+                }
             }
         } catch (Exception e) {
             throw new HttpParseException("build decoder fail", e);
         }
     }
 
-    /**
-     * Example of reading request by chunk and getting values from chunk to chunk
-     */
-    private void readHttpDataChunkByChunk(HttpPostRequestDecoder decoder) {
-        try {
-            while (decoder.hasNext()) {
-                InterfaceHttpData data = decoder.next();
-                if (data != null) {
-                    // check if current HttpData is a FileUpload and previously set as partial
-                    if (partialContent == data) {
-                        partialContent = null;
-                    }
-                    try {
-                        // new value
-                        writeHttpData(data);
-                    } finally {
-                        data.release();
-                    }
-                }
-            }
-            // Check partial decoding for a FileUpload
-            InterfaceHttpData data = decoder.currentPartialHttpData();
-            if (data != null) {
-                if (partialContent == null) {
-                    partialContent = (HttpData) data;
-                }
-            }
-        } catch (HttpPostRequestDecoder.EndOfDataDecoderException e1) {
-            // end
+    private void parseCookie() {
+        String cookie = this.httpHeaders.get(HttpConst.HEADER_COOKIE);
+        if (StringKit.isEmpty(cookie)) {
+            return;
         }
+        this.cookies = new HashMap<>(8);
+        ServerCookieDecoder.LAX.decode(cookie).forEach(this::parseCookie);
+    }
+
+    private void parseContentType() {
+        String contentType = this.httpHeaders.get(HttpConst.CONTENT_TYPE);
+        if (null != contentType) {
+            contentType = contentType.toLowerCase();
+        }
+        if (null != contentType && contentType.contains(";")) {
+            contentType = contentType.split(";")[0];
+        }
+        this.contentType = contentType;
     }
 
     private void writeHttpData(InterfaceHttpData data) {
+        boolean canRelease = false;
         try {
+            if (null == data) {
+                return;
+            }
             InterfaceHttpData.HttpDataType dataType = data.getHttpDataType();
             if (dataType == InterfaceHttpData.HttpDataType.Attribute) {
                 parseAttribute((Attribute) data);
+                canRelease = true;
             } else if (dataType == InterfaceHttpData.HttpDataType.FileUpload) {
                 parseFileUpload((FileUpload) data);
             }
         } catch (IOException e) {
             log.error("Parse request parameter error", e);
+        } finally {
+            if (canRelease) {
+                data.release();
+            }
         }
     }
 
@@ -434,13 +384,13 @@ public class HttpRequest implements Request {
         var value = attribute.getValue();
 
         List<String> values;
-        if (this.parameters.containsKey(name)) {
-            values = this.parameters.get(name);
+        if (this.formParams.containsKey(name)) {
+            values = this.formParams.get(name);
             values.add(value);
         } else {
             values = new ArrayList<>();
             values.add(value);
-            this.parameters.put(name, values);
+            this.formParams.put(name, values);
         }
     }
 
@@ -456,21 +406,20 @@ public class HttpRequest implements Request {
         FileItem fileItem = new FileItem();
         fileItem.setName(fileUpload.getName());
         fileItem.setFileName(fileUpload.getFilename());
+        fileItem.setContentType(fileUpload.getContentType());
+        fileItem.setLength(fileUpload.length());
 
         // Upload the file is moved to the specified temporary file,
         // because FileUpload will be release after completion of the analysis.
         // tmpFile will be deleted automatically if they are used.
-        Path tmpFile = Files.createTempFile(
-                Paths.get(fileUpload.getFile().getParent()), "blade_", "_upload");
-
-        Path fileUploadPath = Paths.get(fileUpload.getFile().getPath());
-        Files.move(fileUploadPath, tmpFile, StandardCopyOption.REPLACE_EXISTING);
-
-        fileItem.setFile(tmpFile.toFile());
-        fileItem.setPath(tmpFile.toFile().getPath());
-        fileItem.setContentType(fileUpload.getContentType());
-        fileItem.setLength(fileUpload.length());
-
+        if (fileUpload.isInMemory()) {
+            fileItem.setInMemory(true);
+            fileItem.setData(fileUpload.get());
+        } else {
+            fileItem.setFile(fileUpload.getFile());
+            fileItem.setPath(fileUpload.getFile().getPath());
+            fileItem.setInMemory(false);
+        }
         fileItems.put(fileItem.getName(), fileItem);
     }
 

@@ -44,7 +44,7 @@ If you think it's good, you can support it with a [star](https://github.com/lets
 * [x] Support webjars resources
 * [x] Tasks based on `cron` expressions
 * [x] Built-in a variety of commonly used middleware
-* [x] Built-in JSON output
+* [x] Built-in Response output
 * [x] JDK8 +
 
 ## Overview
@@ -102,7 +102,7 @@ Open http://localhost:9000 in your browser to see your first `Blade` application
 - [**`Upload File`**](#upload-file)
 - [**`Set Session`**](#set-session)
 - [**`Render To Browser`**](#render-to-browser)
-    - [**`Render JSON`**](#render-json)
+    - [**`Render Response`**](#render-json)
     - [**`Render Text`**](#render-text)
     - [**`Render Html`**](#render-html)
 - [**`Render Template`**](#render-template)
@@ -145,7 +145,7 @@ public class IndexController {
     }
 
     @PostRoute("signin")
-    @JSON
+    @Response
     public RestResponse doSignin(RouteContext ctx){
         // do something
         return RestResponse.ok();
@@ -404,7 +404,7 @@ public void login(Session session){
 
 ## Render To Browser
 
-### Render JSON
+### Render Response
 
 **By Context**
 
@@ -422,7 +422,7 @@ This form looks more concise 😶
 
 ```java
 @GetRoute("users/json")
-@JSON
+@Response
 public User printJSON(){
     return new User("hellokaton", 18);
 }

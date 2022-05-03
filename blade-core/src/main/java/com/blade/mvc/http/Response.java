@@ -4,6 +4,7 @@ import com.blade.exception.BladeException;
 import com.blade.kit.JsonKit;
 import com.blade.kit.StringKit;
 import com.blade.mvc.Const;
+import com.blade.mvc.HttpConst;
 import com.blade.mvc.WebContext;
 import com.blade.mvc.ui.ModelAndView;
 
@@ -168,7 +169,7 @@ public interface Response {
     default void text(String text) {
         if (null == text) return;
         if (null == contentType()) {
-            this.contentType(Const.CONTENT_TYPE_TEXT);
+            this.contentType(HttpConst.CONTENT_TYPE_TEXT);
         }
         this.body(text);
     }
@@ -181,7 +182,7 @@ public interface Response {
     default void html(String html) {
         if (null == html) return;
         if (null == contentType()) {
-            this.contentType(Const.CONTENT_TYPE_HTML);
+            this.contentType(HttpConst.CONTENT_TYPE_HTML);
         }
         this.body(html);
     }
@@ -195,9 +196,9 @@ public interface Response {
         if (null == json) return;
         if (null == contentType()) {
             if (Objects.requireNonNull(WebContext.request()).isIE()) {
-                this.contentType(Const.CONTENT_TYPE_HTML);
+                this.contentType(HttpConst.CONTENT_TYPE_HTML);
             } else {
-                this.contentType(Const.CONTENT_TYPE_JSON);
+                this.contentType(HttpConst.CONTENT_TYPE_JSON);
             }
         }
         this.body(json);

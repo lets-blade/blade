@@ -45,7 +45,7 @@ public class BasicAuthMiddlewareTest extends BaseTestCase {
         Map<String, String> headers = new HashMap<>();
         headers.put("Authorization", "Basic YWRtaW46MTIzNDU2");
 
-        Mockito.when(mockRequest.parameters()).thenReturn(new HashMap<>());
+        Mockito.when(mockRequest.formParams()).thenReturn(new HashMap<>());
         Mockito.when(mockRequest.headers()).thenReturn(headers);
 
         Request  request  = new HttpRequest(mockRequest);
@@ -76,7 +76,7 @@ public class BasicAuthMiddlewareTest extends BaseTestCase {
         Map<String, String> headers = new HashMap<>();
         headers.put("Authorization", "Basic YmxhZGU6YmxhZGUyMg==");
 
-        Mockito.when(mockRequest.parameters()).thenReturn(new HashMap<>());
+        Mockito.when(mockRequest.formParams()).thenReturn(new HashMap<>());
         Mockito.when(mockRequest.headers()).thenReturn(headers);
 
         Request  request  = new HttpRequest(mockRequest);

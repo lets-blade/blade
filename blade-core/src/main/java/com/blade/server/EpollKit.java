@@ -1,4 +1,4 @@
-package com.blade.server.netty;
+package com.blade.server;
 
 import com.blade.kit.NamedThreadFactory;
 import io.netty.channel.epoll.EpollEventLoopGroup;

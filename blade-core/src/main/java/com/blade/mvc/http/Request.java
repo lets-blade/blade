@@ -7,7 +7,7 @@ import com.blade.mvc.WebContext;
 import com.blade.mvc.handler.RouteActionArguments;
 import com.blade.mvc.multipart.FileItem;
 import com.blade.mvc.route.Route;
-import com.blade.server.netty.HttpConst;
+import com.blade.server.NettyHttpConst;
 import io.netty.buffer.ByteBuf;
 import io.netty.util.CharsetUtil;
 import lombok.NonNull;
@@ -30,10 +30,10 @@ public interface Request {
     /**
      * init request path parameters
      *
-     * @param route route object
+     * @param pathParams path params
      * @return Return request
      */
-    Request initPathParams(Route route);
+    Request initPathParams(Map<String, String> pathParams);
 
     /**
      * Get client host.
@@ -69,7 +69,7 @@ public interface Request {
      * @return return user-agent
      */
     default String userAgent() {
-        return header(HttpConst.USER_AGENT);
+        return header(NettyHttpConst.USER_AGENT);
     }
 
     /**
@@ -134,12 +134,14 @@ public interface Request {
      */
     String queryString();
 
+    Map<String, List<String>> queries();
+
     /**
      * Get current request query parameters
      *
      * @return Return request query Map
      */
-    Map<String, List<String>> parameters();
+    Map<String, List<String>> formParams();
 
     /**
      * Get current request query parameter names
@@ -156,7 +158,7 @@ public interface Request {
      * @return Return request query values
      * @since 2.0.8-RELEASE
      */
-    List<String> parameterValues(String paramName);
+    List<String> formValue(String paramName);
 
     /**
      * Get a request parameter
@@ -165,7 +167,20 @@ public interface Request {
      * @return Return request parameter value
      */
     default Optional<String> query(@NonNull String name) {
-        List<String> values = parameters().get(name);
+        List<String> values = queries().get(name);
+        if (null != values && values.size() > 0)
+            return Optional.of(values.get(0));
+        return Optional.empty();
+    }
+
+    /**
+     * Get a request parameter
+     *
+     * @param name Parameter name
+     * @return Return request parameter value
+     */
+    default Optional<String> form(@NonNull String name) {
+        List<String> values = formParams().get(name);
         if (null != values && values.size() > 0)
             return Optional.of(values.get(0));
         return Optional.empty();
@@ -183,6 +198,11 @@ public interface Request {
         return value.orElse(defaultValue);
     }
 
+    default String form(@NonNull String name, @NonNull String defaultValue) {
+        Optional<String> value = form(name);
+        return value.orElse(defaultValue);
+    }
+
     /**
      * Returns a request parameter for a Int type
      *
@@ -191,6 +211,11 @@ public interface Request {
      */
     default Optional<Integer> queryInt(@NonNull String name) {
         Optional<String> value = query(name);
+        return value.map(Integer::parseInt);
+    }
+
+    default Optional<Integer> formInt(@NonNull String name) {
+        Optional<String> value = form(name);
         return value.map(Integer::parseInt);
     }
 
@@ -206,6 +231,11 @@ public interface Request {
         return value.map(Integer::parseInt).orElse(defaultValue);
     }
 
+    default int formInt(@NonNull String name, int defaultValue) {
+        Optional<String> value = form(name);
+        return value.map(Integer::parseInt).orElse(defaultValue);
+    }
+
     /**
      * Returns a request parameter for a Long type
      *
@@ -214,6 +244,11 @@ public interface Request {
      */
     default Optional<Long> queryLong(@NonNull String name) {
         Optional<String> value = query(name);
+        return value.map(Long::parseLong);
+    }
+
+    default Optional<Long> formLong(@NonNull String name) {
+        Optional<String> value = form(name);
         return value.map(Long::parseLong);
     }
 
@@ -229,6 +264,11 @@ public interface Request {
         return value.map(Long::parseLong).orElse(defaultValue);
     }
 
+    default long formLong(@NonNull String name, long defaultValue) {
+        Optional<String> value = form(name);
+        return value.map(Long::parseLong).orElse(defaultValue);
+    }
+
     /**
      * Returns a request parameter for a Double type
      *
@@ -237,6 +277,11 @@ public interface Request {
      */
     default Optional<Double> queryDouble(@NonNull String name) {
         Optional<String> value = query(name);
+        return value.map(Double::parseDouble);
+    }
+
+    default Optional<Double> formDouble(@NonNull String name) {
+        Optional<String> value = form(name);
         return value.map(Double::parseDouble);
     }
 
@@ -252,13 +297,28 @@ public interface Request {
         return value.map(Double::parseDouble).orElse(defaultValue);
     }
 
+    default double formDouble(@NonNull String name, Double defaultValue) {
+        Optional<String> value = form(name);
+        return value.map(Double::parseDouble).orElse(defaultValue);
+    }
+
     default Optional<Boolean> queryBoolean(@NonNull String name) {
         Optional<String> value = query(name);
         return value.map(Boolean::valueOf);
     }
 
+    default Optional<Boolean> formBoolean(@NonNull String name) {
+        Optional<String> value = form(name);
+        return value.map(Boolean::valueOf);
+    }
+
     default boolean queryBoolean(@NonNull String name, Boolean defaultValue) {
         Optional<String> value = query(name);
+        return value.map(Boolean::valueOf).orElse(defaultValue);
+    }
+
+    default boolean formBoolean(@NonNull String name, Boolean defaultValue) {
+        Optional<String> value = form(name);
         return value.map(Boolean::valueOf).orElse(defaultValue);
     }
 
@@ -311,7 +371,7 @@ public interface Request {
      * @return Return contentType
      */
     default String contentType() {
-        String contentType = header(HttpConst.CONTENT_TYPE_STRING);
+        String contentType = header(NettyHttpConst.CONTENT_TYPE_STRING);
         return null != contentType ? contentType : "Unknown";
     }
 
@@ -339,7 +399,7 @@ public interface Request {
      * @return is form request
      */
     default boolean isFormRequest() {
-        return this.header(HttpConst.CONTENT_TYPE_STRING).toLowerCase().contains("form");
+        return this.header(NettyHttpConst.CONTENT_TYPE_STRING).toLowerCase().contains("form");
     }
 
     /**
@@ -350,7 +410,7 @@ public interface Request {
      * @return is json request
      */
     default boolean isJsonRequest() {
-        return this.header(HttpConst.CONTENT_TYPE_STRING).toLowerCase().contains("json");
+        return this.header(NettyHttpConst.CONTENT_TYPE_STRING).toLowerCase().contains("json");
     }
 
     /**
@@ -513,12 +573,6 @@ public interface Request {
     default Optional<FileItem> fileItem(@NonNull String name) {
         return Optional.ofNullable(fileItems().get(name));
     }
-
-    /**
-     * @return return whether Chunk content has been read
-     * @since 2.0.11
-     */
-    boolean chunkIsEnd();
 
     boolean isMultipart();
 
