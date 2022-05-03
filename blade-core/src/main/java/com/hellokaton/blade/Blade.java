@@ -39,6 +39,7 @@ import com.hellokaton.blade.mvc.route.mapping.dynamic.TrieMapping;
 import com.hellokaton.blade.mvc.ui.template.DefaultEngine;
 import com.hellokaton.blade.mvc.ui.template.TemplateEngine;
 import com.hellokaton.blade.options.CorsOptions;
+import com.hellokaton.blade.options.HttpOptions;
 import com.hellokaton.blade.server.NettyServer;
 import com.hellokaton.blade.server.Server;
 import lombok.AccessLevel;
@@ -64,7 +65,7 @@ import java.util.stream.Collectors;
  * modify the template engine, set the file list display,
  * static resource directory, and so on.
  *
- * @author biezhi 2017/5/31
+ * @author hellokaton 2017/5/31
  */
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -77,29 +78,29 @@ public class Blade {
      * Blade provide you with BasicAuthMiddleware, CsrfMiddleware,
      * you can customize the implementation of some middleware
      */
-    private List<WebHook> middleware = new ArrayList<>();
+    private final List<WebHook> middleware = new ArrayList<>();
 
     /**
      * Blade loader list, which stores all the actions that were performed before the project was started
      */
-    private List<BladeLoader> loaders = new ArrayList<>();
+    private final List<BladeLoader> loaders = new ArrayList<>();
 
     /**
      * All need to be scanned by the package, when you do not set the time will scan com.hellokaton.blade.plugin package
      */
-    private Set<String> packages = new LinkedHashSet<>(BladeConst.PLUGIN_PACKAGE_NAME);
+    private final Set<String> packages = new LinkedHashSet<>(BladeConst.PLUGIN_PACKAGE_NAME);
 
     /**
      * All static resource URL prefixes,
      * defaults to "/favicon.ico", "/robots.txt", "/static/", "/upload/", "/webjars/",
      * which are located under classpath
      */
-    private Set<String> statics = new HashSet<>(BladeConst.DEFAULT_STATICS);
+    private final Set<String> statics = new HashSet<>(BladeConst.DEFAULT_STATICS);
 
     /**
      * The default IOC container implementation
      */
-    private Ioc ioc = new SimpleIoc();
+    private final Ioc ioc = new SimpleIoc();
 
     /**
      * The default template engine implementation, this is a very simple, generally not put into production
@@ -109,7 +110,7 @@ public class Blade {
     /**
      * Event manager, which manages all the guys that will trigger events
      */
-    private EventManager eventManager = new EventManager();
+    private final EventManager eventManager = new EventManager();
 
     /**
      * Session manager, which manages session when you enable session
@@ -119,19 +120,20 @@ public class Blade {
     /**
      * Used to wait for the start to complete the lock
      */
-    private CountDownLatch latch = new CountDownLatch(1);
+    private final CountDownLatch latch = new CountDownLatch(1);
 
     /**
      * Web server implementation, currently only netty
      */
-    private Server server = new NettyServer();
+    private final Server server = new NettyServer();
 
     /**
      * A route matcher that matches whether a route exists
      */
-    private RouteMatcher routeMatcher = new RouteMatcher();
+    private final RouteMatcher routeMatcher = new RouteMatcher();
 
     private CorsOptions corsOptions = null;
+    private HttpOptions httpOptions = HttpOptions.create();
 
     /**
      * Blade environment, which stores the parameters of the app.properties configuration file
@@ -141,7 +143,7 @@ public class Blade {
     /**
      * Exception handling, it will output some logs when the error is initiated
      */
-    private Consumer<Exception> startupExceptionHandler = (e) -> log.error("Start blade failed", e);
+    private final Consumer<Exception> startupExceptionHandler = (e) -> log.error("Start blade failed", e);
 
     /**
      * Exception handler, default is DefaultExceptionHandler.
@@ -315,6 +317,11 @@ public class Blade {
         return this.routeMatcher;
     }
 
+    public Blade http(HttpOptions httpOptions) {
+        this.httpOptions = httpOptions;
+        return this;
+    }
+
     public Blade cors(CorsOptions corsOptions) {
         this.corsOptions = corsOptions;
         return this;
@@ -322,6 +329,10 @@ public class Blade {
 
     public CorsOptions corsOptions() {
         return this.corsOptions;
+    }
+
+    public HttpOptions httpOptions() {
+        return this.httpOptions;
     }
 
     /**
@@ -366,17 +377,6 @@ public class Blade {
      */
     public Blade showFileList(boolean fileList) {
         this.environment.set(BladeConst.ENV_KEY_STATIC_LIST, fileList);
-        return this;
-    }
-
-    /**
-     * Set whether open gzip, default disabled
-     *
-     * @param gzipEnable enabled gzip
-     * @return blade
-     */
-    public Blade gzip(boolean gzipEnable) {
-        this.environment.set(BladeConst.ENV_KEY_GZIP_ENABLE, gzipEnable);
         return this;
     }
 
@@ -908,9 +908,7 @@ public class Blade {
             return;
         }
 
-        Iterator<Map.Entry<String, String>> iterator = argsMap.entrySet().iterator();
-        while (iterator.hasNext()) {
-            Map.Entry<String, String> next = iterator.next();
+        for (Map.Entry<String, String> next : argsMap.entrySet()) {
             this.environment.set(next.getKey(), next.getValue());
         }
 

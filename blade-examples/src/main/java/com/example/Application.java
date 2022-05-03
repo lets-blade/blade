@@ -14,6 +14,7 @@ import com.hellokaton.blade.mvc.HttpConst;
 import com.hellokaton.blade.mvc.http.Request;
 import com.hellokaton.blade.mvc.multipart.FileItem;
 import com.hellokaton.blade.options.CorsOptions;
+import com.hellokaton.blade.options.HttpOptions;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
@@ -66,7 +67,8 @@ public class Application {
 
     public static void main(String[] args) {
         CorsOptions corsOptions = CorsOptions.forAnyOrigin().allowNullOrigin().allowCredentials();
-        Blade.of().cors(corsOptions)
+        Blade.of()
+                .cors(corsOptions)
                 .listen().start(Application.class);
     }
 

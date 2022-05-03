@@ -52,8 +52,7 @@ public interface BladeConst {
     String ENV_KEY_BANNER_PATH               = "app.banner-path";
     String ENV_KEY_TASK_THREAD_COUNT         = "app.task.thread-count";
     String ENV_KEY_CONTEXT_PATH              = "app.context-path";
-    String ENV_KEY_GZIP_ENABLE               = "http.gzip.enable";
-    String ENV_KEY_CORS_ENABLE               = "http.cors.enable";
+    String ENV_KEY_GZIP_ENABLE               = "http.gzip.enabled";
     String ENV_KEY_SESSION_KEY               = "http.session.key";
     String ENV_KEY_SESSION_TIMEOUT           = "http.session.timeout";
     String ENV_KEY_HTTP_CACHE_TIMEOUT        = "http.cache.timeout";
