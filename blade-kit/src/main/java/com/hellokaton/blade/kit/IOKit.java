@@ -21,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.*;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -62,7 +63,7 @@ public class IOKit {
     }
 
     public static String readToString(InputStream input) throws IOException {
-        try (BufferedReader buffer = new BufferedReader(new InputStreamReader(input, "UTF-8"))) {
+        try (BufferedReader buffer = new BufferedReader(new InputStreamReader(input, StandardCharsets.UTF_8))) {
             return buffer.lines().collect(Collectors.joining(System.lineSeparator()));
         }
     }
@@ -77,7 +78,7 @@ public class IOKit {
         try (GZIPOutputStream out = new GZIPOutputStream(new FileOutputStream(output))) {
             try (FileInputStream in = new FileInputStream(input)) {
                 byte[] buffer = new byte[1024];
-                int    len;
+                int len;
                 while ((len = in.read(buffer)) != -1) {
                     out.write(buffer, 0, len);
                 }
@@ -89,7 +90,7 @@ public class IOKit {
         if (content == null || content.length() == 0) {
             return null;
         }
-        GZIPOutputStream      gzip;
+        GZIPOutputStream gzip;
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         gzip = new GZIPOutputStream(out);
         gzip.write(content.getBytes(charset));

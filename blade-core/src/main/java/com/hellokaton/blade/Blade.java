@@ -317,8 +317,8 @@ public class Blade {
         return this.routeMatcher;
     }
 
-    public Blade http(HttpOptions httpOptions) {
-        this.httpOptions = httpOptions;
+    public Blade http(Consumer<HttpOptions> consumer) {
+        consumer.accept(this.httpOptions);
         return this;
     }
 

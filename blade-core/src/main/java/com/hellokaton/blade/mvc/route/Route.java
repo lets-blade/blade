@@ -172,7 +172,7 @@ public class Route {
      * @return return path params
      */
     public Map<String, String> getPathParams() {
-        return pathParams;
+        return this.pathParams;
     }
 
     /**

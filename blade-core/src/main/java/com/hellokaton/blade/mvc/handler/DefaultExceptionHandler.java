@@ -45,7 +45,7 @@ public class DefaultExceptionHandler implements ExceptionHandler {
 
             if (e instanceof BladeException) {
                 this.handleBladeException((BladeException) e, request, response);
-            } else if (ValidatorException.class.isInstance(e)) {
+            } else if (e instanceof ValidatorException) {
                 this.handleValidators(ValidatorException.class.cast(e), request, response);
             } else {
                 this.handleException(e, request, response);

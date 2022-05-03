@@ -27,17 +27,17 @@ public class IOKitTest {
     @Test
     public void testReadToString() throws IOException, URISyntaxException {
         String content = IOKit.readToString(IOKitTest.class.getResourceAsStream("/application.properties"));
-        Assert.assertEquals(true, StringKit.isNotBlank(content));
+        Assert.assertTrue(StringKit.isNotBlank(content));
 
         content = IOKit.readToString(Paths.get(IOKitTest.class.getResource("/application.properties").toURI()).toString());
-        Assert.assertEquals(true, StringKit.isNotBlank(content));
+        Assert.assertTrue(StringKit.isNotBlank(content));
     }
 
     @Test
     public void testCopyFile() throws IOException {
         IOKit.copyFile(new File(IOKitTest.class.getResource("/application.properties").getPath()), new File("./tmp.properties"));
         File tmp = new File("./tmp.properties");
-        Assert.assertEquals(true, tmp.exists() && tmp.isFile());
+        Assert.assertTrue(tmp.exists() && tmp.isFile());
         tmp.delete();
     }
 

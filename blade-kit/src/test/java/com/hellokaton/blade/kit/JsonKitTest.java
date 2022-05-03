@@ -2,6 +2,7 @@ package com.hellokaton.blade.kit;
 
 import com.hellokaton.blade.kit.model.ChildBean;
 import com.hellokaton.blade.kit.model.TestBean;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.time.LocalDate;
@@ -63,9 +64,11 @@ public class JsonKitTest {
         childBean.setRepeatField("sss");
         String json = JsonKit.toString(childBean);
 
-        System.out.println(json);
+        Assert.assertEquals("{\"repeatField\":\"sss\",\"childField\":\"child\",\"superField\":\"super\"}", json);
+
         ChildBean formJson = JsonKit.fromJson(json, ChildBean.class);
-        System.out.println(formJson);
+
+        Assert.assertEquals(formJson, childBean);
     }
 
 }

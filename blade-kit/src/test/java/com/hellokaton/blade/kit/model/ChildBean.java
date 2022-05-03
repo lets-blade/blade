@@ -1,10 +1,8 @@
 package com.hellokaton.blade.kit.model;
 
-import lombok.AccessLevel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
-import lombok.experimental.FieldDefaults;
 
 /**
  * @author ydq
@@ -13,8 +11,10 @@ import lombok.experimental.FieldDefaults;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
-@FieldDefaults(level = AccessLevel.PRIVATE)
 public class ChildBean extends SuperBean {
-    String repeatField;
-    String childField;
+
+    private String repeatField;
+
+    private String childField;
+
 }

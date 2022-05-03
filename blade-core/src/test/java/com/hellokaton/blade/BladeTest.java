@@ -7,6 +7,7 @@ import com.hellokaton.blade.mvc.handler.ExceptionHandler;
 import com.hellokaton.blade.mvc.handler.RouteHandler;
 import com.hellokaton.blade.mvc.http.HttpSession;
 import com.hellokaton.blade.mvc.ui.template.TemplateEngine;
+import com.hellokaton.blade.options.HttpOptions;
 import com.hellokaton.blade.types.BladeClassDefineType;
 import com.mashape.unirest.http.Unirest;
 import netty_hello.Hello;
@@ -201,7 +202,7 @@ public class BladeTest extends BaseTestCase {
     @Test
     public void testGZIP() {
         Blade blade = Blade.of();
-        blade.gzip(true);
+        blade.http(HttpOptions::enableGzip);
         assertEquals(Boolean.TRUE, blade.environment().getBooleanOrNull(ENV_KEY_GZIP_ENABLE));
     }
 

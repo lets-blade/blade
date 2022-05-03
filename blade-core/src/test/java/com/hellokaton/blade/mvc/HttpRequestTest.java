@@ -171,13 +171,13 @@ public class HttpRequestTest extends BaseTestCase {
 
         Request mockRequest = mockHttpRequest("GET");
 
-        Map<String, List<String>> parameters = new HashMap<>();
-        parameters.put("name", Collections.singletonList("jack"));
-        parameters.put("price", Collections.singletonList("22.1"));
-        parameters.put("age", Collections.singletonList("25"));
-        parameters.put("id", Collections.singletonList("220291"));
+        Map<String, List<String>> queryParams = new HashMap<>();
+        queryParams.put("name", Collections.singletonList("jack"));
+        queryParams.put("price", Collections.singletonList("22.1"));
+        queryParams.put("age", Collections.singletonList("25"));
+        queryParams.put("id", Collections.singletonList("220291"));
 
-        when(mockRequest.formParams()).thenReturn(parameters);
+        when(mockRequest.queries()).thenReturn(queryParams);
 
         Request request = new HttpRequest(mockRequest);
 
@@ -185,6 +185,27 @@ public class HttpRequestTest extends BaseTestCase {
         assertEquals(Double.valueOf(22.1), request.queryDouble("price").get());
         assertEquals(Long.valueOf(220291), request.queryLong("id").get());
         assertEquals(Integer.valueOf(25), request.queryInt("age").get());
+    }
+
+    @Test
+    public void testFormParam() {
+
+        Request mockRequest = mockHttpRequest("GET");
+
+        Map<String, List<String>> formParams = new HashMap<>();
+        formParams.put("name", Collections.singletonList("jack"));
+        formParams.put("price", Collections.singletonList("22.1"));
+        formParams.put("age", Collections.singletonList("25"));
+        formParams.put("id", Collections.singletonList("220291"));
+
+        when(mockRequest.formParams()).thenReturn(formParams);
+
+        Request request = new HttpRequest(mockRequest);
+
+        assertEquals("jack", request.form("name").get());
+        assertEquals(Double.valueOf(22.1), request.formDouble("price").get());
+        assertEquals(Long.valueOf(220291), request.formLong("id").get());
+        assertEquals(Integer.valueOf(25), request.formInt("age").get());
     }
 
     @Test
