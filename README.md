@@ -322,7 +322,7 @@ String version = environment.get("app.version", "0.0.1");
 
 ```java
 @GET("header")
-public void getHeader(RouteContext ctx){
+public void readHeader(RouteContext ctx){
     System.out.println("Host => " + ctx.header("Host"));
     // get useragent
     System.out.println("UserAgent => " + ctx.userAgent());
@@ -335,7 +335,7 @@ public void getHeader(RouteContext ctx){
 
 ```java
 @GET("header")
-public void getHeader(@Header String host){
+public void readHeader(@Header String host){
     System.out.println("Host => " + host);
 }
 ```
@@ -346,7 +346,7 @@ public void getHeader(@Header String host){
 
 ```java
 @GET("cookie")
-public void getCookie(RouteContext ctx){
+public void readCookie(RouteContext ctx){
     System.out.println("UID => " + ctx.cookie("UID"));
 }
 ```
@@ -355,7 +355,7 @@ public void getCookie(RouteContext ctx){
 
 ```java
 @GET("cookie")
-public void getCookie(@Cookie String uid){
+public void readCookie(@Cookie String uid){
     System.out.println("Cookie UID => " + uid);
 }
 ```
