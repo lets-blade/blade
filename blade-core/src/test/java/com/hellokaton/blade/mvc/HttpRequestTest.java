@@ -177,7 +177,7 @@ public class HttpRequestTest extends BaseTestCase {
         queryParams.put("age", Collections.singletonList("25"));
         queryParams.put("id", Collections.singletonList("220291"));
 
-        when(mockRequest.queries()).thenReturn(queryParams);
+        when(mockRequest.queryParams()).thenReturn(queryParams);
 
         Request request = new HttpRequest(mockRequest);
 

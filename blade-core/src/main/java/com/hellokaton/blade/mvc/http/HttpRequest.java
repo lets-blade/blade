@@ -87,7 +87,7 @@ public class HttpRequest implements Request {
     private Map<String, String> headers = Collections.emptyMap();
     private Map<String, Object> attributes = Collections.emptyMap();
     private Map<String, String> pathParams = Collections.emptyMap();
-    private Map<String, List<String>> queries = Collections.emptyMap();
+    private Map<String, List<String>> queryParams = Collections.emptyMap();
     private Map<String, List<String>> formParams = Collections.emptyMap();
     private Map<String, Cookie> cookies = Collections.emptyMap();
     private Map<String, FileItem> fileItems = Collections.emptyMap();
@@ -158,8 +158,8 @@ public class HttpRequest implements Request {
     }
 
     @Override
-    public Map<String, List<String>> queries() {
-        return this.queries;
+    public Map<String, List<String>> queryParams() {
+        return this.queryParams;
     }
 
     @Override
@@ -305,10 +305,10 @@ public class HttpRequest implements Request {
         QueryStringDecoder queryDecoder = new QueryStringDecoder(this.url, StandardCharsets.UTF_8);
         Map<String, List<String>> query = queryDecoder.parameters();
         if (null != query) {
-            this.queries = query;
+            this.queryParams = query;
         }
 
-        if ("GET".equals(this.method())) {
+        if (HttpMethod.GET.name().equals(this.method())) {
             return;
         }
 

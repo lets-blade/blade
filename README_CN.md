@@ -137,13 +137,12 @@ public static void main(String[] args) {
 @Path
 public class IndexController {
     
-    @GET("signin")
+    @GET("/signin")
     public String signin(){
         return "signin.html";
     }
     
-    @POST("signin")
-    @Response
+    @POST(value = "/signin", responseType = ResponseType.JSON)
     public RestResponse doSignin(RouteContext ctx){
         // do something
         return RestResponse.ok();
@@ -425,8 +424,7 @@ public void printJSON(RouteContext ctx){
 这种形式看起来更简洁 😶
 
 ```java
-@GET("users/json")
-@Response
+@GET(value = "/users/json", responseType = ResponseType.JSON)
 public User printJSON(){
   return new User("hellokaton", 18);
 }
@@ -444,8 +442,7 @@ public void printText(RouteContext ctx){
 or
 
 ```java
-@GET("text")
-@Response(contentType = HttpConst.CONTENT_TYPE_TEXT)
+@GET(value = "/text", responseType = ResponseType.TEXT)
 public String printText(RouteContext ctx){
     return "I Love Blade!";
 }
@@ -463,8 +460,7 @@ public void printHtml(RouteContext ctx){
 or
 
 ```java
-@GET("html")
-@Response(contentType = HttpConst.CONTENT_TYPE_HTML)
+@GET(value = "/html", responseType = ResponseType.HTML)
 public String printHtml(RouteContext ctx){
     return "<center><h1>I Love Blade!</h1></center>";
 }

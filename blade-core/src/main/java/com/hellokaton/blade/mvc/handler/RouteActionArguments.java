@@ -177,9 +177,9 @@ public final class RouteActionArguments {
 
             return ReflectKit.convert(argType, value);
         } else {
-            if (ParameterizedType.class.isInstance(argType)) {
+            if (argType instanceof ParameterizedType) {
 
-                List<String> values = request.queries().get(query.name());
+                List<String> values = request.queryParams().get(query.name());
                 return getParameterizedTypeValues(values, argType);
             }
             return parseModel(ReflectKit.typeToClass(argType), request, query.name());
@@ -204,7 +204,7 @@ public final class RouteActionArguments {
 
             return ReflectKit.convert(argType, value);
         } else {
-            if (ParameterizedType.class.isInstance(argType)) {
+            if (argType instanceof ParameterizedType) {
                 List<String> values = request.formParams().get(form.name());
                 return getParameterizedTypeValues(values, argType);
             }

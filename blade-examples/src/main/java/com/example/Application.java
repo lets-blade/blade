@@ -29,8 +29,8 @@ public class Application {
     public Map<String, Object> hello(Request req) {
         Map<String, Object> result = new HashMap<>();
         result.put("name", "hellokaton");
-        Map<String, List<String>> queries = req.queries();
-        for (Map.Entry<String, List<String>> entry : queries.entrySet()) {
+        Map<String, List<String>> params = req.queryParams();
+        for (Map.Entry<String, List<String>> entry : params.entrySet()) {
             result.put(entry.getKey(), entry.getValue());
         }
         return result;

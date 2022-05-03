@@ -133,7 +133,7 @@ public interface Request {
      */
     String queryString();
 
-    Map<String, List<String>> queries();
+    Map<String, List<String>> queryParams();
 
     /**
      * Get current request query parameters
@@ -143,9 +143,9 @@ public interface Request {
     Map<String, List<String>> formParams();
 
     /**
-     * Get current request query parameter names
+     * Get current request form parameter names
      *
-     * @return Return request query names
+     * @return Return request form names
      * @since 2.0.8-RELEASE
      */
     Set<String> parameterNames();
@@ -166,7 +166,7 @@ public interface Request {
      * @return Return request parameter value
      */
     default Optional<String> query(@NonNull String name) {
-        List<String> values = queries().get(name);
+        List<String> values = queryParams().get(name);
         if (null != values && values.size() > 0)
             return Optional.of(values.get(0));
         return Optional.empty();
@@ -482,7 +482,7 @@ public interface Request {
      * @return Return header information
      */
     default String header(@NonNull String name) {
-        return headers().getOrDefault(name,"");
+        return headers().getOrDefault(name, "");
     }
 
     /**
