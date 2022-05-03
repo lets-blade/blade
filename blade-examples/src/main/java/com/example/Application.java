@@ -57,7 +57,7 @@ public class Application {
     }
 
     public static void main(String[] args) {
-        CorsOptions corsOptions = CorsOptions.create();
+        CorsOptions corsOptions = CorsOptions.forAnyOrigin().allowNullOrigin().allowCredentials();
         Blade.of().cors(corsOptions).listen().start(Application.class);
     }
 

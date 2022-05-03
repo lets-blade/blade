@@ -5,6 +5,7 @@ import io.netty.handler.codec.http.cors.CorsConfigBuilder;
 import lombok.Getter;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -12,33 +13,49 @@ import java.util.Set;
 public class CorsOptions {
 
     private Set<String> origins;
-    private boolean anyOrigin;
-    private boolean enabled;
+    private boolean disable;
     private Set<String> exposeHeaders;
     private boolean allowCredentials;
     private long maxAge;
     private Set<HttpMethod> allowedMethods;
     private Set<String> allowedHeaders;
     private boolean allowNullOrigin;
+    private boolean anyOrigin;
 
-    public static CorsOptions create(final String... origins) {
-        CorsOptions options = new CorsOptions();
-        if (null == origins) {
-            options.anyOrigin = true;
-        } else {
-            options.origins = new LinkedHashSet<>(Arrays.asList(origins));
-            options.anyOrigin = false;
-        }
-        return options;
+    /**
+     * Creates a new Builder instance allowing any origin, "*" which is the
+     * wildcard origin.
+     */
+    CorsOptions() {
+        this.anyOrigin = true;
+        this.origins = Collections.emptySet();
     }
 
-    public CorsOptions addOrigin(final String... origins) {
+    /**
+     * Creates a Builder instance with it's origin set to '*'.
+     *
+     * @return Builder to support method chaining.
+     */
+    public static CorsOptions forAnyOrigin() {
+        return new CorsOptions();
+    }
+
+    public static CorsOptions create(final String... origins) {
+        if (null != origins && origins.length > 0) {
+            CorsOptions options = new CorsOptions();
+            options.origins = new LinkedHashSet<>(Arrays.asList(origins));
+            return options;
+        } else {
+            return forAnyOrigin();
+        }
+    }
+
+    public CorsOptions allowedOrigins(final String... origins) {
         if (null != this.origins) {
             this.origins.addAll(new LinkedHashSet<>(Arrays.asList(origins)));
         } else {
             this.origins = new LinkedHashSet<>(Arrays.asList(origins));
         }
-        this.anyOrigin = false;
         return this;
     }
 
@@ -60,7 +77,7 @@ public class CorsOptions {
      * @return {@link CorsOptions} to support method chaining.
      */
     public CorsOptions disable() {
-        enabled = false;
+        this.disable = true;
         return this;
     }
 

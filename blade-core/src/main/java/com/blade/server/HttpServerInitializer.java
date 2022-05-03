@@ -63,11 +63,12 @@ public class HttpServerInitializer extends ChannelInitializer<SocketChannel> {
             if (useGZIP) {
                 pipeline.addLast(new HttpContentCompressor());
             }
-            pipeline.addLast(new FullHttpRequestDecode());
             if (null != corsConfig) {
                 pipeline.addLast(new CorsHandler(corsConfig));
             }
-            pipeline.addLast(httpServerHandler);
+
+            pipeline.addLast(new FullHttpRequestDecode());
+            pipeline.addLast(new HttpServerHandler());
         } catch (Exception e) {
             log.error("Add channel pipeline error", e);
         }
@@ -76,31 +77,37 @@ public class HttpServerInitializer extends ChannelInitializer<SocketChannel> {
     private void buildCorsConfig(Blade blade) {
         CorsOptions corsOptions = blade.corsOptions();
         if (null != corsOptions) {
-            CorsConfigBuilder corsConfigBuilder = CorsConfigBuilder.forAnyOrigin()
-                    .maxAge(corsOptions.getMaxAge());
-
-            if (null != corsOptions.getExposeHeaders()) {
-                corsConfigBuilder.exposeHeaders(corsOptions.getExposeHeaders().toArray(new String[0]));
+            CorsConfigBuilder corsConfigBuilder = null;
+            if (corsOptions.isAnyOrigin()) {
+                corsConfigBuilder = CorsConfigBuilder.forAnyOrigin();
             }
-            if (null != corsOptions.getAllowedMethods()) {
-                corsConfigBuilder.allowedRequestMethods(corsOptions.getAllowedMethods().stream()
-                        .map(item -> HttpMethod.valueOf(item.name()))
-                        .toArray(HttpMethod[]::new));
+            if (null != corsOptions.getOrigins() && !corsOptions.getOrigins().isEmpty()) {
+                corsConfigBuilder = CorsConfigBuilder.forOrigins(corsOptions.getOrigins().toArray(new String[0]));
             }
-            if (null != corsOptions.getAllowedHeaders()) {
-                corsConfigBuilder.allowedRequestHeaders(corsOptions.getAllowedHeaders().toArray(new String[0]));
-            }
-            if (corsOptions.isAllowCredentials()) {
-                corsConfigBuilder.allowCredentials();
+            if (null == corsConfigBuilder) {
+                return;
             }
             if (corsOptions.isAllowNullOrigin()) {
                 corsConfigBuilder.allowNullOrigin();
             }
-            if (!corsOptions.isEnabled()) {
+            if (corsOptions.isAllowCredentials()) {
+                corsConfigBuilder.allowCredentials();
+            }
+            if (corsOptions.isDisable()) {
                 corsConfigBuilder.disable();
             }
-            if (!corsOptions.isEnabled()) {
-                corsConfigBuilder.disable();
+            corsConfigBuilder.maxAge(corsOptions.getMaxAge());
+
+            if (null != corsOptions.getExposeHeaders() && !corsOptions.getExposeHeaders().isEmpty()) {
+                corsConfigBuilder.exposeHeaders(corsOptions.getExposeHeaders().toArray(new String[0]));
+            }
+            if (null != corsOptions.getAllowedMethods() && !corsOptions.getAllowedMethods().isEmpty()) {
+                corsConfigBuilder.allowedRequestMethods(corsOptions.getAllowedMethods().stream()
+                        .map(item -> HttpMethod.valueOf(item.name()))
+                        .toArray(HttpMethod[]::new));
+            }
+            if (null != corsOptions.getAllowedHeaders() && !corsOptions.getAllowedHeaders().isEmpty()) {
+                corsConfigBuilder.allowedRequestHeaders(corsOptions.getAllowedHeaders().toArray(new String[0]));
             }
             this.corsConfig = corsConfigBuilder.build();
         }
