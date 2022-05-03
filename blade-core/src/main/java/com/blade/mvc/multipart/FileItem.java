@@ -44,6 +44,12 @@ public class FileItem {
      */
     private long length;
 
+    /**
+     * Netty upload File mode,
+     * If the file size is less than 16kb, the memory mode is used.
+     * <p>
+     * In this mode, the file exists as a byte array and the file object is null.
+     */
     private boolean inMemory;
 
     private transient File file;
@@ -77,16 +83,20 @@ public class FileItem {
         }
     }
 
-    public byte[] byteArray() {
+    public byte[] byteArray() throws IOException {
         if (null != this.data) {
             return this.data;
         }
+        if (null == this.file) {
+            return null;
+        }
+        Path tmpPath = Paths.get(file.getPath());
         try {
             this.data = Files.readAllBytes(file.toPath());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+            return this.data;
+        } finally {
+            Files.delete(tmpPath);
         }
-        return this.data;
     }
 
 }
