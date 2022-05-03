@@ -48,8 +48,8 @@
         <netty.version>4.1.76.Final</netty.version>
         <blade-asm.version>0.0.4</blade-asm.version>
         <blade-log.version>0.1.6</blade-log.version>
-        <blade-kit.version>${parent.version}</blade-kit.version>
-        <blade-core.version>${parent.version}</blade-core.version>
+        <blade-kit.version>${project.parent.version}</blade-kit.version>
+        <blade-core.version>${project.parent.version}</blade-core.version>
         <gson.version>2.9.0</gson.version>
         <bootstrap.version>4.1.0</bootstrap.version>
         <mockito.version>1.10.19</mockito.version>
