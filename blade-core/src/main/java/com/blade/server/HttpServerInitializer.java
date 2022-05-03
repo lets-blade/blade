@@ -66,9 +66,8 @@ public class HttpServerInitializer extends ChannelInitializer<SocketChannel> {
             if (null != corsConfig) {
                 pipeline.addLast(new CorsHandler(corsConfig));
             }
-
             pipeline.addLast(new FullHttpRequestDecode());
-            pipeline.addLast(new HttpServerHandler());
+            pipeline.addLast(httpServerHandler);
         } catch (Exception e) {
             log.error("Add channel pipeline error", e);
         }

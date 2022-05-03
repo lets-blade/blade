@@ -25,6 +25,7 @@ import com.blade.mvc.http.*;
 import com.blade.mvc.route.Route;
 import com.blade.mvc.route.RouteMatcher;
 import io.netty.channel.ChannelFutureListener;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.DefaultFullHttpResponse;
@@ -49,7 +50,7 @@ import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
  * 2018/10/15
  */
 @Slf4j
-//@ChannelHandler.Sharable
+@ChannelHandler.Sharable
 public class HttpServerHandler extends SimpleChannelInboundHandler<HttpRequest> {
 
     public static final FastThreadLocal<WebContext> WEB_CONTEXT_THREAD_LOCAL = new FastThreadLocal<>();
