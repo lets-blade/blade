@@ -5,7 +5,9 @@ import com.blade.annotation.Path;
 import com.blade.annotation.request.Body;
 import com.blade.annotation.request.Form;
 import com.blade.annotation.request.Multipart;
+import com.blade.annotation.request.PathParam;
 import com.blade.annotation.response.Response;
+import com.blade.annotation.route.DELETE;
 import com.blade.annotation.route.GET;
 import com.blade.annotation.route.POST;
 import com.blade.mvc.HttpConst;
@@ -46,6 +48,12 @@ public class Application {
         log.info("读取到 form = {}", req.formParams());
         log.info("读取到 age = {}", age);
         return "hello";
+    }
+
+    @DELETE("/users/:uid")
+    public Result<?> deleteUser(@PathParam String uid) {
+        log.info("删除 uid = {}", uid);
+        return Result.success(uid);
     }
 
     @POST("/upload")
