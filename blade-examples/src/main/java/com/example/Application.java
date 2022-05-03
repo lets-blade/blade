@@ -3,6 +3,7 @@ package com.example;
 import com.blade.Blade;
 import com.blade.annotation.Path;
 import com.blade.annotation.request.Body;
+import com.blade.annotation.request.Form;
 import com.blade.annotation.request.Multipart;
 import com.blade.annotation.response.Response;
 import com.blade.annotation.route.GET;
@@ -42,8 +43,9 @@ public class Application {
     }
 
     @POST("/form_data")
-    public String formData(Request req) {
-        log.info("读取到 body = {}", req.formParams());
+    public String formData(Request req, @Form Integer age) {
+        log.info("读取到 form = {}", req.formParams());
+        log.info("读取到 age = {}", age);
         return "hello";
     }
 

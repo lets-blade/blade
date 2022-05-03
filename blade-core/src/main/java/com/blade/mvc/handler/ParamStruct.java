@@ -10,6 +10,7 @@ import java.lang.reflect.Type;
 class ParamStruct {
 
     Query query;
+    Form form;
     PathParam pathParam;
     Body body;
     Header header;

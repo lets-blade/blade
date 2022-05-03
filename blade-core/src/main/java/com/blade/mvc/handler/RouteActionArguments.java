@@ -30,18 +30,18 @@ import java.util.stream.Collectors;
 public final class RouteActionArguments {
 
     public static Object[] getRouteActionParameters(RouteContext context) {
-        Method  actionMethod = context.routeAction();
-        Request request      = context.request();
+        Method actionMethod = context.routeAction();
+        Request request = context.request();
         actionMethod.setAccessible(true);
 
-        Parameter[] parameters     = actionMethod.getParameters();
-        Object[]    args           = new Object[parameters.length];
-        String[]    parameterNames = ASMUtils.findMethodParmeterNames(actionMethod);
+        Parameter[] parameters = actionMethod.getParameters();
+        Object[] args = new Object[parameters.length];
+        String[] parameterNames = ASMUtils.findMethodParmeterNames(actionMethod);
 
         for (int i = 0, len = parameters.length; i < len; i++) {
             Parameter parameter = parameters[i];
-            String    paramName = Objects.requireNonNull(parameterNames)[i];
-            Type      argType   = parameter.getParameterizedType();
+            String paramName = Objects.requireNonNull(parameterNames)[i];
+            Type argType = parameter.getParameterizedType();
             if (containsAnnotation(parameter)) {
                 args[i] = getAnnotationParam(parameter, paramName, request);
                 continue;
@@ -58,6 +58,7 @@ public final class RouteActionArguments {
     private static boolean containsAnnotation(Parameter parameter) {
         return parameter.getAnnotation(PathParam.class) != null ||
                 parameter.getAnnotation(Query.class) != null ||
+                parameter.getAnnotation(Form.class) != null ||
                 parameter.getAnnotation(Header.class) != null ||
                 parameter.getAnnotation(Body.class) != null ||
                 parameter.getAnnotation(Cookie.class) != null ||
@@ -81,12 +82,12 @@ public final class RouteActionArguments {
         } else if (argType == Map.class) {
             return context.request().formParams();
         } else if (argType == Optional.class) {
-            ParameterizedType firstParam           = (ParameterizedType) parameter.getParameterizedType();
-            Type              paramsOfFirstGeneric = firstParam.getActualTypeArguments()[0];
-            Class<?>          modelType            = ReflectKit.form(paramsOfFirstGeneric.getTypeName());
+            ParameterizedType firstParam = (ParameterizedType) parameter.getParameterizedType();
+            Type paramsOfFirstGeneric = firstParam.getActualTypeArguments()[0];
+            Class<?> modelType = ReflectKit.form(paramsOfFirstGeneric.getTypeName());
             return Optional.ofNullable(parseModel(modelType, context.request(), null));
         } else if (ParameterizedType.class.isInstance(argType)) {
-            String       name   = parameter.getName();
+            String name = parameter.getName();
             List<String> values = context.request().formParams().get(name);
             return getParameterizedTypeValues(values, argType);
         } else if (ReflectKit.isArray(argType)) {
@@ -94,8 +95,8 @@ public final class RouteActionArguments {
             if (null == values) {
                 return null;
             }
-            Class  arrayCls = (Class) argType;
-            Object aObject  = Array.newInstance(arrayCls.getComponentType(), values.size());
+            Class arrayCls = (Class) argType;
+            Object aObject = Array.newInstance(arrayCls.getComponentType(), values.size());
             for (int i = 0; i < values.size(); i++) {
                 Array.set(aObject, i, ReflectKit.convert(arrayCls.getComponentType(), values.get(i)));
             }
@@ -106,15 +107,20 @@ public final class RouteActionArguments {
     }
 
     private static Object getAnnotationParam(Parameter parameter, String paramName, Request request) {
-        Type  argType = parameter.getParameterizedType();
+        Type argType = parameter.getParameterizedType();
         Query query = parameter.getAnnotation(Query.class);
 
         ParamStruct.ParamStructBuilder structBuilder = ParamStruct.builder().argType(argType).request(request);
 
         if (null != query) {
-            ParamStruct paramStruct = structBuilder.query(query).paramName(paramName).build();
-            return getQueryParam(paramStruct);
+            return getQueryParam(structBuilder.query(query).paramName(paramName).build());
         }
+
+        Form form = parameter.getAnnotation(Form.class);
+        if (null != form) {
+            return getFormParam(structBuilder.form(form).paramName(paramName).build());
+        }
+
         Body body = parameter.getAnnotation(Body.class);
         if (null != body) {
             return getBodyParam(structBuilder.build());
@@ -142,7 +148,7 @@ public final class RouteActionArguments {
     }
 
     private static Object getBodyParam(ParamStruct paramStruct) {
-        Type    argType = paramStruct.argType;
+        Type argType = paramStruct.argType;
         Request request = paramStruct.request;
 
         if (ReflectKit.isPrimitive(argType)) {
@@ -155,14 +161,13 @@ public final class RouteActionArguments {
 
     private static Object getQueryParam(ParamStruct paramStruct) {
         Query query = paramStruct.query;
-        String  paramName = paramStruct.paramName;
-        Type    argType   = paramStruct.argType;
-        Request request   = paramStruct.request;
+        Type argType = paramStruct.argType;
+        Request request = paramStruct.request;
         if (null == query) {
             return null;
         }
 
-        String name = StringKit.isBlank(query.name()) ? paramName : query.name();
+        String name = StringKit.isBlank(query.name()) ? paramStruct.paramName : query.name();
 
         if (ReflectKit.isBasicType(argType) || argType.equals(Date.class)
                 || argType.equals(BigDecimal.class) || argType.equals(LocalDate.class)
@@ -174,10 +179,36 @@ public final class RouteActionArguments {
         } else {
             if (ParameterizedType.class.isInstance(argType)) {
 
-                List<String> values = request.formParams().get(query.name());
+                List<String> values = request.queries().get(query.name());
                 return getParameterizedTypeValues(values, argType);
             }
             return parseModel(ReflectKit.typeToClass(argType), request, query.name());
+        }
+    }
+
+    private static Object getFormParam(ParamStruct paramStruct) {
+        Form form = paramStruct.form;
+        Type argType = paramStruct.argType;
+        Request request = paramStruct.request;
+        if (null == form) {
+            return null;
+        }
+
+        String name = StringKit.isBlank(form.name()) ? paramStruct.paramName : form.name();
+
+        if (ReflectKit.isBasicType(argType) || argType.equals(Date.class)
+                || argType.equals(BigDecimal.class) || argType.equals(LocalDate.class)
+                || argType.equals(LocalDateTime.class) || (argType instanceof Class && ((Class) argType).isEnum())) {
+
+            String value = request.form(name).orElseGet(() -> getDefaultValue(form.defaultValue(), argType));
+
+            return ReflectKit.convert(argType, value);
+        } else {
+            if (ParameterizedType.class.isInstance(argType)) {
+                List<String> values = request.formParams().get(form.name());
+                return getParameterizedTypeValues(values, argType);
+            }
+            return parseModel(ReflectKit.typeToClass(argType), request, form.name());
         }
     }
 
@@ -206,13 +237,13 @@ public final class RouteActionArguments {
     }
 
     private static Object getCookie(ParamStruct paramStruct) throws BladeException {
-        Type        argType     = paramStruct.argType;
+        Type argType = paramStruct.argType;
         Cookie cookie = paramStruct.cookie;
-        String      paramName   = paramStruct.paramName;
-        Request     request     = paramStruct.request;
+        String paramName = paramStruct.paramName;
+        Request request = paramStruct.request;
 
         String cookieName = StringKit.isEmpty(cookie.value()) ? paramName : cookie.value();
-        String val        = request.cookie(cookieName);
+        String val = request.cookie(cookieName);
         if (null == val) {
             val = cookie.defaultValue();
         }
@@ -220,10 +251,10 @@ public final class RouteActionArguments {
     }
 
     private static Object getHeader(ParamStruct paramStruct) throws BladeException {
-        Type        argType     = paramStruct.argType;
+        Type argType = paramStruct.argType;
         Header header = paramStruct.header;
-        String      paramName   = paramStruct.paramName;
-        Request     request     = paramStruct.request;
+        String paramName = paramStruct.paramName;
+        Request request = paramStruct.request;
 
         String key = StringKit.isEmpty(header.value()) ? paramName : header.value();
         String val = request.header(key);
@@ -234,13 +265,13 @@ public final class RouteActionArguments {
     }
 
     private static Object getPathParam(ParamStruct paramStruct) {
-        Type      argType   = paramStruct.argType;
+        Type argType = paramStruct.argType;
         PathParam pathParam = paramStruct.pathParam;
-        String    paramName = paramStruct.paramName;
-        Request   request   = paramStruct.request;
+        String paramName = paramStruct.paramName;
+        Request request = paramStruct.request;
 
         String name = StringKit.isEmpty(pathParam.name()) ? paramName : pathParam.name();
-        String val  = request.pathString(name);
+        String val = request.pathString(name);
         if (StringKit.isBlank(val)) {
             val = pathParam.defaultValue();
         }
@@ -281,7 +312,7 @@ public final class RouteActionArguments {
             return null;
         }
         ParameterizedType parameterizedType = (ParameterizedType) argType;
-        Class<?>          realType          = (Class) parameterizedType.getActualTypeArguments()[0];
+        Class<?> realType = (Class) parameterizedType.getActualTypeArguments()[0];
         return values.stream()
                 .map(s -> ReflectKit.convert(realType, s))
                 .collect(Collectors.toList());
