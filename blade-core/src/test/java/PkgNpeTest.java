@@ -1,4 +1,4 @@
-import com.blade.Blade;
+import com.hellokaton.blade.Blade;
 
 /**
  * @author darren

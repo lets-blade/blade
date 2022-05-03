@@ -4,8 +4,8 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>blade</artifactId>
-        <groupId>com.bladejava</groupId>
-        <version>2.1.0-BETA</version>
+        <groupId>com.hellokaton</groupId>
+        <version>2.1.0.BETA</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -13,7 +13,7 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.bladejava</groupId>
+            <groupId>com.hellokaton</groupId>
             <artifactId>blade-core</artifactId>
             <scope>provided</scope>
         </dependency>

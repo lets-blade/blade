@@ -1,7 +1,7 @@
 package benchmark;
 
-import com.blade.kit.StringKit;
-import com.blade.mvc.http.HttpMethod;
+import com.hellokaton.blade.kit.StringKit;
+import com.hellokaton.blade.mvc.http.HttpMethod;
 
 import java.io.IOException;
 import java.nio.file.Files;

@@ -1,6 +1,6 @@
 package netty_hello;
 
-import com.blade.ioc.annotation.Bean;
+import com.hellokaton.blade.ioc.annotation.Bean;
 
 /**
  * @author biezhi

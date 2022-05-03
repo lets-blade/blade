@@ -1,8 +1,8 @@
 package netty_hello;
 
-import com.blade.task.TaskContext;
-import com.blade.task.TaskManager;
-import com.blade.task.annotation.Schedule;
+import com.hellokaton.blade.task.TaskContext;
+import com.hellokaton.blade.task.TaskManager;
+import com.hellokaton.blade.task.annotation.Schedule;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;

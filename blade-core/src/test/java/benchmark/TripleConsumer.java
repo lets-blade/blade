@@ -1,6 +1,6 @@
 package benchmark;
 
-import com.blade.mvc.http.HttpMethod;
+import com.hellokaton.blade.mvc.http.HttpMethod;
 
 import java.util.List;
 

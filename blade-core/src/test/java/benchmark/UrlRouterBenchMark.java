@@ -1,9 +1,9 @@
 package benchmark;
 
-import com.blade.mvc.route.DynamicMapping;
-import com.blade.mvc.route.Route;
-import com.blade.mvc.route.mapping.dynamic.RegexMapping;
-import com.blade.mvc.route.mapping.dynamic.TrieMapping;
+import com.hellokaton.blade.mvc.route.DynamicMapping;
+import com.hellokaton.blade.mvc.route.Route;
+import com.hellokaton.blade.mvc.route.mapping.dynamic.RegexMapping;
+import com.hellokaton.blade.mvc.route.mapping.dynamic.TrieMapping;
 import com.carrotsearch.junitbenchmarks.BenchmarkOptions;
 import com.carrotsearch.junitbenchmarks.BenchmarkRule;
 import org.junit.BeforeClass;

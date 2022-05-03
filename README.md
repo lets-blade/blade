@@ -13,7 +13,7 @@
 </p>
 <p align="center">
     <a href="https://travis-ci.org/lets-blade/blade"><img src="https://img.shields.io/travis/lets-blade/blade.svg?style=flat-square"></a>
-    <a href="http://search.maven.org/#search%7Cga%7C1%7Cblade-mvc"><img src="https://img.shields.io/maven-central/v/com.bladejava/blade-mvc.svg?style=flat-square"></a>
+    <a href="http://search.maven.org/#search%7Cga%7C1%7Cblade-mvc"><img src="https://img.shields.io/maven-central/v/com.hellokaton/blade-core.svg?style=flat-square"></a>
     <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache%202-4EB1BA.svg?style=flat-square"></a>
     <a class="badge-align" href="https://www.codacy.com/app/lets-blade/blade"><img src="https://api.codacy.com/project/badge/Grade/5f5fb55f38614f04823372db3a3c1d1b"/></a>
     <a href="https://gitter.im/lets-blade/blade"><img src="https://badges.gitter.im/hellokaton/blade.svg?style=flat-square"></a>
@@ -63,16 +63,16 @@ Run with `Maven`:
 
 ```xml
 <dependency>
-    <groupId>com.bladejava</groupId>
+    <groupId>com.hellokaton</groupId>
     <artifactId>blade-core</artifactId>
-    <version>2.1.0.RELEASE</version>
+    <version>2.1.0.BETA</version>
 </dependency>
 ```
 
 or `Gradle`:
 
 ```sh
-compile 'com.bladejava:blade-core:2.1.0.RELEASE'
+compile 'com.hellokaton:blade-core:2.1.0.BETA'
 ```
 
 Write the `main` method and the `Hello World`:
@@ -559,7 +559,7 @@ The `hello.html` template
 </html>
 ```
 
-[Render API](http://static.javadoc.io/com.bladejava/blade-mvc/2.0.3/com/blade/mvc/http/Response.html#render-com.ModelAndView-)
+[Render API](http://static.javadoc.io/com.hellokaton/blade-core/2.1.0.BETA/com/hellokaton/blade/mvc/http/Response.html#render-com.ModelAndView-)
 
 ## Redirects
 
@@ -570,7 +570,7 @@ public void redirectToGithub(RouteContext ctx){
 }
 ```
 
-[Redirect API](http://static.javadoc.io/com.bladejava/blade-mvc/2.0.3/com/blade/mvc/http/Response.html#redirect-java.lang.String-)
+[Redirect API](http://static.javadoc.io/com.hellokaton/blade-core/2.1.0.BETA/com/hellokaton/blade/mvc/http/Response.html#redirect-java.lang.String-)
 
 ## Write Cookie
 
@@ -582,7 +582,7 @@ public void writeCookie(RouteContext ctx){
 }
 ```
 
-[Cookie API](http://static.javadoc.io/com.bladejava/blade-mvc/2.0.3/com/blade/mvc/http/Response.html#cookie-java.lang.String-java.lang.String-)
+[Cookie API](http://static.javadoc.io/com.hellokaton/blade-core/2.1.0.BETA/com/hellokaton/blade/mvc/http/Response.html#cookie-java.lang.String-java.lang.String-)
 
 ## Web Hook
 
