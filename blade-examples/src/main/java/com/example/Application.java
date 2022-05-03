@@ -11,6 +11,7 @@ import com.blade.annotation.route.POST;
 import com.blade.mvc.HttpConst;
 import com.blade.mvc.http.Request;
 import com.blade.mvc.multipart.FileItem;
+import com.blade.options.CorsOptions;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
@@ -56,7 +57,8 @@ public class Application {
     }
 
     public static void main(String[] args) {
-        Blade.of().listen().start(Application.class);
+        CorsOptions corsOptions = CorsOptions.create();
+        Blade.of().cors(corsOptions).listen().start(Application.class);
     }
 
 }

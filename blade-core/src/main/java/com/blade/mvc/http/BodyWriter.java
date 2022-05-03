@@ -7,8 +7,6 @@ import java.io.Closeable;
 
 public interface BodyWriter {
 
-    FullHttpResponse onStream(Closeable closeable);
-
     FullHttpResponse onView(ViewBody body);
 
     FullHttpResponse onRawBody(RawBody body);

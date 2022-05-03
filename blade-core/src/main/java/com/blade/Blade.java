@@ -37,8 +37,9 @@ import com.blade.mvc.route.mapping.dynamic.RegexMapping;
 import com.blade.mvc.route.mapping.dynamic.TrieMapping;
 import com.blade.mvc.ui.template.DefaultEngine;
 import com.blade.mvc.ui.template.TemplateEngine;
-import com.blade.server.Server;
+import com.blade.options.CorsOptions;
 import com.blade.server.NettyServer;
+import com.blade.server.Server;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
@@ -130,6 +131,8 @@ public class Blade {
      * A route matcher that matches whether a route exists
      */
     private RouteMatcher routeMatcher = new RouteMatcher();
+
+    private CorsOptions corsOptions = null;
 
     /**
      * Blade environment, which stores the parameters of the app.properties configuration file
@@ -311,6 +314,15 @@ public class Blade {
      */
     public RouteMatcher routeMatcher() {
         return this.routeMatcher;
+    }
+
+    public Blade cors(CorsOptions corsOptions) {
+        this.corsOptions = corsOptions;
+        return this;
+    }
+
+    public CorsOptions corsOptions() {
+        return this.corsOptions;
     }
 
     /**

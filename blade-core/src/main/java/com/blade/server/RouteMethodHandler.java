@@ -29,13 +29,13 @@ import io.netty.handler.stream.ChunkedStream;
 import lombok.extern.slf4j.Slf4j;
 import lombok.var;
 
-import java.io.Closeable;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import static com.blade.server.NettyHttpConst.CONTENT_LENGTH;
 import static com.blade.server.NettyHttpConst.KEEP_ALIVE;
@@ -108,17 +108,12 @@ public class RouteMethodHandler implements RequestHandler {
             }
 
             @Override
-            public FullHttpResponse onStream(Closeable closeable) {
-                // TODO
-                return null;
-            }
-
-            @Override
             public FullHttpResponse onView(ViewBody body) {
                 try {
                     var sw = new StringWriter();
                     WebContext.blade().templateEngine().render(body.modelAndView(), sw);
-                    WebContext.response().contentType(HttpConst.CONTENT_TYPE_HTML);
+                    Objects.requireNonNull(WebContext.response())
+                            .contentType(HttpConst.CONTENT_TYPE_HTML);
                     return this.onByteBuf(Unpooled.copiedBuffer(sw.toString().getBytes(StandardCharsets.UTF_8)));
                 } catch (Exception e) {
                     log.error("Render view error", e);

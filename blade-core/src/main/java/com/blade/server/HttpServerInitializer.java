@@ -3,14 +3,19 @@ package com.blade.server;
 import com.blade.Blade;
 import com.blade.kit.DateKit;
 import com.blade.mvc.Const;
+import com.blade.options.CorsOptions;
 import com.blade.server.decode.FullHttpRequestDecode;
 import com.blade.server.decode.HttpObjectAggregatorDecode;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.http.HttpContentCompressor;
+import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.codec.http.HttpServerExpectContinueHandler;
+import io.netty.handler.codec.http.cors.CorsConfig;
+import io.netty.handler.codec.http.cors.CorsConfigBuilder;
+import io.netty.handler.codec.http.cors.CorsHandler;
 import io.netty.handler.ssl.SslContext;
 import lombok.extern.slf4j.Slf4j;
 
@@ -29,7 +34,7 @@ public class HttpServerInitializer extends ChannelInitializer<SocketChannel> {
     private final SslContext sslCtx;
     private final Blade blade;
     private final boolean useGZIP;
-
+    private CorsConfig corsConfig;
     public static volatile String date = DateKit.gmtDate(LocalDateTime.now());
 
 
@@ -38,6 +43,7 @@ public class HttpServerInitializer extends ChannelInitializer<SocketChannel> {
         this.blade = blade;
         this.useGZIP = blade.environment().getBoolean(Const.ENV_KEY_GZIP_ENABLE, false);
         this.httpServerHandler = new HttpServerHandler();
+        this.buildCorsConfig(blade);
 
         service.scheduleWithFixedDelay(() -> date = DateKit.gmtDate(LocalDateTime.now()), 1000, 1000, TimeUnit.MILLISECONDS);
     }
@@ -58,9 +64,45 @@ public class HttpServerInitializer extends ChannelInitializer<SocketChannel> {
                 pipeline.addLast(new HttpContentCompressor());
             }
             pipeline.addLast(new FullHttpRequestDecode());
+            if (null != corsConfig) {
+                pipeline.addLast(new CorsHandler(corsConfig));
+            }
             pipeline.addLast(httpServerHandler);
         } catch (Exception e) {
             log.error("Add channel pipeline error", e);
+        }
+    }
+
+    private void buildCorsConfig(Blade blade) {
+        CorsOptions corsOptions = blade.corsOptions();
+        if (null != corsOptions) {
+            CorsConfigBuilder corsConfigBuilder = CorsConfigBuilder.forAnyOrigin()
+                    .maxAge(corsOptions.getMaxAge());
+
+            if (null != corsOptions.getExposeHeaders()) {
+                corsConfigBuilder.exposeHeaders(corsOptions.getExposeHeaders().toArray(new String[0]));
+            }
+            if (null != corsOptions.getAllowedMethods()) {
+                corsConfigBuilder.allowedRequestMethods(corsOptions.getAllowedMethods().stream()
+                        .map(item -> HttpMethod.valueOf(item.name()))
+                        .toArray(HttpMethod[]::new));
+            }
+            if (null != corsOptions.getAllowedHeaders()) {
+                corsConfigBuilder.allowedRequestHeaders(corsOptions.getAllowedHeaders().toArray(new String[0]));
+            }
+            if (corsOptions.isAllowCredentials()) {
+                corsConfigBuilder.allowCredentials();
+            }
+            if (corsOptions.isAllowNullOrigin()) {
+                corsConfigBuilder.allowNullOrigin();
+            }
+            if (!corsOptions.isEnabled()) {
+                corsConfigBuilder.disable();
+            }
+            if (!corsOptions.isEnabled()) {
+                corsConfigBuilder.disable();
+            }
+            this.corsConfig = corsConfigBuilder.build();
         }
     }
 
