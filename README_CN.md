@@ -24,7 +24,7 @@
 
 `Blade` 是一款追求简约、高效的 Web 框架，让 `JavaWeb` 开发如虎添翼，在性能与灵活性上同时兼顾。
 如果你喜欢尝试有趣的事物，相信你会爱上它。
-如果觉得这个项目不错可以 [star](https://github.com/hellokaton/blade/stargazers) 支持或者 [捐赠](https://lets-blade.com/donate) 它 :blush:
+如果觉得这个项目不错可以 [star](https://github.com/hellokaton/blade/stargazers) 支持或者 [捐赠](https://dun.mianbaoduo.com/@hellokaton) 它 :blush:
 
 ## 功能特性
 

@@ -26,7 +26,7 @@
 
 `Blade` is a pursuit of simple, efficient Web framework, so that `JavaWeb` development becomes even more powerful, both in performance and flexibility.
 If you like to try something interesting, I believe you will love it.
-If you think it's good, you can support it with a [star](https://github.com/lets-blade/blade/stargazers) or by [donating](https://lets-blade.com/donate) :blush:
+If you think it's good, you can support it with a [star](https://github.com/lets-blade/blade/stargazers) or by [donating](https://ko-fi.com/hellokaton) :blush:
 
 ## Features
 
