@@ -8,6 +8,7 @@ import com.blade.annotation.request.Multipart;
 import com.blade.annotation.response.Response;
 import com.blade.annotation.route.GET;
 import com.blade.annotation.route.POST;
+import com.blade.mvc.HttpConst;
 import com.blade.mvc.http.Request;
 import com.blade.mvc.multipart.FileItem;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +16,6 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -28,9 +28,7 @@ public class Application {
         Map<String, Object> result = new HashMap<>();
         result.put("name", "hellokaton");
         Map<String, List<String>> queries = req.queries();
-        Iterator<Map.Entry<String, List<String>>> iterator = queries.entrySet().iterator();
-        while (iterator.hasNext()) {
-            Map.Entry<String, List<String>> entry = iterator.next();
+        for (Map.Entry<String, List<String>> entry : queries.entrySet()) {
             result.put(entry.getKey(), entry.getValue());
         }
         return result;
@@ -50,7 +48,7 @@ public class Application {
     }
 
     @POST("/upload")
-    @Response
+    @Response(contentType = HttpConst.CONTENT_TYPE_TEXT)
     public String upload(@Multipart FileItem fileItem) throws IOException {
         log.info("读取到 fileItem = {}", fileItem);
         fileItem.moveTo(new File(fileItem.getFileName()));

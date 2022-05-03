@@ -60,8 +60,8 @@
 ```xml
 <dependency>
 	<groupId>com.bladejava</groupId>
-	<artifactId>blade-mvc</artifactId>
-	<version>2.0.15.RELEASE</version>
+	<artifactId>blade-core</artifactId>
+	<version>2.1.0.RELEASE</version>
 </dependency>
 ```
 
@@ -70,7 +70,7 @@
 或者  `Gradle`:
 
 ```sh
-compile 'com.bladejava:blade-mvc:2.0.15.RELEASE'
+compile 'com.bladejava:blade-core:2.1.0.RELEASE'
 ```
 
 编写 `main` 函数写一个 `Hello World`：
@@ -138,12 +138,12 @@ public static void main(String[] args) {
 @Path
 public class IndexController {
     
-    @GetRoute("signin")
+    @GET("signin")
     public String signin(){
         return "signin.html";
     }
     
-    @PostRoute("signin")
+    @POST("signin")
     @Response
     public RestResponse doSignin(RouteContext ctx){
         // do something
@@ -173,8 +173,13 @@ public static void main(String[] args) {
 **使用注解获取**
 
 ```java
-@PostRoute("/save")
-public void savePerson(@Param String username, @Param Integer age){
+@GET("/user")
+public void savePerson(@Query Integer age){
+  System.out.println("age is:" + age);
+}
+
+@POST("/save")
+public void savePerson(@Form String username, @Form Integer age){
   System.out.println("username is:" + username + ", age is:" + age);
 }
 ```
@@ -218,7 +223,7 @@ public static void main(String[] args) {
 **使用注解获取**
 
 ```java
-@GetRoute("/users/:username/:page")
+@GET("/users/:username/:page")
 public void userTopics(@PathParam String username, @PathParam Integer page){
   System.out.println("username is:" + username + ", page is:" + page);
 }
@@ -261,8 +266,8 @@ public class User {
 **使用注解获取**
 
 ```java
-@PostRoute("/users")
-public void saveUser(@Param User user){
+@POST("/users")
+public void saveUser(@Form User user) {
     System.out.println("user => " + user);
 }
 ```
@@ -276,8 +281,8 @@ curl -X POST http://127.0.0.1:9000/users -F username=jack -F age=16
 **自定义 `model` 名称**
 
 ```java
-@PostRoute("/users")
-public void saveUser(@Param(name="u") User user){
+@POST("/users")
+public void saveUser(@Form(name="u") User user) {
     System.out.println("user => " + user);
 }
 ```
@@ -291,7 +296,8 @@ curl -X POST http://127.0.0.1:9000/users -F u[username]=jack -F u[age]=16
 **Body 参数转对象**
 
 ```java
-public void getUser(@BodyParam User user){
+@POST("/body")
+public void body(@Body User user) {
     System.out.println("user => " + user);
 }
 ```
@@ -314,7 +320,7 @@ String version = environment.get("app.version", "0.0.1");
 **使用 RouteContext 获取**
 
 ```java
-@GetRoute("header")
+@GET("header")
 public void getHeader(RouteContext ctx){
     System.out.println("Host => " + ctx.header("Host"));
     // get useragent
@@ -327,9 +333,9 @@ public void getHeader(RouteContext ctx){
 **使用注解获取**
 
 ```java
-@GetRoute("header")
-public void getHeader(@HeaderParam String Host){
-  System.out.println("Host => " + Host);
+@GET("header")
+public void getHeader(@Header String host){
+  System.out.println("Host => " + host);
 }
 ```
 
@@ -338,7 +344,7 @@ public void getHeader(@HeaderParam String Host){
 **使用 RouteContext 获取**
 
 ```java
-@GetRoute("cookie")
+@GET("cookie")
 public void getCookie(RouteContext ctx){
     System.out.println("UID => " + ctx.cookie("UID"));
 }
@@ -347,8 +353,8 @@ public void getCookie(RouteContext ctx){
 **使用注解获取**
 
 ```java
-@GetRoute("cookie")
-public void getCookie(@CookieParam String UID){
+@GET("cookie")
+public void getCookie(@Cookie String UID){
   System.out.println("Cookie UID => " + UID);
 }
 ```
@@ -374,7 +380,7 @@ mvc.statics=/mydir
 **使用Request获取**
 
 ```java
-@PostRoute("upload")
+@POST("upload")
 public void upload(Request request){
     request.fileItem("img").ifPresent(fileItem -> {
         fileItem.moveTo(new File(fileItem.getFileName()));              
@@ -385,8 +391,8 @@ public void upload(Request request){
 **使用注解获取**
 
 ```java
-@PostRoute("upload")
-public void upload(@MultipartParam FileItem fileItem){
+@POST("upload")
+public void upload(@Multipart FileItem fileItem){
     // 保存到新位置
     fileItem.moveTo(new File(fileItem.getFileName()));
 }
@@ -408,7 +414,7 @@ public void login(Session session){
 **使用 RouteContext 渲染**
 
 ```java
-@GetRoute("users/json")
+@GET("users/json")
 public void printJSON(RouteContext ctx){
     User user = new User("hellokaton", 18);
     ctx.json(user);
@@ -420,7 +426,7 @@ public void printJSON(RouteContext ctx){
 这种形式看起来更简洁 😶
 
 ```java
-@GetRoute("users/json")
+@GET("users/json")
 @Response
 public User printJSON(){
   return new User("hellokaton", 18);
@@ -430,18 +436,38 @@ public User printJSON(){
 ### 渲染文本
 
 ```java
-@GetRoute("text")
+@GET("text")
 public void printText(RouteContext ctx){
     ctx.text("I Love Blade!");
+}
+```
+
+or
+
+```java
+@GET("text")
+@Response(contentType = HttpConst.CONTENT_TYPE_TEXT)
+public String printText(RouteContext ctx){
+    return "I Love Blade!";
 }
 ```
 
 ### 渲染Html
 
 ```java
-@GetRoute("html")
+@GET("html")
 public void printHtml(RouteContext ctx){
     ctx.html("<center><h1>I Love Blade!</h1></center>");
+}
+```
+
+or
+
+```java
+@GET("html")
+@Response(contentType = HttpConst.CONTENT_TYPE_HTML)
+public String printHtml(RouteContext ctx){
+    return "<center><h1>I Love Blade!</h1></center>";
 }
 ```
 
@@ -537,7 +563,7 @@ public static void main(String[] args) {
 ## 重定向
 
 ```java
-@GetRoute("redirect")
+@GET("redirect")
 public void redirectToGithub(RouteContext ctx){
     ctx.redirect("https://github.com/hellokaton");
 }
@@ -548,7 +574,7 @@ public void redirectToGithub(RouteContext ctx){
 ## 写入Cookie
 
 ```java
-@GetRoute("write-cookie")
+@GET("write-cookie")
 public void writeCookie(RouteContext ctx){
     ctx.cookie("hello", "world");
     ctx.cookie("UID", "22", 3600);

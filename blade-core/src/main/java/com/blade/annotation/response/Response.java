@@ -17,6 +17,6 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 public @interface Response {
 
-    String contentType() default HttpConst.CONTENT_TYPE_TEXT;
+    String contentType() default HttpConst.CONTENT_TYPE_JSON;
 
 }

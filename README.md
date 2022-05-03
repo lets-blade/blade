@@ -64,15 +64,15 @@ Run with `Maven`:
 ```xml
 <dependency>
     <groupId>com.bladejava</groupId>
-    <artifactId>blade-mvc</artifactId>
-    <version>2.0.15.RELEASE</version>
+    <artifactId>blade-core</artifactId>
+    <version>2.1.0.RELEASE</version>
 </dependency>
 ```
 
 or `Gradle`:
 
 ```sh
-compile 'com.bladejava:blade-mvc:2.0.15.RELEASE'
+compile 'com.bladejava:blade-core:2.1.0.RELEASE'
 ```
 
 Write the `main` method and the `Hello World`:
@@ -139,12 +139,12 @@ public static void main(String[] args) {
 @Path
 public class IndexController {
 
-    @GetRoute("signin")
+    @GET("signin")
     public String signin(){
         return "signin.html";
     }
 
-    @PostRoute("signin")
+    @POST("signin")
     @Response
     public RestResponse doSignin(RouteContext ctx){
         // do something
@@ -174,9 +174,14 @@ public static void main(String[] args) {
 **By Annotation**
 
 ```java
-@PostRoute("/save")
-public void savePerson(@Param String username, @Param Integer age){
-    System.out.println("username is:" + username + ", age is:" + age)
+@GET("/user")
+public void savePerson(@Query Integer age){
+  System.out.println("age is:" + age);
+}
+
+@POST("/save")
+public void savePerson(@Form String username, @Form Integer age){
+  System.out.println("username is:" + username + ", age is:" + age);
 }
 ```
 
@@ -219,7 +224,7 @@ public static void main(String[] args) {
 **By Annotation**
 
 ```java
-@GetRoute("/users/:username/:page")
+@GET("/users/:username/:page")
 public void userTopics(@PathParam String username, @PathParam Integer page){
     System.out.println("username is:" + usernam + ", page is:" + page)
 }
@@ -262,8 +267,8 @@ public class User {
 **By Annotation**
 
 ```java
-@PostRoute("/users")
-public void saveUser(@Param User user){
+@POST("/users")
+public void saveUser(@Form User user) {
     System.out.println("user => " + user);
 }
 ```
@@ -277,8 +282,8 @@ curl -X POST http://127.0.0.1:9000/users -F username=jack -F age=16
 **Custom model identification**
 
 ```java
-@PostRoute("/users")
-public void saveUser(@Param(name="u") User user){
+@POST("/users")
+public void saveUser(@Form(name="u") User user) {
     System.out.println("user => " + user);
 }
 ```
@@ -292,7 +297,8 @@ curl -X POST http://127.0.0.1:9000/users -F u[username]=jack -F u[age]=16
 **Body Parameter To Model**
 
 ```java
-public void getUser(@BodyParam User user){
+@POST("/body")
+public void body(@Body User user) {
     System.out.println("user => " + user);
 }
 ```
@@ -315,7 +321,7 @@ String version = environment.get("app.version", "0.0.1");
 **By Context**
 
 ```java
-@GetRoute("header")
+@GET("header")
 public void getHeader(RouteContext ctx){
     System.out.println("Host => " + ctx.header("Host"));
     // get useragent
@@ -328,9 +334,9 @@ public void getHeader(RouteContext ctx){
 **By Annotation**
 
 ```java
-@GetRoute("header")
-public void getHeader(@HeaderParam String Host){
-    System.out.println("Host => " + Host);
+@GET("header")
+public void getHeader(@Header String host){
+    System.out.println("Host => " + host);
 }
 ```
 
@@ -339,7 +345,7 @@ public void getHeader(@HeaderParam String Host){
 **By Context**
 
 ```java
-@GetRoute("cookie")
+@GET("cookie")
 public void getCookie(RouteContext ctx){
     System.out.println("UID => " + ctx.cookie("UID"));
 }
@@ -348,9 +354,9 @@ public void getCookie(RouteContext ctx){
 **By Annotation**
 
 ```java
-@GetRoute("cookie")
-public void getCookie(@CookieParam String UID){
-    System.out.println("Cookie UID => " + UID);
+@GET("cookie")
+public void getCookie(@Cookie String uid){
+    System.out.println("Cookie UID => " + uid);
 }
 ```
 
@@ -375,7 +381,7 @@ mvc.statics=/mydir
 **By Request**
 
 ```java
-@PostRoute("upload")
+@POST("upload")
 public void upload(Request request){
     request.fileItem("img").ifPresent(fileItem -> {
         fileItem.moveTo(new File(fileItem.getFileName()));
@@ -386,8 +392,8 @@ public void upload(Request request){
 **By Annotation**
 
 ```java
-@PostRoute("upload")
-public void upload(@MultipartParam FileItem fileItem){
+@POST("upload")
+public void upload(@Multipart FileItem fileItem){
     // Save to new path
     fileItem.moveTo(new File(fileItem.getFileName()));
 }
@@ -409,7 +415,7 @@ public void login(Session session){
 **By Context**
 
 ```java
-@GetRoute("users/json")
+@GET("users/json")
 public void printJSON(RouteContext ctx){
     User user = new User("hellokaton", 18);
     ctx.json(user);
@@ -421,7 +427,7 @@ public void printJSON(RouteContext ctx){
 This form looks more concise 😶
 
 ```java
-@GetRoute("users/json")
+@GET("users/json")
 @Response
 public User printJSON(){
     return new User("hellokaton", 18);
@@ -431,18 +437,38 @@ public User printJSON(){
 ### Render Text
 
 ```java
-@GetRoute("text")
+@GET("text")
 public void printText(RouteContext ctx){
     ctx.text("I Love Blade!");
+}
+```
+
+or
+
+```java
+@GET("text")
+@Response(contentType = HttpConst.CONTENT_TYPE_TEXT)
+public String printText(RouteContext ctx){
+    return "I Love Blade!";
 }
 ```
 
 ### Render Html
 
 ```java
-@GetRoute("html")
+@GET("html")
 public void printHtml(RouteContext ctx){
     ctx.html("<center><h1>I Love Blade!</h1></center>");
+}
+```
+
+or
+
+```java
+@GET("html")
+@Response(contentType = HttpConst.CONTENT_TYPE_HTML)
+public String printHtml(RouteContext ctx){
+    return "<center><h1>I Love Blade!</h1></center>";
 }
 ```
 
@@ -538,7 +564,7 @@ The `hello.html` template
 ## Redirects
 
 ```java
-@GetRoute("redirect")
+@GET("redirect")
 public void redirectToGithub(RouteContext ctx){
     ctx.redirect("https://github.com/hellokaton");
 }
@@ -549,7 +575,7 @@ public void redirectToGithub(RouteContext ctx){
 ## Write Cookie
 
 ```java
-@GetRoute("write-cookie")
+@GET("write-cookie")
 public void writeCookie(RouteContext ctx){
     ctx.cookie("hello", "world");
     ctx.cookie("UID", "22", 3600);
