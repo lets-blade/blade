@@ -16,16 +16,19 @@
 package com.hellokaton.blade.mvc.handler;
 
 import com.hellokaton.blade.Blade;
+import com.hellokaton.blade.Environment;
+import com.hellokaton.blade.exception.InternalErrorException;
 import com.hellokaton.blade.kit.ReflectKit;
 import com.hellokaton.blade.kit.StringKit;
 import com.hellokaton.blade.kit.UUID;
-import com.hellokaton.blade.mvc.WebContext;
 import com.hellokaton.blade.mvc.http.Request;
 import com.hellokaton.blade.mvc.http.Session;
 import com.hellokaton.blade.mvc.http.session.SessionManager;
+import com.hellokaton.blade.options.HttpOptions;
 
 import java.time.Instant;
 
+import static com.hellokaton.blade.mvc.BladeConst.ENV_KEY_SESSION_KEY;
 import static com.hellokaton.blade.mvc.BladeConst.ENV_KEY_SESSION_TIMEOUT;
 
 /**
@@ -36,14 +39,16 @@ import static com.hellokaton.blade.mvc.BladeConst.ENV_KEY_SESSION_TIMEOUT;
  */
 public class SessionHandler {
 
-    private final Blade          blade;
+    private final Class<? extends Session> sessionType;
     private final SessionManager sessionManager;
-    private final int            timeout;
+    private int timeout;
+    private String sessionKey;
 
     public SessionHandler(Blade blade) {
-        this.blade = blade;
+        this.sessionType = blade.httpOptions().getSessionType();
         this.sessionManager = blade.sessionManager();
-        this.timeout = blade.environment().getInt(ENV_KEY_SESSION_TIMEOUT, 1800);
+
+        this.initOptions(blade.httpOptions(), blade.environment());
     }
 
     public Session createSession(Request request) {
@@ -52,7 +57,10 @@ public class SessionHandler {
         long now = Instant.now().getEpochSecond();
         if (null == session) {
             long expired = now + timeout;
-            session = ReflectKit.newInstance(blade.sessionType());
+            session = ReflectKit.newInstance(sessionType);
+            if (null == session) {
+                throw new InternalErrorException("Unable to create session object :(");
+            }
             session.id(UUID.UU32());
             session.created(now);
             session.expired(expired);
@@ -60,7 +68,7 @@ public class SessionHandler {
             return session;
         } else {
             if (session.expired() < now) {
-                sessionManager.destorySession(session);
+                sessionManager.destroySession(session);
             } else {
                 // renewal
                 long expired = now + timeout;
@@ -71,11 +79,29 @@ public class SessionHandler {
     }
 
     private Session getSession(Request request) {
-        String cookieHeader = request.cookie(WebContext.sessionKey());
+        String cookieHeader = request.cookie(this.sessionKey);
         if (StringKit.isEmpty(cookieHeader)) {
             return null;
         }
         return sessionManager.getSession(cookieHeader);
+    }
+
+    private void initOptions(HttpOptions httpOptions, Environment environment) {
+        this.timeout = httpOptions.getSessionTimeout();
+        this.sessionKey = httpOptions.getSessionKey();
+        if (this.timeout != HttpOptions.DEFAULT_SESSION_TIMEOUT) {
+            environment.set(ENV_KEY_SESSION_TIMEOUT, this.timeout);
+        } else {
+            this.timeout = environment.getInt(ENV_KEY_SESSION_TIMEOUT, HttpOptions.DEFAULT_SESSION_TIMEOUT);
+            httpOptions.setSessionTimeout(this.timeout);
+        }
+
+        if (!HttpOptions.DEFAULT_SESSION_KEY.equals(this.sessionKey)) {
+            environment.set(ENV_KEY_SESSION_KEY, this.sessionKey);
+        } else {
+            this.sessionKey = environment.get(ENV_KEY_SESSION_KEY, HttpOptions.DEFAULT_SESSION_KEY);
+            httpOptions.setSessionKey(this.sessionKey);
+        }
     }
 
 }

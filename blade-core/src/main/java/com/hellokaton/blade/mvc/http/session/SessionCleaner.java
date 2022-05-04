@@ -25,7 +25,7 @@ public class SessionCleaner implements Runnable {
     public void run() {
         try {
             Collection<Session> sessions = sessionManager.sessionMap().values();
-            sessions.parallelStream().filter(this::expires).forEach(sessionManager::destorySession);
+            sessions.parallelStream().filter(this::expires).forEach(sessionManager::destroySession);
         } catch (Exception e) {
             log.error("Session clean error", e);
         }

@@ -40,7 +40,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
 import static com.hellokaton.blade.kit.BladeKit.*;
-import static com.hellokaton.blade.mvc.BladeConst.*;
+import static com.hellokaton.blade.mvc.BladeConst.ENV_KEY_PERFORMANCE;
+import static com.hellokaton.blade.mvc.BladeConst.REQUEST_COST_TIME;
 import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
 /**
@@ -61,8 +62,7 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<HttpRequest> 
     private final RouteMatcher routeMatcher = WebContext.blade().routeMatcher();
 
     private boolean allowCost() {
-        return WebContext.blade().environment()
-                .getBoolean(ENV_KEY_HTTP_REQUEST_COST, true);
+        return WebContext.blade().httpOptions().isEnableRequestCost();
     }
 
     private boolean enablePerformance() {

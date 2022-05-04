@@ -76,7 +76,7 @@ compile 'com.hellokaton:blade-core:2.1.0.BETA'
 
 ```java
 public static void main(String[] args) {
-    Blade.of().get("/", ctx -> ctx.text("Hello Blade")).start();
+    Blade.create().get("/", ctx -> ctx.text("Hello Blade")).start();
 }
 ```
 
@@ -122,7 +122,7 @@ public static void main(String[] args) {
 ```java
 public static void main(String[] args) {
     // Create Blade，using GET、POST、PUT、DELETE
-    Blade.of()
+    Blade.create()
         .get("/user/21", getting)
         .post("/save", posting)
         .delete("/remove", deleting)
@@ -161,7 +161,7 @@ public class IndexController {
 
 ```java
 public static void main(String[] args) {
-    Blade.of().get("/user", ctx -> {
+    Blade.create().get("/user", ctx -> {
         Integer age = ctx.fromInt("age");
         System.out.println("age is:" + age);
     }).start();
@@ -198,7 +198,7 @@ curl -X POST http://127.0.0.1:9000/save -F username=jack -F age=16
 
 ```java
 public static void main(String[] args) {
-    Blade blade = Blade.of();
+    Blade blade = Blade.create();
     // Create a route: /user/:uid
     blade.get("/user/:uid", ctx -> {
         Integer uid = ctx.pathInt("uid");
@@ -237,7 +237,7 @@ curl -X GET http://127.0.0.1:9000/users/hellokaton/2
 
 ```java
 public static void main(String[] args) {
-    Blade.of().post("/body", ctx -> {
+    Blade.create().post("/body", ctx -> {
         System.out.println("body string is:" + ctx.bodyToString())
     }).start();
 }
@@ -364,7 +364,7 @@ Blade 内置了一些静态资源目录，只要将资源文件保存在 `classp
 如果要自定义静态资源URL，可以使用下面的代码
 
 ```java
-Blade.of().addStatics("/mydir");
+Blade.create().addStatics("/mydir");
 ```
 
 当然你也可以在配置文件中指定 `application.properties` (位于classpath之下)
@@ -476,7 +476,7 @@ public String printHtml(RouteContext ctx){
 
 ```java
 public static void main(String[] args) {
-    Blade.of().get("/hello", ctx -> {
+    Blade.create().get("/hello", ctx -> {
         ctx.attribute("name", "hellokaton");
         ctx.render("hello.html");
     }).start(Hello.class, args);
@@ -522,7 +522,7 @@ public class TemplateConfig implements BladeLoader {
 
 ```java
 public static void main(String[] args) {
-    Blade.of().get("/hello", ctx -> {
+    Blade.create().get("/hello", ctx -> {
         User user = new User("hellokaton", 50);
         ctx.attribute("user", user);
         ctx.render("hello.html");
@@ -585,7 +585,7 @@ public void writeCookie(RouteContext ctx){
 ```java
 public static void main(String[] args) {
     // All requests are exported before execution before
-    Blade.of().before("/*", ctx -> {
+    Blade.create().before("/*", ctx -> {
         System.out.println("before...");
     }).start();
 }
@@ -612,7 +612,7 @@ Blade 内置了几个中间件，当你需要Basic认证时可以使用如下代
 
 ```java
 public static void main(String[] args) {
-  Blade.of().use(new BasicAuthMiddleware()).start();
+  Blade.create().use(new BasicAuthMiddleware()).start();
 }
 ```
 
@@ -630,7 +630,7 @@ http.auth.password=123456
 **硬编码**
 
 ```java
-Blade.of().listen(9001).start();
+Blade.create().listen(9001).start();
 ```
 
 **配置文件 `application.properties`**

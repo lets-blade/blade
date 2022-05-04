@@ -27,6 +27,7 @@ import lombok.var;
 import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
@@ -172,7 +173,7 @@ public class Environment {
     private static Environment of(@NonNull InputStream is) {
         try {
             var environment = new Environment();
-            environment.props.load(new InputStreamReader(is, "UTF-8"));
+            environment.props.load(new InputStreamReader(is, StandardCharsets.UTF_8));
             return environment;
         } catch (IOException e) {
             throw new IllegalStateException(e);

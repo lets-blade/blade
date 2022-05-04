@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2022, katon (hellokaton@gmail.com)
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -33,18 +33,18 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class SessionManager {
 
-    private EventManager eventManager;
+    private final EventManager eventManager;
 
     /**
      * Store all Session instances
      */
-    private Map<String, Session> sessionMap;
+    private final Map<String, Session> sessionMap;
 
     /**
      * Create SessionManager
      */
     public SessionManager(EventManager eventManager) {
-        this.sessionMap = new ConcurrentHashMap<>();
+        this.sessionMap = new ConcurrentHashMap<>(16);
         this.eventManager = eventManager;
     }
 
@@ -83,7 +83,7 @@ public class SessionManager {
      *
      * @param session session instance
      */
-    public void destorySession(Session session) {
+    public void destroySession(Session session) {
         session.attributes().clear();
         sessionMap.remove(session.id());
 

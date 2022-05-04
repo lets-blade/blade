@@ -1,6 +1,7 @@
 package com.hellokaton.blade.server;
 
 import com.hellokaton.blade.Blade;
+import com.hellokaton.blade.Environment;
 import com.hellokaton.blade.kit.DateKit;
 import com.hellokaton.blade.options.CorsOptions;
 import com.hellokaton.blade.options.HttpOptions;
@@ -23,6 +24,8 @@ import java.time.LocalDateTime;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import static com.hellokaton.blade.mvc.BladeConst.*;
+
 /**
  * HttpServerInitializer
  */
@@ -32,19 +35,17 @@ public class HttpServerInitializer extends ChannelInitializer<SocketChannel> {
     private final HttpServerHandler httpServerHandler;
 
     private final SslContext sslCtx;
-    private final Blade blade;
     private CorsConfig corsConfig;
-    private HttpOptions httpOptions;
+    private int maxContentSize;
+    private boolean enableGzip;
     public static volatile String date = DateKit.gmtDate(LocalDateTime.now());
 
 
     public HttpServerInitializer(SslContext sslCtx, Blade blade, ScheduledExecutorService service) {
         this.sslCtx = sslCtx;
-        this.blade = blade;
-        this.httpOptions = blade.httpOptions();
         this.httpServerHandler = new HttpServerHandler();
-        this.buildCorsConfig(blade.corsOptions());
-
+        this.mergeCorsConfig(blade.corsOptions());
+        this.mergeHttpOptions(blade.httpOptions(), blade.environment());
         service.scheduleWithFixedDelay(() -> date = DateKit.gmtDate(LocalDateTime.now()), 1000, 1000, TimeUnit.MILLISECONDS);
     }
 
@@ -55,12 +56,11 @@ public class HttpServerInitializer extends ChannelInitializer<SocketChannel> {
             if (sslCtx != null) {
                 pipeline.addLast(sslCtx.newHandler(ch.alloc()));
             }
-            int maxContentSize = this.httpOptions.getMaxContentSize();
             pipeline.addLast(new HttpServerCodec());
             pipeline.addLast(new HttpObjectAggregatorDecode(maxContentSize));
             pipeline.addLast(new HttpServerExpectContinueHandler());
 
-            if (this.httpOptions.isEnableGzip()) {
+            if (enableGzip) {
                 pipeline.addLast(new HttpContentCompressor());
             }
             if (null != corsConfig) {
@@ -73,7 +73,7 @@ public class HttpServerInitializer extends ChannelInitializer<SocketChannel> {
         }
     }
 
-    private void buildCorsConfig(CorsOptions corsOptions) {
+    private void mergeCorsConfig(CorsOptions corsOptions) {
         if (null == corsOptions) {
             return;
         }
@@ -110,6 +110,41 @@ public class HttpServerInitializer extends ChannelInitializer<SocketChannel> {
             corsConfigBuilder.allowedRequestHeaders(corsOptions.getAllowedHeaders().toArray(new String[0]));
         }
         this.corsConfig = corsConfigBuilder.build();
+    }
+
+    private void mergeHttpOptions(HttpOptions httpOptions, Environment environment) {
+        this.maxContentSize = httpOptions.getMaxContentSize();
+        this.enableGzip = httpOptions.isEnableGzip();
+
+        if (this.maxContentSize != HttpOptions.DEFAULT_MAX_CONTENT_SIZE) {
+            environment.set(ENV_KEY_HTTP_MAX_CONTENT, this.maxContentSize);
+        } else {
+            this.maxContentSize = environment.getInt(ENV_KEY_HTTP_MAX_CONTENT, HttpOptions.DEFAULT_MAX_CONTENT_SIZE);
+            httpOptions.setMaxContentSize(maxContentSize);
+        }
+
+        if (this.enableGzip) {
+            environment.set(ENV_KEY_GZIP_ENABLE, true);
+        } else {
+            this.enableGzip = environment.getBoolean(ENV_KEY_GZIP_ENABLE, false);
+            httpOptions.setEnableGzip(enableGzip);
+        }
+
+        boolean requestCost = httpOptions.isEnableRequestCost();
+        if (requestCost) {
+            environment.set(ENV_KEY_HTTP_REQUEST_COST, true);
+        } else {
+            requestCost = environment.getBoolean(ENV_KEY_HTTP_REQUEST_COST, false);
+            httpOptions.setEnableRequestCost(requestCost);
+        }
+
+        boolean enableSession = httpOptions.isEnableSession();
+        if (enableSession) {
+            environment.set(ENV_KEY_SESSION_ENABLED, true);
+        } else {
+            enableSession = environment.getBoolean(ENV_KEY_SESSION_ENABLED, false);
+            httpOptions.setEnableSession(enableSession);
+        }
     }
 
 }

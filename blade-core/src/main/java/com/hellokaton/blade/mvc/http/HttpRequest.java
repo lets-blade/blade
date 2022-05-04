@@ -19,7 +19,6 @@ import com.hellokaton.blade.exception.HttpParseException;
 import com.hellokaton.blade.kit.CaseInsensitiveHashMap;
 import com.hellokaton.blade.kit.PathKit;
 import com.hellokaton.blade.kit.StringKit;
-import com.hellokaton.blade.mvc.BladeConst;
 import com.hellokaton.blade.mvc.HttpConst;
 import com.hellokaton.blade.mvc.WebContext;
 import com.hellokaton.blade.mvc.handler.SessionHandler;
@@ -44,8 +43,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
-import static com.hellokaton.blade.mvc.BladeConst.ENV_KEY_PERFORMANCE;
-
 /**
  * Http Request Impl
  *
@@ -61,7 +58,7 @@ public class HttpRequest implements Request {
 
     private static final ByteBuf EMPTY_BUF = Unpooled.copiedBuffer("", CharsetUtil.UTF_8);
 
-    private static final SessionHandler SESSION_HANDLER = new SessionHandler(WebContext.blade());
+    private static SessionHandler SESSION_HANDLER = null;
 
     static {
         DiskFileUpload.deleteOnExitTemporaryFile = true; // should delete file
@@ -189,9 +186,7 @@ public class HttpRequest implements Request {
 
     @Override
     public boolean useGZIP() {
-        boolean useGZIP = WebContext.blade().environment()
-                .getBoolean(BladeConst.ENV_KEY_GZIP_ENABLE, false);
-
+        boolean useGZIP = WebContext.blade().httpOptions().isEnableGzip();
         if (!useGZIP) {
             return false;
         }
@@ -294,8 +289,10 @@ public class HttpRequest implements Request {
         this.parseContentType();
         this.parseCookie();
 
-        if (!WebContext.blade().environment()
-                .getBoolean(ENV_KEY_PERFORMANCE, false)) {
+        if (WebContext.blade().httpOptions().isEnableSession()) {
+            if (null == SESSION_HANDLER) {
+                SESSION_HANDLER = new SessionHandler(WebContext.blade());
+            }
             SessionManager sessionManager = WebContext.blade().sessionManager();
             if (null != sessionManager) {
                 this.session = SESSION_HANDLER.createSession(this);

@@ -17,8 +17,8 @@ package com.hellokaton.blade.server;
 
 import com.hellokaton.blade.Blade;
 import com.hellokaton.blade.Environment;
-import com.hellokaton.blade.annotation.URLPattern;
 import com.hellokaton.blade.annotation.Path;
+import com.hellokaton.blade.annotation.URLPattern;
 import com.hellokaton.blade.event.Event;
 import com.hellokaton.blade.event.EventType;
 import com.hellokaton.blade.ioc.DynamicContext;
@@ -50,10 +50,7 @@ import com.hellokaton.blade.task.cron.CronExpression;
 import com.hellokaton.blade.task.cron.CronThreadPoolExecutor;
 import com.hellokaton.blade.watcher.EnvironmentWatcher;
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.Channel;
-import io.netty.channel.DefaultEventLoop;
-import io.netty.channel.EventLoop;
-import io.netty.channel.EventLoopGroup;
+import io.netty.channel.*;
 import io.netty.channel.epoll.EpollChannelOption;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
@@ -95,7 +92,11 @@ public class NettyServer implements Server {
     private Channel channel;
     private RouteBuilder routeBuilder;
     private List<BladeLoader> loaders;
-    private List<TaskStruct> taskStruts = new ArrayList<>();
+    private final List<TaskStruct> taskStruts = new ArrayList<>();
+
+    // netty default config
+    private static final int DEFAULT_ACCEPT_THREAD_COUNT = 1;
+    private static final int DEFAULT_IO_THREAD_COUNT = 0;
 
     private volatile boolean isStop;
 
@@ -185,8 +186,8 @@ public class NettyServer implements Server {
         SslContext sslCtx = null;
         if (SSL) {
             String certFilePath = environment.get(ENV_KEY_SSL_CERT, null);
-            String privateKeyPath = environment.get(ENE_KEY_SSL_PRIVATE_KEY, null);
-            String privateKeyPassword = environment.get(ENE_KEY_SSL_PRIVATE_KEY_PASS, null);
+            String privateKeyPath = environment.get(ENV_KEY_SSL_PRIVATE_KEY, null);
+            String privateKeyPassword = environment.get(ENV_KEY_SSL_PRIVATE_KEY_PASS, null);
 
             log.info("{}SSL CertChainFile  Path: {}", getStartedSymbol(), certFilePath);
             log.info("{}SSL PrivateKeyFile Path: {}", getStartedSymbol(), privateKeyPath);
@@ -195,7 +196,7 @@ public class NettyServer implements Server {
 
         var bootstrap = new ServerBootstrap();
 
-        int acceptThreadCount = environment.getInt(ENC_KEY_NETTY_ACCEPT_THREAD_COUNT, DEFAULT_ACCEPT_THREAD_COUNT);
+        int acceptThreadCount = environment.getInt(ENV_KEY_NETTY_ACCEPT_THREAD_COUNT, DEFAULT_ACCEPT_THREAD_COUNT);
         int ioThreadCount = environment.getInt(ENV_KEY_NETTY_IO_THREAD_COUNT, DEFAULT_IO_THREAD_COUNT);
 
         // enable epoll
@@ -216,6 +217,16 @@ public class NettyServer implements Server {
         }
 
         scheduleEventLoop = new DefaultEventLoop();
+
+        Boolean tcpNodeLay = environment.getBoolean(ENV_KEY_NETTY_TCP_NODELAY, true);
+        bootstrap.childOption(ChannelOption.TCP_NODELAY, tcpNodeLay);
+
+        Boolean soKeepAlive = environment.getBoolean(ENV_KEY_NETTY_SO_KEEPALIVE, true);
+        bootstrap.childOption(ChannelOption.SO_KEEPALIVE, soKeepAlive);
+
+        environment.getInt(ENV_KEY_NETTY_SO_BACKLOG).ifPresent(backLog -> {
+            bootstrap.option(ChannelOption.SO_BACKLOG, backLog);
+        });
 
         bootstrap.childHandler(new HttpServerInitializer(sslCtx, blade, scheduleEventLoop));
 

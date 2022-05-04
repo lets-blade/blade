@@ -26,8 +26,6 @@ import lombok.var;
 
 import java.util.Optional;
 
-import static com.hellokaton.blade.mvc.BladeConst.ENV_KEY_SESSION_KEY;
-import static com.hellokaton.blade.server.NettyHttpConst.DEFAULT_SESSION_KEY;
 import static com.hellokaton.blade.server.HttpServerHandler.WEB_CONTEXT_THREAD_LOCAL;
 
 /**
@@ -50,11 +48,6 @@ public class WebContext {
      * ContextPath, default is "/"
      */
     private static String contextPath;
-
-    /**
-     * Session Key, default is: SESSION
-     */
-    private static String sessionKey;
 
     /**
      * Http Request instance of current thread context
@@ -90,18 +83,14 @@ public class WebContext {
         return blade.environment();
     }
 
-    public static String sessionKey() {
-        return sessionKey;
-    }
-
     /**
      * Get application environment information.
      *
      * @param key environment key
      * @return environment optional value
      */
-    public Optional<String> env(String key) {
-        return blade().env(key);
+    public Optional<String> getEnv(String key) {
+        return blade().getEnv(key);
     }
 
     /**
@@ -111,8 +100,8 @@ public class WebContext {
      * @param defaultValue default value, if value is null
      * @return environment optional value
      */
-    public String env(String key, String defaultValue) {
-        return blade().env(key, defaultValue);
+    public String getEnv(String key, String defaultValue) {
+        return blade().getEnv(key, defaultValue);
     }
 
     public ChannelHandlerContext getChannelHandlerContext() {
@@ -140,7 +129,6 @@ public class WebContext {
     public static void init(Blade blade, String contextPath) {
         WebContext.blade = blade;
         WebContext.contextPath = contextPath;
-        WebContext.sessionKey = blade.environment().get(ENV_KEY_SESSION_KEY, DEFAULT_SESSION_KEY);
     }
 
     /**

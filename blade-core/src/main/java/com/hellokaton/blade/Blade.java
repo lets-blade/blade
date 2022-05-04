@@ -1,17 +1,17 @@
-/**
- * Copyright (c) 2022, katon (hellokaton@gmail.com)
- * <p>
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * <p>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+/*
+  Copyright (c) 2022, katon (hellokaton@gmail.com)
+  <p>
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  <p>
+  http://www.apache.org/licenses/LICENSE-2.0
+  <p>
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
  */
 package com.hellokaton.blade;
 
@@ -29,8 +29,6 @@ import com.hellokaton.blade.mvc.handler.ExceptionHandler;
 import com.hellokaton.blade.mvc.handler.RouteHandler;
 import com.hellokaton.blade.mvc.hook.WebHook;
 import com.hellokaton.blade.mvc.http.HttpMethod;
-import com.hellokaton.blade.mvc.http.HttpSession;
-import com.hellokaton.blade.mvc.http.Session;
 import com.hellokaton.blade.mvc.http.session.SessionManager;
 import com.hellokaton.blade.mvc.route.DynamicMapping;
 import com.hellokaton.blade.mvc.route.RouteMatcher;
@@ -133,10 +131,10 @@ public class Blade {
     private final RouteMatcher routeMatcher = new RouteMatcher();
 
     private CorsOptions corsOptions = null;
-    private HttpOptions httpOptions = HttpOptions.create();
+    private final HttpOptions httpOptions = HttpOptions.create();
 
     /**
-     * Blade environment, which stores the parameters of the app.properties configuration file
+     * Blade environment, which stores the parameters of the application.properties configuration file
      */
     private Environment environment = Environment.empty();
 
@@ -164,13 +162,6 @@ public class Blade {
     private Class<?> bootClass = null;
 
     /**
-     * Session implementation type, the default is HttpSession.
-     * <p>
-     * When you need to be able to achieve similar RedisSession
-     */
-    private Class<? extends Session> sessionImplType = HttpSession.class;
-
-    /**
      * Blade app start banner, default is Const.BANNER
      */
     private String bannerText;
@@ -185,8 +176,13 @@ public class Blade {
      *
      * @return return blade instance
      */
-    public static Blade of() {
+    public static Blade create() {
         return new Blade();
+    }
+
+    @Deprecated
+    public static Blade of() {
+        return create();
     }
 
     /**
@@ -208,8 +204,8 @@ public class Blade {
      * for example :
      * {@code routerMapping(new TrieMapping())}
      *
-     * @param dynamicMapping
-     * @return
+     * @param dynamicMapping see {@link DynamicMapping}
+     * @return blade instance
      */
     public Blade routerMapping(DynamicMapping dynamicMapping) {
         routeMatcher.setDynamicMapping(dynamicMapping);
@@ -221,7 +217,7 @@ public class Blade {
      *
      * @param path    your route path
      * @param handler route implement
-     * @return return blade instance
+     * @return blade instance
      */
     public Blade get(@NonNull String path, @NonNull RouteHandler handler) {
         this.routeMatcher.addRoute(path, handler, HttpMethod.GET);
@@ -292,7 +288,7 @@ public class Blade {
      * Setting blade mvc default templateEngine
      *
      * @param templateEngine TemplateEngine object
-     * @return blade
+     * @return blade instance
      */
     public Blade templateEngine(@NonNull TemplateEngine templateEngine) {
         this.templateEngine = templateEngine;
@@ -507,7 +503,7 @@ public class Blade {
      * @param key environment key
      * @return environment optional value
      */
-    public Optional<String> env(String key) {
+    public Optional<String> getEnv(String key) {
         return this.environment.get(key);
     }
 
@@ -518,8 +514,13 @@ public class Blade {
      * @param defaultValue default value, if value is null
      * @return environment optional value
      */
-    public String env(String key, String defaultValue) {
+    public String getEnv(String key, String defaultValue) {
         return this.environment.get(key, defaultValue);
+    }
+
+    public Blade setEnv(String key, Object value) {
+        this.environment.set(key, value);
+        return this;
     }
 
     /**
@@ -618,26 +619,6 @@ public class Blade {
      */
     public Blade on(@NonNull EventType eventType, @NonNull com.hellokaton.blade.event.EventListener eventListener) {
         this.eventManager.addEventListener(eventType, eventListener);
-        return this;
-    }
-
-    /**
-     * Get session implements Class Type
-     *
-     * @return return blade Session Type
-     */
-    public Class<? extends Session> sessionType() {
-        return this.sessionImplType;
-    }
-
-    /**
-     * Set session implements Class Type, e.g: RedisSession
-     *
-     * @param sessionImplType Session Type implement
-     * @return return blade instance
-     */
-    public Blade sessionType(Class<? extends Session> sessionImplType) {
-        this.sessionImplType = sessionImplType;
         return this;
     }
 

@@ -16,6 +16,7 @@
 package com.hellokaton.blade.exception;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  * Blade Exception, Base RuntimeException
@@ -24,9 +25,10 @@ import lombok.Data;
  * 2017/5/31
  */
 @Data
+@EqualsAndHashCode(callSuper = true)
 public class BladeException extends RuntimeException {
 
-    protected int    status;
+    protected int status;
     protected String name;
 
     public BladeException(Throwable cause) {

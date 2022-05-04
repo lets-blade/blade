@@ -144,10 +144,10 @@ public class BladeTest extends BaseTestCase {
 
         assertTrue(environment2.hasKey("hello"));
 
-        String value = Blade.of().env("blade", "2.0.9");
+        String value = Blade.of().getEnv("blade", "2.0.9");
         assertEquals("2.0.9", value);
 
-        assertFalse(Blade.of().env("blade").isPresent());
+        assertFalse(Blade.of().getEnv("blade").isPresent());
     }
 
 //    @Test
@@ -203,7 +203,7 @@ public class BladeTest extends BaseTestCase {
     public void testGZIP() {
         Blade blade = Blade.of();
         blade.http(HttpOptions::enableGzip);
-        assertEquals(Boolean.TRUE, blade.environment().getBooleanOrNull(ENV_KEY_GZIP_ENABLE));
+        assertEquals(Boolean.TRUE, blade.httpOptions().isEnableGzip());
     }
 
     @Test

@@ -78,7 +78,7 @@ Write the `main` method and the `Hello World`:
 
 ```java
 public static void main(String[] args) {
-    Blade.of().get("/", ctx -> ctx.text("Hello Blade")).start();
+    Blade.create().get("/", ctx -> ctx.text("Hello Blade")).start();
 }
 ```
 
@@ -123,7 +123,7 @@ Open http://localhost:9000 in your browser to see your first `Blade` application
 ```java
 public static void main(String[] args) {
     // Create Blade，using GET、POST、PUT、DELETE
-    Blade.of()
+    Blade.create()
         .get("/user/21", getting)
         .post("/save", posting)
         .delete("/remove", deleting)
@@ -162,7 +162,7 @@ Here is an example:
 
 ```java
 public static void main(String[] args) {
-    Blade.of().get("/user", ctx -> {
+    Blade.create().get("/user", ctx -> {
         Integer age = ctx.fromInt("age");
         System.out.println("age is:" + age);
     }).start();
@@ -199,7 +199,7 @@ curl -X POST http://127.0.0.1:9000/save -F username=jack -F age=16
 
 ```java
 public static void main(String[] args) {
-    Blade blade = Blade.of();
+    Blade blade = Blade.create();
     // Create a route: /user/:uid
     blade.get("/user/:uid", ctx -> {
         Integer uid = ctx.pathInt("uid");
@@ -238,7 +238,7 @@ curl -X GET http://127.0.0.1:9000/users/hellokaton/2
 
 ```java
 public static void main(String[] args) {
-    Blade.of().post("/body", ctx -> {
+    Blade.create().post("/body", ctx -> {
         System.out.println("body string is:" + ctx.bodyToString())
     }).start();
 }
@@ -365,7 +365,7 @@ Blade builds a few static resource catalog, as long as you will save the resourc
 If you want to customize the static resource URL
 
 ```java
-Blade.of().addStatics("/mydir");
+Blade.create().addStatics("/mydir");
 ```
 
 Of course you can also specify it in the configuration file. `application.properties` (location in classpath)
@@ -477,7 +477,7 @@ By default, Blade uses the built-in template engine, which is very simple. In a 
 
 ```java
 public static void main(String[] args) {
-    Blade.of().get("/hello", ctx -> {
+    Blade.create().get("/hello", ctx -> {
         ctx.attribute("name", "hellokaton");
         ctx.render("hello.html");
     }).start(Hello.class, args);
@@ -523,7 +523,7 @@ Write some data for the template engine to render
 
 ```java
 public static void main(String[] args) {
-    Blade.of().get("/hello", ctx -> {
+    Blade.create().get("/hello", ctx -> {
         User user = new User("hellokaton", 50);
         ctx.attribute("user", user);
         ctx.render("hello.html");
@@ -586,7 +586,7 @@ public void writeCookie(RouteContext ctx){
 ```java
 public static void main(String[] args) {
     // All requests are exported before execution before
-    Blade.of().before("/*", ctx -> {
+    Blade.create().before("/*", ctx -> {
         System.out.println("before...");
     }).start();
 }
@@ -613,7 +613,7 @@ Blade includes a few middleware, like Basic Authentication; of course, it can al
 
 ```java
 public static void main(String[] args) {
-    Blade.of().use(new BasicAuthMiddleware()).start();
+    Blade.create().use(new BasicAuthMiddleware()).start();
 }
 ```
 
@@ -631,7 +631,7 @@ There are three ways to modify the port: hard coding it, in a configuration file
 **Hard Coding**
 
 ```java
-Blade.of().listen(9001).start();
+Blade.create().listen(9001).start();
 ```
 
 **Configuration For `application.properties`**
