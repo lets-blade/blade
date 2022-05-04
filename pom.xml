@@ -212,10 +212,10 @@
                     </formats>
                     <instrumentation>
                         <excludes>
-                            <exclude>com/blade/ioc/annotation/*.class</exclude>
-                            <exclude>com/blade/mvc/annotation/*.class</exclude>
-                            <exclude>com/blade/kit/*.class</exclude>
-                            <exclude>com/blade/server/*.class</exclude>
+                            <exclude>com/hellokaton/blade/ioc/annotation/*.class</exclude>
+                            <exclude>com/hellokaton/blade/mvc/annotation/*.class</exclude>
+                            <exclude>com/hellokaton/blade/kit/*.class</exclude>
+                            <exclude>com/hellokaton/blade/server/*.class</exclude>
                             <exclude>netty_hello/*.class</exclude>
                         </excludes>
                     </instrumentation>
@@ -350,6 +350,27 @@
                         <configuration>
                             <skipTests>true</skipTests>
                         </configuration>
+                    </plugin>
+                    <!--  Javadoc  -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>2.10.2</version>
+                        <configuration>
+                            <charset>UTF-8</charset>
+                            <docencoding>UTF-8</docencoding>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                                <configuration>
+                                    <additionalparam>-Xdoclint:none</additionalparam>
+                                </configuration>
+                            </execution>
+                        </executions>
                     </plugin>
                     <!--  Gpg Signature  -->
                     <plugin>
