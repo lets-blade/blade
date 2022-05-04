@@ -1,6 +1,6 @@
 package com.hellokaton.blade.kit;
 
-import com.blade.reflectasm.MethodAccess;
+import com.hellokaton.blade.asm.MethodAccess;
 import lombok.experimental.UtilityClass;
 
 import java.lang.invoke.SerializedLambda;

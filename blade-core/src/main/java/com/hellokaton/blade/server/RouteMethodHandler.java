@@ -1,6 +1,6 @@
 package com.hellokaton.blade.server;
 
-import com.blade.reflectasm.MethodAccess;
+import com.hellokaton.blade.asm.MethodAccess;
 import com.hellokaton.blade.annotation.Path;
 import com.hellokaton.blade.exception.BladeException;
 import com.hellokaton.blade.exception.InternalErrorException;
