@@ -21,7 +21,7 @@ public class Hello {
     private static final StringBody hello = StringBody.of("Hello World.");
 
     public static void main(String[] args) {
-        Blade.of()
+        Blade.create()
                 .get("/", ctx -> {
                     String[] chars = new String[]{"Here a special char \" that not escaped", "And Another \\ char"};
                     ctx.json(chars);

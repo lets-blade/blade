@@ -32,7 +32,7 @@ public class BladeTestRunner extends BlockJUnit4ClassRunner {
         return new Statement() {
             @Override
             public void evaluate() throws Throwable {
-                blade = Blade.of().start(mainCls).await();
+                blade = Blade.create().start(mainCls).await();
                 junitStatement.evaluate();
             }
         };

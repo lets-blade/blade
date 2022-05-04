@@ -25,7 +25,7 @@ public class BaseTestCase {
     protected String firefoxUA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:53.0) Gecko/20100101 Firefox/53.0";
 
     protected com.hellokaton.blade.mvc.http.HttpRequest mockHttpRequest(String methodName) {
-        WebContext.init(Blade.of(),"/");
+        WebContext.init(Blade.create(),"/");
         com.hellokaton.blade.mvc.http.HttpRequest request = mock(com.hellokaton.blade.mvc.http.HttpRequest.class);
         when(request.method()).thenReturn(methodName);
         when(request.url()).thenReturn("/");

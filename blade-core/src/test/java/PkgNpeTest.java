@@ -7,7 +7,7 @@ import com.hellokaton.blade.Blade;
 public class PkgNpeTest {
 
     public static void main(String[] args) {
-        Blade.of()
+        Blade.create()
                 .start();
     }
 }

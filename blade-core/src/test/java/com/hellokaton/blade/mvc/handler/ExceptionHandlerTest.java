@@ -27,7 +27,7 @@ public class ExceptionHandlerTest {
         when(request.header("Accept")).thenReturn("text/html");
         response = mock(Response.class);
 
-        WebContext.init(Blade.of(), "/");
+        WebContext.init(Blade.create(), "/");
         WebContext.set(new WebContext(request, response, null));
     }
 

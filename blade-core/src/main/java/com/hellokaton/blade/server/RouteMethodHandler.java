@@ -91,11 +91,11 @@ public class RouteMethodHandler implements RequestHandler {
         }
     }
 
-    public FullHttpResponse handleResponse(Request request, com.hellokaton.blade.mvc.http.Response response, ChannelHandlerContext context) {
+    public FullHttpResponse handleResponse(Request request, Response response, ChannelHandlerContext context) {
         Session session = request.session();
         if (null != session) {
             Cookie cookie = new Cookie();
-            cookie.name(WebContext.sessionKey());
+            cookie.name(WebContext.blade().httpOptions().getSessionKey());
             cookie.value(session.id());
             cookie.httpOnly(true);
             cookie.secure(request.isSecure());

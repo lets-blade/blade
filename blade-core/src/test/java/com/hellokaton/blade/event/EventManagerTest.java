@@ -13,7 +13,7 @@ public class EventManagerTest {
     public void testManager() {
         EventManager eventManager = new EventManager();
         eventManager.addEventListener(EventType.SERVER_STARTED, b -> System.out.println("server started"));
-        eventManager.fireEvent(EventType.SERVER_STARTED, new Event().attribute("blade", Blade.of()));
+        eventManager.fireEvent(EventType.SERVER_STARTED, new Event().attribute("blade", Blade.create()));
     }
 
 }
