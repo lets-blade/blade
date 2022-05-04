@@ -1,6 +1,7 @@
 package com.hellokaton.blade.mvc.handler;
 
 import com.hellokaton.blade.annotation.request.*;
+import com.hellokaton.blade.asm.ASMUtils;
 import com.hellokaton.blade.exception.BladeException;
 import com.hellokaton.blade.kit.JsonKit;
 import com.hellokaton.blade.kit.ReflectKit;
@@ -12,7 +13,6 @@ import com.hellokaton.blade.mvc.http.Response;
 import com.hellokaton.blade.mvc.http.Session;
 import com.hellokaton.blade.mvc.multipart.FileItem;
 import com.hellokaton.blade.mvc.ui.ModelAndView;
-import com.hellokaton.blade.asm.ASMUtils;
 
 import java.lang.reflect.*;
 import java.math.BigDecimal;
@@ -155,6 +155,9 @@ public final class RouteActionArguments {
             return ReflectKit.convert(argType, request.bodyToString());
         } else {
             String json = request.bodyToString();
+            if (String.class.equals(argType)) {
+                return json;
+            }
             return StringKit.isNotEmpty(json) ? JsonKit.fromJson(json, argType) : null;
         }
     }
