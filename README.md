@@ -12,7 +12,7 @@
 </p>
 <p align="center">
     <a href="https://travis-ci.org/lets-blade/blade"><img src="https://img.shields.io/travis/lets-blade/blade.svg?style=flat-square"></a>
-    <a href="http://search.maven.org/#search%7Cga%7C1%7Cblade-mvc"><img src="https://img.shields.io/maven-central/v/com.hellokaton/blade-core.svg?style=flat-square"></a>
+    <a href="http://search.maven.org/#search%7Cga%7C1%7Cblade-core"><img src="https://img.shields.io/maven-central/v/com.hellokaton/blade-core.svg?style=flat-square"></a>
     <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache%202-4EB1BA.svg?style=flat-square"></a>
     <a class="badge-align" href="https://www.codacy.com/app/lets-blade/blade"><img src="https://api.codacy.com/project/badge/Grade/5f5fb55f38614f04823372db3a3c1d1b"/></a>
     <a href="https://gitter.im/lets-blade/blade"><img src="https://badges.gitter.im/hellokaton/blade.svg?style=flat-square"></a>
