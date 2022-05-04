@@ -64,14 +64,14 @@ Run with `Maven`:
 <dependency>
     <groupId>com.hellokaton</groupId>
     <artifactId>blade-core</artifactId>
-    <version>2.1.0.BETA</version>
+    <version>2.1.0.RELEASE</version>
 </dependency>
 ```
 
 or `Gradle`:
 
 ```sh
-compile 'com.hellokaton:blade-core:2.1.0.BETA'
+compile 'com.hellokaton:blade-core:2.1.0.RELEASE'
 ```
 
 Write the `main` method and the `Hello World`:
@@ -554,7 +554,7 @@ The `hello.html` template
 </html>
 ```
 
-[Render API](http://static.javadoc.io/com.hellokaton/blade-core/2.1.0.BETA/com/hellokaton/blade/mvc/http/Response.html#render-com.ModelAndView-)
+[Render API](http://static.javadoc.io/com.hellokaton/blade-core/2.1.0.RELEASE/com/hellokaton/blade/mvc/http/Response.html#render-com.ModelAndView-)
 
 ## Redirects
 
@@ -565,7 +565,7 @@ public void redirectToGithub(RouteContext ctx){
 }
 ```
 
-[Redirect API](http://static.javadoc.io/com.hellokaton/blade-core/2.1.0.BETA/com/hellokaton/blade/mvc/http/Response.html#redirect-java.lang.String-)
+[Redirect API](http://static.javadoc.io/com.hellokaton/blade-core/2.1.0.RELEASE/com/hellokaton/blade/mvc/http/Response.html#redirect-java.lang.String-)
 
 ## Write Cookie
 
@@ -577,7 +577,7 @@ public void writeCookie(RouteContext ctx){
 }
 ```
 
-[Cookie API](http://static.javadoc.io/com.hellokaton/blade-core/2.1.0.BETA/com/hellokaton/blade/mvc/http/Response.html#cookie-java.lang.String-java.lang.String-)
+[Cookie API](http://static.javadoc.io/com.hellokaton/blade-core/2.1.0.RELEASE/com/hellokaton/blade/mvc/http/Response.html#cookie-java.lang.String-java.lang.String-)
 
 ## Web Hook
 
