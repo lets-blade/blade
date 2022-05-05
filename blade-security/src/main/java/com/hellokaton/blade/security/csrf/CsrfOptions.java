@@ -25,7 +25,6 @@ public class CsrfOptions {
     );
 
     private boolean enabled = true;
-    private int tokenExpiredSeconds = 600;
     private String attrKeyName = "_csrf_token";
     private String headerKeyName = "X-CSRF-TOKEN";
     private String formKeyName = "_csrf_token";

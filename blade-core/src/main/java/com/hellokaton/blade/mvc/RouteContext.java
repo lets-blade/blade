@@ -361,9 +361,8 @@ public class RouteContext {
      * @param view view page
      * @return RouteContext
      */
-    public RouteContext render(String view) {
+    public void render(String view) {
         this.response.render(view);
-        return this;
     }
 
     /**
@@ -372,9 +371,8 @@ public class RouteContext {
      * @param modelAndView ModelAndView object
      * @return RouteContext
      */
-    public RouteContext render(ModelAndView modelAndView) {
+    public void render(ModelAndView modelAndView) {
         this.response.render(modelAndView);
-        return this;
     }
 
     /**
@@ -383,9 +381,8 @@ public class RouteContext {
      * @param text text content
      * @return RouteContext
      */
-    public RouteContext text(String text) {
+    public void text(String text) {
         this.response.text(text);
-        return this;
     }
 
     /**
@@ -394,9 +391,8 @@ public class RouteContext {
      * @param json json content
      * @return RouteContext
      */
-    public RouteContext json(String json) {
+    public void json(String json) {
         this.response.json(json);
-        return this;
     }
 
     /**
@@ -405,9 +401,8 @@ public class RouteContext {
      * @param bean bean instance
      * @return RouteContext
      */
-    public RouteContext json(Object bean) {
+    public void json(Object bean) {
         this.response.json(bean);
-        return this;
     }
 
     /**
@@ -416,9 +411,8 @@ public class RouteContext {
      * @param html html content
      * @return RouteContext
      */
-    public RouteContext html(String html) {
+    public void html(String html) {
         this.response.html(html);
-        return this;
     }
 
     /**

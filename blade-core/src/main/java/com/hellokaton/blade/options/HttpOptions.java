@@ -10,7 +10,7 @@ import lombok.Setter;
 public class HttpOptions {
 
     public static final int DEFAULT_MAX_CONTENT_SIZE = 20971520; // 20MB
-    public static final int DEFAULT_SESSION_TIMEOUT = 1800;
+    public static final int DEFAULT_SESSION_TIMEOUT = 7200; // 2 hour
     public static final String DEFAULT_SESSION_KEY = "SESSION";
 
     /**

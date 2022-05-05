@@ -4,7 +4,7 @@ app.monitor.enable=true
 
 http.gzip.enable=true
 http.session.key=SESSION
-http.session.timeout=1800
+http.session.timeout=7200
 
 mvc.view.404=/comm/page_404.html
 mvc.view.500=/comm/page_404.html
