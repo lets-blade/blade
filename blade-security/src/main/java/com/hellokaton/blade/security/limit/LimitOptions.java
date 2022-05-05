@@ -15,8 +15,12 @@ public class LimitOptions {
 
     private boolean enabled = true;
     private Function<Request, String> keyFunc;
-    private Consumer<RouteContext> handler;
-    private LimitMode mode;
+    private Function<RouteContext, Boolean> limitHandler;
+    private String expression = "5/s";
     private Set<String> excludeURLs;
+
+    public static LimitOptions create(){
+        return new LimitOptions();
+    }
 
 }

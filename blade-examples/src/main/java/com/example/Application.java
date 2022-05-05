@@ -14,6 +14,9 @@ import com.hellokaton.blade.mvc.multipart.FileItem;
 import com.hellokaton.blade.mvc.ui.ResponseType;
 import com.hellokaton.blade.options.CorsOptions;
 import com.hellokaton.blade.security.csrf.CsrfMiddleware;
+import com.hellokaton.blade.security.limit.Limit;
+import com.hellokaton.blade.security.limit.LimitMiddleware;
+import com.hellokaton.blade.security.limit.LimitOptions;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
@@ -78,9 +81,14 @@ public class Application {
 
     public static void main(String[] args) {
         CorsOptions corsOptions = CorsOptions.forAnyOrigin().allowNullOrigin().allowCredentials();
+
+        LimitOptions limitOptions = LimitOptions.create();
+        limitOptions.setExpression("2/s");
+
         Blade.create()
                 .cors(corsOptions)
                 .use(new CsrfMiddleware())
+                .use(new LimitMiddleware(limitOptions))
                 .listen().start(Application.class);
     }
 

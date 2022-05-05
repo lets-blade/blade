@@ -25,8 +25,8 @@ import com.hellokaton.blade.exception.BladeException;
  */
 public class LimitException extends BladeException {
 
-    private static final int STATUS = 573;
-    private static final String NAME = "Too fast";
+    private static final int STATUS = 429;
+    private static final String NAME = "RateLimit";
 
     public LimitException() {
         super(STATUS, NAME);

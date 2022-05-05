@@ -35,6 +35,10 @@ public class CsrfOptions {
 
     private Function<RouteContext, Boolean> errorHandler;
 
+    public static CsrfOptions create() {
+        return new CsrfOptions();
+    }
+
     public CsrfOptions exclusion(@NonNull String... urls) {
         this.urlExclusions.addAll(Arrays.asList(urls));
         return this;

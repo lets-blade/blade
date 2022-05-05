@@ -13,7 +13,7 @@
 
     <properties>
         <jjwt.version>0.11.5</jjwt.version>
-        <expiringmap.version>0.5.10</expiringmap.version>
+        <guava.version>31.1-jre</guava.version>
     </properties>
 
     <dependencies>
@@ -33,9 +33,9 @@
             <version>${jjwt.version}</version>
         </dependency>
         <dependency>
-            <groupId>net.jodah</groupId>
-            <artifactId>expiringmap</artifactId>
-            <version>${expiringmap.version}</version>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>${guava.version}</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
