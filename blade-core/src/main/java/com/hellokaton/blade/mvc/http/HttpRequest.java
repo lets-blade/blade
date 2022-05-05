@@ -79,13 +79,11 @@ public class HttpRequest implements Request {
 
     private boolean isMultipart;
 
-    private HttpHeaders httpHeaders;
-
-    private Map<String, String> headers = Collections.emptyMap();
     private Map<String, Object> attributes = Collections.emptyMap();
     private Map<String, String> pathParams = Collections.emptyMap();
     private Map<String, List<String>> queryParams = Collections.emptyMap();
     private Map<String, List<String>> formParams = Collections.emptyMap();
+    private Map<String, List<String>> headers = Collections.emptyMap();
     private Map<String, Cookie> cookies = Collections.emptyMap();
     private Map<String, FileItem> fileItems = Collections.emptyMap();
 
@@ -231,13 +229,7 @@ public class HttpRequest implements Request {
     }
 
     @Override
-    public Map<String, String> headers() {
-        if (null == headers) {
-            headers = new CaseInsensitiveHashMap<>(httpHeaders.size());
-            for (Map.Entry<String, String> header : httpHeaders) {
-                headers.put(header.getKey(), header.getValue());
-            }
-        }
+    public Map<String, List<String>> headers() {
         return this.headers;
     }
 
@@ -285,7 +277,26 @@ public class HttpRequest implements Request {
             this.uri = cleanUri;
         }
 
-        this.httpHeaders = fullHttpRequest.headers();
+        HttpHeaders httpHeaders = fullHttpRequest.headers();
+        if (null == this.headers || this.headers.isEmpty()) {
+            this.headers = new CaseInsensitiveHashMap<>(httpHeaders.size());
+            for (Map.Entry<String, String> header : httpHeaders) {
+                String headerName = header.getKey();
+                if (this.headers.containsKey(headerName)) {
+                    List<String> tmpHeader = this.headers.get(headerName);
+                    if (null != tmpHeader && tmpHeader.size() == 1) {
+                        this.headers.put(headerName, Arrays.asList(tmpHeader.get(0), header.getValue()));
+                    }
+                    if (null != tmpHeader && tmpHeader.size() > 1) {
+                        tmpHeader.add(header.getValue());
+                        this.headers.put(headerName, tmpHeader);
+                    }
+                } else {
+                    this.headers.put(headerName, Collections.singletonList(header.getValue()));
+                }
+            }
+        }
+
         this.parseContentType();
         this.parseCookie();
 
@@ -335,16 +346,18 @@ public class HttpRequest implements Request {
     }
 
     private void parseCookie() {
-        String cookie = this.httpHeaders.get(HttpConst.HEADER_COOKIE);
-        if (StringKit.isEmpty(cookie)) {
+        List<String> cookies = this.getHeader(HttpConst.HEADER_COOKIE);
+        if (null == cookies || cookies.isEmpty()) {
             return;
         }
         this.cookies = new HashMap<>(8);
-        ServerCookieDecoder.LAX.decode(cookie).forEach(this::parseCookie);
+        for (String cookie : cookies) {
+            ServerCookieDecoder.LAX.decode(cookie).forEach(this::parseCookie);
+        }
     }
 
     private void parseContentType() {
-        String contentType = this.httpHeaders.get(HttpConst.CONTENT_TYPE);
+        String contentType = this.header(HttpConst.CONTENT_TYPE);
         if (null != contentType) {
             contentType = contentType.toLowerCase();
         }

@@ -271,7 +271,7 @@ public class RouteContext {
      *
      * @return Return header information Map
      */
-    public Map<String, String> headers() {
+    public Map<String, List<String>> headers() {
         return this.request.headers();
     }
 

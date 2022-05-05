@@ -57,7 +57,7 @@ public class HttpRequestTest extends BaseTestCase {
     @Test
     public void testCookie() {
         Map<String, Cookie> cookieMap = new HashMap<>();
-        Cookie              c1        = new Cookie();
+        Cookie c1 = new Cookie();
         c1.name("c1");
         c1.value("hello1");
         cookieMap.put("c1", c1);
@@ -141,7 +141,7 @@ public class HttpRequestTest extends BaseTestCase {
 
     @Test
     public void testUserAgent() {
-        Map<String, String> headers = Collections.singletonMap("User-Agent", firefoxUA);
+        Map<String, List<String>> headers = Collections.singletonMap("User-Agent", Collections.singletonList(firefoxUA));
 
         Request mockRequest = mockHttpRequest("GET");
         when(mockRequest.headers()).thenReturn(headers);
@@ -239,8 +239,8 @@ public class HttpRequestTest extends BaseTestCase {
     @Test
     public void testIsAjax() {
 
-        Request             mockRequest = mockHttpRequest("GET");
-        Map<String, String> headers     = Collections.singletonMap("x-requested-with", "XMLHttpRequest");
+        Request mockRequest = mockHttpRequest("GET");
+        Map<String, List<String>> headers = Collections.singletonMap("x-requested-with", Collections.singletonList("XMLHttpRequest"));
         when(mockRequest.headers()).thenReturn(headers);
 
         Request request = new HttpRequest(mockRequest);
@@ -256,8 +256,9 @@ public class HttpRequestTest extends BaseTestCase {
 
     @Test
     public void testIsIE() {
-        Request             mockRequest = mockHttpRequest("GET");
-        Map<String, String> headers     = Collections.singletonMap("User-Agent", "Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; Trident/5.0)");
+        Request mockRequest = mockHttpRequest("GET");
+        List<String> uaList = Collections.singletonList("Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; Trident/5.0)");
+        Map<String, List<String>> headers = Collections.singletonMap("User-Agent", uaList);
         when(mockRequest.headers()).thenReturn(headers);
 
         Request request = new HttpRequest(mockRequest);
@@ -272,10 +273,10 @@ public class HttpRequestTest extends BaseTestCase {
 
     @Test
     public void testHeaders() {
-        Request             mockRequest = mockHttpRequest("GET");
-        Map<String, String> headers     = new CaseInsensitiveHashMap<>();
-        headers.put("h1", "a1");
-        headers.put("H2", "a2");
+        Request mockRequest = mockHttpRequest("GET");
+        Map<String, List<String>> headers = new CaseInsensitiveHashMap<>();
+        headers.put("h1", Collections.singletonList("a1"));
+        headers.put("H2", Collections.singletonList("a2"));
 
         when(mockRequest.headers()).thenReturn(headers);
 
@@ -285,7 +286,7 @@ public class HttpRequestTest extends BaseTestCase {
         assertEquals("a1", request.header("H1"));
         assertEquals("a2", request.header("h2"));
         assertEquals("a2", request.header("H2"));
-        request.headers().forEach((key,val)-> System.out.println(key+"\t=\t"+val));
+        request.headers().forEach((key, val) -> System.out.println(key + "\t=\t" + val));
     }
 
     @Test
@@ -314,8 +315,8 @@ public class HttpRequestTest extends BaseTestCase {
 
         Request mockRequest = mockHttpRequest("GET");
 
-        Map<String, FileItem> attr     = new HashMap<>();
-        FileItem              fileItem = new FileItem();
+        Map<String, FileItem> attr = new HashMap<>();
+        FileItem fileItem = new FileItem();
         fileItem.setName("file");
         fileItem.setFileName("hello.png");
         fileItem.setPath("/usr/hello.png");

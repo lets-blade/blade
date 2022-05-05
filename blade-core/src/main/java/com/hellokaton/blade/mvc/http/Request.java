@@ -473,7 +473,7 @@ public interface Request {
      *
      * @return Return header information Map
      */
-    Map<String, String> headers();
+    Map<String, List<String>> headers();
 
     /**
      * Get header information
@@ -482,7 +482,19 @@ public interface Request {
      * @return Return header information
      */
     default String header(@NonNull String name) {
-        return headers().getOrDefault(name, "");
+        List<String> values = getHeader(name);
+        if (null != values && values.size() > 0) {
+            return values.get(0);
+        }
+        return "";
+    }
+
+    default List<String> getHeader(@NonNull String name) {
+        List<String> headerValues = headers().get(name);
+        if (null == headerValues || headerValues.isEmpty()) {
+            headerValues = headers().get(name.toLowerCase());
+        }
+        return headerValues;
     }
 
     /**
