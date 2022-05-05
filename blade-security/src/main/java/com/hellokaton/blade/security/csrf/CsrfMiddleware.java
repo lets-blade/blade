@@ -80,7 +80,7 @@ public class CsrfMiddleware implements WebHook {
             if (null != csrfOptions.getErrorHandler()) {
                 return csrfOptions.getErrorHandler().apply(context);
             } else {
-                context.badRequest().text("CSRF token mismatch.");
+                context.badRequest().text("CSRF token mismatch :(");
                 return false;
             }
         }
