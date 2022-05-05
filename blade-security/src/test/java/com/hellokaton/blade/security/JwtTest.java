@@ -63,7 +63,7 @@ public class JwtTest {
         jwsStr = jwtBuilder.compact();
         System.out.println(jwsStr);
 
-        jwsStr = "a";
+//        jwsStr = "a";
         try {
             Jws<Claims> jws = Jwts.parserBuilder()
                     .setSigningKey(secretKey)

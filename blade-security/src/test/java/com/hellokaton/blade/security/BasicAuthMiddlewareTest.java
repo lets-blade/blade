@@ -15,8 +15,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * CsrfToken Test
@@ -42,13 +41,13 @@ public class BasicAuthMiddlewareTest extends BaseTestCase {
 
         WebContext.init(Blade.of(), "/");
 
-        Map<String, String> headers = new HashMap<>();
-        headers.put("Authorization", "Basic YWRtaW46MTIzNDU2");
+        Map<String, List<String>> headers = new HashMap<>();
+        headers.put("Authorization", Arrays.asList("Basic YWRtaW46MTIzNDU2"));
 
         Mockito.when(mockRequest.formParams()).thenReturn(new HashMap<>());
         Mockito.when(mockRequest.headers()).thenReturn(headers);
 
-        Request  request  = new HttpRequest(mockRequest);
+        Request request = new HttpRequest(mockRequest);
         Response response = mockHttpResponse(200);
 
         RouteContext context = new RouteContext(request, response);
@@ -63,7 +62,7 @@ public class BasicAuthMiddlewareTest extends BaseTestCase {
         authOption.addUser("admin", "123456");
 
         BasicAuthMiddleware basicAuthMiddleware = new BasicAuthMiddleware(authOption);
-        boolean             flag                = basicAuthMiddleware.before(context);
+        boolean flag = basicAuthMiddleware.before(context);
         Assert.assertTrue(flag);
     }
 
@@ -73,13 +72,13 @@ public class BasicAuthMiddlewareTest extends BaseTestCase {
 
         WebContext.init(Blade.of(), "/");
 
-        Map<String, String> headers = new HashMap<>();
-        headers.put("Authorization", "Basic YmxhZGU6YmxhZGUyMg==");
+        Map<String, List<String>> headers = new HashMap<>();
+        headers.put("Authorization", Collections.singletonList("Basic YmxhZGU6YmxhZGUyMg=="));
 
         Mockito.when(mockRequest.formParams()).thenReturn(new HashMap<>());
         Mockito.when(mockRequest.headers()).thenReturn(headers);
 
-        Request  request  = new HttpRequest(mockRequest);
+        Request request = new HttpRequest(mockRequest);
         Response response = mockHttpResponse(200);
 
         RouteContext context = new RouteContext(request, response);
@@ -95,7 +94,7 @@ public class BasicAuthMiddlewareTest extends BaseTestCase {
         authOption.addUser("admin", "123456");
 
         BasicAuthMiddleware basicAuthMiddleware = new BasicAuthMiddleware(authOption);
-        boolean             flag                = basicAuthMiddleware.before(context);
+        boolean flag = basicAuthMiddleware.before(context);
         Assert.assertFalse(flag);
     }
 

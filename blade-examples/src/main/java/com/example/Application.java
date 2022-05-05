@@ -13,6 +13,7 @@ import com.hellokaton.blade.mvc.http.Request;
 import com.hellokaton.blade.mvc.multipart.FileItem;
 import com.hellokaton.blade.mvc.ui.ResponseType;
 import com.hellokaton.blade.options.CorsOptions;
+import com.hellokaton.blade.security.csrf.CsrfMiddleware;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
@@ -62,10 +63,24 @@ public class Application {
         return fileItem.getFileName();
     }
 
+    @GET
+    public String home(Request req) {
+        String token = req.attribute("_csrf_token");
+        System.out.println("token = " + token);
+        return token;
+    }
+
+    @POST
+    public String verifyToken(Request req) {
+        System.out.println("token = " + req.header("X-CSRF-TOKEN"));
+        return "nice.. :)";
+    }
+
     public static void main(String[] args) {
         CorsOptions corsOptions = CorsOptions.forAnyOrigin().allowNullOrigin().allowCredentials();
         Blade.create()
                 .cors(corsOptions)
+                .use(new CsrfMiddleware())
                 .listen().start(Application.class);
     }
 

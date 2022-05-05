@@ -1,6 +1,8 @@
 package com.hellokaton.blade.security.csrf;
 
+import com.hellokaton.blade.kit.Pair;
 import com.hellokaton.blade.kit.StringKit;
+import com.hellokaton.blade.kit.UUID;
 import com.hellokaton.blade.mvc.RouteContext;
 import com.hellokaton.blade.mvc.hook.WebHook;
 import com.hellokaton.blade.mvc.http.HttpMethod;
@@ -13,14 +15,26 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
+import net.jodah.expiringmap.ExpirationPolicy;
+import net.jodah.expiringmap.ExpiringMap;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Csrf middleware
+ *
+ * <p>
+ * <meta name="csrf-token" content="{{ _csrf_token }}">
+ * </p>
+ * $.ajaxSetup({
+ * headers: {
+ * 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+ * }
+ * });
  *
  * @author hellokaton
  * 2022/5/5
@@ -28,16 +42,28 @@ import java.util.Map;
 @Slf4j
 public class CsrfMiddleware implements WebHook {
 
-    private final CsrfOptions csrfOptions;
-    private final SecretKey secretKey;
     private static final String JWT_EXP_KEY = "exp";
     private static final String JWT_SID_KEY = "sid";
+
+    private final CsrfOptions csrfOptions;
+    private final SecretKey secretKey;
+
+    private final ExpiringMap<String, Boolean> verifiedToken;
+
+    public CsrfMiddleware() {
+        this(new CsrfOptions());
+    }
 
     public CsrfMiddleware(CsrfOptions csrfOptions) {
         this.csrfOptions = csrfOptions;
 
         byte[] encodeKey = Decoders.BASE64.decode(csrfOptions.getSecret());
         this.secretKey = Keys.hmacShaKeyFor(encodeKey);
+
+        this.verifiedToken = ExpiringMap.builder()
+                .maxSize(1024)
+                .variableExpiration()
+                .build();
     }
 
     @Override
@@ -59,8 +85,9 @@ public class CsrfMiddleware implements WebHook {
         // verify token
         if (csrfOptions.getVerifyMethods().contains(httpMethod)) {
             String token = parseRequestToken(context.request());
-            boolean verified = verifyToken(context.request(), token);
-            if (verified) {
+            Pair<Boolean, Long> verified = verifyToken(context.request(), token);
+            if (Boolean.TRUE.equals(verified.getKey())) {
+                verifiedToken.put(token, Boolean.TRUE, ExpirationPolicy.ACCESSED, verified.getValue(), TimeUnit.SECONDS);
                 return true;
             }
             if (null != csrfOptions.getErrorHandler()) {
@@ -73,9 +100,12 @@ public class CsrfMiddleware implements WebHook {
         return true;
     }
 
-    private boolean verifyToken(Request request, String token) {
+    private Pair<Boolean, Long> verifyToken(Request request, String token) {
         if (StringKit.isEmpty(token)) {
-            return false;
+            return Pair.of(false, 0L);
+        }
+        if (verifiedToken.containsKey(token)) {
+            return Pair.of(false, 0L);
         }
         Session session = request.session();
         try {
@@ -89,17 +119,17 @@ public class CsrfMiddleware implements WebHook {
             long now = System.currentTimeMillis() / 1000;
             // overdue
             if (now >= exp) {
-                return false;
+                return Pair.of(false, 0L);
             }
             if (null == session) {
-                return true;
+                return Pair.of(true, now - exp);
             }
             String sid = (String) body.getOrDefault(JWT_SID_KEY, "");
-            return session.id().equals(sid);
+            return session.id().equals(sid) ? Pair.of(true, now - exp) : Pair.of(false, 0L);
         } catch (Exception e) {
             log.error("Request IP: {}, UA: {}, Token: {} parse error",
                     request.remoteAddress(), request.userAgent(), token, e);
-            return false;
+            return Pair.of(false, 0L);
         }
     }
 
@@ -117,11 +147,13 @@ public class CsrfMiddleware implements WebHook {
         long now = System.currentTimeMillis();
         jwtBuilder.setExpiration(new Date(now + csrfOptions.getTokenExpiredSeconds() * 1000));
         jwtBuilder.signWith(secretKey);
+        Map<String, Object> claims = new HashMap<>(1);
         if (null != session) {
-            Map<String, Object> claims = new HashMap<>(1);
-            claims.put("sid", session.id());
-            jwtBuilder.setClaims(claims);
+            claims.put(JWT_SID_KEY, session.id());
+        } else {
+            claims.put(JWT_SID_KEY, UUID.UU64());
         }
+        jwtBuilder.setClaims(claims);
         return jwtBuilder.compact();
     }
 

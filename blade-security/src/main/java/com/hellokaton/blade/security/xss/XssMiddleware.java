@@ -7,6 +7,7 @@ import com.hellokaton.blade.mvc.http.StringBody;
 import com.hellokaton.blade.security.filter.HTMLFilter;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -48,14 +49,20 @@ public class XssMiddleware implements WebHook {
         return true;
     }
 
-    protected void filterHeaders(Map<String, String> headers) {
-        headers.forEach((key, value) -> headers.put(key, this.stripXSS(value)));
+    protected void filterHeaders(Map<String, List<String>> headers) {
+        headers.forEach((key, values) -> {
+            List<String> newHeader = new ArrayList<>();
+            for (String value : values) {
+                newHeader.add(this.stripXSS(value));
+            }
+            headers.put(key, newHeader);
+        });
     }
 
     protected void filterParameters(Map<String, List<String>> parameters) {
         Set<Map.Entry<String, List<String>>> entries = parameters.entrySet();
 
-        for (Map.Entry<String, List<String>> entry: entries) {
+        for (Map.Entry<String, List<String>> entry : entries) {
             List<String> snzValues = entry.getValue().stream().map(this::stripXSS).collect(Collectors.toList());
             parameters.put(entry.getKey(), snzValues);
         }
