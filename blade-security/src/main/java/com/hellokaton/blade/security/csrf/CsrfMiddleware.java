@@ -8,10 +8,7 @@ import com.hellokaton.blade.mvc.hook.WebHook;
 import com.hellokaton.blade.mvc.http.HttpMethod;
 import com.hellokaton.blade.mvc.http.Request;
 import com.hellokaton.blade.mvc.http.Session;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.JwtBuilder;
-import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
@@ -122,10 +119,10 @@ public class CsrfMiddleware implements WebHook {
                 return Pair.of(false, 0L);
             }
             if (null == session) {
-                return Pair.of(true, now - exp);
+                return Pair.of(true, exp - now);
             }
             String sid = (String) body.getOrDefault(JWT_SID_KEY, "");
-            return session.id().equals(sid) ? Pair.of(true, now - exp) : Pair.of(false, 0L);
+            return session.id().equals(sid) ? Pair.of(true, exp - now) : Pair.of(false, 0L);
         } catch (Exception e) {
             log.error("Request IP: {}, UA: {}, Token: {} parse error",
                     request.remoteAddress(), request.userAgent(), token, e);
@@ -143,17 +140,20 @@ public class CsrfMiddleware implements WebHook {
 
     public String genToken(Request request) {
         Session session = request.session();
-        JwtBuilder jwtBuilder = Jwts.builder();
+
         long now = System.currentTimeMillis();
-        jwtBuilder.setExpiration(new Date(now + csrfOptions.getTokenExpiredSeconds() * 1000));
-        jwtBuilder.signWith(secretKey);
-        Map<String, Object> claims = new HashMap<>(1);
+
+        Map<String, Object> claims = new HashMap<>();
         if (null != session) {
             claims.put(JWT_SID_KEY, session.id());
         } else {
             claims.put(JWT_SID_KEY, UUID.UU64());
         }
-        jwtBuilder.setClaims(claims);
+        JwtBuilder jwtBuilder = Jwts.builder()
+                .setClaims(claims)
+                .setExpiration(new Date(now + csrfOptions.getTokenExpiredSeconds() * 1000))
+                .signWith(secretKey);
+
         return jwtBuilder.compact();
     }
 

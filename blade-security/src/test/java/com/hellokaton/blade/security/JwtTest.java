@@ -55,7 +55,7 @@ public class JwtTest {
 
         long now = System.currentTimeMillis();
 
-        jwtBuilder.setExpiration(new Date(now + 60 * 1000));
+        jwtBuilder.setExpiration(new Date(now + 600 * 1000));
 
         SecretKey secretKey = getSecretKey();
         jwtBuilder.signWith(secretKey);
