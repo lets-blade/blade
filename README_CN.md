@@ -60,7 +60,7 @@
 <dependency>
 	<groupId>com.hellokaton</groupId>
 	<artifactId>blade-core</artifactId>
-	<version>2.1.0.RELEASE</version>
+	<version>2.1.1.BETA</version>
 </dependency>
 ```
 
@@ -69,7 +69,7 @@
 或者  `Gradle`:
 
 ```sh
-compile 'com.hellokaton:blade-core:2.1.0.RELEASE'
+compile 'com.hellokaton:blade-core:2.1.1.BETA'
 ```
 
 编写 `main` 函数写一个 `Hello World`：
@@ -553,7 +553,7 @@ public static void main(String[] args) {
 </html>
 ```
 
-[Render API](http://static.javadoc.io/com.hellokaton/blade-core/2.1.0.RELEASE/com/hellokaton/blade/mvc/http/Response.html#render-com.ModelAndView-)
+[Render API](http://static.javadoc.io/com.hellokaton/blade-core/2.1.1.BETA/com/hellokaton/blade/mvc/http/Response.html#render-com.ModelAndView-)
 
 ## 重定向
 
@@ -564,7 +564,7 @@ public void redirectToGithub(RouteContext ctx){
 }
 ```
 
-[Redirect API](http://static.javadoc.io/com.hellokaton/blade-core/2.1.0.RELEASE/com/hellokaton/blade/mvc/http/Response.html#redirect-java.lang.String-)
+[Redirect API](http://static.javadoc.io/com.hellokaton/blade-core/2.1.1.BETA/com/hellokaton/blade/mvc/http/Response.html#redirect-java.lang.String-)
 
 ## 写入Cookie
 
@@ -576,7 +576,7 @@ public void writeCookie(RouteContext ctx){
 }
 ```
 
-[Cookie API](http://static.javadoc.io/com.hellokaton/blade-core/2.1.0.RELEASE/com/hellokaton/blade/mvc/http/Response.html#cookie-java.lang.String-java.lang.String-)
+[Cookie API](http://static.javadoc.io/com.hellokaton/blade-core/2.1.1.BETA/com/hellokaton/blade/mvc/http/Response.html#cookie-java.lang.String-java.lang.String-)
 
 ## 路由拦截
 
