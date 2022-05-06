@@ -22,7 +22,6 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -33,10 +32,7 @@ public class Application {
     public Map<String, Object> hello(Request req) {
         Map<String, Object> result = new HashMap<>();
         result.put("name", "hellokaton");
-        Map<String, List<String>> params = req.queryParams();
-        for (Map.Entry<String, List<String>> entry : params.entrySet()) {
-            result.put(entry.getKey(), entry.getValue());
-        }
+        result.putAll(req.queryParams());
         return result;
     }
 
