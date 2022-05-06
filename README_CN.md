@@ -60,7 +60,7 @@
 <dependency>
 	<groupId>com.hellokaton</groupId>
 	<artifactId>blade-core</artifactId>
-	<version>2.1.1.BETA</version>
+	<version>2.1.1.RELEASE</version>
 </dependency>
 ```
 
@@ -69,7 +69,7 @@
 或者  `Gradle`:
 
 ```sh
-compile 'com.hellokaton:blade-core:2.1.1.BETA'
+compile 'com.hellokaton:blade-core:2.1.1.RELEASE'
 ```
 
 编写 `main` 函数写一个 `Hello World`：
@@ -98,6 +98,7 @@ public static void main(String[] args) {
 - [**`获取Cookie`**](#获取cookie)
 - [**`静态资源`**](#静态资源)
 - [**`上传文件`**](#上传文件)
+- [**`下载文件`**](#下载文件)
 - [**`设置会话`**](#设置会话)
 - [**`渲染到浏览器`**](#渲染到浏览器)
     - [**`渲染JSON`**](#渲染json)
@@ -396,7 +397,35 @@ public void upload(@Multipart FileItem fileItem){
 }
 ```
 
+## 下载文件
+
+```java
+@GET(value = "/download", responseType = ResponseType.STREAM)
+public void download(Response response) throws IOException {
+    response.write("abcd.pdf", new File("146373013842336153820220427172437.pdf"));
+}
+```
+
+**如果你想在浏览器预览某些文件**
+
+```java
+@GET(value = "/preview", responseType = ResponseType.PREVIEW)
+public void preview(Response response) throws IOException {
+    response.write(new File("146373013842336153820220427172437.pdf"));
+}
+```
+
 ## 设置会话
+
+默认情况不开启会话功能，首先要开启会话
+
+```java
+Blade.create()
+     .http(HttpOptions::enableSession)
+     .start(Application.class, args);
+```
+
+> 💡 也可以使用配置文件开启，`http.session.enabled=true` 
 
 ```java
 public void login(Session session){
@@ -553,7 +582,7 @@ public static void main(String[] args) {
 </html>
 ```
 
-[Render API](http://static.javadoc.io/com.hellokaton/blade-core/2.1.1.BETA/com/hellokaton/blade/mvc/http/Response.html#render-com.ModelAndView-)
+[Render API](http://static.javadoc.io/com.hellokaton/blade-core/2.1.1.RELEASE/com/hellokaton/blade/mvc/http/Response.html#render-com.ModelAndView-)
 
 ## 重定向
 
@@ -564,7 +593,7 @@ public void redirectToGithub(RouteContext ctx){
 }
 ```
 
-[Redirect API](http://static.javadoc.io/com.hellokaton/blade-core/2.1.1.BETA/com/hellokaton/blade/mvc/http/Response.html#redirect-java.lang.String-)
+[Redirect API](http://static.javadoc.io/com.hellokaton/blade-core/2.1.1.RELEASE/com/hellokaton/blade/mvc/http/Response.html#redirect-java.lang.String-)
 
 ## 写入Cookie
 
@@ -576,7 +605,7 @@ public void writeCookie(RouteContext ctx){
 }
 ```
 
-[Cookie API](http://static.javadoc.io/com.hellokaton/blade-core/2.1.1.BETA/com/hellokaton/blade/mvc/http/Response.html#cookie-java.lang.String-java.lang.String-)
+[Cookie API](http://static.javadoc.io/com.hellokaton/blade-core/2.1.1.RELEASE/com/hellokaton/blade/mvc/http/Response.html#cookie-java.lang.String-java.lang.String-)
 
 ## 路由拦截
 

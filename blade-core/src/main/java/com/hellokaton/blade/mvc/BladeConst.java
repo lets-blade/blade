@@ -31,7 +31,7 @@ public interface BladeConst {
     int DEFAULT_SERVER_PORT = 9000;
     String DEFAULT_SERVER_ADDRESS = "0.0.0.0";
     String LOCAL_IP_ADDRESS = "127.0.0.1";
-    String VERSION = "2.1.1.BETA";
+    String VERSION = "2.1.1.RELEASE";
     String WEB_JARS = "/webjars/";
     String CLASSPATH = BladeKit.getCurrentClassPath();
     String HTTP_DATE_FORMAT = "EEE, dd MMM yyyy HH:mm:ss zzz";

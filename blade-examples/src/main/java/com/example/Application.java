@@ -14,6 +14,7 @@ import com.hellokaton.blade.mvc.http.Response;
 import com.hellokaton.blade.mvc.multipart.FileItem;
 import com.hellokaton.blade.mvc.ui.ResponseType;
 import com.hellokaton.blade.options.CorsOptions;
+import com.hellokaton.blade.options.HttpOptions;
 import com.hellokaton.blade.security.csrf.CsrfMiddleware;
 import com.hellokaton.blade.security.limit.LimitMiddleware;
 import com.hellokaton.blade.security.limit.LimitOptions;
@@ -81,7 +82,7 @@ public class Application {
     }
 
     @GET(value = "/preview/:id", responseType = ResponseType.PREVIEW)
-    public void preview(@PathParam String id, Response response) throws Exception {
+    public void preview(@PathParam String id, Response response) throws IOException {
         response.write(new File("/Users/biezhi/Downloads/146373013842336153820220427172437.pdf"));
     }
 
@@ -98,6 +99,7 @@ public class Application {
 
         Blade.create()
                 .cors(corsOptions)
+                .http(HttpOptions::enableSession)
 //                .use(new CsrfMiddleware())
 //                .use(new LimitMiddleware(limitOptions))
                 .listen().start(Application.class);

@@ -64,14 +64,14 @@ Run with `Maven`:
 <dependency>
     <groupId>com.hellokaton</groupId>
     <artifactId>blade-core</artifactId>
-    <version>2.1.1.BETA</version>
+    <version>2.1.1.RELEASE</version>
 </dependency>
 ```
 
 or `Gradle`:
 
 ```sh
-compile 'com.hellokaton:blade-core:2.1.1.BETA'
+compile 'com.hellokaton:blade-core:2.1.1.RELEASE'
 ```
 
 Write the `main` method and the `Hello World`:
@@ -99,6 +99,7 @@ Open http://localhost:9000 in your browser to see your first `Blade` application
 - [**`Get Cookie`**](#get-cookie)
 - [**`Static Resource`**](#static-resource)
 - [**`Upload File`**](#upload-file)
+- [**`Download File`**](#download-file)
 - [**`Set Session`**](#set-session)
 - [**`Render To Browser`**](#render-to-browser)
     - [**`Render Response`**](#render-json)
@@ -397,7 +398,35 @@ public void upload(@Multipart FileItem fileItem){
 }
 ```
 
+## Download File
+
+```java
+@GET(value = "/download", responseType = ResponseType.STREAM)
+public void download(Response response) throws IOException {
+    response.write("abcd.pdf", new File("146373013842336153820220427172437.pdf"));
+}
+```
+
+**If you want to preview certain files in your browser**
+
+```java
+@GET(value = "/preview", responseType = ResponseType.PREVIEW)
+public void preview(Response response) throws IOException {
+    response.write(new File("146373013842336153820220427172437.pdf"));
+}
+```
+
 ## Set Session
+
+The session is disabled by default, you must enable the session.
+
+```java
+Blade.create()
+     .http(HttpOptions::enableSession)
+     .start(Application.class, args);
+```
+
+> 💡 It can also be enabled using a configuration file，`http.session.enabled=true` 
 
 ```java
 public void login(Session session){
@@ -554,7 +583,7 @@ The `hello.html` template
 </html>
 ```
 
-[Render API](http://static.javadoc.io/com.hellokaton/blade-core/2.1.1.BETA/com/hellokaton/blade/mvc/http/Response.html#render-com.ModelAndView-)
+[Render API](http://static.javadoc.io/com.hellokaton/blade-core/2.1.1.RELEASE/com/hellokaton/blade/mvc/http/Response.html#render-com.ModelAndView-)
 
 ## Redirects
 
@@ -565,7 +594,7 @@ public void redirectToGithub(RouteContext ctx){
 }
 ```
 
-[Redirect API](http://static.javadoc.io/com.hellokaton/blade-core/2.1.1.BETA/com/hellokaton/blade/mvc/http/Response.html#redirect-java.lang.String-)
+[Redirect API](http://static.javadoc.io/com.hellokaton/blade-core/2.1.1.RELEASE/com/hellokaton/blade/mvc/http/Response.html#redirect-java.lang.String-)
 
 ## Write Cookie
 
@@ -577,7 +606,7 @@ public void writeCookie(RouteContext ctx){
 }
 ```
 
-[Cookie API](http://static.javadoc.io/com.hellokaton/blade-core/2.1.1.BETA/com/hellokaton/blade/mvc/http/Response.html#cookie-java.lang.String-java.lang.String-)
+[Cookie API](http://static.javadoc.io/com.hellokaton/blade-core/2.1.1.RELEASE/com/hellokaton/blade/mvc/http/Response.html#cookie-java.lang.String-java.lang.String-)
 
 ## Web Hook
 
