@@ -6,9 +6,9 @@ import java.util.List;
 
 public class HtmlCreator {
 
-    private static final String HTML_FOOTER = "<br/><p><center>Copyright © <a href='https://github.com/biezhi/blade' target='_blank'>Blade-" + BladeConst.VERSION + "</a></center></p><br/>";
+    private static final String HTML_FOOTER = "<br/><p><center>Copyright © <a href='https://github.com/lets-blade/blade' target='_blank'>Blade-" + BladeConst.VERSION + "</a></center></p><br/>";
 
-    private StringBuilder html = new StringBuilder();
+    private final StringBuilder html = new StringBuilder();
 
     public HtmlCreator() {
         html.append("<!DOCTYPE html>");
