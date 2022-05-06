@@ -14,9 +14,8 @@ import java.io.InputStream;
  */
 public class StaticInputStream {
 
-    private InputStream inputStream;
     private int         size;
-    private ByteBuf     byteBuf;
+    private final ByteBuf     byteBuf;
 
     public StaticInputStream(InputStream input) throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -36,8 +35,8 @@ public class StaticInputStream {
 
         // Open new InputStreams using the recorded bytes
         // Can be repeated as many times as you wish
-        this.inputStream = new ByteArrayInputStream(baos.toByteArray());
-        byteBuf.writeBytes(this.inputStream, size);
+        InputStream inputStream = new ByteArrayInputStream(baos.toByteArray());
+        byteBuf.writeBytes(inputStream, size);
     }
 
     public int size() {
