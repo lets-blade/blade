@@ -93,12 +93,12 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<HttpRequest> 
         return WebContext.create(req, new HttpResponse(), ctx);
     }
 
-    private void writeResponse(ChannelHandlerContext ctx, CompletableFuture<HttpRequest> future, FullHttpResponse msg) {
+    private void writeResponse(ChannelHandlerContext ctx, CompletableFuture<HttpRequest> future, io.netty.handler.codec.http.HttpResponse msg) {
         ctx.writeAndFlush(msg);
         future.complete(null);
     }
 
-    private FullHttpResponse handleException(Throwable e) {
+    private io.netty.handler.codec.http.HttpResponse handleException(Throwable e) {
         Request request = WebContext.request();
         Response response = WebContext.response();
         String method = request.method();
@@ -120,7 +120,7 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<HttpRequest> 
         );
     }
 
-    private FullHttpResponse buildResponse(WebContext webContext) {
+    private io.netty.handler.codec.http.HttpResponse buildResponse(WebContext webContext) {
         WebContext.set(webContext);
         return routeHandler.handleResponse(
                 webContext.getRequest(), webContext.getResponse(),

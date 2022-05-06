@@ -2,7 +2,7 @@ package com.hellokaton.blade.mvc.http;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import io.netty.handler.codec.http.FullHttpResponse;
+import io.netty.handler.codec.http.HttpResponse;
 
 import java.io.File;
 import java.io.IOException;
@@ -58,9 +58,9 @@ public class ByteBody implements Body {
     }
 
     @Override
-    public FullHttpResponse write(BodyWriter writer) {
+    public HttpResponse write(BodyWriter writer) {
         if (null != outputStream) {
-            return writer.onByteBuf(outputStream);
+            return writer.onByteBuf((ByteBuf) null);
         }
         return writer.onByteBuf(byteBuf);
     }

@@ -31,8 +31,8 @@ public class TrieANYTest {
     private Map<String, String> map(List<Pair> pairs) {
         return pairs.stream()
                 .collect(Collectors.toMap(
-                   Pair::getKey,
-                   Pair::getValue
+                        Pair::getKey,
+                        Pair::getValue
                 ));
     }
 
@@ -40,7 +40,7 @@ public class TrieANYTest {
     private void addSimpleRoute(TrieMapping trieMapping, HttpMethod httpMethod, String path) {
         trieMapping.addRoute(httpMethod,
                 new Route(null, path,
-                        null, null, null, null), Collections.emptyList());
+                        null, null, null, null, null), Collections.emptyList());
     }
 
     @Test

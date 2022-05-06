@@ -11,7 +11,10 @@ public enum ResponseType {
     JSON(HttpConst.CONTENT_TYPE_JSON),
     XML(HttpConst.CONTENT_TYPE_XML),
     TEXT(HttpConst.CONTENT_TYPE_TEXT),
-    HTML(HttpConst.CONTENT_TYPE_HTML);
+    HTML(HttpConst.CONTENT_TYPE_HTML),
+    STREAM(HttpConst.CONTENT_TYPE_STREAM),
+    PREVIEW(""),
+    ;
 
     private final String contentType;
 

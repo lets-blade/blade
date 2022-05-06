@@ -3,7 +3,7 @@ package netty_hello;
 import com.hellokaton.blade.Blade;
 import com.hellokaton.blade.event.EventType;
 import com.hellokaton.blade.mvc.http.ByteBody;
-import com.hellokaton.blade.mvc.http.StreamBody;
+import com.hellokaton.blade.mvc.http.ChannelBody;
 import com.hellokaton.blade.mvc.http.StringBody;
 
 import java.io.File;
@@ -32,14 +32,18 @@ public class Hello {
                     File file = new File("/Users/biezhi/Pictures/rand/003.jpg");
                     ctx.response().contentType("image/jpeg");
                     ctx.response().header("Content-Disposition", "attachment; filename=003.jpg");
-                    ctx.response().body(ByteBody.of(file));
+                    try {
+                        ctx.response().body(ChannelBody.of(file));
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 })
                 .get("/d2", ctx -> {
                     File file = new File("/Users/biezhi/Pictures/rand/003.jpg");
                     try (FileInputStream inputStream = new FileInputStream(file)) {
                         ctx.response().contentType("image/jpef");
                         ctx.response().header("Content-Disposition", "attachment; filename=m1.png");
-                        ctx.response().body(StreamBody.of(inputStream));
+                        ctx.response().body(ChannelBody.of(file));
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -66,7 +70,7 @@ public class Hello {
                 .delete("/hello", ctx -> ctx.text("Hello World."))
                 .get("/download", ctx -> {
                     try {
-                        ctx.response().download("hello.txt", new File("/Users/biezhi/workspace/projects/java/blade/src/test/resources/static/a.txt"));
+                        ctx.response().write("hello.txt", new File("/Users/biezhi/workspace/java/blade/src/test/resources/static/a.txt"));
                     } catch (Exception e) {
                         e.printStackTrace();
                     }

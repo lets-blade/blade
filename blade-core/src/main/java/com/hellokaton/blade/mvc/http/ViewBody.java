@@ -1,7 +1,7 @@
 package com.hellokaton.blade.mvc.http;
 
 import com.hellokaton.blade.mvc.ui.ModelAndView;
-import io.netty.handler.codec.http.FullHttpResponse;
+import io.netty.handler.codec.http.HttpResponse;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -22,7 +22,7 @@ public class ViewBody implements Body {
     }
 
     @Override
-    public FullHttpResponse write(BodyWriter writer) {
+    public HttpResponse write(BodyWriter writer) {
         return writer.onView(this);
     }
 

@@ -1,9 +1,9 @@
 package com.hellokaton.blade.mvc.http;
 
-import io.netty.handler.codec.http.FullHttpResponse;
+import io.netty.handler.codec.http.HttpResponse;
 
 public interface Body {
 
-    FullHttpResponse write(BodyWriter writer);
+    HttpResponse write(BodyWriter writer);
 
 }

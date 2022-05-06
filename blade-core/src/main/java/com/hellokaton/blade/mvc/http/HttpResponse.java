@@ -1,7 +1,5 @@
 package com.hellokaton.blade.mvc.http;
 
-import com.hellokaton.blade.exception.NotFoundException;
-import com.hellokaton.blade.kit.MimeTypeKit;
 import com.hellokaton.blade.mvc.ui.ModelAndView;
 import com.hellokaton.blade.server.NettyHttpConst;
 import io.netty.handler.codec.http.cookie.Cookie;
@@ -10,8 +8,10 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
-import java.io.FileInputStream;
+import java.io.IOException;
+import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.StandardOpenOption;
 import java.util.*;
 
 /**
@@ -23,8 +23,8 @@ import java.util.*;
 @Slf4j
 public class HttpResponse implements Response {
 
-    private Map<String, String> headers = new HashMap<>();
-    private Set<Cookie> cookies = new HashSet<>();
+    private final Map<String, String> headers = new HashMap<>();
+    private final Set<Cookie> cookies = new HashSet<>();
 
     private int statusCode = 200;
     private Body body;
@@ -139,18 +139,6 @@ public class HttpResponse implements Response {
     }
 
     @Override
-    public void download(@NonNull String fileName, @NonNull File file) throws Exception {
-        if (!file.exists() || !file.isFile()) {
-            throw new NotFoundException("Not found file: " + file.getPath());
-        }
-        String contentType = MimeTypeKit.parse(file.getName());
-        headers.put("Content-Disposition", "attachment; filename=" + new String(fileName.getBytes(StandardCharsets.UTF_8), "ISO8859_1"));
-        headers.put(NettyHttpConst.CONTENT_LENGTH.toString(), String.valueOf(file.length()));
-        headers.put(NettyHttpConst.CONTENT_TYPE_STRING, contentType);
-        this.body = new StreamBody(new FileInputStream(file));
-    }
-
-    @Override
     public void render(@NonNull ModelAndView modelAndView) {
         this.body = new ViewBody(modelAndView);
     }
@@ -159,6 +147,18 @@ public class HttpResponse implements Response {
     public void redirect(@NonNull String newUri) {
         headers.put(NettyHttpConst.LOCATION.toString(), newUri);
         this.status(302);
+    }
+
+    @Override
+    public void write(File file) throws IOException {
+        this.body = ChannelBody.of(file);
+    }
+
+    @Override
+    public void write(String fileName, File file) throws IOException {
+        FileChannel fileChannel = FileChannel.open(file.toPath(), StandardOpenOption.READ);
+        headers.put("Content-Disposition", "attachment; filename=" + new String(fileName.getBytes(StandardCharsets.UTF_8), StandardCharsets.ISO_8859_1));
+        this.body = new ChannelBody(null, fileChannel);
     }
 
     @Override

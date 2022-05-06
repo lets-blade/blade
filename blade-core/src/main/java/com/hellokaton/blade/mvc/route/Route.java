@@ -76,7 +76,8 @@ public class Route {
         this.sort = Integer.MAX_VALUE;
     }
 
-    public Route(HttpMethod httpMethod, String originalPath, String path, Object target, Class<?> targetType, Method action) {
+    public Route(HttpMethod httpMethod, String originalPath, String path, Object target,
+                 Class<?> targetType, Method action, ResponseType responseType) {
         super();
         this.httpMethod = httpMethod;
         this.originalPath = originalPath;
@@ -84,6 +85,7 @@ public class Route {
         this.target = target;
         this.targetType = targetType;
         this.action = action;
+        this.responseType = responseType;
         sort = Integer.MAX_VALUE;
     }
 
@@ -94,6 +96,7 @@ public class Route {
         this.target = route.target;
         this.targetType = route.targetType;
         this.action = route.action;
+        this.responseType = route.responseType;
         this.sort = route.sort;
     }
 

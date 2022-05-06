@@ -39,7 +39,7 @@ public class UrlRouterBenchMark {
             path = "*".equals(path) ? "/.*" : path;
             path = path.replace("/**", "/.*").replace("/*", "/.*");
             Route route = new Route(httpMethod,
-                    originalPath, path, null, null, null);
+                    originalPath, path, null, null, null, null);
             trieMapping.addRoute(httpMethod, route, variables);
             regexMapping.addRoute(httpMethod, route, variables);
         });

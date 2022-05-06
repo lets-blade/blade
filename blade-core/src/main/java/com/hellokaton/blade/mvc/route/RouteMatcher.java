@@ -9,6 +9,7 @@ import com.hellokaton.blade.mvc.hook.WebHook;
 import com.hellokaton.blade.mvc.http.HttpMethod;
 import com.hellokaton.blade.mvc.route.mapping.StaticMapping;
 import com.hellokaton.blade.mvc.route.mapping.dynamic.RegexMapping;
+import com.hellokaton.blade.mvc.ui.ResponseType;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Method;
@@ -33,34 +34,36 @@ import static com.hellokaton.blade.kit.BladeKit.logAddRoute;
 public class RouteMatcher {
 
     private static final Pattern PATH_VARIABLE_PATTERN = Pattern.compile("/(?:([^:/]*):([^/]+))|(\\.\\*)");
-    private static final String  METHOD_NAME           = "handle";
+    private static final String METHOD_NAME = "handle";
 
     // Storage URL and route
-    private Map<String, Route>       routes          = new HashMap<>();
-    private Map<String, List<Route>> hooks           = new HashMap<>();
-    private List<Route>              middleware      = null;
-    private Map<String, Method[]>    classMethodPool = new ConcurrentHashMap<>();
-    private Map<Class<?>, Object>    controllerPool  = new ConcurrentHashMap<>();
+    private final Map<String, Route> routes = new HashMap<>(16);
+    private final Map<String, List<Route>> hooks = new HashMap<>(8);
+    private List<Route> middleware = null;
+    private final Map<String, Method[]> classMethodPool = new ConcurrentHashMap<>();
+    private final Map<Class<?>, Object> controllerPool = new ConcurrentHashMap<>(8);
 
     private DynamicMapping dynamicMapping = new RegexMapping();
-    private StaticMapping staticMapping = new StaticMapping();
+    private final StaticMapping staticMapping = new StaticMapping();
 
-    private Route addRoute(HttpMethod httpMethod, String path, RouteHandler handler, String methodName) throws NoSuchMethodException {
+    private Route addRoute(HttpMethod httpMethod, String path, RouteHandler handler) throws NoSuchMethodException {
         Class<?> handleType = handler.getClass();
-        Method   method     = handleType.getMethod(methodName, RouteContext.class);
-        return addRoute(httpMethod, path, handler, RouteHandler.class, method);
+        Method method = handleType.getMethod(RouteMatcher.METHOD_NAME, RouteContext.class);
+        return addRoute(httpMethod, path, handler, RouteHandler.class, method, null);
     }
 
     Route addRoute(Route route) {
-        String     path           = route.getPath();
-        HttpMethod httpMethod     = route.getHttpMethod();
-        Object     controller     = route.getTarget();
-        Class<?>   controllerType = route.getTargetType();
-        Method     method         = route.getAction();
-        return addRoute(httpMethod, path, controller, controllerType, method);
+        String path = route.getPath();
+        HttpMethod httpMethod = route.getHttpMethod();
+        Object controller = route.getTarget();
+        Class<?> controllerType = route.getTargetType();
+        Method method = route.getAction();
+        ResponseType responseType = route.getResponseType();
+        return addRoute(httpMethod, path, controller, controllerType, method, responseType);
     }
 
-    private Route addRoute(HttpMethod httpMethod, String path, Object controller, Class<?> controllerType, Method method) {
+    private Route addRoute(HttpMethod httpMethod, String path, Object controller,
+                           Class<?> controllerType, Method method, ResponseType responseType) {
         String originalPath = path;
 
         // [/** | /*]
@@ -74,7 +77,7 @@ public class RouteMatcher {
             log.warn("\tRoute {} -> {} has exist", path, httpMethod.toString());
         }
 
-        Route route = new Route(httpMethod, originalPath, path, controller, controllerType, method);
+        Route route = new Route(httpMethod, originalPath, path, controller, controllerType, method, responseType);
         if (BladeKit.isWebHook(httpMethod)) {
             Order order = controllerType.getAnnotation(Order.class);
             if (null != order) {
@@ -95,7 +98,7 @@ public class RouteMatcher {
 
     public Route addRoute(String path, RouteHandler handler, HttpMethod httpMethod) {
         try {
-            return addRoute(httpMethod, path, handler, METHOD_NAME);
+            return addRoute(httpMethod, path, handler);
         } catch (Exception e) {
             log.error("", e);
         }
@@ -127,7 +130,7 @@ public class RouteMatcher {
             for (Method method : methods) {
                 if (method.getName().equals(methodName)) {
                     Object controller = controllerPool.computeIfAbsent(clazz, k -> ReflectKit.newInstance(clazz));
-                    addRoute(httpMethod, path, controller, clazz, method);
+                    addRoute(httpMethod, path, controller, clazz, method, null);
                 }
             }
         } catch (Exception e) {
@@ -273,18 +276,18 @@ public class RouteMatcher {
     }
 
     private void registerRoute(Route route) {
-        String  path    = parsePath(route.getPath());
+        String path = parsePath(route.getPath());
         Matcher matcher = null;
         if (path != null) {
             matcher = PATH_VARIABLE_PATTERN.matcher(path);
         }
-        boolean      find             = false;
+        boolean find = false;
         List<String> uriVariableNames = new ArrayList<>();
         while (matcher != null && matcher.find()) {
             if (!find) {
                 find = true;
             }
-            String regexName  = matcher.group(1);
+            String regexName = matcher.group(1);
             String regexValue = matcher.group(2);
 
             // when /.* is matched, there is no param
@@ -340,7 +343,7 @@ public class RouteMatcher {
     public void initMiddleware(List<WebHook> hooks) {
         this.middleware = hooks.stream().map(webHook -> {
             Method method = ReflectKit.getMethod(WebHook.class, "before", RouteContext.class);
-            return new Route(HttpMethod.BEFORE, "/*", "/.*", webHook, WebHook.class, method);
+            return new Route(HttpMethod.BEFORE, "/*", "/.*", webHook, WebHook.class, method, null);
         }).collect(Collectors.toList());
     }
 

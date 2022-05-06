@@ -1,13 +1,11 @@
 package com.hellokaton.blade.server;
 
-import com.hellokaton.blade.asm.MethodAccess;
 import com.hellokaton.blade.annotation.Path;
+import com.hellokaton.blade.asm.MethodAccess;
 import com.hellokaton.blade.exception.BladeException;
 import com.hellokaton.blade.exception.InternalErrorException;
 import com.hellokaton.blade.exception.NotFoundException;
-import com.hellokaton.blade.kit.BladeCache;
-import com.hellokaton.blade.kit.BladeKit;
-import com.hellokaton.blade.kit.ReflectKit;
+import com.hellokaton.blade.kit.*;
 import com.hellokaton.blade.mvc.HttpConst;
 import com.hellokaton.blade.mvc.RouteContext;
 import com.hellokaton.blade.mvc.WebContext;
@@ -22,17 +20,16 @@ import com.hellokaton.blade.mvc.ui.ModelAndView;
 import com.hellokaton.blade.mvc.ui.ResponseType;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelFutureListener;
-import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.*;
+import io.netty.handler.codec.http.HttpResponse;
 import io.netty.handler.codec.http.*;
-import io.netty.handler.stream.ChunkedStream;
 import lombok.extern.slf4j.Slf4j;
 import lombok.var;
 
-import java.io.InputStream;
+import java.io.IOException;
 import java.io.StringWriter;
 import java.lang.reflect.Method;
+import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
@@ -91,7 +88,7 @@ public class RouteMethodHandler implements RequestHandler {
         }
     }
 
-    public FullHttpResponse handleResponse(Request request, Response response, ChannelHandlerContext context) {
+    public HttpResponse handleResponse(Request request, Response response, ChannelHandlerContext context) {
         Session session = request.session();
         if (null != session) {
             Cookie cookie = new Cookie();
@@ -102,14 +99,15 @@ public class RouteMethodHandler implements RequestHandler {
             response.cookie(cookie);
         }
 
-        FullHttpResponse fullHttpResponse = response.body().write(new BodyWriter() {
+        return response.body().write(new BodyWriter() {
+
             @Override
-            public FullHttpResponse onByteBuf(ByteBuf byteBuf) {
+            public HttpResponse onByteBuf(ByteBuf byteBuf) {
                 return createResponseByByteBuf(response, byteBuf);
             }
 
             @Override
-            public FullHttpResponse onView(ViewBody body) {
+            public HttpResponse onView(ViewBody body) {
                 try {
                     var sw = new StringWriter();
                     WebContext.blade().templateEngine().render(body.modelAndView(), sw);
@@ -123,36 +121,62 @@ public class RouteMethodHandler implements RequestHandler {
             }
 
             @Override
-            public FullHttpResponse onRawBody(RawBody body) {
+            public HttpResponse onRawBody(RawBody body) {
                 return body.httpResponse();
             }
 
             @Override
-            public FullHttpResponse onByteBuf(Object byteBuf) {
+            public HttpResponse onByteBuf(String fileName, FileChannel channel) {
                 var httpResponse = new DefaultHttpResponse(HTTP_1_1, HttpResponseStatus.valueOf(response.statusCode()));
 
+                httpResponse.headers().set(TRANSFER_ENCODING, HttpHeaderValues.CHUNKED);
+                setDefaultHeaders(httpResponse.headers());
                 for (Map.Entry<String, String> next : response.headers().entrySet()) {
                     httpResponse.headers().set(next.getKey(), next.getValue());
                 }
-
-                // Write the initial line and the header.
                 if (request.keepAlive()) {
                     httpResponse.headers().set(NettyHttpConst.CONNECTION, KEEP_ALIVE);
                 }
-                context.write(httpResponse, context.voidPromise());
-
-                ChannelFuture lastContentFuture = context.writeAndFlush(byteBuf);
-                if (!request.keepAlive()) {
-                    lastContentFuture.addListener(ChannelFutureListener.CLOSE);
+                String mimeType = null;
+                if (!httpResponse.headers().contains(NettyHttpConst.CONTENT_TYPE_STRING) && StringKit.isNotEmpty(fileName)) {
+                    mimeType = MimeTypeKit.parse(fileName);
+                    httpResponse.headers().set(NettyHttpConst.CONTENT_TYPE_STRING, mimeType);
                 }
-                return null;
-            }
+                long length;
 
+                try {
+                    length = channel.size();
+                    httpResponse.headers().set(NettyHttpConst.CONTENT_LENGTH.toString(), length);
+                } catch (IOException e) {
+                    log.error("Read file {} length error", fileName, e);
+                    context.writeAndFlush(httpResponse);
+                    return httpResponse;
+                }
+
+                context.write(httpResponse);
+
+                ChannelFuture sendFileFuture = context.write(new DefaultFileRegion(channel, 0, length), context.newProgressivePromise());
+                sendFileFuture.addListener(new ChannelProgressiveFutureListener() {
+                    @Override
+                    public void operationComplete(ChannelProgressiveFuture future)
+                            throws Exception {
+                        log.info("File {} transfer complete.", fileName);
+                        channel.close();
+                    }
+
+                    @Override
+                    public void operationProgressed(ChannelProgressiveFuture future, long progress, long total) {
+                        if (total < 0) {
+                            log.warn("File {} transfer progress: {}", fileName, progress);
+                        } else {
+                            log.debug("File {} transfer progress: {}/{}", fileName, progress, total);
+                        }
+                    }
+                });
+                context.writeAndFlush(LastHttpContent.EMPTY_LAST_CONTENT);
+                return httpResponse;
+            }
         });
-        if (request.keepAlive()) {
-            fullHttpResponse.headers().set(NettyHttpConst.CONNECTION, KEEP_ALIVE);
-        }
-        return fullHttpResponse;
     }
 
     private void setDefaultHeaders(HttpHeaders headers) {
@@ -160,30 +184,7 @@ public class RouteMethodHandler implements RequestHandler {
         headers.set(NettyHttpConst.X_POWER_BY, NettyHttpConst.HEADER_VERSION);
     }
 
-    public Void handleStreamResponse(com.hellokaton.blade.mvc.http.Response response, InputStream body,
-                                     ChannelHandlerContext context, boolean keepAlive) {
-
-        var httpResponse = new DefaultHttpResponse(HTTP_1_1, HttpResponseStatus.valueOf(response.statusCode()));
-
-        httpResponse.headers().set(TRANSFER_ENCODING, HttpHeaderValues.CHUNKED);
-        setDefaultHeaders(httpResponse.headers());
-
-        for (Map.Entry<String, String> next : response.headers().entrySet()) {
-            httpResponse.headers().set(next.getKey(), next.getValue());
-        }
-
-        context.write(response);
-
-        context.write(new ChunkedStream(body));
-        ChannelFuture lastContentFuture = context.writeAndFlush(LastHttpContent.EMPTY_LAST_CONTENT);
-        if (!keepAlive) {
-            lastContentFuture.addListener(ChannelFutureListener.CLOSE);
-        }
-        return null;
-    }
-
-    private FullHttpResponse createResponseByByteBuf(com.hellokaton.blade.mvc.http.Response response, ByteBuf byteBuf) {
-
+    private FullHttpResponse createResponseByByteBuf(Response response, ByteBuf byteBuf) {
         Map<String, String> headers = response.headers();
 
         var httpResponse = new DefaultFullHttpResponse(HTTP_1_1, HttpResponseStatus.valueOf(response.statusCode()), byteBuf);
@@ -201,7 +202,7 @@ public class RouteMethodHandler implements RequestHandler {
         return httpResponse;
     }
 
-    private void appendCookie(com.hellokaton.blade.mvc.http.Response response, DefaultFullHttpResponse httpResponse) {
+    private void appendCookie(Response response, DefaultFullHttpResponse httpResponse) {
         for (io.netty.handler.codec.http.cookie.Cookie next : response.cookiesRaw()) {
             httpResponse.headers().add(NettyHttpConst.SET_COOKIE,
                     io.netty.handler.codec.http.cookie.ServerCookieEncoder.LAX.encode(next));
@@ -276,7 +277,8 @@ public class RouteMethodHandler implements RequestHandler {
             } else {
                 context.contentType(HttpConst.CONTENT_TYPE_HTML);
             }
-        } else if (null != routeResponseType && !ResponseType.EMPTY.equals(routeResponseType)) {
+        } else if (null != routeResponseType && !ResponseType.EMPTY.equals(routeResponseType)
+                && !ResponseType.PREVIEW.equals(routeResponseType)) {
             context.contentType(routeResponseType.contentType());
         }
         return responseJson;
@@ -323,8 +325,8 @@ public class RouteMethodHandler implements RequestHandler {
         if (null == returnParam) return true;
 
         Class<?> returnType = returnParam.getClass();
-        if (returnType == Boolean.class || returnType == boolean.class) {
-            return Boolean.valueOf(returnParam.toString());
+        if (returnType == Boolean.class) {
+            return Boolean.parseBoolean(returnParam.toString());
         }
         return true;
     }

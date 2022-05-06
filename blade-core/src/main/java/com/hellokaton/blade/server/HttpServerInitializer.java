@@ -18,6 +18,7 @@ import io.netty.handler.codec.http.cors.CorsConfig;
 import io.netty.handler.codec.http.cors.CorsConfigBuilder;
 import io.netty.handler.codec.http.cors.CorsHandler;
 import io.netty.handler.ssl.SslContext;
+import io.netty.handler.stream.ChunkedWriteHandler;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
@@ -67,6 +68,7 @@ public class HttpServerInitializer extends ChannelInitializer<SocketChannel> {
                 pipeline.addLast(new CorsHandler(corsConfig));
             }
             pipeline.addLast(new FullHttpRequestDecode());
+            pipeline.addLast(new ChunkedWriteHandler());
             pipeline.addLast(httpServerHandler);
         } catch (Exception e) {
             log.error("Add channel pipeline error", e);

@@ -9,5 +9,6 @@ public interface HttpConst {
     String CONTENT_TYPE_XML = "text/xml; charset=UTF-8";
     String CONTENT_TYPE_JSON = "application/json; charset=UTF-8";
     String CONTENT_TYPE_TEXT = "text/plain; charset=UTF-8";
+    String CONTENT_TYPE_STREAM = "application/octet-stream";
 
 }

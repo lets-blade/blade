@@ -10,17 +10,18 @@ import com.hellokaton.blade.annotation.route.DELETE;
 import com.hellokaton.blade.annotation.route.GET;
 import com.hellokaton.blade.annotation.route.POST;
 import com.hellokaton.blade.mvc.http.Request;
+import com.hellokaton.blade.mvc.http.Response;
 import com.hellokaton.blade.mvc.multipart.FileItem;
 import com.hellokaton.blade.mvc.ui.ResponseType;
 import com.hellokaton.blade.options.CorsOptions;
 import com.hellokaton.blade.security.csrf.CsrfMiddleware;
-import com.hellokaton.blade.security.limit.Limit;
 import com.hellokaton.blade.security.limit.LimitMiddleware;
 import com.hellokaton.blade.security.limit.LimitOptions;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
+import java.net.URLConnection;
+import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -79,6 +80,16 @@ public class Application {
         return "nice.. :)";
     }
 
+    @GET(value = "/preview/:id", responseType = ResponseType.PREVIEW)
+    public void preview(@PathParam String id, Response response) throws Exception {
+        response.write(new File("/Users/biezhi/Downloads/146373013842336153820220427172437.pdf"));
+    }
+
+    @GET(value = "/file/:id", responseType = ResponseType.STREAM)
+    public void download(@PathParam String id, Response response) throws Exception {
+        response.write("abcd.pdf", new File("/Users/biezhi/Downloads/146373013842336153820220427172437.pdf"));
+    }
+
     public static void main(String[] args) {
         CorsOptions corsOptions = CorsOptions.forAnyOrigin().allowNullOrigin().allowCredentials();
 
@@ -87,8 +98,8 @@ public class Application {
 
         Blade.create()
                 .cors(corsOptions)
-                .use(new CsrfMiddleware())
-                .use(new LimitMiddleware(limitOptions))
+//                .use(new CsrfMiddleware())
+//                .use(new LimitMiddleware(limitOptions))
                 .listen().start(Application.class);
     }
 

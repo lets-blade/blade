@@ -8,6 +8,8 @@ import com.hellokaton.blade.mvc.WebContext;
 import com.hellokaton.blade.mvc.ui.ModelAndView;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -230,14 +232,6 @@ public interface Response {
     Response body(Body body);
 
     /**
-     * download some file to client
-     *
-     * @param fileName give client file name
-     * @param file     file storage location
-     */
-    void download(String fileName, File file) throws Exception;
-
-    /**
      * Render view, can be modified after WebHook
      *
      * @param view view page
@@ -264,6 +258,10 @@ public interface Response {
      * @param newUri new url
      */
     void redirect(String newUri);
+
+    void write(File file) throws IOException;
+
+    void write(String fileName, File file) throws IOException;
 
     /**
      * @return Returns the currently set view, returning an empty Optional type when not set
