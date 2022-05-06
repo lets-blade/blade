@@ -1,5 +1,6 @@
 package com.hellokaton.blade.kit;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 /**
@@ -7,10 +8,10 @@ import java.util.Objects;
  *
  * @author <a href="mailto:chenchen_839@126.com" target="_blank">ccqy66</a>
  */
-public class Tuple2<K, V> {
+public class Tuple2<K, V> implements Serializable {
 
-    private K k;
-    private V v;
+    private final K k;
+    private final V v;
 
     public Tuple2(K k, V v) {
         this.k = k;

@@ -86,14 +86,12 @@ public class StaticFileHandler implements RequestHandler {
      * print static file to client
      *
      * @param webContext web context
-     * @throws Exception
      */
     @Override
     public void handle(WebContext webContext) throws Exception {
         Request request = webContext.getRequest();
 
         ChannelHandlerContext ctx = webContext.getChannelHandlerContext();
-
         if (!NettyHttpConst.METHOD_GET.equals(request.method())) {
             sendError(ctx, METHOD_NOT_ALLOWED);
             return;
@@ -175,9 +173,16 @@ public class StaticFileHandler implements RequestHandler {
             return;
         }
 
-        long fileLength = raf.length();
+        long length;
+        try {
+            length = raf.length();
+        } catch (IOException e) {
+            log.error("Read file {} length error", file.getName(), e);
+            sendError(ctx, INTERNAL_SERVER_ERROR);
+            return;
+        }
 
-        httpResponse.headers().set(NettyHttpConst.CONTENT_LENGTH, fileLength);
+        httpResponse.headers().set(NettyHttpConst.CONTENT_LENGTH, length);
         if (request.keepAlive()) {
             httpResponse.headers().set(NettyHttpConst.CONNECTION, NettyHttpConst.KEEP_ALIVE);
         }
@@ -190,7 +195,7 @@ public class StaticFileHandler implements RequestHandler {
         ChannelFuture lastContentFuture;
         if (ctx.pipeline().get(SslHandler.class) == null) {
             sendFileFuture = ctx.write(
-                    new DefaultFileRegion(raf.getChannel(), 0, fileLength),
+                    new DefaultFileRegion(raf.getChannel(), 0, length),
                     ctx.newProgressivePromise()
             );
 
@@ -200,14 +205,14 @@ public class StaticFileHandler implements RequestHandler {
         } else {
             sendFileFuture = ctx.writeAndFlush(
                     new HttpChunkedInput(
-                            new ChunkedFile(raf, 0, fileLength, 8192)
+                            new ChunkedFile(raf, 0, length, 8192)
                     ),
                     ctx.newProgressivePromise());
             // HttpChunkedInput will write the end marker (LastHttpContent) for us.
             lastContentFuture = sendFileFuture;
         }
 
-        sendFileFuture.addListener(ProgressiveFutureListener.build(raf));
+        sendFileFuture.addListener(ProgressiveFutureListener.create(file.getName(), raf.getChannel()));
 
         // Decide whether to close the connection or not.
         if (!request.keepAlive()) {
