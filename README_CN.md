@@ -89,7 +89,8 @@ public static void main(String[] args) {
 - [**`注册路由`**](#注册路由)
     - [**`硬编码方式`**](#硬编码方式)
     - [**`控制器方式`**](#控制器方式)
-- [**`获取请求参数`**](#获取请求参数)
+- [**`请求参数`**](#获取请求参数)
+    - [**`URL参数`**](#URL参数)
     - [**`表单参数`**](#表单参数)
     - [**`Restful参数`**](#restful参数)
     - [**`Body参数`**](#body参数)
@@ -123,7 +124,7 @@ public static void main(String[] args) {
 
 ```java
 public static void main(String[] args) {
-    // Create Blade，using GET、POST、PUT、DELETE
+    // 使用 Blade 实例创建多种路由 GET、POST、PUT、DELETE
     Blade.create()
         .get("/user/21", getting)
         .post("/save", posting)
@@ -138,22 +139,52 @@ public static void main(String[] args) {
 ```java
 @Path
 public class IndexController {
-    
-    @GET("/signin")
-    public String signin(){
-        return "signin.html";
+
+    @GET("/login")
+    public String login(){
+      return "login.html";
     }
     
-    @POST(value = "/signin", responseType = ResponseType.JSON)
-    public RestResponse doSignin(RouteContext ctx){
-        // do something
-        return RestResponse.ok();
+    @POST(value = "/login", responseType = ResponseType.JSON)
+    public RestResponse doLogin(RouteContext ctx){
+      // do something
+      return RestResponse.ok();
     }
     
 }
 ```
 
-## 获取请求参数
+## 请求参数
+
+### URL参数
+
+下面是个例子:
+
+**使用 RouteContext 获取**
+
+```java
+public static void main(String[] args) {
+    Blade.create().get("/user", ctx -> {
+        Integer age = ctx.queryInt("age");
+        System.out.println("age is:" + age);
+    }).start();
+}
+```
+
+**使用 `@Query` 注解获取**
+
+```java
+@GET("/user")
+public void savePerson(@Query Integer age){
+  System.out.println("age is:" + age);
+}
+```
+
+在命令行下发送数据测试
+
+```bash
+curl -X GET http://127.0.0.1:9000/user?age=25
+```
 
 ### 表单参数
 
@@ -170,14 +201,9 @@ public static void main(String[] args) {
 }
 ```
 
-**使用注解获取**
+**使用 `@Form` 注解获取**
 
 ```java
-@GET("/user")
-public void savePerson(@Query Integer age){
-  System.out.println("age is:" + age);
-}
-
 @POST("/save")
 public void savePerson(@Form String username, @Form Integer age){
   System.out.println("username is:" + username + ", age is:" + age);
@@ -185,10 +211,6 @@ public void savePerson(@Form String username, @Form Integer age){
 ```
 
 在终端下发送数据测试
-
-```bash
-curl -X GET http://127.0.0.1:9000/user?age=25
-```
 
 ```bash
 curl -X POST http://127.0.0.1:9000/save -F username=jack -F age=16
@@ -240,8 +262,17 @@ curl -X GET http://127.0.0.1:9000/users/hellokaton/2
 ```java
 public static void main(String[] args) {
     Blade.create().post("/body", ctx -> {
-        System.out.println("body string is:" + ctx.bodyToString())
+        System.out.println("body string is:" + ctx.bodyToString());
     }).start();
+}
+```
+
+**使用 `@Body` 注解**
+
+```java
+@POST("/body")
+public void readBody(@Body String data){
+    System.out.println("data is:" + data);
 }
 ```
 

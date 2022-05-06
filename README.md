@@ -89,10 +89,11 @@ Open http://localhost:9000 in your browser to see your first `Blade` application
 - [**`Register Route`**](#register-route)
     - [**`HardCode`**](#hardCode)
     - [**`Controller`**](#controller)
-- [**`Get Request Parameters`**](#get-request-parameters)
-    - [**`Form Parameters`**](#form-parameters)
-    - [**`Path Parameters`**](#path-parameters)
-    - [**`Body Parameters`**](#body-parameters)
+- [**`Request Parameter`**](#request-parameter)
+    - [**`URL Parameter`**](#URL-parameter)
+    - [**`Form Parameter`**](#form-parameter)
+    - [**`Path Parameter`**](#path-parameter)
+    - [**`Body Parameter`**](#body-parameter)
     - [**`Parse To Model`**](#parse-to-model)
 - [**`Get Environment`**](#get-environment)
 - [**`Get Header`**](#get-header)
@@ -123,7 +124,7 @@ Open http://localhost:9000 in your browser to see your first `Blade` application
 
 ```java
 public static void main(String[] args) {
-    // Create Blade，using GET、POST、PUT、DELETE
+    // Create multiple routes GET, POST, PUT, DELETE using Blade instance
     Blade.create()
         .get("/user/21", getting)
         .post("/save", posting)
@@ -139,13 +140,13 @@ public static void main(String[] args) {
 @Path
 public class IndexController {
 
-    @GET("signin")
-    public String signin(){
-        return "signin.html";
+    @GET("/login")
+    public String login(){
+        return "login.html";
     }
-
-    @POST(value = "/signin", responseType = ResponseType.JSON)
-    public RestResponse doSignin(RouteContext ctx){
+    
+    @POST(value = "/login", responseType = ResponseType.JSON)
+    public RestResponse doLogin(RouteContext ctx){
         // do something
         return RestResponse.ok();
     }
@@ -153,13 +154,41 @@ public class IndexController {
 }
 ```
 
-## Get Request Parameters
+## Request Parameter
 
-### Form Parameters
+### URL Parameter
+
+**Using RouteContext**
+
+```java
+public static void main(String[] args) {
+    Blade.create().get("/user", ctx -> {
+        Integer age = ctx.queryInt("age");
+        System.out.println("age is:" + age);
+    }).start();
+}
+```
+
+**Using `@Query` annotation**
+
+```java
+@GET("/user")
+public void savePerson(@Query Integer age){
+  System.out.println("age is:" + age);
+}
+```
+
+Test it with sample data from the terminal
+
+```bash
+curl -X GET http://127.0.0.1:9000/user?age=25
+```
+
+### Form Parameter
 
 Here is an example:
 
-**By Context**
+**Using RouteContext**
 
 ```java
 public static void main(String[] args) {
@@ -170,14 +199,9 @@ public static void main(String[] args) {
 }
 ```
 
-**By Annotation**
+**Using `@Form` Annotation**
 
 ```java
-@GET("/user")
-public void savePerson(@Query Integer age){
-  System.out.println("age is:" + age);
-}
-
 @POST("/save")
 public void savePerson(@Form String username, @Form Integer age){
   System.out.println("username is:" + username + ", age is:" + age);
@@ -187,16 +211,12 @@ public void savePerson(@Form String username, @Form Integer age){
 Test it with sample data from the terminal
 
 ```bash
-curl -X GET http://127.0.0.1:9000/user?age=25
-```
-
-```bash
 curl -X POST http://127.0.0.1:9000/save -F username=jack -F age=16
 ```
 
-### Path Parameters
+### Path Parameter
 
-**By RouteContext**
+**Using RouteContext**
 
 ```java
 public static void main(String[] args) {
@@ -220,12 +240,12 @@ public static void main(String[] args) {
 }
 ```
 
-**By Annotation**
+**Using `@PathParam` Annotation**
 
 ```java
 @GET("/users/:username/:page")
 public void userTopics(@PathParam String username, @PathParam Integer page){
-    System.out.println("username is:" + usernam + ", page is:" + page)
+    System.out.println("username is:" + usernam + ", page is:" + page);
 }
 ```
 
@@ -235,13 +255,22 @@ Test it with sample data from the terminal
 curl -X GET http://127.0.0.1:9000/users/hellokaton/2
 ```
 
-### Body Parameters
+### Body Parameter
 
 ```java
 public static void main(String[] args) {
     Blade.create().post("/body", ctx -> {
-        System.out.println("body string is:" + ctx.bodyToString())
+        System.out.println("body string is:" + ctx.bodyToString());
     }).start();
+}
+```
+
+**Using `@Body` Annotation**
+
+```java
+@POST("/body")
+public void readBody(@Body String data){
+    System.out.println("data is:" + data);
 }
 ```
 
