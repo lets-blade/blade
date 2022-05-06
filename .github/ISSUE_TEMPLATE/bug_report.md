@@ -5,8 +5,8 @@ about: Report a general framework issue. help us improve this framework.
 
 - System Version (e.g. Mac Os 10.14.3):
 - Build tools (e.g. maven/gradle):
-- JDK Version (e.g. e.g `2.0.8-R1`):
-- Database Version:
+- JDK Version (e.g. `1.8`):
+- Blade Version (e.g. `2.1.1.RELEASE`):
 
 ### Describe the bug
 
@@ -18,8 +18,9 @@ Steps to reproduce the behavior:
 
 1. Operating system and its version
 2. Build tools (e.g. maven or gradle)
-3. JDK version and blade version(e.g `2.0.8-R1`)
-4. See error
+3. JDK version and blade version(e.g `1.8`)
+4. Blade Version (e.g. `2.1.1.RELEASE`):
+5. See error
 
 ### Expected behavior:
 
