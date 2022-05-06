@@ -13,16 +13,14 @@ import com.hellokaton.blade.mvc.http.Request;
 import com.hellokaton.blade.mvc.http.Response;
 import com.hellokaton.blade.mvc.multipart.FileItem;
 import com.hellokaton.blade.mvc.ui.ResponseType;
+import com.hellokaton.blade.mvc.ui.RestResponse;
 import com.hellokaton.blade.options.CorsOptions;
 import com.hellokaton.blade.options.HttpOptions;
-import com.hellokaton.blade.security.csrf.CsrfMiddleware;
-import com.hellokaton.blade.security.limit.LimitMiddleware;
 import com.hellokaton.blade.security.limit.LimitOptions;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.*;
-import java.net.URLConnection;
-import java.nio.file.Files;
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -56,9 +54,9 @@ public class Application {
     }
 
     @DELETE("/users/:uid")
-    public Result<?> deleteUser(@PathParam String uid) {
+    public RestResponse<?> deleteUser(@PathParam String uid) {
         log.info("删除 uid = {}", uid);
-        return Result.success(uid);
+        return RestResponse.success(uid);
     }
 
     @POST(value = "/upload", responseType = ResponseType.TEXT)
