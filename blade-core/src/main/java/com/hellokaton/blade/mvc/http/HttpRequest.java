@@ -280,21 +280,7 @@ public class HttpRequest implements Request {
         HttpHeaders httpHeaders = fullHttpRequest.headers();
         if (null == this.headers || this.headers.isEmpty()) {
             this.headers = new CaseInsensitiveHashMap<>(httpHeaders.size());
-            for (Map.Entry<String, String> header : httpHeaders) {
-                String headerName = header.getKey();
-                if (this.headers.containsKey(headerName)) {
-                    List<String> tmpHeader = this.headers.get(headerName);
-                    if (null != tmpHeader && tmpHeader.size() == 1) {
-                        this.headers.put(headerName, Arrays.asList(tmpHeader.get(0), header.getValue()));
-                    }
-                    if (null != tmpHeader && tmpHeader.size() > 1) {
-                        tmpHeader.add(header.getValue());
-                        this.headers.put(headerName, tmpHeader);
-                    }
-                } else {
-                    this.headers.put(headerName, Collections.singletonList(header.getValue()));
-                }
-            }
+            httpHeaders.forEach(this::putHeaderValues);
         }
 
         this.parseContentType();
@@ -323,6 +309,7 @@ public class HttpRequest implements Request {
         try {
             this.body = fullHttpRequest.content().copy();
 
+            // if request is multipart/form-data
             if (HttpConst.CONTENT_TYPE_MULTIPART.equals(this.contentType)) {
                 this.isMultipart = true;
                 this.formParams = new HashMap<>(8);
@@ -336,12 +323,28 @@ public class HttpRequest implements Request {
                 String paramString = fullHttpRequest.content().toString(StandardCharsets.UTF_8);
                 queryDecoder = new QueryStringDecoder(paramString, false);
                 Map<String, List<String>> uriAttributes = queryDecoder.parameters();
-                if (null != uriAttributes) {
+                if (null != uriAttributes && !uriAttributes.isEmpty()) {
                     this.formParams = uriAttributes;
                 }
             }
         } catch (Exception e) {
             throw new HttpParseException("build decoder fail", e);
+        }
+    }
+
+    private void putHeaderValues(Map.Entry<String, String> header) {
+        String headerName = header.getKey();
+        String headerValue = header.getValue();
+        if (!this.headers.containsKey(headerName)) {
+            List<String> values = new ArrayList<>(2);
+            values.add(headerValue);
+            this.headers.put(headerName, values);
+            return;
+        }
+        List<String> values = this.headers.get(headerName);
+        if (null != values && !values.isEmpty()) {
+            values.add(headerValue);
+            this.headers.put(headerName, values);
         }
     }
 
@@ -393,12 +396,15 @@ public class HttpRequest implements Request {
         var name = attribute.getName();
         var value = attribute.getValue();
 
+        if (StringKit.isEmpty(name)) {
+            return;
+        }
         List<String> values;
         if (this.formParams.containsKey(name)) {
             values = this.formParams.get(name);
             values.add(value);
         } else {
-            values = new ArrayList<>();
+            values = new ArrayList<>(4);
             values.add(value);
             this.formParams.put(name, values);
         }

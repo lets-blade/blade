@@ -15,7 +15,10 @@
  */
 package com.hellokaton.blade.mvc;
 
-import com.hellokaton.blade.mvc.http.*;
+import com.hellokaton.blade.mvc.http.Body;
+import com.hellokaton.blade.mvc.http.Request;
+import com.hellokaton.blade.mvc.http.Response;
+import com.hellokaton.blade.mvc.http.Session;
 import com.hellokaton.blade.mvc.route.Route;
 import com.hellokaton.blade.mvc.ui.ModelAndView;
 import lombok.var;
@@ -37,11 +40,11 @@ import static com.hellokaton.blade.mvc.handler.RouteActionArguments.getRouteActi
  */
 public class RouteContext {
 
-    private Route    route;
-    private Request  request;
+    private Route route;
+    private Request request;
     private Response response;
     private Object[] routeActionParameters;
-    private boolean  abort;
+    private boolean abort;
 
     private static final String LAMBDA_IDENTIFY = "$$Lambda$";
 
@@ -133,104 +136,104 @@ public class RouteContext {
     /**
      * Get a request parameter, if NULL is returned to defaultValue
      *
-     * @param paramName    parameter name
+     * @param name         query name
      * @param defaultValue default String value
      * @return Return request parameter values
      */
-    public String query(String paramName, String defaultValue) {
-        return this.request.query(paramName, defaultValue);
+    public String query(String name, String defaultValue) {
+        return this.request.query(name, defaultValue);
     }
 
     /**
      * Returns a request parameter for a Int type
      *
-     * @param paramName Parameter name
+     * @param name query name
      * @return Return Int parameter values
      */
-    public Integer queryInt(String paramName) {
-        return this.request.queryInt(paramName).orElse(null);
+    public Integer queryInt(String name) {
+        return this.request.queryInt(name).orElse(null);
     }
 
     /**
      * Returns a request parameter for a Int type
      *
-     * @param paramName    Parameter name
+     * @param name         query name
      * @param defaultValue default int value
      * @return Return Int parameter values
      */
-    public Integer queryInt(String paramName, Integer defaultValue) {
-        return this.request.queryInt(paramName, defaultValue);
+    public Integer queryInt(String name, Integer defaultValue) {
+        return this.request.queryInt(name, defaultValue);
     }
 
     /**
      * Returns a request parameter for a Long type
      *
-     * @param paramName Parameter name
+     * @param name query name
      * @return Return Long parameter values
      */
-    public Long queryLong(String paramName) {
-        return this.request.queryLong(paramName).orElse(null);
+    public Long queryLong(String name) {
+        return this.request.queryLong(name).orElse(null);
     }
 
     /**
      * Returns a request parameter for a Long type
      *
-     * @param paramName    Parameter name
+     * @param name         query name
      * @param defaultValue default long value
      * @return Return Long parameter values
      */
-    public Long queryLong(String paramName, Long defaultValue) {
-        return this.request.queryLong(paramName, defaultValue);
+    public Long queryLong(String name, Long defaultValue) {
+        return this.request.queryLong(name, defaultValue);
     }
 
-    public Double queryDouble(String paramName) {
-        return this.request.queryDouble(paramName, null);
+    public Double queryDouble(String name) {
+        return this.request.queryDouble(name, null);
     }
 
-    public Double queryDouble(String paramName, Double defaultValue) {
-        return this.request.queryDouble(paramName, defaultValue);
+    public Double queryDouble(String name, Double defaultValue) {
+        return this.request.queryDouble(name, defaultValue);
     }
 
-    public Boolean queryBoolean(String paramName) {
-        return this.request.queryBoolean(paramName, null);
+    public Boolean queryBoolean(String name) {
+        return this.request.queryBoolean(name, null);
     }
 
-    public Boolean queryBoolean(String paramName, Boolean defaultValue) {
-        return this.request.queryBoolean(paramName, defaultValue);
+    public Boolean queryBoolean(String name, Boolean defaultValue) {
+        return this.request.queryBoolean(name, defaultValue);
     }
 
     /**
-     * Get a URL parameter
+     * Get path variable
      *
-     * @param paramName Parameter name
+     * @param variable path variable name
      * @return Return parameter value
      */
-    public String pathString(String paramName) {
-        return this.request.pathString(paramName);
+    public String pathString(String variable) {
+        return this.request.pathString(variable);
     }
 
     /**
-     * Return a URL parameter for a Int type
+     * Get path variable as Integer
      *
-     * @param paramName Parameter name
+     * @param variable path variable name
      * @return Return Int parameter value
      */
-    public Integer pathInt(String paramName) {
-        return this.request.pathInt(paramName);
+    public Integer pathInt(String variable) {
+        return this.request.pathInt(variable);
     }
 
     /**
-     * Return a URL parameter for a Long type
+     * Get path variable as Long
      *
-     * @param paramName Parameter name
+     * @param variable path variable name
      * @return Return Long parameter value
      */
-    public Long pathLong(String paramName) {
-        return this.request.pathLong(paramName);
+    public Long pathLong(String variable) {
+        return this.request.pathLong(variable);
     }
 
     /**
-     * Get request user-agent
+     * request user-agent
      *
      * @return return user-agent
      */
@@ -239,7 +242,9 @@ public class RouteContext {
     }
 
     /**
-     * Get client ip address
+     * client ip address
+     *
+     * e.g.
      *
      * @return Return server remote address
      */
