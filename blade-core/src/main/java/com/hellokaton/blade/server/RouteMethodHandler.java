@@ -20,7 +20,9 @@ import com.hellokaton.blade.mvc.ui.ModelAndView;
 import com.hellokaton.blade.mvc.ui.ResponseType;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import io.netty.channel.*;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.DefaultFileRegion;
 import io.netty.handler.codec.http.HttpResponse;
 import io.netty.handler.codec.http.*;
 import lombok.extern.slf4j.Slf4j;
@@ -143,36 +145,21 @@ public class RouteMethodHandler implements RequestHandler {
                     httpResponse.headers().set(NettyHttpConst.CONTENT_TYPE_STRING, mimeType);
                 }
                 long length;
-
                 try {
                     length = channel.size();
-                    httpResponse.headers().set(NettyHttpConst.CONTENT_LENGTH.toString(), length);
                 } catch (IOException e) {
                     log.error("Read file {} length error", fileName, e);
                     context.writeAndFlush(httpResponse);
                     return httpResponse;
                 }
 
+                httpResponse.headers().set(NettyHttpConst.CONTENT_LENGTH.toString(), length);
+
                 context.write(httpResponse);
 
-                ChannelFuture sendFileFuture = context.write(new DefaultFileRegion(channel, 0, length), context.newProgressivePromise());
-                sendFileFuture.addListener(new ChannelProgressiveFutureListener() {
-                    @Override
-                    public void operationComplete(ChannelProgressiveFuture future)
-                            throws Exception {
-                        log.info("File {} transfer complete.", fileName);
-                        channel.close();
-                    }
-
-                    @Override
-                    public void operationProgressed(ChannelProgressiveFuture future, long progress, long total) {
-                        if (total < 0) {
-                            log.warn("File {} transfer progress: {}", fileName, progress);
-                        } else {
-                            log.debug("File {} transfer progress: {}/{}", fileName, progress, total);
-                        }
-                    }
-                });
+                DefaultFileRegion fileRegion = new DefaultFileRegion(channel, 0, length);
+                ChannelFuture sendFileFuture = context.write(fileRegion, context.newProgressivePromise());
+                sendFileFuture.addListener(ProgressiveFutureListener.create(fileName, channel));
                 context.writeAndFlush(LastHttpContent.EMPTY_LAST_CONTENT);
                 return httpResponse;
             }
