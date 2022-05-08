@@ -212,7 +212,8 @@ public class StaticFileHandler implements RequestHandler {
             lastContentFuture = sendFileFuture;
         }
 
-        sendFileFuture.addListener(ProgressiveFutureListener.create(file.getName(), raf.getChannel()));
+        ProgressiveFutureListener progressiveListener = ProgressiveFutureListener.create(file.getName(), raf.getChannel()).hideProgress();
+        sendFileFuture.addListener(progressiveListener);
 
         // Decide whether to close the connection or not.
         if (!request.keepAlive()) {
@@ -393,17 +394,6 @@ public class StaticFileHandler implements RequestHandler {
         String name;
         long length;
 
-//        static FileMeta buildByJarEntry(JarEntry jarEntry) {
-//            FileMeta fileMeta = new FileMeta();
-//            String name = jarEntry.getName();
-//            fileMeta.name = name.substring(path.length() + 1);
-//            fileMeta.isDirectory = jarEntry.isDirectory();
-//            if (!fileMeta.isDirectory) {
-//                fileMeta.length = jarEntry.getSize();
-//            }
-//            return fileMeta;
-//        }
-
         static FileMeta buildByFile(File f) {
             FileMeta fileMeta = new FileMeta();
             fileMeta.name = f.getName();
@@ -446,7 +436,7 @@ public class StaticFileHandler implements RequestHandler {
 
         if (dirs.length > 2) {
             String parent = uri.substring(0, uri.lastIndexOf("/"));
-            buf.append("<li><a href='" + parent + "' title='' class=''>..<i></i></li>");
+            buf.append("<li><a href='").append(parent).append("' title='' class=''>..<i></i></li>");
         }
 
         for (FileMeta f : listFiles) {

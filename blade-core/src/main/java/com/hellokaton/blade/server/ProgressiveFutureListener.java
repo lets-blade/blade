@@ -17,6 +17,8 @@ public class ProgressiveFutureListener implements ChannelProgressiveFutureListen
     private final String fileName;
     private final FileChannel channel;
 
+    private boolean showProgress = true;
+
     public ProgressiveFutureListener(String fileName, FileChannel channel) {
         this.fileName = fileName;
         this.channel = channel;
@@ -27,19 +29,27 @@ public class ProgressiveFutureListener implements ChannelProgressiveFutureListen
         if (total < 0) { // total unknown
             log.warn("File {} transfer progress: {}", fileName, progress);
         } else {
-            log.debug("File {} transfer progress: {}/{}", fileName, progress, total);
+            if (showProgress) {
+                log.debug("File {} transfer progress: {}/{}", fileName, progress, total);
+            }
         }
-
     }
 
     @Override
     public void operationComplete(ChannelProgressiveFuture future) {
         try {
             channel.close();
-            log.info("File {} transfer complete.", fileName);
+            if (showProgress) {
+                log.debug("File {} transfer complete.", fileName);
+            }
         } catch (Exception e) {
             log.error("File {} channel close error.", fileName, e);
         }
+    }
+
+    public ProgressiveFutureListener hideProgress() {
+        this.showProgress = false;
+        return this;
     }
 
     public static ProgressiveFutureListener create(String fileName, FileChannel channel) {
