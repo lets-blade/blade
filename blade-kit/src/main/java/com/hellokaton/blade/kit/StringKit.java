@@ -18,9 +18,13 @@ import java.util.stream.Stream;
 @UtilityClass
 public class StringKit {
 
+    public static final int INDEX_NOT_FOUND = -1;
+
     private static final Random RANDOM = new Random();
 
     private static final char SEPARATOR = '_';
+
+    public static final String EMPTY = "";
 
     /**
      * Randomly generate a number in the min and Max range
@@ -247,6 +251,275 @@ public class StringKit {
         for (int i = 0; i < num; i++)
             sb.append(c);
         return sb.toString();
+    }
+
+    // Stripping
+    //-----------------------------------------------------------------------
+
+    /**
+     * <p>Strips whitespace from the start and end of a String.</p>
+     * <p>
+     * Whitespace is defined by {@link Character#isWhitespace(char)}.</p>
+     *
+     * <p>A {@code null} input String returns {@code null}.</p>
+     *
+     * <pre>
+     * StringUtils.strip(null)     = null
+     * StringUtils.strip("")       = ""
+     * StringUtils.strip("   ")    = ""
+     * StringUtils.strip("abc")    = "abc"
+     * StringUtils.strip("  abc")  = "abc"
+     * StringUtils.strip("abc  ")  = "abc"
+     * StringUtils.strip(" abc ")  = "abc"
+     * StringUtils.strip(" ab c ") = "ab c"
+     * </pre>
+     *
+     * @param str the String to remove whitespace from, may be null
+     * @return the stripped String, {@code null} if null String input
+     */
+    public static String strip(final String str) {
+        return strip(str, null);
+    }
+
+    /**
+     * <p>Strips whitespace from the start and end of a String  returning
+     * {@code null} if the String is empty ("") after the strip.</p>
+     * <p>
+     * Whitespace is defined by {@link Character#isWhitespace(char)}.</p>
+     *
+     * <pre>
+     * StringUtils.stripToNull(null)     = null
+     * StringUtils.stripToNull("")       = null
+     * StringUtils.stripToNull("   ")    = null
+     * StringUtils.stripToNull("abc")    = "abc"
+     * StringUtils.stripToNull("  abc")  = "abc"
+     * StringUtils.stripToNull("abc  ")  = "abc"
+     * StringUtils.stripToNull(" abc ")  = "abc"
+     * StringUtils.stripToNull(" ab c ") = "ab c"
+     * </pre>
+     *
+     * @param str the String to be stripped, may be null
+     * @return the stripped String,
+     * {@code null} if whitespace, empty or null String input
+     * @since 2.0
+     */
+    public static String stripToNull(String str) {
+        if (str == null) {
+            return null;
+        }
+        str = strip(str, null);
+        return str.isEmpty() ? null : str;
+    }
+
+    /**
+     * <p>Strips whitespace from the start and end of a String  returning
+     * an empty String if {@code null} input.</p>
+     * <p>
+     * Whitespace is defined by {@link Character#isWhitespace(char)}.</p>
+     *
+     * <pre>
+     * StringUtils.stripToEmpty(null)     = ""
+     * StringUtils.stripToEmpty("")       = ""
+     * StringUtils.stripToEmpty("   ")    = ""
+     * StringUtils.stripToEmpty("abc")    = "abc"
+     * StringUtils.stripToEmpty("  abc")  = "abc"
+     * StringUtils.stripToEmpty("abc  ")  = "abc"
+     * StringUtils.stripToEmpty(" abc ")  = "abc"
+     * StringUtils.stripToEmpty(" ab c ") = "ab c"
+     * </pre>
+     *
+     * @param str the String to be stripped, may be null
+     * @return the trimmed String, or an empty String if {@code null} input
+     * @since 2.0
+     */
+    public static String stripToEmpty(final String str) {
+        return str == null ? EMPTY : strip(str, null);
+    }
+
+    /**
+     * <p>Strips any of a set of characters from the start and end of a String.
+     * This is similar to {@link String#trim()} but allows the characters
+     * to be stripped to be controlled.</p>
+     *
+     * <p>A {@code null} input String returns {@code null}.
+     * An empty string ("") input returns the empty string.</p>
+     *
+     * <p>If the stripChars String is {@code null}, whitespace is
+     * stripped as defined by {@link Character#isWhitespace(char)}.
+     * Alternatively use {@link #strip(String)}.</p>
+     *
+     * <pre>
+     * StringUtils.strip(null, *)          = null
+     * StringUtils.strip("", *)            = ""
+     * StringUtils.strip("abc", null)      = "abc"
+     * StringUtils.strip("  abc", null)    = "abc"
+     * StringUtils.strip("abc  ", null)    = "abc"
+     * StringUtils.strip(" abc ", null)    = "abc"
+     * StringUtils.strip("  abcyx", "xyz") = "  abc"
+     * </pre>
+     *
+     * @param str        the String to remove characters from, may be null
+     * @param stripChars the characters to remove, null treated as whitespace
+     * @return the stripped String, {@code null} if null String input
+     */
+    public static String strip(String str, final String stripChars) {
+        if (isEmpty(str)) {
+            return str;
+        }
+        str = stripStart(str, stripChars);
+        return stripEnd(str, stripChars);
+    }
+
+    /**
+     * <p>Strips any of a set of characters from the start of a String.</p>
+     *
+     * <p>A {@code null} input String returns {@code null}.
+     * An empty string ("") input returns the empty string.</p>
+     *
+     * <p>If the stripChars String is {@code null}, whitespace is
+     * stripped as defined by {@link Character#isWhitespace(char)}.</p>
+     *
+     * <pre>
+     * StringUtils.stripStart(null, *)          = null
+     * StringUtils.stripStart("", *)            = ""
+     * StringUtils.stripStart("abc", "")        = "abc"
+     * StringUtils.stripStart("abc", null)      = "abc"
+     * StringUtils.stripStart("  abc", null)    = "abc"
+     * StringUtils.stripStart("abc  ", null)    = "abc  "
+     * StringUtils.stripStart(" abc ", null)    = "abc "
+     * StringUtils.stripStart("yxabc  ", "xyz") = "abc  "
+     * </pre>
+     *
+     * @param str        the String to remove characters from, may be null
+     * @param stripChars the characters to remove, null treated as whitespace
+     * @return the stripped String, {@code null} if null String input
+     */
+    public static String stripStart(final String str, final String stripChars) {
+        int strLen;
+        if (str == null || (strLen = str.length()) == 0) {
+            return str;
+        }
+        int start = 0;
+        if (stripChars == null) {
+            while (start != strLen && Character.isWhitespace(str.charAt(start))) {
+                start++;
+            }
+        } else if (stripChars.isEmpty()) {
+            return str;
+        } else {
+            while (start != strLen && stripChars.indexOf(str.charAt(start)) != INDEX_NOT_FOUND) {
+                start++;
+            }
+        }
+        return str.substring(start);
+    }
+
+    /**
+     * <p>Strips any of a set of characters from the end of a String.</p>
+     *
+     * <p>A {@code null} input String returns {@code null}.
+     * An empty string ("") input returns the empty string.</p>
+     *
+     * <p>If the stripChars String is {@code null}, whitespace is
+     * stripped as defined by {@link Character#isWhitespace(char)}.</p>
+     *
+     * <pre>
+     * StringUtils.stripEnd(null, *)          = null
+     * StringUtils.stripEnd("", *)            = ""
+     * StringUtils.stripEnd("abc", "")        = "abc"
+     * StringUtils.stripEnd("abc", null)      = "abc"
+     * StringUtils.stripEnd("  abc", null)    = "  abc"
+     * StringUtils.stripEnd("abc  ", null)    = "abc"
+     * StringUtils.stripEnd(" abc ", null)    = " abc"
+     * StringUtils.stripEnd("  abcyx", "xyz") = "  abc"
+     * StringUtils.stripEnd("120.00", ".0")   = "12"
+     * </pre>
+     *
+     * @param str        the String to remove characters from, may be null
+     * @param stripChars the set of characters to remove, null treated as whitespace
+     * @return the stripped String, {@code null} if null String input
+     */
+    public static String stripEnd(final String str, final String stripChars) {
+        int end;
+        if (str == null || (end = str.length()) == 0) {
+            return str;
+        }
+
+        if (stripChars == null) {
+            while (end != 0 && Character.isWhitespace(str.charAt(end - 1))) {
+                end--;
+            }
+        } else if (stripChars.isEmpty()) {
+            return str;
+        } else {
+            while (end != 0 && stripChars.indexOf(str.charAt(end - 1)) != INDEX_NOT_FOUND) {
+                end--;
+            }
+        }
+        return str.substring(0, end);
+    }
+
+    // StripAll
+    //-----------------------------------------------------------------------
+
+    /**
+     * <p>Strips whitespace from the start and end of every String in an array.
+     * Whitespace is defined by {@link Character#isWhitespace(char)}.</p>
+     *
+     * <p>A new array is returned each time, except for length zero.
+     * A {@code null} array will return {@code null}.
+     * An empty array will return itself.
+     * A {@code null} array entry will be ignored.</p>
+     *
+     * <pre>
+     * StringUtils.stripAll(null)             = null
+     * StringUtils.stripAll([])               = []
+     * StringUtils.stripAll(["abc", "  abc"]) = ["abc", "abc"]
+     * StringUtils.stripAll(["abc  ", null])  = ["abc", null]
+     * </pre>
+     *
+     * @param strs the array to remove whitespace from, may be null
+     * @return the stripped Strings, {@code null} if null array input
+     */
+    public static String[] stripAll(final String... strs) {
+        return stripAll(strs, null);
+    }
+
+    /**
+     * <p>Strips any of a set of characters from the start and end of every
+     * String in an array.</p>
+     * <p>Whitespace is defined by {@link Character#isWhitespace(char)}.</p>
+     *
+     * <p>A new array is returned each time, except for length zero.
+     * A {@code null} array will return {@code null}.
+     * An empty array will return itself.
+     * A {@code null} array entry will be ignored.
+     * A {@code null} stripChars will strip whitespace as defined by
+     * {@link Character#isWhitespace(char)}.</p>
+     *
+     * <pre>
+     * StringUtils.stripAll(null, *)                = null
+     * StringUtils.stripAll([], *)                  = []
+     * StringUtils.stripAll(["abc", "  abc"], null) = ["abc", "abc"]
+     * StringUtils.stripAll(["abc  ", null], null)  = ["abc", null]
+     * StringUtils.stripAll(["abc  ", null], "yz")  = ["abc  ", null]
+     * StringUtils.stripAll(["yabcz", null], "yz")  = ["abc", null]
+     * </pre>
+     *
+     * @param strs       the array to remove characters from, may be null
+     * @param stripChars the characters to remove, null treated as whitespace
+     * @return the stripped Strings, {@code null} if null array input
+     */
+    public static String[] stripAll(final String[] strs, final String stripChars) {
+        int strsLen;
+        if (strs == null || (strsLen = strs.length) == 0) {
+            return strs;
+        }
+        final String[] newArr = new String[strsLen];
+        for (int i = 0; i < strsLen; i++) {
+            newArr[i] = strip(strs[i], stripChars);
+        }
+        return newArr;
     }
 
     public static String fileExt(String fname) {
