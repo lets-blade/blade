@@ -19,7 +19,7 @@
         </dependency>
 
         <dependency>
-            <groupId>com.bladejava</groupId>
+            <groupId>com.hellokaton</groupId>
             <artifactId>blade-log</artifactId>
         </dependency>
 
