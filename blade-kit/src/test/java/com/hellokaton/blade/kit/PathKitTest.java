@@ -25,6 +25,7 @@ public class PathKitTest {
         trieRouter.addRoute("/static/**");
         trieRouter.addRoute("/users/:userId");
         trieRouter.addRoute("/users/bg/**");
+        trieRouter.addRoute("/login");
 
         Assert.assertTrue(trieRouter.match("/static/123"));
         Assert.assertTrue(trieRouter.match("/static/abcd/123"));
@@ -33,6 +34,7 @@ public class PathKitTest {
         Assert.assertTrue(trieRouter.match("/users/123"));
         Assert.assertTrue(trieRouter.match("/users/bg/123"));
         Assert.assertTrue(trieRouter.match("/users/bg/123/456"));
+        Assert.assertTrue(trieRouter.match("/login"));
     }
 
 }

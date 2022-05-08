@@ -1,14 +1,12 @@
 package com.hellokaton.blade.mvc.route;
 
-import com.hellokaton.blade.exception.MethodNotAllowedException;
 import com.hellokaton.blade.ioc.annotation.Order;
 import com.hellokaton.blade.kit.*;
 import com.hellokaton.blade.mvc.RouteContext;
 import com.hellokaton.blade.mvc.handler.RouteHandler;
 import com.hellokaton.blade.mvc.hook.WebHook;
 import com.hellokaton.blade.mvc.http.HttpMethod;
-import com.hellokaton.blade.mvc.route.mapping.StaticMapping;
-import com.hellokaton.blade.mvc.route.mapping.dynamic.RegexMapping;
+import com.hellokaton.blade.mvc.route.mapping.dynamic.TrieMapping;
 import com.hellokaton.blade.mvc.ui.ResponseType;
 import lombok.extern.slf4j.Slf4j;
 
@@ -28,7 +26,7 @@ import static com.hellokaton.blade.kit.BladeKit.logAddRoute;
  * Default Route Matcher
  *
  * @author <a href="mailto:hellokaton@gmail.com" target="_blank">hellokaton</a>
- * @since 1.7.1-release
+ * @since 2.1.2.RELEASE
  */
 @Slf4j
 public class RouteMatcher {
@@ -43,8 +41,7 @@ public class RouteMatcher {
     private final Map<String, Method[]> classMethodPool = new ConcurrentHashMap<>();
     private final Map<Class<?>, Object> controllerPool = new ConcurrentHashMap<>(8);
 
-    private DynamicMapping dynamicMapping = new RegexMapping();
-    private final StaticMapping staticMapping = new StaticMapping();
+    private DynamicMapping dynamicMapping = new TrieMapping();
 
     private Route addRoute(HttpMethod httpMethod, String path, RouteHandler handler) throws NoSuchMethodException {
         Class<?> handleType = handler.getClass();
@@ -118,15 +115,12 @@ public class RouteMatcher {
 
     public void route(String path, Class<?> clazz, String methodName, HttpMethod httpMethod) {
         try {
-            Assert.notNull(path, "Route path not is null!");
-            Assert.notNull(clazz, "Route type not is null!");
-            Assert.notNull(methodName, "Method name not is null");
-            Assert.notNull(httpMethod, "Request Method not is null");
+            Assert.notNull(path, "Route path not is null.");
+            Assert.notNull(clazz, "Route type not is null.");
+            Assert.notNull(methodName, "Method name not is null.");
+            Assert.notNull(httpMethod, "Request Method not is null.");
 
             Method[] methods = classMethodPool.computeIfAbsent(clazz.getName(), k -> clazz.getMethods());
-            if (null == methods) {
-                return;
-            }
             for (Method method : methods) {
                 if (method.getName().equals(methodName)) {
                     Object controller = controllerPool.computeIfAbsent(clazz, k -> ReflectKit.newInstance(clazz));
@@ -139,24 +133,6 @@ public class RouteMatcher {
     }
 
     public Route lookupRoute(String httpMethod, String path) {
-        Route route = staticMapping.findRoute(path, httpMethod);
-        if (null != route) {
-            return route;
-        }
-        path = parsePath(path);
-        route = staticMapping.findRoute(path, httpMethod);
-        if (null != route) {
-            return route;
-        }
-        route = staticMapping.findRoute(path, HttpMethod.ALL.name());
-        if (null != route) {
-            return route;
-        } else {
-            if (staticMapping.hasPath(path)) {
-                throw new MethodNotAllowedException("[" + httpMethod + "] Method Not Allowed");
-            }
-        }
-
         return dynamicMapping.findRoute(httpMethod, path);
     }
 
@@ -216,6 +192,13 @@ public class RouteMatcher {
         return this.middleware;
     }
 
+    public int middlewareCount() {
+        if (null == this.middleware) {
+            return 0;
+        }
+        return this.middleware.size();
+    }
+
     /**
      * Sort of path
      *
@@ -255,7 +238,6 @@ public class RouteMatcher {
             URI uri = new URI(path);
             return uri.getPath();
         } catch (URISyntaxException e) {
-            //log.error("parse [" + path + "] error", e);
             return path;
         }
     }
@@ -302,11 +284,7 @@ public class RouteMatcher {
             }
         }
         HttpMethod httpMethod = route.getHttpMethod();
-        if (find || BladeKit.isWebHook(httpMethod)) {
-            dynamicMapping.addRoute(httpMethod, route, uriVariableNames);
-        } else {
-            staticMapping.addRoute(path, httpMethod, route);
-        }
+        dynamicMapping.addRoute(httpMethod, route, uriVariableNames);
     }
 
     public void addMiddleware(WebHook webHook) {

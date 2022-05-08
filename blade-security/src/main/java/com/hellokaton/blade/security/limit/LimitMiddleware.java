@@ -5,6 +5,7 @@ import com.hellokaton.blade.exception.InternalErrorException;
 import com.hellokaton.blade.kit.EncryptKit;
 import com.hellokaton.blade.mvc.RouteContext;
 import com.hellokaton.blade.mvc.hook.WebHook;
+import com.hellokaton.blade.mvc.ui.RestResponse;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Method;
@@ -36,7 +37,8 @@ public class LimitMiddleware implements WebHook {
     private void initOptions(LimitOptions limitOptions) {
         if (null == limitOptions.getLimitHandler()) {
             limitOptions.setLimitHandler(ctx -> {
-                throw new LimitException("Too Many Request :(");
+                ctx.json(RestResponse.fail("Too Many Request :("));
+                return Boolean.FALSE;
             });
         }
         if (null == limitOptions.getKeyFunc()) {

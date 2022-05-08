@@ -23,14 +23,15 @@ import static com.hellokaton.blade.kit.BladeKit.isWebHook;
  * @author biezhi
  * @date 2018/10/16
  */
+@Deprecated
 @Slf4j
 @NoArgsConstructor
 public class RegexMapping implements DynamicMapping {
 
-    private Map<HttpMethod, Map<Integer, FastRouteMappingInfo>> regexRoutes        = new HashMap<>();
-    private Map<HttpMethod, Pattern>                            regexRoutePatterns = new HashMap<>();
-    private Map<HttpMethod, Integer>                            indexes            = new HashMap<>();
-    private Map<HttpMethod, StringBuilder>                      patternBuilders    = new HashMap<>();
+    private Map<HttpMethod, Map<Integer, FastRouteMappingInfo>> regexRoutes = new HashMap<>();
+    private Map<HttpMethod, Pattern> regexRoutePatterns = new HashMap<>();
+    private Map<HttpMethod, Integer> indexes = new HashMap<>();
+    private Map<HttpMethod, StringBuilder> patternBuilders = new HashMap<>();
 
     @Override
     public void addRoute(HttpMethod httpMethod, Route route, List<String> uriVariableNames) {
@@ -98,7 +99,7 @@ public class RegexMapping implements DynamicMapping {
 
                 // find path variable
                 String uriVariable;
-                int    j = 0;
+                int j = 0;
                 while (++i <= matcher.groupCount() && (uriVariable = matcher.group(i)) != null) {
                     String pathVariable = cleanPathVariable(mappingInfo.getVariableNames().get(j++));
                     uriVariables.put(pathVariable, uriVariable);

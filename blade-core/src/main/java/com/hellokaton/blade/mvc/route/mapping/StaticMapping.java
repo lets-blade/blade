@@ -14,6 +14,7 @@ import java.util.Map;
  * @author biezhi
  * @date 2018/10/16
  */
+@Deprecated
 @NoArgsConstructor
 public class StaticMapping {
 

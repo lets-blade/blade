@@ -52,7 +52,6 @@ import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 public class RouteMethodHandler implements RequestHandler {
 
     private final RouteMatcher routeMatcher = WebContext.blade().routeMatcher();
-    private final boolean hasMiddleware = routeMatcher.getMiddleware().size() > 0;
     private final boolean hasBeforeHook = routeMatcher.hasBeforeHook();
     private final boolean hasAfterHook = routeMatcher.hasAfterHook();
 
@@ -71,7 +70,7 @@ public class RouteMethodHandler implements RequestHandler {
         context.initRoute(route);
 
         // execution middleware
-        if (hasMiddleware && !invokeMiddleware(routeMatcher.getMiddleware(), context)) {
+        if (routeMatcher.middlewareCount() > 0 && !invokeMiddleware(routeMatcher.getMiddleware(), context)) {
             return;
         }
         context.injectParameters();
@@ -139,7 +138,7 @@ public class RouteMethodHandler implements RequestHandler {
                 if (request.keepAlive()) {
                     httpResponse.headers().set(NettyHttpConst.CONNECTION, KEEP_ALIVE);
                 }
-                String mimeType = null;
+                String mimeType;
                 if (!httpResponse.headers().contains(NettyHttpConst.CONTENT_TYPE_STRING) && StringKit.isNotEmpty(fileName)) {
                     mimeType = MimeTypeKit.parse(fileName);
                     httpResponse.headers().set(NettyHttpConst.CONTENT_TYPE_STRING, mimeType);

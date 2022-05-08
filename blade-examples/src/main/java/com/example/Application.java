@@ -6,6 +6,7 @@ import com.hellokaton.blade.annotation.request.Body;
 import com.hellokaton.blade.annotation.request.Form;
 import com.hellokaton.blade.annotation.request.Multipart;
 import com.hellokaton.blade.annotation.request.PathParam;
+import com.hellokaton.blade.annotation.route.ANY;
 import com.hellokaton.blade.annotation.route.DELETE;
 import com.hellokaton.blade.annotation.route.GET;
 import com.hellokaton.blade.annotation.route.POST;
@@ -15,7 +16,6 @@ import com.hellokaton.blade.mvc.multipart.FileItem;
 import com.hellokaton.blade.mvc.ui.ResponseType;
 import com.hellokaton.blade.mvc.ui.RestResponse;
 import com.hellokaton.blade.options.CorsOptions;
-import com.hellokaton.blade.options.HttpOptions;
 import com.hellokaton.blade.security.limit.LimitOptions;
 import lombok.extern.slf4j.Slf4j;
 
@@ -85,18 +85,32 @@ public class Application {
         response.write("abcd.pdf", new File("/Users/biezhi/Downloads/146373013842336153820220427172437.pdf"));
     }
 
+    @ANY(value = "/hello/:id", responseType = ResponseType.JSON)
+    public RestResponse<String> hello(@PathParam String id) {
+        return RestResponse.success(id);
+    }
+
     public static void main(String[] args) {
         CorsOptions corsOptions = CorsOptions.forAnyOrigin().allowNullOrigin().allowCredentials();
 
         LimitOptions limitOptions = LimitOptions.create();
-        limitOptions.setExpression("2/s");
+        limitOptions.setExpression("1/s");
 
         Blade.create()
                 .cors(corsOptions)
-                .http(HttpOptions::enableSession)
+//                .http(HttpOptions::enableSession)
+                .get("/base/:uid", ctx -> {
+                    ctx.text(ctx.pathString("uid"));
+                })
+                .get("/base/**", ctx -> {
+                    ctx.text(ctx.request().uri());
+                })
+                .get("/base/:uid/hello", ctx -> {
+                    ctx.text(ctx.pathString("uid") + ": hello");
+                })
 //                .use(new CsrfMiddleware())
 //                .use(new LimitMiddleware(limitOptions))
-                .listen().start(Application.class);
+                .start(Application.class, args);
     }
 
 }

@@ -68,22 +68,22 @@ public class PathKit {
 
         // add route
         public TrieRouter addRoute(String path) {
-            if (!StringKit.isEmpty(path)) {
-                String strippedPath = StringKit.strip(path, "/");
-                String[] strings = strippedPath.split("/");
-                if (strings.length != 0) {
-                    Node node = root;
-                    // split by /
-                    for (int i = 0; i < strings.length; i++) {
-                        String segment = strings[i];
-                        //添加节点：
-                        node = addNode(node, segment);
-                        if ("**".equals(segment))
-                            break;
+            if (StringKit.isEmpty(path)) {
+                return this;
+            }
+            String strippedPath = StringKit.strip(path, "/");
+            String[] strings = strippedPath.split("/");
+            if (strings.length != 0) {
+                Node node = root;
+                // split by /
+                for (String segment : strings) {
+                    node = addNode(node, segment);
+                    if ("**".equals(segment)) {
+                        break;
                     }
-                    // At the end, set the path of the child node
-                    node.path = path;
                 }
+                // At the end, set the path of the child node
+                node.path = path;
             }
             return this;
         }
@@ -107,11 +107,12 @@ public class PathKit {
             Node childNode;
             // Static route, put in a Map,
             // the key of the Map is the URL segment, value is the new child node:
-            if (node.staticRouters == null)
+            if (node.staticRouters == null) {
                 node.staticRouters = new HashMap<>();
-            if (node.staticRouters.containsKey(segment))
+            }
+            if (node.staticRouters.containsKey(segment)) {
                 childNode = node.staticRouters.get(segment);
-            else {
+            } else {
                 childNode = new Node();
                 childNode.segment = segment;
                 node.dynamicRouter = childNode;
@@ -129,16 +130,17 @@ public class PathKit {
             String[] strings = strippedPath.split("/");
             if (strings.length != 0) {
                 Node node = root;
-                //按照斜杠分割：
-                for (int i = 0; i < strings.length; i++) {
-                    String segment = strings[i];
+                // split by /
+                for (String segment : strings) {
                     node = matchNode(node, segment);
-                    //如果没有匹配到，或者是通配符路由，退出：
-                    if (node == null || node.isWildcard)
+                    // if no route is matched or a wildcard route is used, break:
+                    if (node == null || node.isWildcard) {
                         break;
+                    }
                 }
-                if (node != null)
+                if (node != null) {
                     return node.path;
+                }
             }
             return null;
         }

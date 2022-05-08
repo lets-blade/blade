@@ -6,6 +6,7 @@ import com.hellokaton.blade.mvc.hook.WebHook;
 import com.hellokaton.blade.mvc.http.HttpMethod;
 import com.hellokaton.blade.mvc.http.Request;
 import com.hellokaton.blade.mvc.http.Session;
+import com.hellokaton.blade.mvc.ui.RestResponse;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtBuilder;
@@ -80,7 +81,7 @@ public class CsrfMiddleware implements WebHook {
             if (null != csrfOptions.getErrorHandler()) {
                 return csrfOptions.getErrorHandler().apply(context);
             } else {
-                context.badRequest().text("CSRF token mismatch :(");
+                context.badRequest().json(RestResponse.fail("CSRF token mismatch :("));
                 return false;
             }
         }
