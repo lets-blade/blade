@@ -98,7 +98,7 @@ public class NettyServer implements Server {
     private static final int DEFAULT_ACCEPT_THREAD_COUNT = 1;
     private static final int DEFAULT_IO_THREAD_COUNT = 0;
 
-    private volatile boolean isStop;
+    private volatile boolean stopped;
 
     @Override
     public void start(Blade blade) throws Exception {
@@ -143,7 +143,6 @@ public class NettyServer implements Server {
 
     private void initIoc() {
         RouteMatcher routeMatcher = blade.routeMatcher();
-        routeMatcher.initMiddleware(blade.middleware());
 
         routeBuilder = new RouteBuilder(routeMatcher);
 
@@ -287,7 +286,7 @@ public class NettyServer implements Server {
                 }
             });
 
-            ScheduledFuture future = executorService.submit(task);
+            ScheduledFuture<?> future = executorService.submit(task);
             task.setFuture(future);
             TaskManager.addTask(task);
         } catch (Exception e) {
@@ -335,23 +334,6 @@ public class NettyServer implements Server {
             ExceptionHandler exceptionHandler = (ExceptionHandler) blade.getBean(clazz);
             blade.exceptionHandler(exceptionHandler);
         }
-//        WebSocket webSocket;
-//        if (null != (webSocket = clazz.getAnnotation(WebSocket.class))) {
-//            if (null == blade.getBean(clazz)) {
-//                blade.register(clazz);
-//            }
-//            if (ReflectKit.hasInterface(clazz, com.hellokaton.blade.websocket.netty.WebSocketHandler.class)) {
-//                blade.webSocket(webSocket.value(), (com.hellokaton.blade.mvc.handler.WebSocketHandler) blade.getBean(clazz));
-//            } else {
-//                WebSocketHandlerWrapper wrapper = blade.getBean(WebSocketHandlerWrapper.class);
-//                if (wrapper == null) {
-//                    wrapper = WebSocketHandlerWrapper.init(blade);
-//                    blade.register(wrapper);
-//                }
-//                blade.webSocket(webSocket.value(), wrapper);
-//                wrapper.wrapHandler(webSocket.value(), clazz);
-//            }
-//        }
     }
 
     private boolean isExceptionHandler(Class<?> clazz) {
@@ -371,7 +353,6 @@ public class NettyServer implements Server {
     }
 
     private void initConfig() {
-
         Optional.ofNullable(blade.bootClass())
                 .map(Class::getPackage)
                 .map(Package::getName)
@@ -403,10 +384,10 @@ public class NettyServer implements Server {
 
     @Override
     public void stop() {
-        if (isStop) {
+        if (stopped) {
             return;
         }
-        isStop = true;
+        stopped = true;
         System.out.println();
         log.info("{}Blade shutdown ...", getStartedSymbol());
         try {
@@ -425,10 +406,10 @@ public class NettyServer implements Server {
 
     @Override
     public void stopAndWait() {
-        if (isStop) {
+        if (stopped) {
             return;
         }
-        isStop = true;
+        stopped = true;
         System.out.println();
         log.info("{}Blade shutdown ...", getStartedSymbol());
         try {

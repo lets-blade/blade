@@ -44,7 +44,6 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import lombok.var;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -68,15 +67,6 @@ import java.util.stream.Collectors;
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Blade {
-
-    /**
-     * Project middleware list,
-     * the default is empty, when you use the time you can call the use of methods to add.
-     * <p>
-     * Blade provide you with BasicAuthMiddleware, CsrfMiddleware,
-     * you can customize the implementation of some middleware
-     */
-    private final List<WebHook> middleware = new ArrayList<>();
 
     /**
      * Blade loader list, which stores all the actions that were performed before the project was started
@@ -560,39 +550,19 @@ public class Blade {
     }
 
     /**
-     * The use of multiple middleware, if any
+     * Use of multiple middleware
      *
-     * @param middleware middleware object array
+     * @param middleware middleware array
      * @return blade
      */
     public Blade use(@NonNull WebHook... middleware) {
         if (BladeKit.isEmpty(middleware)) {
             return this;
         }
-        this.middleware.addAll(Arrays.asList(middleware));
-        for (var webHook : middleware) {
+        for (WebHook webHook : middleware) {
+            this.routeMatcher.addMiddleware(webHook);
             this.register(webHook);
         }
-        return this;
-    }
-
-    /**
-     * Get middleware list
-     *
-     * @return return middleware list
-     */
-    public List<WebHook> middleware() {
-        return this.middleware;
-    }
-
-    /**
-     * Set in the name of the app blade application
-     *
-     * @param appName application name
-     * @return blade
-     */
-    public Blade appName(@NonNull String appName) {
-        this.environment.set(BladeConst.ENV_KEY_APP_NAME, appName);
         return this;
     }
 

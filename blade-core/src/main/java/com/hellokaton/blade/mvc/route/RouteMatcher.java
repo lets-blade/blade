@@ -271,8 +271,6 @@ public class RouteMatcher {
                 .flatMap(Collection::stream).forEach(this::registerRoute);
 
         dynamicMapping.register();
-
-//        webSockets.keySet().forEach(path -> logWebSocket(log, path));
     }
 
     private void registerRoute(Route route) {
@@ -311,49 +309,14 @@ public class RouteMatcher {
         }
     }
 
-    public Map<String, Route> getRoutes() {
-        return routes;
+    public void addMiddleware(WebHook webHook) {
+        if (null == this.middleware) {
+            this.middleware = new ArrayList<>(8);
+        }
+        Method method = ReflectKit.getMethod(WebHook.class, "before", RouteContext.class);
+        Route route = new Route(HttpMethod.BEFORE, "/*", "/.*", webHook, WebHook.class, method, null);
+        this.middleware.add(route);
     }
-
-//    public Map<String,WebSocketHandler> getWebSockets() {
-//        return webSockets;
-//    }
-//
-//    public WebSocketHandler getWebSocket(String path) {
-//        return webSockets.get(path);
-//    }
-
-    public Map<String, List<Route>> getHooks() {
-        return hooks;
-    }
-
-    public StaticMapping getStaticMapping() {
-        return staticMapping;
-    }
-
-    public void clear() {
-        this.routes.clear();
-        this.hooks.clear();
-        this.classMethodPool.clear();
-        this.controllerPool.clear();
-        this.staticMapping.clear();
-        this.dynamicMapping.clear();
-    }
-
-    public void initMiddleware(List<WebHook> hooks) {
-        this.middleware = hooks.stream().map(webHook -> {
-            Method method = ReflectKit.getMethod(WebHook.class, "before", RouteContext.class);
-            return new Route(HttpMethod.BEFORE, "/*", "/.*", webHook, WebHook.class, method, null);
-        }).collect(Collectors.toList());
-    }
-
-//    public RouteMatcher addWebSocket(@NonNull String path,@NonNull WebSocketHandler handler) {
-//        if (null != this.webSockets.get(path)) {
-//            throw new BladeException(500, "Duplicate WebSocket path [" + path + "]");
-//        }
-//        this.webSockets.put(path,handler);
-//        return this;
-//    }
 
     public void setDynamicMapping(DynamicMapping dynamicMapping) {
         this.dynamicMapping = dynamicMapping;

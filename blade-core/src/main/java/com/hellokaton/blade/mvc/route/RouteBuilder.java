@@ -30,14 +30,14 @@ public class RouteBuilder {
         Method before = ReflectKit.getMethod(webHook, HttpMethod.BEFORE.name().toLowerCase(), RouteContext.class);
         Method after = ReflectKit.getMethod(webHook, HttpMethod.AFTER.name().toLowerCase(), RouteContext.class);
 
-        routeMatcher.addRoute(com.hellokaton.blade.mvc.route.Route.builder()
+        routeMatcher.addRoute(Route.builder()
                 .targetType(webHook)
                 .action(before)
                 .path(pattern)
                 .httpMethod(HttpMethod.BEFORE)
                 .build());
 
-        routeMatcher.addRoute(com.hellokaton.blade.mvc.route.Route.builder()
+        routeMatcher.addRoute(Route.builder()
                 .targetType(webHook)
                 .action(after)
                 .path(pattern)
