@@ -1,11 +1,12 @@
 package com.hellokaton.blade.security.limit;
 
+import com.hellokaton.blade.kit.PathKit;
 import com.hellokaton.blade.mvc.RouteContext;
 import com.hellokaton.blade.mvc.http.Request;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 
-import java.util.Set;
 import java.util.function.Function;
 
 @Getter
@@ -53,10 +54,27 @@ public class LimitOptions {
      * /upload/**
      * /admin/roles/**
      */
-    private Set<String> excludeURLs;
+    private PathKit.TrieRouter router;
 
     public static LimitOptions create() {
         return new LimitOptions();
+    }
+
+    public LimitOptions exclusion(@NonNull String... urls) {
+        if (null == this.router) {
+            this.router = PathKit.createRoute();
+        }
+        for (String url : urls) {
+            this.router.addRoute(url);
+        }
+        return this;
+    }
+
+    public boolean isExclusion(@NonNull String url) {
+        if (null == this.router) {
+            return false;
+        }
+        return router.match(url);
     }
 
 }

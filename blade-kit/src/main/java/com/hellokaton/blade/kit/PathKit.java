@@ -2,6 +2,8 @@ package com.hellokaton.blade.kit;
 
 import lombok.experimental.UtilityClass;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 /**
@@ -13,10 +15,10 @@ import java.util.regex.Pattern;
 @UtilityClass
 public class PathKit {
 
-    public static final  String  VAR_REGEXP          = ":(\\w+)";
-    public static final  String  VAR_REPLACE         = "([^#/?.]+)";
-    private static final String  SLASH               = "/";
-    public static final  Pattern VAR_REGEXP_PATTERN  = Pattern.compile(VAR_REGEXP);
+    public static final String VAR_REGEXP = ":(\\w+)";
+    public static final String VAR_REPLACE = "([^#/?.]+)";
+    private static final String SLASH = "/";
+    public static final Pattern VAR_REGEXP_PATTERN = Pattern.compile(VAR_REGEXP);
     private static final Pattern VAR_FIXPATH_PATTERN = Pattern.compile("\\s");
 
     public static String fixPath(String path) {
@@ -40,6 +42,122 @@ public class PathKit {
             return null;
         }
         return path.replaceAll("[/]+", SLASH);
+    }
+
+    private class Node {
+        private String path;
+        private String segment;
+        private Map<String, Node> staticRouters;
+        private Node dynamicRouter;
+        private boolean isWildcard;
+    }
+
+    public static TrieRouter createRoute() {
+        return new TrieRouter();
+    }
+
+    // source code by https://makefile.so/2021/01/23/trie-tree-and-route-match/
+    public class TrieRouter {
+        private final Node root;
+
+        public TrieRouter() {
+            this.root = new Node();
+            this.root.path = "/";
+            this.root.segment = "/";
+        }
+
+        // add route
+        public TrieRouter addRoute(String path) {
+            if (!StringKit.isEmpty(path)) {
+                String strippedPath = StringKit.strip(path, "/");
+                String[] strings = strippedPath.split("/");
+                if (strings.length != 0) {
+                    Node node = root;
+                    // split by /
+                    for (int i = 0; i < strings.length; i++) {
+                        String segment = strings[i];
+                        //添加节点：
+                        node = addNode(node, segment);
+                        if ("**".equals(segment))
+                            break;
+                    }
+                    // At the end, set the path of the child node
+                    node.path = path;
+                }
+            }
+            return this;
+        }
+
+        // add note
+        private Node addNode(Node node, String segment) {
+            // If it is a wildcard node, return the current node directly:
+            if ("**".equals(segment)) {
+                node.isWildcard = true;
+                return node;
+            }
+            // if it is a dynamic route,
+            // create a child node and then hang the child node under the current node:
+            if (segment.startsWith(":")) {
+                Node childNode = new Node();
+                childNode.segment = segment;
+                node.dynamicRouter = childNode;
+                return childNode;
+            }
+
+            Node childNode;
+            // Static route, put in a Map,
+            // the key of the Map is the URL segment, value is the new child node:
+            if (node.staticRouters == null)
+                node.staticRouters = new HashMap<>();
+            if (node.staticRouters.containsKey(segment))
+                childNode = node.staticRouters.get(segment);
+            else {
+                childNode = new Node();
+                childNode.segment = segment;
+                node.dynamicRouter = childNode;
+                node.staticRouters.put(segment, childNode);
+            }
+            return childNode;
+        }
+
+        // match route
+        public String matchRoute(String path) {
+            if (StringKit.isEmpty(path)) {
+                return null;
+            }
+            String strippedPath = StringKit.strip(path, "/");
+            String[] strings = strippedPath.split("/");
+            if (strings.length != 0) {
+                Node node = root;
+                //按照斜杠分割：
+                for (int i = 0; i < strings.length; i++) {
+                    String segment = strings[i];
+                    node = matchNode(node, segment);
+                    //如果没有匹配到，或者是通配符路由，退出：
+                    if (node == null || node.isWildcard)
+                        break;
+                }
+                if (node != null)
+                    return node.path;
+            }
+            return null;
+        }
+
+        public boolean match(String path) {
+            return matchRoute(path) != null;
+        }
+
+        // match child node
+        private Node matchNode(Node node, String segment) {
+            if (node.staticRouters != null && node.staticRouters.containsKey(segment)) {
+                return node.staticRouters.get(segment);
+            }
+            if (node.dynamicRouter != null)
+                return node.dynamicRouter;
+            if (node.isWildcard)
+                return node;
+            return null;
+        }
     }
 
 }

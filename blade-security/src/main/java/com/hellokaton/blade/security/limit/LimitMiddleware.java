@@ -49,6 +49,10 @@ public class LimitMiddleware implements WebHook {
         if (!limitOptions.isEnabled()) {
             return true;
         }
+        if (limitOptions.isExclusion(ctx.uri())) {
+            return true;
+        }
+
         Method action = ctx.routeAction();
         Class<?> controller = action.getDeclaringClass();
         Limit limit = action.getAnnotation(Limit.class);

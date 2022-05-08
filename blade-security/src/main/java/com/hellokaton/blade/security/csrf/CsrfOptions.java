@@ -1,5 +1,6 @@
 package com.hellokaton.blade.security.csrf;
 
+import com.hellokaton.blade.kit.PathKit;
 import com.hellokaton.blade.mvc.RouteContext;
 import com.hellokaton.blade.mvc.http.HttpMethod;
 import lombok.Getter;
@@ -64,7 +65,7 @@ public class CsrfOptions {
      * /upload/**
      * /admin/roles/**
      */
-    private Set<String> excludeURLs;
+    private PathKit.TrieRouter router;
 
     /**
      * For the following set of request methods, tokens will need to be validated.
@@ -81,17 +82,20 @@ public class CsrfOptions {
     }
 
     public CsrfOptions exclusion(@NonNull String... urls) {
-        this.excludeURLs.addAll(Arrays.asList(urls));
+        if (null == this.router) {
+            this.router = PathKit.createRoute();
+        }
+        for (String url : urls) {
+            this.router.addRoute(url);
+        }
         return this;
     }
 
     public boolean isExclusion(@NonNull String url) {
-        for (String excludeURL : this.excludeURLs) {
-            if (url.equals(excludeURL)) {
-                return true;
-            }
+        if (null == this.router) {
+            return false;
         }
-        return false;
+        return router.match(url);
     }
 
 }
