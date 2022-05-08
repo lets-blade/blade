@@ -86,7 +86,7 @@ public class Application {
     }
 
     @ANY(value = "/hello/:id", responseType = ResponseType.JSON)
-    public RestResponse<String> hello(@PathParam String id) {
+    public RestResponse<String> helloAny(@PathParam String id) {
         return RestResponse.success(id);
     }
 
