@@ -12,6 +12,7 @@ import com.hellokaton.blade.annotation.route.GET;
 import com.hellokaton.blade.annotation.route.POST;
 import com.hellokaton.blade.mvc.http.Request;
 import com.hellokaton.blade.mvc.http.Response;
+import com.hellokaton.blade.mvc.http.StaticFileBody;
 import com.hellokaton.blade.mvc.multipart.FileItem;
 import com.hellokaton.blade.mvc.ui.ResponseType;
 import com.hellokaton.blade.mvc.ui.RestResponse;
@@ -25,7 +26,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Slf4j
-@Path(responseType = ResponseType.JSON)
+//@Path(responseType = ResponseType.JSON)
 public class Application {
 
     @GET("/hello")
@@ -90,6 +91,16 @@ public class Application {
         return RestResponse.success(id);
     }
 
+    @GET(value = "/ss", responseType = ResponseType.PREVIEW)
+    public StaticFileBody staticFile() {
+        return StaticFileBody.of("/static/main.css");
+    }
+
+    @GET(value = "/public/**", responseType = ResponseType.PREVIEW)
+    public StaticFileBody publicDir() {
+        return StaticFileBody.of("/static/");
+    }
+
     public static void main(String[] args) {
         CorsOptions corsOptions = CorsOptions.forAnyOrigin().allowNullOrigin().allowCredentials();
 
@@ -105,9 +116,12 @@ public class Application {
                 .get("/base/**", ctx -> {
                     ctx.text(ctx.request().uri());
                 })
-                .get("/base/:uid/hello", ctx -> {
-                    ctx.text(ctx.pathString("uid") + ": hello");
-                })
+//                .get("/base/:uid/hello", ctx -> {
+//                    ctx.text(ctx.pathString("uid") + ": hello");
+//                })
+//                .before("/**", ctx -> {
+//                    System.out.println("bebebebebe");
+//                })
 //                .use(new CsrfMiddleware())
 //                .use(new LimitMiddleware(limitOptions))
                 .start(Application.class, args);

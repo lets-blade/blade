@@ -53,7 +53,7 @@ public class Route {
 
     private ResponseType responseType;
 
-    private String originalPath;
+    private boolean isWildcard;
 
     private int sort;
 
@@ -61,7 +61,7 @@ public class Route {
      * Url path params
      */
     @Builder.Default
-    private Map<String, String> pathParams = new HashMap<>(8);
+    private Map<String, String> pathParams = new HashMap<>(2);
 
     public Route() {
         this.sort = Integer.MAX_VALUE;
@@ -76,11 +76,10 @@ public class Route {
         this.sort = Integer.MAX_VALUE;
     }
 
-    public Route(HttpMethod httpMethod, String originalPath, String path, Object target,
+    public Route(HttpMethod httpMethod, String path, Object target,
                  Class<?> targetType, Method action, ResponseType responseType) {
         super();
         this.httpMethod = httpMethod;
-        this.originalPath = originalPath;
         this.path = PathKit.fixPath(path);
         this.target = target;
         this.targetType = targetType;
@@ -92,21 +91,11 @@ public class Route {
     public Route(Route route) {
         this.httpMethod = route.httpMethod;
         this.path = route.path;
-        this.originalPath = route.originalPath;
         this.target = route.target;
         this.targetType = route.targetType;
         this.action = route.action;
         this.responseType = route.responseType;
         this.sort = route.sort;
-    }
-
-    /**
-     * Return original path
-     *
-     * @return
-     */
-    public String getOriginalPath() {
-        return originalPath;
     }
 
     /**
@@ -152,6 +141,10 @@ public class Route {
      */
     public void setTarget(Object target) {
         this.target = target;
+    }
+
+    public void setWildcard(boolean wildcard) {
+        this.isWildcard = wildcard;
     }
 
     /**
@@ -223,7 +216,7 @@ public class Route {
      */
     @Override
     public String toString() {
-        return httpMethod + "\t" + originalPath + "\t" + path;
+        return httpMethod + "\t" + path;
     }
 
 }

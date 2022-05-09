@@ -33,13 +33,7 @@ public class UrlRouterBenchMark {
     public static void prepare() throws Exception {
         Path routes = Paths.get(UrlRouterBenchMark.class.getResource("routes").toURI());
         RoutesReader.initMapping(routes, (httpMethod, path, variables) -> {
-            String originalPath = path;
-
-            // [/** | /*]
-            path = "*".equals(path) ? "/.*" : path;
-            path = path.replace("/**", "/.*").replace("/*", "/.*");
-            Route route = new Route(httpMethod,
-                    originalPath, path, null, null, null, null);
+            Route route = new Route(httpMethod, path, null, null, null, null);
             trieMapping.addRoute(httpMethod, route, variables);
             regexMapping.addRoute(httpMethod, route, variables);
         });
@@ -58,7 +52,6 @@ public class UrlRouterBenchMark {
         runTest("GET", trieMapping, "/badUrl/whatever/sefesg/abc/136");
     }
 
-
     @Test
     public void regexInvokeWildUrl() throws URISyntaxException, IOException, InterruptedException {
         runTest("POST", regexMapping, "/shuju/yemian/sgsgrsrhshhsh/component/shrrrshr444457");
@@ -68,7 +61,6 @@ public class UrlRouterBenchMark {
     public void trieInvokeWildUrl() throws URISyntaxException, IOException {
         runTest("POST", trieMapping, "/shuju/yemian/sgsgrsrhshhsh/component/shrrrshr444457");
     }
-
 
     private void runTest(String method, DynamicMapping dynamicMapping,
                          String url) {

@@ -24,8 +24,13 @@ public class PathKitTest {
         PathKit.TrieRouter trieRouter = PathKit.createRoute();
         trieRouter.addRoute("/static/**");
         trieRouter.addRoute("/users/:userId");
+        trieRouter.addRoute("/users/**");
         trieRouter.addRoute("/users/bg/**");
         trieRouter.addRoute("/login");
+
+        System.out.println(
+                trieRouter.matchRoute("/users/123")
+        );
 
         Assert.assertTrue(trieRouter.match("/static/123"));
         Assert.assertTrue(trieRouter.match("/static/abcd/123"));

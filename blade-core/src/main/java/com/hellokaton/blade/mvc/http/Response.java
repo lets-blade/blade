@@ -9,7 +9,6 @@ import com.hellokaton.blade.mvc.ui.ModelAndView;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -258,6 +257,8 @@ public interface Response {
      * @param newUri new url
      */
     void redirect(String newUri);
+
+    void toStatic(StaticFileBody body);
 
     void write(File file) throws IOException;
 

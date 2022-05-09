@@ -144,6 +144,11 @@ public class HttpResponse implements Response {
     }
 
     @Override
+    public void toStatic(StaticFileBody body) {
+        this.body = body;
+    }
+
+    @Override
     public void redirect(@NonNull String newUri) {
         headers.put(HttpConst.HEADER_LOCATION, newUri);
         this.status(302);

@@ -21,7 +21,10 @@ import com.hellokaton.blade.kit.BladeCache;
 import com.hellokaton.blade.kit.LRUSet;
 import com.hellokaton.blade.mvc.WebContext;
 import com.hellokaton.blade.mvc.handler.ExceptionHandler;
-import com.hellokaton.blade.mvc.http.*;
+import com.hellokaton.blade.mvc.http.HttpMethod;
+import com.hellokaton.blade.mvc.http.HttpRequest;
+import com.hellokaton.blade.mvc.http.HttpResponse;
+import com.hellokaton.blade.mvc.http.Request;
 import com.hellokaton.blade.mvc.route.Route;
 import com.hellokaton.blade.mvc.route.RouteMatcher;
 import io.netty.channel.ChannelFutureListener;
@@ -60,10 +63,6 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<HttpRequest> 
     private final RouteMethodHandler routeHandler = new RouteMethodHandler();
     private final Set<String> notStaticUri = new LRUSet<>(128);
     private final RouteMatcher routeMatcher = WebContext.blade().routeMatcher();
-
-    private boolean allowCost() {
-        return WebContext.blade().httpOptions().isEnableRequestCost();
-    }
 
     private boolean recordRequestLog() {
         return WebContext.blade().environment()
@@ -105,7 +104,6 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<HttpRequest> 
 
     private io.netty.handler.codec.http.HttpResponse handleException(Throwable e) {
         Request request = WebContext.request();
-        Response response = WebContext.response();
         String method = request.method();
         String uri = request.uri();
 
@@ -119,18 +117,12 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<HttpRequest> 
         } else {
             log.error("", srcException);
         }
-
-        return routeHandler.handleResponse(
-                request, response, WebContext.get().getChannelHandlerContext()
-        );
+        return routeHandler.handleResponse(WebContext.get());
     }
 
     private io.netty.handler.codec.http.HttpResponse buildResponse(WebContext webContext) {
         WebContext.set(webContext);
-        return routeHandler.handleResponse(
-                webContext.getRequest(), webContext.getResponse(),
-                webContext.getChannelHandlerContext()
-        );
+        return routeHandler.handleResponse(webContext);
     }
 
     private WebContext executeLogic(WebContext webContext) {
@@ -160,7 +152,7 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<HttpRequest> 
 
             if (recordRequestLog()) {
                 long cost = log200AndCost(log, start, BladeCache.getPaddingMethod(method.name()), uri);
-                request.attribute(REQUEST_COST_TIME, cost);
+                request.attribute(REQUEST_COST_TIME_ATTR, cost);
             }
             return webContext;
         } catch (Exception e) {

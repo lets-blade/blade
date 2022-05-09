@@ -272,7 +272,7 @@ public class BladeKit {
                 break;
         }
         String msg = (route.getHttpMethod().equals(HttpMethod.BEFORE) || route.getHttpMethod().equals(HttpMethod.AFTER)) ? " hook" : "route";
-        log.info("{}Add {} {} {}", getStartedSymbol(), msg, method, route.getOriginalPath());
+        log.info("{}Add {} {} {}", getStartedSymbol(), msg, method, route.getPath());
     }
 
     public static void logWebSocket(Logger log, String path) {

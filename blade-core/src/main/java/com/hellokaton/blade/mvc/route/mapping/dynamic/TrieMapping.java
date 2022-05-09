@@ -143,8 +143,22 @@ public class TrieMapping implements DynamicMapping {
 
     @Override
     public void addRoute(HttpMethod httpMethod, Route route, List<String> uriVariableNames) {
-        String path = route.getOriginalPath();
+        String path = route.getPath();
+
         Node prev = root;
+
+        if ("/".equals(route.getPath())) {
+            Node nodeByPart = getNodeByPart(path);
+            if (NodeType.WILD.equals(nodeByPart.type)) {
+                route.setWildcard(true);
+            }
+            prev = prev.putChildIfAbsent(nodeByPart, true);
+            prev.getRouteMap().put(httpMethod, route);
+            return;
+        }
+
+        path = StringKit.strip(route.getPath(), "/");
+
         String[] parts = path.split("/");
         for (int i = 0; i < parts.length; i++) {
             String part = parts[i];
@@ -152,8 +166,11 @@ public class TrieMapping implements DynamicMapping {
                 continue;
             }
             boolean isEnd = i == parts.length - 1;
-
-            prev = prev.putChildIfAbsent(getNodeByPart(part), isEnd);
+            Node nodeByPart = getNodeByPart(part);
+            if (NodeType.WILD.equals(nodeByPart.type)) {
+                route.setWildcard(true);
+            }
+            prev = prev.putChildIfAbsent(nodeByPart, isEnd);
             if (isEnd) {
                 prev.getRouteMap().put(httpMethod, route);
             }
@@ -161,9 +178,16 @@ public class TrieMapping implements DynamicMapping {
     }
 
     private Node getNodeByPart(String part) {
-        NodeType type = part.charAt(0) == ':'? NodeType.PARAM:
-                "*".equals(part) ? NodeType.WILD:
-                        NodeType.NORMAL;
+        NodeType type;
+        if (part.charAt(0) == ':') {
+            type = NodeType.PARAM;
+        } else {
+            if (part.startsWith("*")) {
+                type = NodeType.WILD;
+            } else {
+                type = NodeType.NORMAL;
+            }
+        }
         return Node.builder()
                 .part(part)
                 .type(type)

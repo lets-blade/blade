@@ -84,7 +84,9 @@ public interface BladeConst {
     /**
      * A request processing ends the elapsed time, in milliseconds.
      */
-    String REQUEST_COST_TIME = "costTime";
+    String REQUEST_COST_TIME_ATTR = "costTime";
+
+    String REQUEST_TO_STATIC_ATTR = "_to_static";
 
     String NEW_LINE = "\r\n";
 

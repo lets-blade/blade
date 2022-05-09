@@ -61,20 +61,15 @@ public class RouteMatcher {
 
     private Route addRoute(HttpMethod httpMethod, String path, Object controller,
                            Class<?> controllerType, Method method, ResponseType responseType) {
-        String originalPath = path;
-
-        // [/** | /*]
-        path = "*".equals(path) ? "/.*" : path;
-        path = path.replace("/**", "/.*").replace("/*", "/.*");
 
         String key = path + "#" + httpMethod.toString();
 
         // exist
         if (this.routes.containsKey(key)) {
-            log.warn("\tRoute {} -> {} has exist", path, httpMethod.toString());
+            log.warn("\tRoute {} -> {} has exist", path, httpMethod);
         }
 
-        Route route = new Route(httpMethod, originalPath, path, controller, controllerType, method, responseType);
+        Route route = new Route(httpMethod, path, controller, controllerType, method, responseType);
         if (BladeKit.isWebHook(httpMethod)) {
             Order order = controllerType.getAnnotation(Order.class);
             if (null != order) {
@@ -270,7 +265,7 @@ public class RouteMatcher {
             String regexName = matcher.group(1);
             String regexValue = matcher.group(2);
 
-            // when /.* is matched, there is no param
+            // when /** is matched, there is no param
             if (regexName == null && regexValue == null) {
                 continue;
             }
@@ -291,8 +286,8 @@ public class RouteMatcher {
         if (null == this.middleware) {
             this.middleware = new ArrayList<>(8);
         }
-        Method method = ReflectKit.getMethod(WebHook.class, "before", RouteContext.class);
-        Route route = new Route(HttpMethod.BEFORE, "/*", "/.*", webHook, WebHook.class, method, null);
+        Method method = ReflectKit.getMethod(WebHook.class, HttpMethod.BEFORE.name().toLowerCase(), RouteContext.class);
+        Route route = new Route(HttpMethod.BEFORE, "/**", webHook, WebHook.class, method, null);
         this.middleware.add(route);
     }
 

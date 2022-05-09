@@ -8,7 +8,6 @@ package com.hellokaton.blade.server;
  */
 public interface NettyHttpConst {
 
-    String METHOD_GET = "GET";
     String SLASH = "/";
     char CHAR_SLASH = '/';
     char CHAR_POINT = '.';
