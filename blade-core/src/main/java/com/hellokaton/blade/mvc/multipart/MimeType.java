@@ -172,11 +172,7 @@ public interface MimeType {
      * @return return file MimeType
      */
     static String get(String ext) {
-        if (mimeTypes.containsKey(ext)) {
-            return mimeTypes.get(ext);
-        } else {
-            return APPLICATION;
-        }
+        return mimeTypes.getOrDefault(ext, APPLICATION);
     }
 
 }
