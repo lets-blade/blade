@@ -27,9 +27,9 @@ import java.util.Map;
 public class ModelAndView {
 
     /**
-     * Data object, the object is placed in the attribute httprequest
+     * Data object, the object is placed in the attribute request
      */
-    private Map<String, Object> model = new HashMap<>(8);
+    private Map<String, Object> model = new HashMap<>(4);
 
     /**
      * View Page
