@@ -8,7 +8,11 @@ public interface HttpConst {
     String HEADER_CONTENT_TYPE = "Content-Type";
     String HEADER_HOST = "Host";
 
+    String HEADER_LOCATION = "Location";
+
     String HEADER_ACCEPT_ENCODING = "Accept-Encoding";
+
+    String HEADER_IF_MODIFIED_SINCE ="If-Modified-Since";
 
     String HEADER_USER_AGENT = "User-Agent";
 
