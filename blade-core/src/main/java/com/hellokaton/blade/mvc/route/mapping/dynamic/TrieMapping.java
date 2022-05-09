@@ -56,14 +56,14 @@ public class TrieMapping implements DynamicMapping {
         /**
          * support http method
          */
-        private final Map<HttpMethod, Route> routeMap = new LinkedHashMap<>();
+        private final Map<HttpMethod, Route> routeMap = new LinkedHashMap<>(4);
 
         /**
          * in staticChildren and dynamicChild, only one is real children, according to ChildType
          * when in dynamic ChildType, staticChildren is used to store static end node, which is last node
          * with static text.
          */
-        private final Map<String, Node> staticChildren = new LinkedHashMap<>();
+        private final Map<String, Node> staticChildren = new LinkedHashMap<>(8);
 
         private Node dynamicChild;
 
@@ -201,7 +201,7 @@ public class TrieMapping implements DynamicMapping {
     @Override
     public Route findRoute(String httpMethod, String path) {
         HttpMethod requestMethod = HttpMethod.valueOf(httpMethod);
-        Map<String, String> uriVariables = new LinkedHashMap<>();
+        Map<String, String> uriVariables = new LinkedHashMap<>(2);
         Iterator<String> partIter = partIter(path);
         Node prev = root;
         walk:

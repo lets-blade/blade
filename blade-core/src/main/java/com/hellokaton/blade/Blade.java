@@ -189,20 +189,6 @@ public class Blade {
     }
 
     /**
-     * set url router, default is {@link RegexMapping}
-     * if you want a faster router, you can set {@link TrieMapping}
-     * for example :
-     * {@code routerMapping(new TrieMapping())}
-     *
-     * @param dynamicMapping see {@link DynamicMapping}
-     * @return blade instance
-     */
-    public Blade routerMapping(DynamicMapping dynamicMapping) {
-        routeMatcher.setDynamicMapping(dynamicMapping);
-        return this;
-    }
-
-    /**
      * Add a get route to routes
      *
      * @param path    your route path

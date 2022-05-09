@@ -18,7 +18,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static com.hellokaton.blade.kit.BladeKit.logAddRoute;
 
@@ -41,7 +40,7 @@ public class RouteMatcher {
     private final Map<String, Method[]> classMethodPool = new ConcurrentHashMap<>();
     private final Map<Class<?>, Object> controllerPool = new ConcurrentHashMap<>(8);
 
-    private DynamicMapping dynamicMapping = new TrieMapping();
+    private final DynamicMapping routeMapping = new TrieMapping();
 
     private Route addRoute(HttpMethod httpMethod, String path, RouteHandler handler) throws NoSuchMethodException {
         Class<?> handleType = handler.getClass();
@@ -62,7 +61,7 @@ public class RouteMatcher {
     private Route addRoute(HttpMethod httpMethod, String path, Object controller,
                            Class<?> controllerType, Method method, ResponseType responseType) {
 
-        String key = path + "#" + httpMethod.toString();
+        String key = path + "#" + httpMethod.name();
 
         // exist
         if (this.routes.containsKey(key)) {
@@ -74,6 +73,9 @@ public class RouteMatcher {
             Order order = controllerType.getAnnotation(Order.class);
             if (null != order) {
                 route.setSort(order.value());
+            }
+            if (route.getPath().contains("*")) {
+                route.setPath(route.getPath().replaceAll("\\*", ""));
             }
             if (this.hooks.containsKey(key)) {
                 this.hooks.get(key).add(route);
@@ -128,7 +130,7 @@ public class RouteMatcher {
     }
 
     public Route lookupRoute(String httpMethod, String path) {
-        return dynamicMapping.findRoute(httpMethod, path);
+        return routeMapping.findRoute(httpMethod, path);
     }
 
     private String cleanPathVariable(String pathVariable) {
@@ -155,6 +157,7 @@ public class RouteMatcher {
      */
     public List<Route> getBefore(String path) {
         String cleanPath = parsePath(path);
+
         List<Route> collect = hooks.values().stream()
                 .flatMap(Collection::stream)
                 .sorted(Comparator.comparingInt(Route::getSort))
@@ -217,8 +220,10 @@ public class RouteMatcher {
      * @return return match is success
      */
     private boolean matchesPath(String routePath, String pathToMatch) {
-        routePath = PathKit.VAR_REGEXP_PATTERN.matcher(routePath).replaceAll(PathKit.VAR_REPLACE);
-        return pathToMatch.matches("(?i)" + routePath);
+        if ("/".equals(routePath)) {
+            return true;
+        }
+        return pathToMatch.startsWith(routePath);
     }
 
     /**
@@ -244,10 +249,7 @@ public class RouteMatcher {
         routes.values().forEach(route -> logAddRoute(log, route));
         hooks.values().stream().flatMap(Collection::stream).forEach(route -> logAddRoute(log, route));
 
-        Stream.of(routes.values(), hooks.values().stream().findAny().orElse(new ArrayList<>()))
-                .flatMap(Collection::stream).forEach(this::registerRoute);
-
-        dynamicMapping.register();
+        routes.values().forEach(this::registerRoute);
     }
 
     private void registerRoute(Route route) {
@@ -279,7 +281,10 @@ public class RouteMatcher {
             }
         }
         HttpMethod httpMethod = route.getHttpMethod();
-        dynamicMapping.addRoute(httpMethod, route, uriVariableNames);
+        if (HttpMethod.BEFORE == httpMethod || HttpMethod.AFTER == httpMethod) {
+        } else {
+            routeMapping.addRoute(httpMethod, route, uriVariableNames);
+        }
     }
 
     public void addMiddleware(WebHook webHook) {
@@ -289,10 +294,6 @@ public class RouteMatcher {
         Method method = ReflectKit.getMethod(WebHook.class, HttpMethod.BEFORE.name().toLowerCase(), RouteContext.class);
         Route route = new Route(HttpMethod.BEFORE, "/**", webHook, WebHook.class, method, null);
         this.middleware.add(route);
-    }
-
-    public void setDynamicMapping(DynamicMapping dynamicMapping) {
-        this.dynamicMapping = dynamicMapping;
     }
 
 }

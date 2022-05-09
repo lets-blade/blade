@@ -26,7 +26,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Slf4j
-//@Path(responseType = ResponseType.JSON)
+@Path(responseType = ResponseType.JSON)
 public class Application {
 
     @GET("/hello")
@@ -113,15 +113,12 @@ public class Application {
                 .get("/base/:uid", ctx -> {
                     ctx.text(ctx.pathString("uid"));
                 })
-                .get("/base/**", ctx -> {
-                    ctx.text(ctx.request().uri());
+                .get("/base/:uid/hello", ctx -> {
+                    ctx.text(ctx.pathString("uid") + ": hello");
                 })
-//                .get("/base/:uid/hello", ctx -> {
-//                    ctx.text(ctx.pathString("uid") + ": hello");
-//                })
-//                .before("/**", ctx -> {
-//                    System.out.println("bebebebebe");
-//                })
+                .before("/**", ctx -> {
+                    System.out.println("bebebebebe");
+                })
 //                .use(new CsrfMiddleware())
 //                .use(new LimitMiddleware(limitOptions))
                 .start(Application.class, args);
