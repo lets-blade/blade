@@ -37,8 +37,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import static com.hellokaton.blade.server.NettyHttpConst.CONTENT_LENGTH;
-import static com.hellokaton.blade.server.NettyHttpConst.KEEP_ALIVE;
+import static com.hellokaton.blade.server.NettyHttpConst.*;
 import static io.netty.handler.codec.http.HttpHeaderNames.TRANSFER_ENCODING;
 import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
@@ -136,12 +135,12 @@ public class RouteMethodHandler implements RequestHandler {
                     httpResponse.headers().set(next.getKey(), next.getValue());
                 }
                 if (request.keepAlive()) {
-                    httpResponse.headers().set(NettyHttpConst.CONNECTION, KEEP_ALIVE);
+                    httpResponse.headers().set(CONNECTION, KEEP_ALIVE);
                 }
                 String mimeType;
-                if (!httpResponse.headers().contains(NettyHttpConst.CONTENT_TYPE_STRING) && StringKit.isNotEmpty(fileName)) {
+                if (!httpResponse.headers().contains(HttpConst.HEADER_CONTENT_TYPE) && StringKit.isNotEmpty(fileName)) {
                     mimeType = MimeTypeKit.parse(fileName);
-                    httpResponse.headers().set(NettyHttpConst.CONTENT_TYPE_STRING, mimeType);
+                    httpResponse.headers().set(CONTENT_TYPE, mimeType);
                 }
                 long length;
                 try {
@@ -167,7 +166,7 @@ public class RouteMethodHandler implements RequestHandler {
 
     private void setDefaultHeaders(HttpHeaders headers) {
         headers.set(NettyHttpConst.DATE, HttpServerInitializer.date);
-        headers.set(NettyHttpConst.X_POWER_BY, NettyHttpConst.HEADER_VERSION);
+        headers.set(NettyHttpConst.SERVER, HttpConst.HEADER_SERVER_VALUE);
     }
 
     private FullHttpResponse createResponseByByteBuf(Response response, ByteBuf byteBuf) {

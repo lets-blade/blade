@@ -24,7 +24,6 @@ import com.hellokaton.blade.mvc.WebContext;
 import com.hellokaton.blade.mvc.handler.SessionHandler;
 import com.hellokaton.blade.mvc.http.session.SessionManager;
 import com.hellokaton.blade.mvc.multipart.FileItem;
-import com.hellokaton.blade.server.NettyHttpConst;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.handler.codec.http.FullHttpRequest;
@@ -33,7 +32,6 @@ import io.netty.handler.codec.http.HttpUtil;
 import io.netty.handler.codec.http.QueryStringDecoder;
 import io.netty.handler.codec.http.cookie.ServerCookieDecoder;
 import io.netty.handler.codec.http.multipart.*;
-import io.netty.util.CharsetUtil;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -43,22 +41,23 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
+import static com.hellokaton.blade.mvc.HttpConst.HEADER_ACCEPT_ENCODING;
+import static com.hellokaton.blade.mvc.HttpConst.HEADER_HOST;
+
 /**
- * Http Request Impl
+ * HttpRequest
  *
- * @author biezhi
- * 2017/5/31
+ * @author hellokaton
+ * 2022/5/9
  */
 @Slf4j
 @NoArgsConstructor
 public class HttpRequest implements Request {
 
-    private static final HttpDataFactory HTTP_DATA_FACTORY =
+    static final HttpDataFactory HTTP_DATA_FACTORY =
             new DefaultHttpDataFactory(DefaultHttpDataFactory.MINSIZE); // Disk if size exceed
 
-    private static final ByteBuf EMPTY_BUF = Unpooled.copiedBuffer("", CharsetUtil.UTF_8);
-
-    private static SessionHandler SESSION_HANDLER = null;
+    static SessionHandler SESSION_HANDLER = null;
 
     static {
         DiskFileUpload.deleteOnExitTemporaryFile = true; // should delete file
@@ -67,7 +66,7 @@ public class HttpRequest implements Request {
         DiskAttribute.baseDirectory = null;              // system temp directory
     }
 
-    private ByteBuf body = EMPTY_BUF;
+    private ByteBuf body = Unpooled.EMPTY_BUFFER;
     private String remoteAddress;
     private String uri;
     private String url;
@@ -76,7 +75,6 @@ public class HttpRequest implements Request {
     private String contentType;
     private boolean keepAlive;
     private Session session;
-
     private boolean isMultipart;
 
     private Map<String, Object> attributes = Collections.emptyMap();
@@ -99,8 +97,8 @@ public class HttpRequest implements Request {
         this.url = request.url();
 
         if (null != this.url && this.url.length() > 0) {
-            var pathEndPos = this.url.indexOf('?');
-            this.uri = pathEndPos < 0 ? this.url : this.url.substring(0, pathEndPos);
+            var queryPost = this.url.indexOf('?');
+            this.uri = queryPost < 0 ? this.url : this.url.substring(0, queryPost);
         }
 
         this.formParams = request.formParams();
@@ -116,7 +114,7 @@ public class HttpRequest implements Request {
 
     @Override
     public String host() {
-        return this.header("Host");
+        return this.header(HEADER_HOST);
     }
 
     @Override
@@ -189,7 +187,7 @@ public class HttpRequest implements Request {
             return false;
         }
 
-        String acceptEncoding = this.header(NettyHttpConst.ACCEPT_ENCODING);
+        String acceptEncoding = this.header(HEADER_ACCEPT_ENCODING);
         if (StringKit.isEmpty(acceptEncoding)) {
             return false;
         }
@@ -261,13 +259,13 @@ public class HttpRequest implements Request {
         return isMultipart;
     }
 
-    public void init(String remoteAddress, FullHttpRequest fullHttpRequest) {
+    public HttpRequest(String remoteAddress, FullHttpRequest fullHttpRequest) {
         this.remoteAddress = remoteAddress.substring(1);
         this.keepAlive = HttpUtil.isKeepAlive(fullHttpRequest);
         this.url = fullHttpRequest.uri();
 
-        int pathEndPos = this.url().indexOf('?');
-        this.uri = pathEndPos < 0 ? this.url() : this.url().substring(0, pathEndPos);
+        int queryPos = this.url().indexOf('?');
+        this.uri = queryPos < 0 ? this.url() : this.url().substring(0, queryPos);
         this.protocol = fullHttpRequest.protocolVersion().text();
         this.method = fullHttpRequest.method().name();
 
@@ -296,10 +294,12 @@ public class HttpRequest implements Request {
             }
         }
 
-        QueryStringDecoder queryDecoder = new QueryStringDecoder(this.url, StandardCharsets.UTF_8);
-        Map<String, List<String>> query = queryDecoder.parameters();
-        if (null != query) {
-            this.queryParams = query;
+        if (queryPos > 0) {
+            QueryStringDecoder queryDecoder = new QueryStringDecoder(this.url, StandardCharsets.UTF_8);
+            Map<String, List<String>> query = queryDecoder.parameters();
+            if (null != query) {
+                this.queryParams = query;
+            }
         }
 
         if (HttpMethod.GET.name().equals(this.method())) {
@@ -321,7 +321,7 @@ public class HttpRequest implements Request {
                 }
             } else {
                 String paramString = fullHttpRequest.content().toString(StandardCharsets.UTF_8);
-                queryDecoder = new QueryStringDecoder(paramString, false);
+                QueryStringDecoder queryDecoder = new QueryStringDecoder(paramString, false);
                 Map<String, List<String>> uriAttributes = queryDecoder.parameters();
                 if (null != uriAttributes && !uriAttributes.isEmpty()) {
                     this.formParams = uriAttributes;
@@ -360,7 +360,7 @@ public class HttpRequest implements Request {
     }
 
     private void parseContentType() {
-        String contentType = this.header(HttpConst.CONTENT_TYPE);
+        String contentType = this.header(HttpConst.HEADER_CONTENT_TYPE);
         if (null != contentType) {
             contentType = contentType.toLowerCase();
         }

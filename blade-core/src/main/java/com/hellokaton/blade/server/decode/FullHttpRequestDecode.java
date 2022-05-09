@@ -32,8 +32,8 @@ public class FullHttpRequestDecode extends SimpleChannelInboundHandler<FullHttpR
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest fullHttpRequest) {
-        HttpRequest httpRequest = new HttpRequest();
-        httpRequest.init(ctx.channel().remoteAddress().toString(), fullHttpRequest);
+        String address = ctx.channel().remoteAddress().toString();
+        HttpRequest httpRequest = new HttpRequest(address, fullHttpRequest);
         ctx.fireChannelRead(httpRequest);
     }
 

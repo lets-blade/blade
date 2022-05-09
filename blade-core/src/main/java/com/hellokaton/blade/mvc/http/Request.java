@@ -3,10 +3,10 @@ package com.hellokaton.blade.mvc.http;
 import com.hellokaton.blade.kit.JsonKit;
 import com.hellokaton.blade.kit.StringKit;
 import com.hellokaton.blade.kit.WebKit;
+import com.hellokaton.blade.mvc.HttpConst;
 import com.hellokaton.blade.mvc.WebContext;
 import com.hellokaton.blade.mvc.handler.RouteActionArguments;
 import com.hellokaton.blade.mvc.multipart.FileItem;
-import com.hellokaton.blade.server.NettyHttpConst;
 import io.netty.buffer.ByteBuf;
 import io.netty.util.CharsetUtil;
 import lombok.NonNull;
@@ -68,7 +68,7 @@ public interface Request {
      * @return return user-agent
      */
     default String userAgent() {
-        return header(NettyHttpConst.USER_AGENT);
+        return header(HttpConst.HEADER_USER_AGENT);
     }
 
     /**
@@ -370,8 +370,7 @@ public interface Request {
      * @return Return contentType
      */
     default String contentType() {
-        String contentType = header(NettyHttpConst.CONTENT_TYPE_STRING);
-        return null != contentType ? contentType : "Unknown";
+        return header(HttpConst.HEADER_CONTENT_TYPE);
     }
 
     /**
@@ -391,17 +390,6 @@ public interface Request {
     }
 
     /**
-     * Determine if this request is a FORM form request
-     * <p>
-     * According to header content-type contains "form"
-     *
-     * @return is form request
-     */
-    default boolean isFormRequest() {
-        return this.header(NettyHttpConst.CONTENT_TYPE_STRING).toLowerCase().contains("form");
-    }
-
-    /**
      * Determine if this request is a json request
      * <p>
      * According to header content-type contains "json"
@@ -409,7 +397,7 @@ public interface Request {
      * @return is json request
      */
     default boolean isJsonRequest() {
-        return this.header(NettyHttpConst.CONTENT_TYPE_STRING).toLowerCase().contains("json");
+        return this.header(HttpConst.CONTENT_TYPE_JSON).toLowerCase().contains("json");
     }
 
     /**
