@@ -179,12 +179,12 @@ public class BladeKit {
     }
 
     public static void log304(Logger log, String method, String uri) {
-        if (!log.isWarnEnabled()) {
+        if (!log.isDebugEnabled()) {
             return;
         }
         String pad = StringKit.padLeft("", 6);
         String msg304 = Ansi.BgGreen.and(Ansi.Black).format(" 304 ");
-        log.warn("{} {}  {} {}", msg304, pad, method, uri);
+        log.debug("{} {}  {} {}", msg304, pad, method, uri);
     }
 
     public static void log200(Logger log, String method, String uri) {

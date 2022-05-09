@@ -39,9 +39,9 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
-import static com.hellokaton.blade.kit.BladeKit.*;
-import static com.hellokaton.blade.mvc.BladeConst.ENV_KEY_PERFORMANCE;
-import static com.hellokaton.blade.mvc.BladeConst.REQUEST_COST_TIME;
+import static com.hellokaton.blade.kit.BladeKit.log200AndCost;
+import static com.hellokaton.blade.kit.BladeKit.log500;
+import static com.hellokaton.blade.mvc.BladeConst.*;
 import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
 /**
@@ -63,6 +63,11 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<HttpRequest> 
 
     private boolean allowCost() {
         return WebContext.blade().httpOptions().isEnableRequestCost();
+    }
+
+    private boolean recordRequestLog() {
+        return WebContext.blade().environment()
+                .getBoolean(ENV_KEY_REQUEST_LOG, true);
     }
 
     private boolean enablePerformance() {
@@ -134,11 +139,7 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<HttpRequest> 
             Request request = webContext.getRequest();
             HttpMethod method = request.httpMethod();
             String uri = request.uri();
-            Instant start = null;
-
-            if (allowCost() && !enablePerformance()) {
-                start = Instant.now();
-            }
+            Instant start = Instant.now();
 
             if (isStaticFile(method, uri)) {
                 staticFileHandler.handle(webContext);
@@ -157,13 +158,10 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<HttpRequest> 
                 return webContext;
             }
 
-            if (allowCost()) {
+            if (recordRequestLog()) {
                 long cost = log200AndCost(log, start, BladeCache.getPaddingMethod(method.name()), uri);
                 request.attribute(REQUEST_COST_TIME, cost);
-            } else {
-                log200(log, BladeCache.getPaddingMethod(method.name()), uri);
             }
-
             return webContext;
         } catch (Exception e) {
             throw BladeException.wrapper(e);
@@ -180,7 +178,7 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<HttpRequest> 
     }
 
     private boolean isStaticFile(HttpMethod method, String uri) {
-        if (HttpMethod.POST.equals(method) || notStaticUri.contains(uri)) {
+        if (!HttpMethod.GET.equals(method) || notStaticUri.contains(uri)) {
             return false;
         }
 

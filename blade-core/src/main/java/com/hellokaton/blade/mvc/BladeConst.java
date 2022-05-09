@@ -52,6 +52,7 @@ public interface BladeConst {
     String ENV_KEY_BANNER_PATH = "app.banner-path";
     String ENV_KEY_TASK_THREAD_COUNT = "app.task.thread-count";
     String ENV_KEY_CONTEXT_PATH = "app.context-path";
+    String ENV_KEY_REQUEST_LOG = "app.request-log";
     String ENV_KEY_HTTP_MAX_CONTENT = "http.max-content-size";
     String ENV_KEY_GZIP_ENABLE = "http.gzip.enabled";
     String ENV_KEY_SESSION_ENABLED = "http.session.enabled";
