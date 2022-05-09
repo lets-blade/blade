@@ -24,6 +24,7 @@ import com.hellokaton.blade.mvc.HttpConst;
 import com.hellokaton.blade.mvc.WebContext;
 import com.hellokaton.blade.mvc.handler.RequestHandler;
 import com.hellokaton.blade.mvc.http.Request;
+import com.hellokaton.blade.mvc.route.Route;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFuture;
@@ -54,6 +55,7 @@ import java.util.regex.Pattern;
 
 import static com.hellokaton.blade.kit.BladeKit.*;
 import static com.hellokaton.blade.mvc.BladeConst.HTTP_DATE_FORMAT;
+import static com.hellokaton.blade.mvc.BladeConst.REQUEST_TO_STATIC_ATTR;
 import static io.netty.handler.codec.http.HttpResponseStatus.*;
 import static io.netty.handler.codec.http.HttpVersion.HTTP_1_0;
 import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
@@ -96,14 +98,21 @@ public class StaticFileHandler implements RequestHandler {
         Request request = webContext.getRequest();
 
         ChannelHandlerContext ctx = webContext.getChannelHandlerContext();
-        if (!NettyHttpConst.METHOD_GET.equals(request.method())) {
+        if (!com.hellokaton.blade.mvc.http.HttpMethod.GET.name().equals(request.method())) {
             sendError(ctx, METHOD_NOT_ALLOWED);
             return;
         }
 
         Instant start = Instant.now();
 
-        String uri = URLDecoder.decode(request.uri(), "UTF-8");
+        Route route = webContext.getRoute();
+
+        String uri = request.attribute(REQUEST_TO_STATIC_ATTR);
+        if (null != uri) {
+
+        } else {
+            uri = URLDecoder.decode(request.uri(), "UTF-8");
+        }
         String method = StringKit.padRight(request.method(), 6);
         String cleanURL = getCleanURL(request, uri);
 

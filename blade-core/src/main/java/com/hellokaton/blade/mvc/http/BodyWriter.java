@@ -9,6 +9,8 @@ public interface BodyWriter {
 
     HttpResponse onView(ViewBody body);
 
+    HttpResponse onStatic(StaticFileBody body);
+
     HttpResponse onRawBody(RawBody body);
 
     HttpResponse onByteBuf(ByteBuf byteBuf);

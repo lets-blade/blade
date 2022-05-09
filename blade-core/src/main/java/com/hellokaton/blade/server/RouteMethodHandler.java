@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import static com.hellokaton.blade.mvc.BladeConst.REQUEST_TO_STATIC_ATTR;
 import static io.netty.handler.codec.http.HttpHeaderNames.TRANSFER_ENCODING;
 import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
@@ -50,6 +51,8 @@ import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 public class RouteMethodHandler implements RequestHandler {
 
     private final RouteMatcher routeMatcher = WebContext.blade().routeMatcher();
+    private final StaticFileHandler staticFileHandler = new StaticFileHandler(WebContext.blade());
+
     private final boolean hasBeforeHook = routeMatcher.hasBeforeHook();
     private final boolean hasAfterHook = routeMatcher.hasAfterHook();
 
@@ -87,7 +90,11 @@ public class RouteMethodHandler implements RequestHandler {
         }
     }
 
-    public HttpResponse handleResponse(Request request, Response response, ChannelHandlerContext context) {
+    public HttpResponse handleResponse(WebContext webContext) {
+        Request request = webContext.getRequest();
+        Response response = webContext.getResponse();
+        ChannelHandlerContext context = webContext.getChannelHandlerContext();
+
         Session session = request.session();
         if (null != session) {
             Cookie cookie = new Cookie();
@@ -115,6 +122,17 @@ public class RouteMethodHandler implements RequestHandler {
                     return this.onByteBuf(Unpooled.copiedBuffer(sw.toString().getBytes(StandardCharsets.UTF_8)));
                 } catch (Exception e) {
                     log.error("Render view error", e);
+                }
+                return null;
+            }
+
+            @Override
+            public HttpResponse onStatic(StaticFileBody body) {
+                request.attribute(REQUEST_TO_STATIC_ATTR, body.path());
+                try {
+                    staticFileHandler.handle(webContext);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
                 }
                 return null;
             }
@@ -241,6 +259,9 @@ public class RouteMethodHandler implements RequestHandler {
                 context.body(
                         ViewBody.of((ModelAndView) returnParam)
                 );
+            }
+            if (returnType == StaticFileBody.class) {
+                context.body((StaticFileBody) returnParam);
             }
         }
     }
