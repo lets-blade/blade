@@ -17,6 +17,7 @@ import com.hellokaton.blade.mvc.multipart.FileItem;
 import com.hellokaton.blade.mvc.ui.ResponseType;
 import com.hellokaton.blade.mvc.ui.RestResponse;
 import com.hellokaton.blade.options.CorsOptions;
+import com.hellokaton.blade.options.HttpOptions;
 import com.hellokaton.blade.security.limit.LimitOptions;
 import lombok.extern.slf4j.Slf4j;
 
@@ -71,6 +72,11 @@ public class Application {
         return token;
     }
 
+    @GET(value = "home", responseType = ResponseType.VIEW)
+    public String home() {
+        return "home.html";
+    }
+
     @POST
     public String verifyToken(Request req) {
         System.out.println("token = " + req.header("X-CSRF-TOKEN"));
@@ -110,7 +116,7 @@ public class Application {
 
         Blade.create()
                 .cors(corsOptions)
-//                .http(HttpOptions::enableSession)
+                .http(HttpOptions::enableSession)
                 .get("/base/:uid", ctx -> {
                     ctx.text(ctx.pathString("uid"));
                 })

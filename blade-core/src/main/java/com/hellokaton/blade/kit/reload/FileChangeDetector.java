@@ -2,12 +2,16 @@ package com.hellokaton.blade.kit.reload;
 
 import com.hellokaton.blade.Environment;
 import com.hellokaton.blade.mvc.BladeConst;
+import com.hellokaton.blade.options.StaticOptions;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
@@ -19,18 +23,18 @@ public class FileChangeDetector {
     private final WatchService watcher;
     private final Map<WatchKey, Path> pathMap = new HashMap<>();
 
-    public FileChangeDetector(String dirPath) throws IOException{
+    public FileChangeDetector(String dirPath) throws IOException {
         watcher = FileSystems.getDefault().newWatchService();
         registerAll(Paths.get(dirPath));
     }
 
-    private void register(Path dir) throws IOException{
+    private void register(Path dir) throws IOException {
         WatchKey key = dir.register(watcher, StandardWatchEventKinds.ENTRY_MODIFY);
-        pathMap.put(key,dir);
+        pathMap.put(key, dir);
     }
 
-    private void registerAll(Path dir) throws  IOException{
-        Files.walkFileTree(dir, new SimpleFileVisitor<Path>(){
+    private void registerAll(Path dir) throws IOException {
+        Files.walkFileTree(dir, new SimpleFileVisitor<Path>() {
             @Override
             public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
                 register(dir);
@@ -39,22 +43,22 @@ public class FileChangeDetector {
         });
     }
 
-    public void processEvent(BiConsumer<WatchEvent.Kind<Path>, Path> processor){
-        for(;;){
+    public void processEvent(BiConsumer<WatchEvent.Kind<Path>, Path> processor) {
+        for (; ; ) {
             WatchKey key;
-            try{
+            try {
                 key = watcher.take();
-            }catch (InterruptedException e) {
+            } catch (InterruptedException e) {
                 return;
             }
 
             Path dir = pathMap.get(key);
-            for (WatchEvent<?> event: key.pollEvents()){
+            for (WatchEvent<?> event : key.pollEvents()) {
                 WatchEvent.Kind kind = event.kind();
-                Path filePath = dir.resolve(((WatchEvent<Path>)event).context());
+                Path filePath = dir.resolve(((WatchEvent<Path>) event).context());
 
-                if(Files.isDirectory(filePath)) continue;
-                log.info("File {} changes detected!",filePath.toString());
+                if (Files.isDirectory(filePath)) continue;
+                log.info("File {} changes detected!", filePath.toString());
                 //copy updated files to target
                 processor.accept(kind, filePath);
             }
@@ -62,23 +66,18 @@ public class FileChangeDetector {
         }
     }
 
-    public static Path getDestPath(Path src, Environment env){
-        String templateDir = env.get(BladeConst.ENV_KEY_TEMPLATE_PATH,"/templates");
-        Optional<String> staticDir =  env.get(BladeConst.ENV_KEY_STATIC_DIRS);
+    public static Path getDestPath(Path src, Environment env, StaticOptions staticOptions) {
+        String templateDir = env.get(BladeConst.ENV_KEY_TEMPLATE_PATH, "/templates");
         List<String> templateOrStaticDirKeyword = new ArrayList<>();
         templateOrStaticDirKeyword.add(templateDir);
-        if(staticDir.isPresent()){
-            templateOrStaticDirKeyword.addAll(Arrays.asList(staticDir.get().split(",")));
-        }else{
-            templateOrStaticDirKeyword.addAll(BladeConst.DEFAULT_STATICS);
-        }
+        templateOrStaticDirKeyword.addAll(staticOptions.getPaths());
 
-        List result = templateOrStaticDirKeyword.stream().filter(dir -> src.toString().indexOf(dir)!=-1).collect(Collectors.toList());
-        if(result.size()!=1){
+        List<String> result = templateOrStaticDirKeyword.stream().filter(dir -> src.toString().contains(dir)).collect(Collectors.toList());
+        if (result.size() != 1) {
             log.info("Cannot get dest dir");
-            return  null;
+            return null;
         }
-        String key = (String)result.get(0);
+        String key = result.get(0);
         log.info(BladeConst.CLASSPATH + src.toString().substring(src.toString().indexOf(key)));
         return Paths.get(BladeConst.CLASSPATH + src.toString().substring(src.toString().indexOf(key)));
     }

@@ -361,11 +361,6 @@ public class NettyServer implements Server {
         // print banner text
         this.printBanner();
 
-        String statics = environment.get(ENV_KEY_STATIC_DIRS, "");
-        if (StringKit.isNotBlank(statics)) {
-            blade.addStatics(statics.split(","));
-        }
-
         String templatePath = environment.get(ENV_KEY_TEMPLATE_PATH, "templates");
         if (templatePath.charAt(0) == NettyHttpConst.CHAR_SLASH) {
             templatePath = templatePath.substring(1);

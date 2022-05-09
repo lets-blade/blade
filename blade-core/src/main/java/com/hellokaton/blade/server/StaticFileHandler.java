@@ -54,8 +54,7 @@ import java.util.jar.JarFile;
 import java.util.regex.Pattern;
 
 import static com.hellokaton.blade.kit.BladeKit.*;
-import static com.hellokaton.blade.mvc.BladeConst.HTTP_DATE_FORMAT;
-import static com.hellokaton.blade.mvc.BladeConst.REQUEST_TO_STATIC_ATTR;
+import static com.hellokaton.blade.mvc.BladeConst.*;
 import static io.netty.handler.codec.http.HttpResponseStatus.*;
 import static io.netty.handler.codec.http.HttpVersion.HTTP_1_0;
 import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
@@ -81,11 +80,11 @@ public class StaticFileHandler implements RequestHandler {
     /**
      * default cache 30 days.
      */
-    private final int httpCacheSeconds;
+    private final int staticFileCacheSeconds;
 
     public StaticFileHandler(Blade blade) {
         this.showFileList = blade.environment().getBoolean(BladeConst.ENV_KEY_STATIC_LIST, false);
-        this.httpCacheSeconds = blade.environment().getInt(BladeConst.ENV_KEY_HTTP_CACHE_TIMEOUT, 86400 * 30);
+        this.staticFileCacheSeconds = blade.environment().getInt(BladeConst.ENV_KEY_STATIC_CACHE_SECONDS, 86400 * 30);
     }
 
     /**
@@ -98,7 +97,7 @@ public class StaticFileHandler implements RequestHandler {
         Request request = webContext.getRequest();
 
         ChannelHandlerContext ctx = webContext.getChannelHandlerContext();
-        if (!com.hellokaton.blade.mvc.http.HttpMethod.GET.name().equals(request.method())) {
+        if (!HttpMethod.GET.name().equals(request.method())) {
             sendError(ctx, METHOD_NOT_ALLOWED);
             return;
         }
@@ -114,6 +113,12 @@ public class StaticFileHandler implements RequestHandler {
         } else {
             uri = URLDecoder.decode(request.uri(), "UTF-8");
         }
+
+        if (FAVICON_PATH.equals(uri)) {
+            String dir = WebContext.blade().getEnv(ENV_KEY_FAVICON_DIR, "/static");
+            uri = dir + uri;
+        }
+
         String method = StringKit.padRight(request.method(), 6);
         String cleanURL = getCleanURL(request, uri);
 
@@ -386,7 +391,7 @@ public class StaticFileHandler implements RequestHandler {
     private boolean executeHttp304(ChannelHandlerContext ctx, Request request, long size, long lastModified) {
         String ifModifiedSince = request.header(HttpConst.HEADER_IF_MODIFIED_SINCE);
 
-        if (StringKit.isNotEmpty(ifModifiedSince) && httpCacheSeconds > 0) {
+        if (StringKit.isNotEmpty(ifModifiedSince) && staticFileCacheSeconds > 0) {
 
             Date ifModifiedSinceDate = format(ifModifiedSince, HTTP_DATE_FORMAT);
 
@@ -436,11 +441,11 @@ public class StaticFileHandler implements RequestHandler {
         response.headers().set(HttpHeaderNames.DATE, dateFormatter.format(time.getTime()));
 
         // Add cache headers
-        if (httpCacheSeconds > 0) {
-            time.add(Calendar.SECOND, httpCacheSeconds);
+        if (staticFileCacheSeconds > 0) {
+            time.add(Calendar.SECOND, staticFileCacheSeconds);
 
             response.headers().set(HttpHeaderNames.EXPIRES, dateFormatter.format(time.getTime()));
-            response.headers().set(HttpHeaderNames.CACHE_CONTROL, "private, max-age=" + httpCacheSeconds);
+            response.headers().set(HttpHeaderNames.CACHE_CONTROL, "private, max-age=" + staticFileCacheSeconds);
             response.headers().set(
                     HttpHeaderNames.LAST_MODIFIED, dateFormatter.format(new Date(fileToCache.lastModified())));
         }

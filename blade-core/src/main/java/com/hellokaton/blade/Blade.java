@@ -30,14 +30,12 @@ import com.hellokaton.blade.mvc.handler.RouteHandler;
 import com.hellokaton.blade.mvc.hook.WebHook;
 import com.hellokaton.blade.mvc.http.HttpMethod;
 import com.hellokaton.blade.mvc.http.session.SessionManager;
-import com.hellokaton.blade.mvc.route.DynamicMapping;
 import com.hellokaton.blade.mvc.route.RouteMatcher;
-import com.hellokaton.blade.mvc.route.mapping.dynamic.RegexMapping;
-import com.hellokaton.blade.mvc.route.mapping.dynamic.TrieMapping;
 import com.hellokaton.blade.mvc.ui.template.DefaultEngine;
 import com.hellokaton.blade.mvc.ui.template.TemplateEngine;
 import com.hellokaton.blade.options.CorsOptions;
 import com.hellokaton.blade.options.HttpOptions;
+import com.hellokaton.blade.options.StaticOptions;
 import com.hellokaton.blade.server.NettyServer;
 import com.hellokaton.blade.server.Server;
 import lombok.AccessLevel;
@@ -53,6 +51,8 @@ import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+
+import static com.hellokaton.blade.mvc.BladeConst.ENV_KEY_FAVICON_DIR;
 
 /**
  * Blade Core
@@ -77,13 +77,6 @@ public class Blade {
      * All need to be scanned by the package, when you do not set the time will scan com.hellokaton.blade.plugin package
      */
     private final Set<String> packages = new LinkedHashSet<>(BladeConst.PLUGIN_PACKAGE_NAME);
-
-    /**
-     * All static resource URL prefixes,
-     * defaults to "/favicon.ico", "/robots.txt", "/static/", "/upload/", "/webjars/",
-     * which are located under classpath
-     */
-    private final Set<String> statics = new HashSet<>(BladeConst.DEFAULT_STATICS);
 
     /**
      * The default IOC container implementation
@@ -121,7 +114,8 @@ public class Blade {
     private final RouteMatcher routeMatcher = new RouteMatcher();
 
     private CorsOptions corsOptions = null;
-    private final HttpOptions httpOptions = HttpOptions.create();
+    private HttpOptions httpOptions = HttpOptions.create();
+    private StaticOptions staticOptions = StaticOptions.create();
 
     /**
      * Blade environment, which stores the parameters of the application.properties configuration file
@@ -281,6 +275,17 @@ public class Blade {
     }
 
     /**
+     * setting favicon dir, default is /static
+     *
+     * @param faviconDir favicon dir
+     * @return blade instance
+     */
+    public Blade faviconDir(String faviconDir) {
+        this.setEnv(ENV_KEY_FAVICON_DIR, faviconDir);
+        return this;
+    }
+
+    /**
      * Get RouteMatcher
      *
      * @return return RouteMatcher
@@ -291,6 +296,21 @@ public class Blade {
 
     public Blade http(Consumer<HttpOptions> consumer) {
         consumer.accept(this.httpOptions);
+        return this;
+    }
+
+    public Blade http(HttpOptions httpOptions) {
+        this.httpOptions = httpOptions;
+        return this;
+    }
+
+    public Blade staticOptions(Consumer<StaticOptions> consumer) {
+        consumer.accept(this.staticOptions);
+        return this;
+    }
+
+    public Blade staticOptions(StaticOptions staticOptions) {
+        this.staticOptions = staticOptions;
         return this;
     }
 
@@ -305,6 +325,10 @@ public class Blade {
 
     public HttpOptions httpOptions() {
         return this.httpOptions;
+    }
+
+    public StaticOptions staticOptions() {
+        return this.staticOptions;
     }
 
     /**
@@ -326,29 +350,6 @@ public class Blade {
      */
     public Blade register(@NonNull Class<?> cls) {
         this.ioc.addBean(cls);
-        return this;
-    }
-
-    /**
-     * Add multiple static resource file
-     * the default provides the static, upload
-     *
-     * @param folders static resource directory
-     * @return blade
-     */
-    public Blade addStatics(@NonNull String... folders) {
-        this.statics.addAll(Arrays.asList(folders));
-        return this;
-    }
-
-    /**
-     * Set whether to show the file directory, default doesn't show
-     *
-     * @param fileList show the file directory
-     * @return blade
-     */
-    public Blade showFileList(boolean fileList) {
-        this.environment.set(BladeConst.ENV_KEY_STATIC_LIST, fileList);
         return this;
     }
 
@@ -413,16 +414,6 @@ public class Blade {
 
     public Class<?> bootClass() {
         return this.bootClass;
-    }
-
-    /**
-     * Get blade statics list.
-     * e.g: "/favicon.ico", "/robots.txt", "/static/", "/upload/", "/webjars/"
-     *
-     * @return return statics
-     */
-    public Set<String> getStatics() {
-        return this.statics;
     }
 
     /**
@@ -686,8 +677,8 @@ public class Blade {
                         try {
                             //TODO: add support for Create and Delete
                             if (event.equals(StandardWatchEventKinds.ENTRY_MODIFY)) {
-                                Path destPath = FileChangeDetector.getDestPath(filePath, environment);
-                                Files.copy(filePath, destPath, StandardCopyOption.REPLACE_EXISTING);
+                                Path destPath = FileChangeDetector.getDestPath(filePath, environment, staticOptions);
+                                Files.copy(filePath, Objects.requireNonNull(destPath), StandardCopyOption.REPLACE_EXISTING);
                             }
                         } catch (IOException e) {
                             log.error("Exception when trying to copy updated file");

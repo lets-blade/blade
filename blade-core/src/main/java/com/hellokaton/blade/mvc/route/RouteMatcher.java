@@ -159,7 +159,7 @@ public class RouteMatcher {
                 .flatMap(Collection::stream)
                 .sorted(Comparator.comparingInt(Route::getSort))
                 .filter(route -> route.getHttpMethod() == HttpMethod.BEFORE)
-                .filter(route -> matchesPath(route.getPath(), cleanPath))
+                .filter(route -> matchesPath(route.getRewritePath(), cleanPath))
                 .collect(Collectors.toList());
 
         this.giveMatch(path, collect);
@@ -178,7 +178,7 @@ public class RouteMatcher {
                 .flatMap(Collection::stream)
                 .sorted(Comparator.comparingInt(Route::getSort))
                 .filter(route -> route.getHttpMethod() == HttpMethod.AFTER)
-                .filter(route -> matchesPath(route.getPath(), cleanPath))
+                .filter(route -> matchesPath(route.getRewritePath(), cleanPath))
                 .collect(Collectors.toList());
 
         this.giveMatch(path, afters);

@@ -17,7 +17,6 @@ import com.hellokaton.blade.kit.BladeKit;
 import com.hellokaton.blade.kit.StringKit;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -38,8 +37,6 @@ public interface BladeConst {
     String INTERNAL_SERVER_ERROR_HTML = "<center><h1>500 Internal Server Error</h1><hr/></center>";
     String DEFAULT_THREAD_NAME = "_(:3」∠)_";
     List<String> PLUGIN_PACKAGE_NAME = new ArrayList<>(Collections.singletonList("com.hellokaton.blade.plugin"));
-    List<String> DEFAULT_STATICS = new ArrayList<>(
-            Arrays.asList("/favicon.ico", "/robots.txt", "/static", "/upload", "/webjars/"));
 
     String PROP_NAME = "classpath:application.properties";
 
@@ -53,17 +50,17 @@ public interface BladeConst {
     String ENV_KEY_TASK_THREAD_COUNT = "app.task.thread-count";
     String ENV_KEY_CONTEXT_PATH = "app.context-path";
     String ENV_KEY_REQUEST_LOG = "app.request-log";
+    String ENV_KEY_FAVICON_DIR = "app.favicon-dir";
     String ENV_KEY_HTTP_MAX_CONTENT = "http.max-content-size";
     String ENV_KEY_GZIP_ENABLE = "http.gzip.enabled";
     String ENV_KEY_SESSION_ENABLED = "http.session.enabled";
     String ENV_KEY_SESSION_KEY = "http.session.key";
     String ENV_KEY_SESSION_TIMEOUT = "http.session.timeout";
-    String ENV_KEY_HTTP_CACHE_TIMEOUT = "http.cache.timeout";
     String ENV_KEY_HTTP_REQUEST_COST = "http.request.cost";
     String ENV_KEY_PAGE_404 = "mvc.view.404";
     String ENV_KEY_PAGE_500 = "mvc.view.500";
-    String ENV_KEY_STATIC_DIRS = "mvc.statics";
-    String ENV_KEY_STATIC_LIST = "mvc.statics.show-list";
+    String ENV_KEY_STATIC_LIST = "static.show-list";
+    String ENV_KEY_STATIC_CACHE_SECONDS = "static.cache-seconds";
     String ENV_KEY_TEMPLATE_PATH = "mvc.template.path";
     String ENV_KEY_SERVER_ADDRESS = "server.address";
     String ENV_KEY_SERVER_PORT = "server.port";
@@ -88,6 +85,7 @@ public interface BladeConst {
 
     String REQUEST_TO_STATIC_ATTR = "_to_static";
 
+    String FAVICON_PATH = "/favicon.ico";
     String NEW_LINE = "\r\n";
 
     int BANNER_PADDING = 60;

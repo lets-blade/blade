@@ -44,15 +44,13 @@ import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 /**
  * Http Server Handler
  *
- * @author biezhi
- * 2017/5/31
+ * @author hellokaton
+ * 2022/5/9
  */
 @Slf4j
 public class RouteMethodHandler implements RequestHandler {
 
     private final RouteMatcher routeMatcher = WebContext.blade().routeMatcher();
-    private final StaticFileHandler staticFileHandler = new StaticFileHandler(WebContext.blade());
-
     private final boolean hasBeforeHook = routeMatcher.hasBeforeHook();
     private final boolean hasAfterHook = routeMatcher.hasAfterHook();
 
@@ -130,7 +128,7 @@ public class RouteMethodHandler implements RequestHandler {
             public HttpResponse onStatic(StaticFileBody body) {
                 request.attribute(REQUEST_TO_STATIC_ATTR, body.path());
                 try {
-                    staticFileHandler.handle(webContext);
+                    HttpServerHandler.staticFileHandler.handle(webContext);
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
@@ -231,16 +229,34 @@ public class RouteMethodHandler implements RequestHandler {
 
             Path path = target.getClass().getAnnotation(Path.class);
 
-            boolean responseJson = this.setResponseType(context, path);
+            ResponseType responseType = ResponseType.EMPTY;
+            if (null != path && !ResponseType.EMPTY.equals(path.responseType())) {
+                responseType = path.responseType();
+            }
+            ResponseType routeResponseType = context.route().getResponseType();
+            if (null != routeResponseType && !ResponseType.EMPTY.equals(routeResponseType)) {
+                responseType = routeResponseType;
+            }
+
+            boolean responseJson = ResponseType.JSON.equals(responseType);
+            if (responseJson) {
+                if (!context.isIE()) {
+                    context.contentType(HttpConst.CONTENT_TYPE_JSON);
+                } else {
+                    context.contentType(HttpConst.CONTENT_TYPE_HTML);
+                }
+            } else if (null != responseType && !ResponseType.EMPTY.equals(responseType)
+                    && !ResponseType.PREVIEW.equals(responseType)) {
+                context.contentType(responseType.contentType());
+            }
 
             int len = actionMethod.getParameterTypes().length;
 
             MethodAccess methodAccess = BladeCache.getMethodAccess(target.getClass());
 
-            Object returnParam = methodAccess.invoke(
-                    target, actionMethod.getName(), len > 0 ?
-                            context.routeParameters() : null);
+            Object[] args = len > 0 ? context.routeParameters() : null;
 
+            Object returnParam = methodAccess.invoke(target, actionMethod.getName(), args);
             if (null == returnParam) {
                 return;
             }
@@ -250,9 +266,15 @@ public class RouteMethodHandler implements RequestHandler {
                 return;
             }
             if (returnType == String.class) {
-                context.body(
-                        ViewBody.of(new ModelAndView(returnParam.toString()))
-                );
+                if (ResponseType.VIEW.equals(responseType)) {
+                    context.body(
+                            ViewBody.of(new ModelAndView(returnParam.toString()))
+                    );
+                } else if (ResponseType.HTML.equals(responseType)) {
+                    context.html(returnParam.toString());
+                } else if (ResponseType.TEXT.equals(responseType)) {
+                    context.text(returnParam.toString());
+                }
                 return;
             }
             if (returnType == ModelAndView.class) {
@@ -264,29 +286,6 @@ public class RouteMethodHandler implements RequestHandler {
                 context.body((StaticFileBody) returnParam);
             }
         }
-    }
-
-    private boolean setResponseType(RouteContext context, Path path) {
-        ResponseType responseType = ResponseType.EMPTY;
-        if (null != path && !ResponseType.EMPTY.equals(path.responseType())) {
-            responseType = path.responseType();
-        }
-        ResponseType routeResponseType = context.route().getResponseType();
-        if (null != routeResponseType && !ResponseType.EMPTY.equals(routeResponseType)) {
-            responseType = routeResponseType;
-        }
-        boolean responseJson = ResponseType.JSON.equals(responseType);
-        if (responseJson) {
-            if (!context.isIE()) {
-                context.contentType(HttpConst.CONTENT_TYPE_JSON);
-            } else {
-                context.contentType(HttpConst.CONTENT_TYPE_HTML);
-            }
-        } else if (null != routeResponseType && !ResponseType.EMPTY.equals(routeResponseType)
-                && !ResponseType.PREVIEW.equals(routeResponseType)) {
-            context.contentType(routeResponseType.contentType());
-        }
-        return responseJson;
     }
 
     /**

@@ -8,6 +8,7 @@ import com.hellokaton.blade.mvc.handler.RouteHandler;
 import com.hellokaton.blade.mvc.http.HttpSession;
 import com.hellokaton.blade.mvc.ui.template.TemplateEngine;
 import com.hellokaton.blade.options.HttpOptions;
+import com.hellokaton.blade.options.StaticOptions;
 import com.hellokaton.blade.types.BladeClassDefineType;
 import com.mashape.unirest.http.Unirest;
 import netty_hello.Hello;
@@ -120,11 +121,14 @@ public class BladeTest extends BaseTestCase {
     @Test
     public void testAddStatics() {
         Blade blade = Blade.create();
-        blade.addStatics("/assets/", "/public");
+        blade.staticOptions(options -> {
+            options.addStatic("/assets/");
+            options.addStatic("/assets/");
+        });
 
-        assertEquals(7, blade.getStatics().size());
-        assertEquals(Boolean.TRUE, blade.getStatics().contains("/assets/"));
-        assertEquals(Boolean.FALSE, blade.getStatics().contains("/hello/"));
+        assertEquals(7, blade.staticOptions().getPaths().size());
+        assertEquals(Boolean.TRUE, blade.staticOptions().getPaths().contains("/assets/"));
+        assertEquals(Boolean.FALSE, blade.staticOptions().getPaths().contains("/hello/"));
     }
 
     @Test
@@ -194,8 +198,8 @@ public class BladeTest extends BaseTestCase {
     @Test
     public void testShowFileList() {
         Blade blade = Blade.create();
-        blade.showFileList(false);
-        assertEquals(Boolean.FALSE, blade.environment().getBooleanOrNull(ENV_KEY_STATIC_LIST));
+        blade.staticOptions(StaticOptions::showList);
+        assertEquals(Boolean.FALSE, blade.staticOptions().isShowList());
     }
 
     @Test

@@ -59,10 +59,12 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<HttpRequest> 
 
     public static final FastThreadLocal<WebContext> WEB_CONTEXT_THREAD_LOCAL = new FastThreadLocal<>();
 
-    private final StaticFileHandler staticFileHandler = new StaticFileHandler(WebContext.blade());
+    static final StaticFileHandler staticFileHandler = new StaticFileHandler(WebContext.blade());
+
+    static final RouteMatcher routeMatcher = WebContext.blade().routeMatcher();
+
     private final RouteMethodHandler routeHandler = new RouteMethodHandler();
     private final Set<String> notStaticUri = new LRUSet<>(128);
-    private final RouteMatcher routeMatcher = WebContext.blade().routeMatcher();
 
     private boolean recordRequestLog() {
         return WebContext.blade().environment()
@@ -174,10 +176,16 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<HttpRequest> 
             return false;
         }
 
-        if (WebContext.blade().getStatics().stream().noneMatch(s -> s.equals(uri) || uri.startsWith(s))) {
+        if (FAVICON_PATH.equals(uri)) {
+            return true;
+        }
+
+        Set<String> paths = WebContext.blade().staticOptions().getPaths();
+        if (paths.stream().noneMatch(s -> s.equals(uri) || uri.startsWith(s))) {
             notStaticUri.add(uri);
             return false;
         }
+
         return true;
     }
 

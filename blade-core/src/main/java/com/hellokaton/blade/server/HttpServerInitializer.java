@@ -5,6 +5,7 @@ import com.hellokaton.blade.Environment;
 import com.hellokaton.blade.kit.DateKit;
 import com.hellokaton.blade.options.CorsOptions;
 import com.hellokaton.blade.options.HttpOptions;
+import com.hellokaton.blade.options.StaticOptions;
 import com.hellokaton.blade.server.decode.FullHttpRequestDecode;
 import com.hellokaton.blade.server.decode.HttpObjectAggregatorDecode;
 import io.netty.channel.ChannelInitializer;
@@ -34,11 +35,11 @@ import static com.hellokaton.blade.mvc.BladeConst.*;
 public class HttpServerInitializer extends ChannelInitializer<SocketChannel> {
 
     private final HttpServerHandler httpServerHandler;
-
     private final SslContext sslCtx;
     private CorsConfig corsConfig;
     private int maxContentSize;
     private boolean enableGzip;
+
     public static volatile String date = DateKit.gmtDate(LocalDateTime.now());
 
 
@@ -46,9 +47,11 @@ public class HttpServerInitializer extends ChannelInitializer<SocketChannel> {
         this.sslCtx = sslCtx;
         this.httpServerHandler = new HttpServerHandler();
         this.mergeCorsConfig(blade.corsOptions());
+        this.mergeStaticOptions(blade.staticOptions(), blade.environment());
         this.mergeHttpOptions(blade.httpOptions(), blade.environment());
         service.scheduleWithFixedDelay(() -> date = DateKit.gmtDate(LocalDateTime.now()), 1000, 1000, TimeUnit.MILLISECONDS);
     }
+
 
     @Override
     protected void initChannel(SocketChannel ch) {
@@ -112,6 +115,24 @@ public class HttpServerInitializer extends ChannelInitializer<SocketChannel> {
             corsConfigBuilder.allowedRequestHeaders(corsOptions.getAllowedHeaders().toArray(new String[0]));
         }
         this.corsConfig = corsConfigBuilder.build();
+    }
+
+    private void mergeStaticOptions(StaticOptions staticOptions, Environment environment) {
+        int cacheSeconds = staticOptions.getCacheSeconds();
+        if (cacheSeconds > 0 && StaticOptions.DEFAULT_CACHE_SECONDS != cacheSeconds) {
+            environment.set(ENV_KEY_STATIC_CACHE_SECONDS, cacheSeconds);
+        } else {
+            cacheSeconds = environment.getInt(ENV_KEY_STATIC_CACHE_SECONDS, StaticOptions.DEFAULT_CACHE_SECONDS);
+            staticOptions.setCacheSeconds(cacheSeconds);
+        }
+
+        boolean showList = staticOptions.isShowList();
+        if (showList) {
+            environment.set(ENV_KEY_STATIC_LIST, true);
+        } else {
+            showList = environment.getBoolean(ENV_KEY_STATIC_LIST, Boolean.FALSE);
+            staticOptions.setShowList(showList);
+        }
     }
 
     private void mergeHttpOptions(HttpOptions httpOptions, Environment environment) {
