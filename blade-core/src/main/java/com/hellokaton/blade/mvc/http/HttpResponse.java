@@ -1,7 +1,7 @@
 package com.hellokaton.blade.mvc.http;
 
+import com.hellokaton.blade.mvc.HttpConst;
 import com.hellokaton.blade.mvc.ui.ModelAndView;
-import com.hellokaton.blade.server.NettyHttpConst;
 import io.netty.handler.codec.http.cookie.Cookie;
 import io.netty.handler.codec.http.cookie.DefaultCookie;
 import lombok.NonNull;
@@ -145,7 +145,7 @@ public class HttpResponse implements Response {
 
     @Override
     public void redirect(@NonNull String newUri) {
-        headers.put(NettyHttpConst.LOCATION.toString(), newUri);
+        headers.put(HttpConst.HEADER_LOCATION, newUri);
         this.status(302);
     }
 

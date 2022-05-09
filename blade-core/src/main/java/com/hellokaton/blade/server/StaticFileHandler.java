@@ -41,6 +41,8 @@ import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLDecoder;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -51,7 +53,9 @@ import java.util.jar.JarFile;
 import java.util.regex.Pattern;
 
 import static com.hellokaton.blade.kit.BladeKit.*;
+import static com.hellokaton.blade.mvc.BladeConst.HTTP_DATE_FORMAT;
 import static io.netty.handler.codec.http.HttpResponseStatus.*;
+import static io.netty.handler.codec.http.HttpVersion.HTTP_1_0;
 import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 import static java.util.stream.Collectors.toList;
 
@@ -75,11 +79,11 @@ public class StaticFileHandler implements RequestHandler {
     /**
      * default cache 30 days.
      */
-    private final long httpCacheSeconds;
+    private final int httpCacheSeconds;
 
     public StaticFileHandler(Blade blade) {
         this.showFileList = blade.environment().getBoolean(BladeConst.ENV_KEY_STATIC_LIST, false);
-        this.httpCacheSeconds = blade.environment().getLong(BladeConst.ENV_KEY_HTTP_CACHE_TIMEOUT, 86400 * 30);
+        this.httpCacheSeconds = blade.environment().getInt(BladeConst.ENV_KEY_HTTP_CACHE_TIMEOUT, 86400 * 30);
     }
 
     /**
@@ -149,7 +153,9 @@ public class StaticFileHandler implements RequestHandler {
         }
 
         // Cache Validation
-        if (isHttp304(ctx, request, file.length(), file.lastModified())) {
+        String ifModifiedSince = request.header(HttpConst.HEADER_IF_MODIFIED_SINCE);
+        if (ifModifiedSince != null && !ifModifiedSince.isEmpty()) {
+            this.http304(request, ctx, file, ifModifiedSince);
             log304(log, method, uri);
             return;
         }
@@ -182,9 +188,9 @@ public class StaticFileHandler implements RequestHandler {
             return;
         }
 
-        httpResponse.headers().set(NettyHttpConst.CONTENT_LENGTH, length);
+        httpResponse.headers().set(HttpHeaderNames.CONTENT_LENGTH, length);
         if (request.keepAlive()) {
-            httpResponse.headers().set(NettyHttpConst.CONNECTION, NettyHttpConst.KEEP_ALIVE);
+            httpResponse.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE);
         }
 
         // Write the initial line and the header.
@@ -222,6 +228,65 @@ public class StaticFileHandler implements RequestHandler {
         log200AndCost(log, start, method, uri);
     }
 
+    private void http304(Request request, ChannelHandlerContext ctx,
+                         File file, String ifModifiedSince) throws ParseException {
+        SimpleDateFormat dateFormatter = new SimpleDateFormat(HTTP_DATE_FORMAT, Locale.US);
+        Date ifModifiedSinceDate = dateFormatter.parse(ifModifiedSince);
+
+        // Only compare up to the second because the datetime format we send to the client
+        // does not have milliseconds
+        long ifModifiedSinceDateSeconds = ifModifiedSinceDate.getTime() / 1000;
+        long fileLastModifiedSeconds = file.lastModified() / 1000;
+        if (ifModifiedSinceDateSeconds == fileLastModifiedSeconds) {
+            this.sendNotModified(ctx, request);
+        }
+    }
+
+    private void sendNotModified(ChannelHandlerContext ctx, Request request) {
+        FullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1, NOT_MODIFIED, Unpooled.EMPTY_BUFFER);
+        setDateHeader(response);
+        sendAndCleanupConnection(ctx, request, response);
+    }
+
+    public static final String HTTP_DATE_GMT_TIMEZONE = "GMT";
+
+    /**
+     * Sets the Date header for the HTTP response
+     *
+     * @param response HTTP response
+     */
+    private static void setDateHeader(FullHttpResponse response) {
+        SimpleDateFormat dateFormatter = new SimpleDateFormat(HTTP_DATE_FORMAT, Locale.US);
+        dateFormatter.setTimeZone(TimeZone.getTimeZone(HTTP_DATE_GMT_TIMEZONE));
+
+        Calendar time = new GregorianCalendar();
+        response.headers().set(HttpHeaderNames.DATE, dateFormatter.format(time.getTime()));
+    }
+
+
+    /**
+     * If Keep-Alive is disabled, attaches "Connection: close" header to the response
+     * and closes the connection after the response being sent.
+     */
+    private void sendAndCleanupConnection(ChannelHandlerContext ctx, Request request, FullHttpResponse response) {
+        final boolean keepAlive = request.keepAlive();
+        HttpUtil.setContentLength(response, response.content().readableBytes());
+        if (!keepAlive) {
+            // We're going to close the connection as soon as the response is sent,
+            // so we should also make it clear for the client.
+            response.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.CLOSE);
+        } else if (HTTP_1_0.text().equals(request.protocol())) {
+            response.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE);
+        }
+
+        ChannelFuture flushPromise = ctx.writeAndFlush(response);
+
+        if (!keepAlive) {
+            // Close the connection as soon as the response is sent.
+            flushPromise.addListener(ChannelFutureListener.CLOSE);
+        }
+    }
+
     private List<FileMeta> getFileMetas(File file) {
         if (file.isHidden() || !file.canRead() || file.listFiles() == null) {
             return Collections.emptyList();
@@ -253,7 +318,10 @@ public class StaticFileHandler implements RequestHandler {
         return StaticFileHandler.class.getClassLoader().getResource(uri);
     }
 
-    private void writeWithJarFile(Request request, ChannelHandlerContext ctx, String uri, Instant start, String cleanUri, String method, InputStream input) throws IOException {
+    private void writeWithJarFile(Request request, ChannelHandlerContext ctx,
+                                  String uri, Instant start,
+                                  String cleanUri, String method,
+                                  InputStream input) throws IOException {
         if (null == input) {
             throw new NotFoundException(uri);
         }
@@ -262,13 +330,14 @@ public class StaticFileHandler implements RequestHandler {
         }
     }
 
-    private boolean writeJarResource(ChannelHandlerContext ctx, Request request, String cleanUri, InputStream input) throws IOException {
+    private boolean writeJarResource(ChannelHandlerContext ctx, Request request,
+                                     String cleanUri, InputStream input) throws IOException {
         try {
             var staticInputStream = new StaticInputStream(input);
 
             int size = staticInputStream.size();
 
-            if (isHttp304(ctx, request, size, -1)) {
+            if (this.executeHttp304(ctx, request, size, -1)) {
                 log304(log, request.method(), cleanUri);
                 return false;
             }
@@ -278,12 +347,12 @@ public class StaticFileHandler implements RequestHandler {
             setDateAndCacheHeaders(httpResponse, null);
             String contentType = MimeTypeKit.parse(cleanUri);
             if (null != contentType) {
-                httpResponse.headers().set(NettyHttpConst.CONTENT_TYPE, contentType);
+                httpResponse.headers().set(HttpHeaderNames.CONTENT_TYPE, contentType);
             }
-            httpResponse.headers().set(NettyHttpConst.CONTENT_LENGTH, size);
+            httpResponse.headers().set(HttpHeaderNames.CONTENT_LENGTH, size);
 
             if (request.keepAlive()) {
-                httpResponse.headers().set(NettyHttpConst.CONNECTION, NettyHttpConst.KEEP_ALIVE);
+                httpResponse.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE);
             }
             // Write the initial line and the header.
             ctx.writeAndFlush(httpResponse);
@@ -304,12 +373,12 @@ public class StaticFileHandler implements RequestHandler {
         }
     }
 
-    private boolean isHttp304(ChannelHandlerContext ctx, Request request, long size, long lastModified) {
-        String ifModifiedSince = request.header(NettyHttpConst.IF_MODIFIED_SINCE);
+    private boolean executeHttp304(ChannelHandlerContext ctx, Request request, long size, long lastModified) {
+        String ifModifiedSince = request.header(HttpConst.HEADER_IF_MODIFIED_SINCE);
 
         if (StringKit.isNotEmpty(ifModifiedSince) && httpCacheSeconds > 0) {
 
-            Date ifModifiedSinceDate = format(ifModifiedSince, BladeConst.HTTP_DATE_FORMAT);
+            Date ifModifiedSinceDate = format(ifModifiedSince, HTTP_DATE_FORMAT);
 
             // Only compare up to the second because the datetime format we send to the client
             // does not have milliseconds
@@ -320,13 +389,13 @@ public class StaticFileHandler implements RequestHandler {
 
                 String contentType = MimeTypeKit.parse(request.uri());
                 if (null != contentType) {
-                    response.headers().set(NettyHttpConst.CONTENT_TYPE, contentType);
+                    response.headers().set(HttpHeaderNames.CONTENT_TYPE, contentType);
                 }
 
-                response.headers().set(NettyHttpConst.DATE, DateKit.gmtDate());
-                response.headers().set(NettyHttpConst.CONTENT_LENGTH, size);
+                response.headers().set(HttpHeaderNames.DATE, DateKit.gmtDate());
+                response.headers().set(HttpHeaderNames.CONTENT_LENGTH, size);
                 if (request.keepAlive()) {
-                    response.headers().set(NettyHttpConst.CONNECTION, NettyHttpConst.KEEP_ALIVE);
+                    response.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE);
                 }
                 // Close the connection as soon as the error message is sent.
                 ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
@@ -350,16 +419,20 @@ public class StaticFileHandler implements RequestHandler {
      * @param fileToCache file to extract content type
      */
     private void setDateAndCacheHeaders(HttpResponse response, File fileToCache) {
-        response.headers().set(NettyHttpConst.DATE, DateKit.gmtDate());
+        SimpleDateFormat dateFormatter = new SimpleDateFormat(HTTP_DATE_FORMAT, Locale.US);
+        dateFormatter.setTimeZone(TimeZone.getTimeZone(HTTP_DATE_GMT_TIMEZONE));
+        // Date header
+        Calendar time = new GregorianCalendar();
+        response.headers().set(HttpHeaderNames.DATE, dateFormatter.format(time.getTime()));
+
         // Add cache headers
         if (httpCacheSeconds > 0) {
-            response.headers().set(NettyHttpConst.EXPIRES, DateKit.gmtDate(LocalDateTime.now().plusSeconds(httpCacheSeconds)));
-            response.headers().set(NettyHttpConst.CACHE_CONTROL, "private, max-age=" + httpCacheSeconds);
-            if (null != fileToCache) {
-                response.headers().set(NettyHttpConst.LAST_MODIFIED, DateKit.gmtDate(new Date(fileToCache.lastModified())));
-            } else {
-                response.headers().set(NettyHttpConst.LAST_MODIFIED, DateKit.gmtDate(LocalDateTime.now().plusDays(-1)));
-            }
+            time.add(Calendar.SECOND, httpCacheSeconds);
+
+            response.headers().set(HttpHeaderNames.EXPIRES, dateFormatter.format(time.getTime()));
+            response.headers().set(HttpHeaderNames.CACHE_CONTROL, "private, max-age=" + httpCacheSeconds);
+            response.headers().set(
+                    HttpHeaderNames.LAST_MODIFIED, dateFormatter.format(new Date(fileToCache.lastModified())));
         }
     }
 
@@ -407,7 +480,7 @@ public class StaticFileHandler implements RequestHandler {
 
     private static void sendListing(ChannelHandlerContext ctx, String uri, List<FileMeta> listFiles, String dirPath) {
         var response = new DefaultFullHttpResponse(HTTP_1_1, OK);
-        response.headers().set(NettyHttpConst.CONTENT_TYPE, "text/html; charset=UTF-8");
+        response.headers().set(HttpHeaderNames.CONTENT_TYPE, "text/html; charset=UTF-8");
         StringBuilder buf = new StringBuilder()
                 .append("<!DOCTYPE html>\r\n")
                 .append("<html><head>")
@@ -426,7 +499,7 @@ public class StaticFileHandler implements RequestHandler {
                 continue;
             }
             String path = uri.substring(0, uri.indexOf(s) + s.length());
-            buf.append("<a href='" + path + "'>" + s + "</a>");
+            buf.append("<a href='").append(path).append("'>").append(s).append("</a>");
         }
 
         buf.append("</h1>");
@@ -480,7 +553,7 @@ public class StaticFileHandler implements RequestHandler {
         var response = new DefaultFullHttpResponse(HTTP_1_1, status,
                 Unpooled.copiedBuffer("Failure: " + status + "\r\n", CharsetUtil.UTF_8));
 
-        response.headers().set(NettyHttpConst.CONTENT_TYPE, HttpConst.CONTENT_TYPE_TEXT);
+        response.headers().set(HttpHeaderNames.CONTENT_TYPE, HttpConst.CONTENT_TYPE_TEXT);
         // Close the connection as soon as the error message is sent.
         ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
     }
@@ -517,11 +590,11 @@ public class StaticFileHandler implements RequestHandler {
         if (null == contentType) {
             contentType = URLConnection.guessContentTypeFromName(file.getName());
         }
-        response.headers().set(NettyHttpConst.CONTENT_TYPE, contentType);
+        response.headers().set(HttpHeaderNames.CONTENT_TYPE, contentType);
     }
 
     private void setGzip(HttpResponse response) {
-        response.headers().set(NettyHttpConst.CONTENT_ENCODING, "gzip");
+        response.headers().set(HttpHeaderNames.CONTENT_ENCODING, HttpHeaderValues.GZIP);
     }
 
 }

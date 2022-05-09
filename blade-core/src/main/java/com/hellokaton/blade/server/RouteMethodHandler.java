@@ -37,7 +37,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import static com.hellokaton.blade.server.NettyHttpConst.*;
 import static io.netty.handler.codec.http.HttpHeaderNames.TRANSFER_ENCODING;
 import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
@@ -135,12 +134,12 @@ public class RouteMethodHandler implements RequestHandler {
                     httpResponse.headers().set(next.getKey(), next.getValue());
                 }
                 if (request.keepAlive()) {
-                    httpResponse.headers().set(CONNECTION, KEEP_ALIVE);
+                    httpResponse.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE);
                 }
                 String mimeType;
                 if (!httpResponse.headers().contains(HttpConst.HEADER_CONTENT_TYPE) && StringKit.isNotEmpty(fileName)) {
                     mimeType = MimeTypeKit.parse(fileName);
-                    httpResponse.headers().set(CONTENT_TYPE, mimeType);
+                    httpResponse.headers().set(HttpHeaderNames.CONTENT_TYPE, mimeType);
                 }
                 long length;
                 try {
@@ -151,7 +150,7 @@ public class RouteMethodHandler implements RequestHandler {
                     return httpResponse;
                 }
 
-                httpResponse.headers().set(NettyHttpConst.CONTENT_LENGTH.toString(), length);
+                httpResponse.headers().set(HttpHeaderNames.CONTENT_LENGTH, length);
 
                 context.write(httpResponse);
 
@@ -165,8 +164,8 @@ public class RouteMethodHandler implements RequestHandler {
     }
 
     private void setDefaultHeaders(HttpHeaders headers) {
-        headers.set(NettyHttpConst.DATE, HttpServerInitializer.date);
-        headers.set(NettyHttpConst.SERVER, HttpConst.HEADER_SERVER_VALUE);
+        headers.set(HttpHeaderNames.DATE, HttpServerInitializer.date);
+        headers.set(HttpHeaderNames.SERVER, HttpConst.HEADER_SERVER_VALUE);
     }
 
     private FullHttpResponse createResponseByByteBuf(Response response, ByteBuf byteBuf) {
@@ -174,7 +173,7 @@ public class RouteMethodHandler implements RequestHandler {
 
         var httpResponse = new DefaultFullHttpResponse(HTTP_1_1, HttpResponseStatus.valueOf(response.statusCode()), byteBuf);
 
-        httpResponse.headers().set(CONTENT_LENGTH, httpResponse.content().readableBytes());
+        httpResponse.headers().set(HttpHeaderNames.CONTENT_LENGTH, httpResponse.content().readableBytes());
         setDefaultHeaders(httpResponse.headers());
 
         if (response.cookiesRaw().size() > 0) {
@@ -182,14 +181,14 @@ public class RouteMethodHandler implements RequestHandler {
         }
 
         for (Map.Entry<String, String> next : headers.entrySet()) {
-            httpResponse.headers().set(NettyHttpConst.getAsciiString(next.getKey()), next.getValue());
+            httpResponse.headers().set(next.getKey(), next.getValue());
         }
         return httpResponse;
     }
 
     private void appendCookie(Response response, DefaultFullHttpResponse httpResponse) {
         for (io.netty.handler.codec.http.cookie.Cookie next : response.cookiesRaw()) {
-            httpResponse.headers().add(NettyHttpConst.SET_COOKIE,
+            httpResponse.headers().add(HttpHeaderNames.SET_COOKIE,
                     io.netty.handler.codec.http.cookie.ServerCookieEncoder.LAX.encode(next));
         }
     }
