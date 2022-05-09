@@ -64,9 +64,10 @@ public class Application {
     }
 
     @GET
-    public String home(Request req) {
+    public String index(Request req) {
         String token = req.attribute("_csrf_token");
         System.out.println("token = " + token);
+        token = null == token ? "token is null" : token;
         return token;
     }
 

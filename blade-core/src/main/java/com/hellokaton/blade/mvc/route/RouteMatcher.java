@@ -74,9 +74,6 @@ public class RouteMatcher {
             if (null != order) {
                 route.setSort(order.value());
             }
-            if (route.getPath().contains("*")) {
-                route.setPath(route.getPath().replaceAll("\\*", ""));
-            }
             if (this.hooks.containsKey(key)) {
                 this.hooks.get(key).add(route);
             } else {
@@ -121,7 +118,7 @@ public class RouteMatcher {
             for (Method method : methods) {
                 if (method.getName().equals(methodName)) {
                     Object controller = controllerPool.computeIfAbsent(clazz, k -> ReflectKit.newInstance(clazz));
-                    addRoute(httpMethod, path, controller, clazz, method, null);
+                    this.addRoute(httpMethod, path, controller, clazz, method, null);
                 }
             }
         } catch (Exception e) {
@@ -161,7 +158,8 @@ public class RouteMatcher {
         List<Route> collect = hooks.values().stream()
                 .flatMap(Collection::stream)
                 .sorted(Comparator.comparingInt(Route::getSort))
-                .filter(route -> route.getHttpMethod() == HttpMethod.BEFORE && matchesPath(route.getPath(), cleanPath))
+                .filter(route -> route.getHttpMethod() == HttpMethod.BEFORE)
+                .filter(route -> matchesPath(route.getPath(), cleanPath))
                 .collect(Collectors.toList());
 
         this.giveMatch(path, collect);
@@ -179,7 +177,8 @@ public class RouteMatcher {
         List<Route> afters = hooks.values().stream()
                 .flatMap(Collection::stream)
                 .sorted(Comparator.comparingInt(Route::getSort))
-                .filter(route -> route.getHttpMethod() == HttpMethod.AFTER && matchesPath(route.getPath(), cleanPath))
+                .filter(route -> route.getHttpMethod() == HttpMethod.AFTER)
+                .filter(route -> matchesPath(route.getPath(), cleanPath))
                 .collect(Collectors.toList());
 
         this.giveMatch(path, afters);
@@ -220,9 +219,6 @@ public class RouteMatcher {
      * @return return match is success
      */
     private boolean matchesPath(String routePath, String pathToMatch) {
-        if ("/".equals(routePath)) {
-            return true;
-        }
         return pathToMatch.startsWith(routePath);
     }
 

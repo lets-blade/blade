@@ -105,11 +105,12 @@ public class StaticFileHandler implements RequestHandler {
 
         Instant start = Instant.now();
 
-        Route route = webContext.getRoute();
-
         String uri = request.attribute(REQUEST_TO_STATIC_ATTR);
         if (null != uri) {
-
+            Route route = webContext.getRoute();
+            if (route.isWildcard()) {
+                uri = uri + request.uri().replace(route.getRewritePath(), "");
+            }
         } else {
             uri = URLDecoder.decode(request.uri(), "UTF-8");
         }
@@ -314,7 +315,7 @@ public class StaticFileHandler implements RequestHandler {
     private String getCleanURL(Request request, String uri) {
         uri = PathKit.cleanPath(uri.replaceFirst(request.contextPath(), "/"));
         if (uri.endsWith("/")) {
-            uri = uri.substring(0, uri.length() - 1);
+            uri = StringKit.stripEnd(uri, "/");
         }
         return uri;
     }

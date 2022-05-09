@@ -98,7 +98,7 @@ public class RouteBuilder {
         for (String path : paths) {
             String pathV = getRoutePath(path, routeStruct.nameSpace, routeStruct.suffix);
 
-            routeMatcher.addRoute(com.hellokaton.blade.mvc.route.Route.builder()
+            routeMatcher.addRoute(Route.builder()
                     .target(routeStruct.controller)
                     .targetType(routeStruct.routeType)
                     .action(routeStruct.method)

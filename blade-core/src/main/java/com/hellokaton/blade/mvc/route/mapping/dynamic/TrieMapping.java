@@ -12,18 +12,18 @@ import java.util.*;
 
 /**
  * Trie tree based url route
- *
+ * <p>
  * Support:
- *  - * : match any one part
- *  - /* : match suffix with any number of parts
- *  - :xxx : match one part as path variable
- *
+ * - * : match any one part
+ * - /* : match suffix with any number of parts
+ * - :xxx : match one part as path variable
+ * <p>
  * Example:
- *  - /aaa/* :   /aaa/bbb, /aaa/bbb/ccc
- *  - /aaa/*\/ccc : /aaa/bbb/ccc, /aaa/ddd/ccc
- *  - /aaa/*\/ccc/*
- *  - /aaa/bbb/:id : /aaa/bbb/ccc
- *  - /aaa/bbb/:name/:id
+ * - /aaa/* :   /aaa/bbb, /aaa/bbb/ccc
+ * - /aaa/*\/ccc : /aaa/bbb/ccc, /aaa/ddd/ccc
+ * - /aaa/*\/ccc/*
+ * - /aaa/bbb/:id : /aaa/bbb/ccc
+ * - /aaa/bbb/:name/:id
  *
  * @author: dqyuan
  * @date: 2020/06/25
@@ -107,8 +107,8 @@ public class TrieMapping implements DynamicMapping {
                         return staticChildren.computeIfAbsent(child.getPart(), ignore -> child);
                     }
                     throw new IllegalStateException(
-                      String.format("%s conflict with path %s", child.getPart(),
-                              dynamicChild.getPart())
+                            String.format("%s conflict with path %s", child.getPart(),
+                                    dynamicChild.getPart())
                     );
             }
             throw new IllegalStateException();
@@ -116,6 +116,7 @@ public class TrieMapping implements DynamicMapping {
 
         /**
          * is end of a url
+         *
          * @return
          */
         public boolean isEnd() {
@@ -147,19 +148,14 @@ public class TrieMapping implements DynamicMapping {
 
         Node prev = root;
 
-        if ("/".equals(route.getPath())) {
-            Node nodeByPart = getNodeByPart(path);
-            if (NodeType.WILD.equals(nodeByPart.type)) {
-                route.setWildcard(true);
-            }
-            prev = prev.putChildIfAbsent(nodeByPart, true);
-            prev.getRouteMap().put(httpMethod, route);
-            return;
+        String[] parts;
+        if ("/".equals(path)) {
+            parts = new String[]{"/"};
+        } else {
+            path = StringKit.strip(path, "/");
+            parts = path.split("/");
         }
 
-        path = StringKit.strip(route.getPath(), "/");
-
-        String[] parts = path.split("/");
         for (int i = 0; i < parts.length; i++) {
             String part = parts[i];
             if (StringKit.isBlank(part)) {
@@ -201,7 +197,7 @@ public class TrieMapping implements DynamicMapping {
     @Override
     public Route findRoute(String httpMethod, String path) {
         HttpMethod requestMethod = HttpMethod.valueOf(httpMethod);
-        Map<String, String> uriVariables = new LinkedHashMap<>(2);
+        Map<String, String> uriVariables = null;
         Iterator<String> partIter = partIter(path);
         Node prev = root;
         walk:
@@ -227,6 +223,9 @@ public class TrieMapping implements DynamicMapping {
                     }
                     prev = prev.getDynamicChild();
                     if (prev.getType() == NodeType.PARAM) {
+                        if (null == uriVariables) {
+                            uriVariables = new LinkedHashMap<>(2);
+                        }
                         uriVariables.put(prev.getPart().substring(1), part);
                     }
                     break;
@@ -243,7 +242,9 @@ public class TrieMapping implements DynamicMapping {
                 return null;
             }
             Route route = new Route(selectedRoute);
-            route.setPathParams(uriVariables);
+            if (null != uriVariables) {
+                route.setPathParams(uriVariables);
+            }
             return route;
         }
 
@@ -257,6 +258,11 @@ public class TrieMapping implements DynamicMapping {
 
             @Override
             public boolean hasNext() {
+                if (this.start == 1 && "/".equals(path)) {
+//                    return true;
+                    this.start = 0;
+                    this.end = 1;
+                }
                 return end <= path.length();
             }
 
