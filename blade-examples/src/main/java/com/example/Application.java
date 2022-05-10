@@ -115,25 +115,21 @@ public class Application {
     @GET(value = "/img")
     public void img(Response response) throws IOException {
         ByteBufOutputStream out = new ByteBufOutputStream(Unpooled.buffer());
-        int width = 200, height = 250;
-        //创建图片对象
-        BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_4BYTE_ABGR);
-        //基于图片对象打开绘图
-        Graphics2D graphics = image.createGraphics();
-        //绘图逻辑 START （基于业务逻辑进行绘图处理）……
+        BufferedImage image = drawImage();
 
-        //绘制圆形
-        graphics.setColor(Color.BLACK);
-        Ellipse2D.Double ellipse = new Ellipse2D.Double(20, 20, 100, 100);
-        graphics.draw(ellipse);
-        // 绘图逻辑 END
-        //处理绘图
-        graphics.dispose();
-        //将绘制好的图片写入到图片
-//        ImageIO.write(image, "PNG", new FileOutputStream("aaa.png"));
         ImageIO.write(image, "PNG", out);
         response.contentType("image/png");
         response.body(new ByteBody(out.buffer()));
+    }
+
+    private BufferedImage drawImage() {
+        BufferedImage image = new BufferedImage(200, 250, BufferedImage.TYPE_4BYTE_ABGR);
+        Graphics2D graphics = image.createGraphics();
+        graphics.setColor(Color.BLACK);
+        Ellipse2D.Double ellipse = new Ellipse2D.Double(20, 20, 100, 100);
+        graphics.draw(ellipse);
+        graphics.dispose();
+        return image;
     }
 
     @GET(value = "/public/**", responseType = ResponseType.PREVIEW)
