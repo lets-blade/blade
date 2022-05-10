@@ -1,28 +1,27 @@
 package com.hellokaton.blade.mvc.http;
 
-import io.netty.handler.codec.http.DefaultHttpResponse;
 import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.handler.codec.http.HttpResponse;
 
 public class RawBody implements Body {
 
     private HttpResponse    httpResponse;
-    private DefaultHttpResponse defaultHttpResponse;
+    private FullHttpResponse fullHttpResponse;
 
-    public RawBody(FullHttpResponse httpResponse) {
+    public RawBody(HttpResponse httpResponse) {
         this.httpResponse = httpResponse;
     }
 
-    public RawBody(DefaultHttpResponse defaultHttpResponse) {
-        this.defaultHttpResponse = defaultHttpResponse;
+    public RawBody(FullHttpResponse fullHttpResponse) {
+        this.fullHttpResponse = fullHttpResponse;
     }
 
     public HttpResponse httpResponse() {
         return httpResponse;
     }
 
-    public DefaultHttpResponse defaultHttpResponse() {
-        return defaultHttpResponse;
+    public FullHttpResponse defaultHttpResponse() {
+        return fullHttpResponse;
     }
 
     @Override

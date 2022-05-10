@@ -31,8 +31,7 @@ import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
-import io.netty.handler.codec.http.DefaultFullHttpResponse;
-import io.netty.handler.codec.http.FullHttpResponse;
+import io.netty.handler.codec.http.DefaultHttpResponse;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.util.concurrent.FastThreadLocal;
 import lombok.extern.slf4j.Slf4j;
@@ -166,7 +165,7 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<HttpRequest> 
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         if (!ExceptionHandler.isResetByPeer(cause)) {
             log.error(cause.getMessage(), cause);
-            FullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1, HttpResponseStatus.valueOf(500));
+            io.netty.handler.codec.http.HttpResponse response = new DefaultHttpResponse(HTTP_1_1, HttpResponseStatus.INTERNAL_SERVER_ERROR);
             ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
         }
     }

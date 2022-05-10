@@ -20,13 +20,12 @@ import lombok.var;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
 import static com.hellokaton.blade.kit.BladeKit.log404;
 import static com.hellokaton.blade.kit.BladeKit.log405;
-import static com.hellokaton.blade.mvc.BladeConst.ENV_KEY_PAGE_404;
-import static com.hellokaton.blade.mvc.BladeConst.ENV_KEY_PAGE_500;
-import static com.hellokaton.blade.mvc.BladeConst.INTERNAL_SERVER_ERROR_HTML;
+import static com.hellokaton.blade.mvc.BladeConst.*;
 
 /**
  * Default exception handler implements
@@ -41,7 +40,7 @@ public class DefaultExceptionHandler implements ExceptionHandler {
     public void handle(Exception e) {
         if (!ExceptionHandler.isResetByPeer(e)) {
             var response = WebContext.response();
-            var request  = WebContext.request();
+            var request = WebContext.request();
 
             if (e instanceof BladeException) {
                 this.handleBladeException((BladeException) e, request, response);
@@ -126,7 +125,7 @@ public class DefaultExceptionHandler implements ExceptionHandler {
     }
 
     protected void render500(Request request, Response response) {
-        var blade   = WebContext.blade();
+        var blade = WebContext.blade();
         var page500 = Optional.ofNullable(blade.environment().get(ENV_KEY_PAGE_500, null));
 
         if (page500.isPresent()) {
@@ -156,7 +155,7 @@ public class DefaultExceptionHandler implements ExceptionHandler {
         var sw = new StringWriter();
         try {
             WebContext.blade().templateEngine().render(modelAndView, sw);
-            ByteBuf          buffer           = Unpooled.wrappedBuffer(sw.toString().getBytes("utf-8"));
+            ByteBuf buffer = Unpooled.wrappedBuffer(sw.toString().getBytes(StandardCharsets.UTF_8));
             FullHttpResponse fullHttpResponse = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(response.statusCode()), buffer);
             response.body(new RawBody(fullHttpResponse));
         } catch (Exception e) {
