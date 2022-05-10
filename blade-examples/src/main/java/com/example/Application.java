@@ -10,18 +10,27 @@ import com.hellokaton.blade.annotation.route.ANY;
 import com.hellokaton.blade.annotation.route.DELETE;
 import com.hellokaton.blade.annotation.route.GET;
 import com.hellokaton.blade.annotation.route.POST;
+import com.hellokaton.blade.mvc.http.ByteBody;
 import com.hellokaton.blade.mvc.http.Request;
 import com.hellokaton.blade.mvc.http.Response;
 import com.hellokaton.blade.mvc.http.StaticFileBody;
 import com.hellokaton.blade.mvc.multipart.FileItem;
+import com.hellokaton.blade.mvc.multipart.MimeType;
 import com.hellokaton.blade.mvc.ui.ResponseType;
 import com.hellokaton.blade.mvc.ui.RestResponse;
 import com.hellokaton.blade.options.CorsOptions;
 import com.hellokaton.blade.options.HttpOptions;
 import com.hellokaton.blade.security.limit.LimitOptions;
+import io.netty.buffer.ByteBufOutputStream;
+import io.netty.buffer.Unpooled;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.geom.Ellipse2D;
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -101,6 +110,30 @@ public class Application {
     @GET(value = "/ss", responseType = ResponseType.PREVIEW)
     public StaticFileBody staticFile() {
         return StaticFileBody.of("/static/main.css");
+    }
+
+    @GET(value = "/img")
+    public void img(Response response) throws IOException {
+        ByteBufOutputStream out = new ByteBufOutputStream(Unpooled.buffer());
+        int width = 200, height = 250;
+        //创建图片对象
+        BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_4BYTE_ABGR);
+        //基于图片对象打开绘图
+        Graphics2D graphics = image.createGraphics();
+        //绘图逻辑 START （基于业务逻辑进行绘图处理）……
+
+        //绘制圆形
+        graphics.setColor(Color.BLACK);
+        Ellipse2D.Double ellipse = new Ellipse2D.Double(20, 20, 100, 100);
+        graphics.draw(ellipse);
+        // 绘图逻辑 END
+        //处理绘图
+        graphics.dispose();
+        //将绘制好的图片写入到图片
+//        ImageIO.write(image, "PNG", new FileOutputStream("aaa.png"));
+        ImageIO.write(image, "PNG", out);
+        response.contentType("image/png");
+        response.body(new ByteBody(out.buffer()));
     }
 
     @GET(value = "/public/**", responseType = ResponseType.PREVIEW)

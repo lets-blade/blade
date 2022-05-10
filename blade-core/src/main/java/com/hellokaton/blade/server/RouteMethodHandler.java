@@ -106,12 +106,12 @@ public class RouteMethodHandler implements RequestHandler {
         return response.body().write(new BodyWriter() {
 
             @Override
-            public HttpResponse onByteBuf(ByteBuf byteBuf) {
+            public FullHttpResponse onByteBuf(ByteBuf byteBuf) {
                 return createResponseByByteBuf(response, byteBuf);
             }
 
             @Override
-            public HttpResponse onView(ViewBody body) {
+            public FullHttpResponse onView(ViewBody body) {
                 try {
                     var sw = new StringWriter();
                     WebContext.blade().templateEngine().render(body.modelAndView(), sw);
@@ -125,7 +125,7 @@ public class RouteMethodHandler implements RequestHandler {
             }
 
             @Override
-            public HttpResponse onStatic(StaticFileBody body) {
+            public FullHttpResponse onStatic(StaticFileBody body) {
                 request.attribute(REQUEST_TO_STATIC_ATTR, body.path());
                 try {
                     HttpServerHandler.staticFileHandler.handle(webContext);
@@ -136,13 +136,13 @@ public class RouteMethodHandler implements RequestHandler {
             }
 
             @Override
-            public HttpResponse onRawBody(RawBody body) {
-                return body.httpResponse();
+            public FullHttpResponse onRawBody(RawBody body) {
+                return body.fullHttpResponse();
             }
 
             @Override
-            public HttpResponse onByteBuf(String fileName, FileChannel channel) {
-                var httpResponse = new DefaultHttpResponse(HTTP_1_1, HttpResponseStatus.valueOf(response.statusCode()));
+            public FullHttpResponse onFileChannel(String fileName, FileChannel channel) {
+                var httpResponse = new DefaultFullHttpResponse(HTTP_1_1, HttpResponseStatus.valueOf(response.statusCode()));
 
                 httpResponse.headers().set(TRANSFER_ENCODING, HttpHeaderValues.CHUNKED);
                 setDefaultHeaders(httpResponse.headers());

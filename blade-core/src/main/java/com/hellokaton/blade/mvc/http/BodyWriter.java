@@ -1,20 +1,20 @@
 package com.hellokaton.blade.mvc.http;
 
 import io.netty.buffer.ByteBuf;
-import io.netty.handler.codec.http.HttpResponse;
+import io.netty.handler.codec.http.FullHttpResponse;
 
 import java.nio.channels.FileChannel;
 
 public interface BodyWriter {
 
-    HttpResponse onView(ViewBody body);
+    FullHttpResponse onView(ViewBody body);
 
-    HttpResponse onStatic(StaticFileBody body);
+    FullHttpResponse onStatic(StaticFileBody body);
 
-    HttpResponse onRawBody(RawBody body);
+    FullHttpResponse onRawBody(RawBody body);
 
-    HttpResponse onByteBuf(ByteBuf byteBuf);
+    FullHttpResponse onByteBuf(ByteBuf byteBuf);
 
-    HttpResponse onByteBuf(String fileName, FileChannel channel);
+    FullHttpResponse onFileChannel(String fileName, FileChannel channel);
 
 }

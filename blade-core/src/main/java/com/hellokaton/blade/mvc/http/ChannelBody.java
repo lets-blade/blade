@@ -22,9 +22,13 @@ public class ChannelBody implements Body {
         return new ChannelBody(file.getName(), fileChannel);
     }
 
+    public static ChannelBody of(FileChannel channel) throws IOException {
+        return new ChannelBody(null, channel);
+    }
+
     @Override
     public HttpResponse write(BodyWriter writer) {
-        return writer.onByteBuf(fileName, content);
+        return writer.onFileChannel(fileName, content);
     }
 
 }
