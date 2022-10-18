@@ -446,8 +446,10 @@ public class StaticFileHandler implements RequestHandler {
 
             response.headers().set(HttpHeaderNames.EXPIRES, dateFormatter.format(time.getTime()));
             response.headers().set(HttpHeaderNames.CACHE_CONTROL, "private, max-age=" + staticFileCacheSeconds);
-            response.headers().set(
-                    HttpHeaderNames.LAST_MODIFIED, dateFormatter.format(new Date(fileToCache.lastModified())));
+            if(null!=fileToCache){
+                response.headers().set(
+                        HttpHeaderNames.LAST_MODIFIED, dateFormatter.format(new Date(fileToCache.lastModified())));
+            }
         }
     }
 
