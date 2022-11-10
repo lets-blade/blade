@@ -36,6 +36,7 @@ import com.hellokaton.blade.mvc.ui.template.TemplateEngine;
 import com.hellokaton.blade.options.CorsOptions;
 import com.hellokaton.blade.options.HttpOptions;
 import com.hellokaton.blade.options.StaticOptions;
+import com.hellokaton.blade.INettySslCustomizer;
 import com.hellokaton.blade.server.NettyServer;
 import com.hellokaton.blade.server.Server;
 import lombok.AccessLevel;
@@ -116,6 +117,13 @@ public class Blade {
     private CorsOptions corsOptions = null;
     private HttpOptions httpOptions = HttpOptions.create();
     private StaticOptions staticOptions = StaticOptions.create();
+
+    /**
+     * An SSL customizer for Netty.  If set it will supercede
+     * the built-in SSL options.
+     */
+    private INettySslCustomizer nettySslCustomizer = null;
+
 
     /**
      * Blade environment, which stores the parameters of the application.properties configuration file
@@ -718,6 +726,20 @@ public class Blade {
         }
         return this;
     }
+
+    /**
+     * <Code>INettySslCustomizer</code> will permit the developer
+     * to customize the Netty SSLContext as desired.
+     * @return
+     */
+    public INettySslCustomizer getNettySslCustomizer() {
+		return this.nettySslCustomizer;
+	}
+
+	public Blade setNettySslCustomizer(INettySslCustomizer customizer) {
+		this.nettySslCustomizer = customizer;
+        return this;
+	}
 
     /**
      * Stop current blade application

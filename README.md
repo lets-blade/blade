@@ -714,6 +714,65 @@ server.ssl.cert-path=cert.pem
 server.ssl.private-key-path=private_key.pem
 server.ssl.private-key-pass=123456
 ```
+** Configuration using INettySslCustomizer **
+
+```bash
+#Specify any properties your customizer needs, for example
+server.ssl.enable=true
+server.keystore.path=fully qualified path
+server.keystore.type=PKCS12
+server.keystore.password=mypass
+server.keystore.alias=optional alias
+```
+
+* Create your implementation of INettySslCustomizer
+* Register it with Blade class
+
+```java
+	   MyNettySslCustomizer nc = new MyNettySslCustomizer();	
+		Blade.create()
+			.setNettySslCustomizer(nc)
+			.start(App.class, args);
+		}
+```
+
+Sample implementation of INettySslCustomizer
+
+```java
+public class MyNettySSLCustomizer implements INettySslCustomizer {
+
+	public SslContext getCustomSslContext(Blade blade) {
+		SslContext sslctx = null;
+
+		// get my custom properties from the environment
+		String keystoreType = blade.getEnv("server.keystore.type", null);
+		String keystorePath = blade.getEnv("server.keystore.path", null);
+		String keystorePass = blade.getEnv("server.keystore.password", null);
+
+		if (verifyKeystore(keystoreType, keystorePath, keystorePass)) {
+
+			try (FileInputStream instream = new FileInputStream(new File(keystorePath))) {
+
+				// verify I can load store and password is valid
+				KeyStore keystore = KeyStore.getInstance(keystoreType);
+				char[] storepw = keystorePass.toCharArray();
+				keystore.load(instream, storepw);
+				
+				KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+				kmf.init(keystore, storepw);
+				sslctx = SslContextBuilder.forServer(kmf).build();
+				
+			} catch (Exception ex) {
+				log.error("Keystore validation failed " + ex.getMessage());
+			}
+			
+		} else {
+			log.error("Unable to load keystore, sslContext creation failed.");
+		}
+
+		return sslctx;
+	}
+```
 
 ## Custom Exception Handler
 

@@ -184,13 +184,18 @@ public class NettyServer implements Server {
         // Configure SSL.
         SslContext sslCtx = null;
         if (SSL) {
-            String certFilePath = environment.get(ENV_KEY_SSL_CERT, null);
-            String privateKeyPath = environment.get(ENV_KEY_SSL_PRIVATE_KEY, null);
-            String privateKeyPassword = environment.get(ENV_KEY_SSL_PRIVATE_KEY_PASS, null);
-
-            log.info("{}SSL CertChainFile  Path: {}", getStartedSymbol(), certFilePath);
-            log.info("{}SSL PrivateKeyFile Path: {}", getStartedSymbol(), privateKeyPath);
-            sslCtx = SslContextBuilder.forServer(new File(certFilePath), new File(privateKeyPath), privateKeyPassword).build();
+        	if (blade.getNettySslCustomizer() != null) {
+        		log.info("Using NettySSLCustomizer.");
+        		sslCtx = blade.getNettySslCustomizer().getCustomSslContext(blade);
+        	} else {
+	            String certFilePath = environment.get(ENV_KEY_SSL_CERT, null);
+	            String privateKeyPath = environment.get(ENV_KEY_SSL_PRIVATE_KEY, null);
+	            String privateKeyPassword = environment.get(ENV_KEY_SSL_PRIVATE_KEY_PASS, null);
+	            
+                log.info("{}SSL CertChainFile  Path: {}", getStartedSymbol(), certFilePath);
+                log.info("{}SSL PrivateKeyFile Path: {}", getStartedSymbol(), privateKeyPath);
+                sslCtx = SslContextBuilder.forServer(new File(certFilePath), new File(privateKeyPath), privateKeyPassword).build();
+        	}
         }
 
         var bootstrap = new ServerBootstrap();
