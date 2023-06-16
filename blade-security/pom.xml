@@ -13,7 +13,7 @@
 
     <properties>
         <jjwt.version>0.11.5</jjwt.version>
-        <guava.version>31.1-jre</guava.version>
+        <guava.version>32.0.0-jre</guava.version>
     </properties>
 
     <dependencies>
