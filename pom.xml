@@ -45,7 +45,7 @@
         <junit-benchmarks.version>0.7.2</junit-benchmarks.version>
         <junit.version>4.13.2</junit.version>
         <slf4j-api.version>1.7.36</slf4j-api.version>
-        <netty.version>4.1.86.Final</netty.version>
+        <netty.version>4.1.94.Final</netty.version>
         <blade-asm.version>0.1.1</blade-asm.version>
         <blade-log.version>0.2.0</blade-log.version>
         <blade-kit.version>${project.parent.version}</blade-kit.version>
