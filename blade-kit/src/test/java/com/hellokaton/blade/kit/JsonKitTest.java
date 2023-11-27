@@ -64,7 +64,9 @@ public class JsonKitTest {
         childBean.setRepeatField("sss");
         String json = JsonKit.toString(childBean);
 
-        Assert.assertEquals("{\"repeatField\":\"sss\",\"childField\":\"child\",\"superField\":\"super\"}", json);
+        Map<String, Object> expectedMap = JsonKit.fromJson("{\"repeatField\":\"sss\",\"childField\":\"child\",\"superField\":\"super\"}", Map.class);
+        Map<String, Object> actualMap = JsonKit.fromJson(json, Map.class);
+        Assert.assertEquals(expectedMap, actualMap);
 
         ChildBean formJson = JsonKit.fromJson(json, ChildBean.class);
 
