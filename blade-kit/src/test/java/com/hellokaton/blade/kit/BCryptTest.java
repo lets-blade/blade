@@ -174,4 +174,17 @@ public class BCryptTest {
         System.out.println("");
     }
 
+    /**
+     * Test for correct handling of corrupted hashes
+     * expecting failure
+     */
+    @Test
+    public void testCheckpw_failure_modifiedAndTruncatedHash() {
+        String plain = test_vectors[0][0];
+        String expected = test_vectors[0][2];
+        String corruptedHash = expected.substring(0, 15) + "Q" + expected.substring(15);
+        String truncatedHash = expected.substring(0, expected.length() - 5);
+        Assert.assertFalse(BCrypt.checkpw(plain, corruptedHash));
+        Assert.assertFalse(BCrypt.checkpw(plain, truncatedHash));
+    }
 }
